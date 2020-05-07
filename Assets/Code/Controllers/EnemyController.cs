@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public class EnemyController : MonoBehaviour
@@ -10,7 +9,7 @@ public class EnemyController : MonoBehaviour
     bool wasDifficultySet = false;
     private float difficulty;
     private float horizontalSpeed;
-    
+
     private Rigidbody2D   enemyBody;
     private BoxCollider2D enemyCollider;
     private Vector2 initialPosition;
