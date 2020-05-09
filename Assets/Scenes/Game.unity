@@ -675,7 +675,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 2111221934}
-  scoreLabel: {fileID: 0}
+  levelLabel: {fileID: 6782805227341164722}
+  scoreLabel: {fileID: 1165009680266626752}
+  livesLabel: {fileID: 1350562951862725763}
 --- !u!114 &1812029254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -695,6 +697,11 @@ MonoBehaviour:
   mainMenuButton: {fileID: 2111221937}
   restartButton: {fileID: 2111221936}
   quitButton: {fileID: 2111221935}
+  titleOnPause: Paused
+  titleOnGameOver: Game Over
+  tagsOfButtonsToHideOnMenuOpen: []
+  tagsOfLabelsToHideOnMenuOpen: []
+  tagsOfSpritesToHideOnMenuOpen: []
 --- !u!1001 &1891626405
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -702,6 +709,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1536355077883499988, guid: b5b0c2548e710314e882c4b1428eb985,
+        type: 3}
+      propertyPath: m_UsedByEffector
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1536355077883499988, guid: b5b0c2548e710314e882c4b1428eb985,
+        type: 3}
+      propertyPath: m_UsedByComposite
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5853589860258734046, guid: b5b0c2548e710314e882c4b1428eb985,
         type: 3}
       propertyPath: m_LocalPosition.x
