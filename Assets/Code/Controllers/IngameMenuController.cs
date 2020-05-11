@@ -35,7 +35,7 @@ public class IngameMenuController : MonoBehaviour
         GameEventCenter.gameOver.AddListener(OpenAsEndGameMenu);
 
         #if UNITY_WEBGL
-            GameObjectUtils.SetButtonActiveAndEnabled(quitButton, false);
+            UiUtils.SetButtonActiveAndEnabled(quitButton, false);
         #endif
     }
     void OnDestroy()
@@ -66,18 +66,18 @@ public class IngameMenuController : MonoBehaviour
         bool hideBackground = !isVisible;
         for (int i = 0; i < buttonsToHideWhenActive.Count; i++)
         {
-            GameObjectUtils.SetButtonVisibility(buttonsToHideWhenActive[i], hideBackground);
+            UiUtils.SetButtonVisibility(buttonsToHideWhenActive[i], hideBackground);
         }
         for (int i = 0; i < labelsToHideWhenActive.Count; i++)
         {
-            GameObjectUtils.SetLabelVisibility(labelsToHideWhenActive[i], hideBackground);
+            UiUtils.SetLabelVisibility(labelsToHideWhenActive[i], hideBackground);
         }
         for (int i = 0; i < spritesToHideWhenActive.Count; i++)
         {
-            GameObjectUtils.SetSpriteVisibility(spritesToHideWhenActive[i], hideBackground);
+            UiUtils.SetSpriteVisibility(spritesToHideWhenActive[i], hideBackground);
         }
         #if UNITY_WEBGL
-            GameObjectUtils.SetButtonActiveAndEnabled(quitButton, false);
+            UiUtils.SetButtonActiveAndEnabled(quitButton, false);
         #endif
     }
 
@@ -85,7 +85,7 @@ public class IngameMenuController : MonoBehaviour
     {
         title.text    = titleOnPause;
         subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-        GameObjectUtils.SetButtonActiveAndEnabled(resumeButton, true);
+        UiUtils.SetButtonActiveAndEnabled(resumeButton, true);
         ToggleMenuVisibility(true);
     }
 
@@ -93,7 +93,7 @@ public class IngameMenuController : MonoBehaviour
     {
         title.text    = titleOnGameOver;
         subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-        GameObjectUtils.SetButtonActiveAndEnabled(resumeButton, false);
+        UiUtils.SetButtonActiveAndEnabled(resumeButton, false);
         ToggleMenuVisibility(true);
     }
 

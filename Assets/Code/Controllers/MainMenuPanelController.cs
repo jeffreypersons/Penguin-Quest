@@ -57,17 +57,17 @@ public class MainMenuPanelController : MonoBehaviour
         }
 
         Button startButton = GameObjectUtils.FindFirstChildWithTag<Button>(submenuPanel, "ContinueButton");
-        Button closeButton = GameObjectUtils.FindFirstChildWithTag<Button>(submenuPanel, "CancelButton");
         if (startButton)
         {
-            GameObjectUtils.AddAutoUnsubscribeOnClickListenerToButton(startButton, () =>
+            UiUtils.AddAutoUnsubscribeOnClickListenerToButton(startButton, () =>
             {
                 actionOnStartPress();
             });
         }
+        Button closeButton = GameObjectUtils.FindFirstChildWithTag<Button>(submenuPanel, "CancelButton");
         if (closeButton)
         {
-            GameObjectUtils.AddAutoUnsubscribeOnClickListenerToButton(closeButton, () =>
+            UiUtils.AddAutoUnsubscribeOnClickListenerToButton(closeButton, () =>
             {
                 DeactivePanels();
                 actionOnPanelClose();
