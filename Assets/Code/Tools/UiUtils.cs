@@ -1,6 +1,3 @@
-using System;
-
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -9,7 +6,6 @@ using UnityEngine.UI;
 // note that these methods use old style for loops so that the found value CAN be modified after return
 public static class UiUtils
 {
-
     public static void AddAutoUnsubscribeOnClickListenerToButton(Button button, System.Action onButtonClicked)
     {
         // note null initialization is required to force nonlocal scope of the handler, see https://stackoverflow.com/a/1362244

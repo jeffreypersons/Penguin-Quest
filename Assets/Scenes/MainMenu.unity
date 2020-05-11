@@ -855,9 +855,11 @@ MonoBehaviour:
   settingsPanel: {fileID: 1098113354629006298}
   aboutPanel: {fileID: 9050079348863962934}
   difficultySetting: {fileID: 1785518266}
-  numberOfLivesSetting: {fileID: 2092447414}
+  numberOfGoalsSetting: {fileID: 2092447414}
   soundVolumeSetting: {fileID: 221111967}
   musicVolumeSetting: {fileID: 832823097}
+  startButtonTag: ContinueButton
+  cancelButtonTag: CancelButton
 --- !u!1001 &1707219736
 PrefabInstance:
   m_ObjectHideFlags: 0

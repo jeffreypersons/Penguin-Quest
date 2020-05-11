@@ -18,8 +18,8 @@ public class MainMenuController : MonoBehaviour
 
     void Awake()
     {
-        buttonsToHideWhenPanelIsOpen = GameObjectUtils.FindAllObjectsWithTags<Button>(tagsOfButtonsToHideWhenPanelIsOpen);
-        labelsToHideWhenPanelIsOpen  = GameObjectUtils.FindAllObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideWhenPanelIsOpen);
+        buttonsToHideWhenPanelIsOpen = ObjectUtils.FindAllComponentsInObjectsWithTags<Button>(tagsOfButtonsToHideWhenPanelIsOpen);
+        labelsToHideWhenPanelIsOpen  = ObjectUtils.FindAllComponentsInObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideWhenPanelIsOpen);
 
         mainMenuPanelController.SetActionOnStartPressed(() => LoadGame());
         mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMenuVisibility(true));

@@ -6,6 +6,15 @@ using UnityEngine.SceneManagement;
 
 public static class SceneUtils
 {
+    public static string GetNameOfActiveScene()
+    {
+        return SceneManager.GetActiveScene().name;
+    }
+    public static GameObject[] GetRootObjectsOfActiveScene()
+    {
+        return SceneManager.GetActiveScene().GetRootGameObjects();
+    }
+
     public static void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
@@ -23,6 +32,7 @@ public static class SceneUtils
         };
         SceneManager.sceneLoaded += handler;
     }
+
     public static void QuitGame()
     {
         #if UNITY_EDITOR

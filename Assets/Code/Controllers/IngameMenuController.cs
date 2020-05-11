@@ -27,9 +27,9 @@ public class IngameMenuController : MonoBehaviour
     void Awake()
     {
         ingameMenu.SetActive(false);  // ensures that the fetched objects are OUTSIDE the ingame menu
-        buttonsToHideWhenActive = GameObjectUtils.FindAllObjectsWithTags<Button>(tagsOfButtonsToHideOnMenuOpen);
-        labelsToHideWhenActive  = GameObjectUtils.FindAllObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideOnMenuOpen);
-        spritesToHideWhenActive = GameObjectUtils.FindAllObjectsWithTags<SpriteRenderer>(tagsOfSpritesToHideOnMenuOpen);
+        buttonsToHideWhenActive = ObjectUtils.FindAllComponentsInObjectsWithTags<Button>(tagsOfButtonsToHideOnMenuOpen);
+        labelsToHideWhenActive  = ObjectUtils.FindAllComponentsInObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideOnMenuOpen);
+        spritesToHideWhenActive = ObjectUtils.FindAllComponentsInObjectsWithTags<SpriteRenderer>(tagsOfSpritesToHideOnMenuOpen);
 
         GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
         GameEventCenter.gameOver.AddListener(OpenAsEndGameMenu);

@@ -8,18 +8,23 @@ using UnityEngine.UI;
 // - all panels have a back button, and some may have a continue button
 public class MainMenuPanelController : MonoBehaviour
 {
-    private Action actionOnStartPress;
-    private Action actionOnPanelOpen;
-    private Action actionOnPanelClose;
-
+    [Header("Sub-panels")]
     [SerializeField] private GameObject startPanel    = default;
     [SerializeField] private GameObject settingsPanel = default;
     [SerializeField] private GameObject aboutPanel    = default;
 
+    [Header("Setting Controllers")]
     [SerializeField] private SliderSettingController difficultySetting    = default;
     [SerializeField] private SliderSettingController numberOfLivesSetting = default;
     [SerializeField] private SliderSettingController soundVolumeSetting   = default;
     [SerializeField] private SliderSettingController musicVolumeSetting   = default;
+
+    [SerializeField] [TagSelector] private string startButtonTag  = default;
+    [SerializeField] [TagSelector] private string cancelButtonTag = default;
+
+    private Action actionOnStartPress;
+    private Action actionOnPanelOpen;
+    private Action actionOnPanelClose;
 
     void OnEnable()
     {
@@ -56,7 +61,8 @@ public class MainMenuPanelController : MonoBehaviour
             Debug.LogError($"Cannot open {submenuPanel.name}, since only one sub-mainmenu panel can be active at a time.");
         }
 
-        Button startButton = GameObjectUtils.FindFirstChildWithTag<Button>(submenuPanel, "ContinueButton");
+        submenuPanel.SetActive(true);
+        Button startButton = ObjectUtils.GetComponentInChildWithTag<Button>(submenuPanel, startButtonTag,  true);
         if (startButton)
         {
             UiUtils.AddAutoUnsubscribeOnClickListenerToButton(startButton, () =>
@@ -64,7 +70,7 @@ public class MainMenuPanelController : MonoBehaviour
                 actionOnStartPress();
             });
         }
-        Button closeButton = GameObjectUtils.FindFirstChildWithTag<Button>(submenuPanel, "CancelButton");
+        Button closeButton = ObjectUtils.GetComponentInChildWithTag<Button>(submenuPanel, cancelButtonTag, true);
         if (closeButton)
         {
             UiUtils.AddAutoUnsubscribeOnClickListenerToButton(closeButton, () =>
@@ -74,6 +80,5 @@ public class MainMenuPanelController : MonoBehaviour
             });
         }
         actionOnPanelOpen();
-        submenuPanel.SetActive(true);
     }
 }
