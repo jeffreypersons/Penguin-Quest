@@ -1,29 +1,25 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 
 public class MainMenuController : MonoBehaviour
 {
+    [SerializeField] private TMPro.TextMeshProUGUI subtitle = default;
+
+    [SerializeField] private GameObject buttonPanel = default;
+    [SerializeField] private MainMenuPanelController mainMenuPanelController = default;
+
+    [Header("Menu Buttons")]
     [SerializeField] private Button startButton    = default;
     [SerializeField] private Button settingsButton = default;
     [SerializeField] private Button aboutButton    = default;
     [SerializeField] private Button quitButton     = default;
-    [SerializeField] private MainMenuPanelController mainMenuPanelController = default;
-
-    private List<Button> buttonsToHideWhenPanelIsOpen;
-    private List<TMPro.TextMeshProUGUI> labelsToHideWhenPanelIsOpen;
-    [TagSelector] [SerializeField] private string[] tagsOfButtonsToHideWhenPanelIsOpen = new string[] { };
-    [TagSelector] [SerializeField] private string[] tagsOfLabelsToHideWhenPanelIsOpen  = new string[] { };
 
     void Awake()
     {
-        buttonsToHideWhenPanelIsOpen = ObjectUtils.FindAllComponentsInObjectsWithTags<Button>(tagsOfButtonsToHideWhenPanelIsOpen);
-        labelsToHideWhenPanelIsOpen  = ObjectUtils.FindAllComponentsInObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideWhenPanelIsOpen);
-
         mainMenuPanelController.SetActionOnStartPressed(() => LoadGame());
-        mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMenuVisibility(true));
-        mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMenuVisibility(false));
+        mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMainMenuVisibility(false));
+        mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMainMenuVisibility(true));
 
         #if UNITY_WEBGL
             UiUtils.SetButtonActiveAndEnabled(quitButton, false);
@@ -53,17 +49,10 @@ public class MainMenuController : MonoBehaviour
         });
     }
 
-    private void ToggleMenuVisibility(bool isVisible)
+    private void ToggleMainMenuVisibility(bool isVisible)
     {
-        bool hideBackground = !isVisible;
-        for (int i = 0; i < buttonsToHideWhenPanelIsOpen.Count; i++)
-        {
-            UiUtils.SetButtonVisibility(buttonsToHideWhenPanelIsOpen[i], hideBackground);
-        }
-        for (int i = 0; i < labelsToHideWhenPanelIsOpen.Count; i++)
-        {
-            UiUtils.SetLabelVisibility(labelsToHideWhenPanelIsOpen[i], hideBackground);
-        }
+        UiUtils.SetLabelVisibility(subtitle, isVisible);
+        buttonPanel.SetActive(isVisible);
         #if UNITY_WEBGL
             UiUtils.SetButtonActiveAndEnabled(quitButton, false);
         #endif

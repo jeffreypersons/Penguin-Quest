@@ -416,6 +416,18 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 5294236309974324840}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &982915809 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
+    type: 3}
+  m_PrefabInstance: {fileID: 6213646412801906796}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1002284752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1135,8 +1147,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 580242444010156195}
-  - component: {fileID: 580242444010156194}
   - component: {fileID: 580242444010156199}
+  - component: {fileID: 580242444010156194}
   - component: {fileID: 580242444010156193}
   - component: {fileID: 580242444010156192}
   m_Layer: 5
@@ -1158,15 +1170,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 947f5d3659532d244a2b55f9ecbd5140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  subtitle: {fileID: 982915809}
+  buttonPanel: {fileID: 1002284752}
+  mainMenuPanelController: {fileID: 1678574996}
   startButton: {fileID: 654611497}
   settingsButton: {fileID: 1250114576}
   aboutButton: {fileID: 149932780}
   quitButton: {fileID: 2485890}
-  mainMenuPanelController: {fileID: 1678574996}
-  tagsOfButtonsToHideWhenPanelIsOpen:
-  - Button
-  tagsOfLabelsToHideWhenPanelIsOpen:
-  - Subtitle
 --- !u!1 &1098113354629006298 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5040701810079079401, guid: 6b1e4d00147fb6e448f3dcc8c6f5658a,
@@ -1430,61 +1440,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 580242444010156195}
     m_Modifications:
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_text
-      value: Penguin Quest
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 13
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_textInfo.spaceCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_fontSizeMax
-      value: 175
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 128.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_fontColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_fontColor.g
-      value: 0.54901963
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_fontColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2601689950958128432, guid: bd5fe3fce5f28454f807f37b0daed415,
-        type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4294937600
-      objectReference: {fileID: 0}
     - target: {fileID: 2601689950958128438, guid: bd5fe3fce5f28454f807f37b0daed415,
         type: 3}
       propertyPath: m_Name
@@ -1813,41 +1768,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 580242444010156195}
     m_Modifications:
-    - target: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
-        type: 3}
-      propertyPath: m_fontColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
-        type: 3}
-      propertyPath: m_fontColor.g
-      value: 0.54901963
-      objectReference: {fileID: 0}
-    - target: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
-        type: 3}
-      propertyPath: m_fontColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
-        type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4294937600
-      objectReference: {fileID: 0}
-    - target: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
-        type: 3}
-      propertyPath: m_fontStyle
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
-        type: 3}
-      propertyPath: m_fontSizeMax
-      value: 42.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5082345569953656210, guid: d39af4927c82c9a4e8acc193e6e881dc,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 42.5
-      objectReference: {fileID: 0}
     - target: {fileID: 5082345569953656212, guid: d39af4927c82c9a4e8acc193e6e881dc,
         type: 3}
       propertyPath: m_Name
@@ -1936,7 +1856,7 @@ PrefabInstance:
     - target: {fileID: 5082345569953656213, guid: d39af4927c82c9a4e8acc193e6e881dc,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0.55
       objectReference: {fileID: 0}
     - target: {fileID: 5082345569953656213, guid: d39af4927c82c9a4e8acc193e6e881dc,
         type: 3}
