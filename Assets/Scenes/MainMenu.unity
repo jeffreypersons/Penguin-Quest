@@ -894,7 +894,7 @@ MonoBehaviour:
   settingsPanel: {fileID: 1098113354629006298}
   aboutPanel: {fileID: 9050079348863962934}
   difficultySetting: {fileID: 1785518266}
-  numberOfLivesSetting: {fileID: 0}
+  numberOfLivesSetting: {fileID: 2092447414}
   soundVolumeSetting: {fileID: 221111967}
   musicVolumeSetting: {fileID: 832823097}
   startButtonTag: ContinueButton
@@ -1062,6 +1062,18 @@ RectTransform:
 --- !u!114 &1785518266 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7394248188617143330, guid: ce246366c2d147c40af4cfe64ad4e09d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4248437340350389569}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9642ff0266a49474fa67d90e1a2f2784, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2092447414 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2903839176825299947, guid: ce246366c2d147c40af4cfe64ad4e09d,
     type: 3}
   m_PrefabInstance: {fileID: 4248437340350389569}
   m_PrefabAsset: {fileID: 0}
