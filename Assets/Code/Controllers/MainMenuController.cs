@@ -19,8 +19,6 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button aboutButton    = default;
     [SerializeField] private Button quitButton     = default;
 
-
-
     void Awake()
     {
         if (!SceneUtils.IsSceneAbleToLoad(sceneName))
