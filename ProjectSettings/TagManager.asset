@@ -3,7 +3,24 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Scripter
+  - Label
+  - Canvas
+  - Banner
+  - Paddle
+  - Button
+  - Audio
+  - Menu
+  - EventSystem
+  - Camera
+  - VerticalWall
+  - HorizontalWall
+  - Title
+  - AdjustableSetting
+  - ContinueButton
+  - CancelButton
+  - Subtitle
   layers:
   - Default
   - TransparentFX
@@ -40,4 +57,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ui
+    uniqueID: 155862943
     locked: 0
