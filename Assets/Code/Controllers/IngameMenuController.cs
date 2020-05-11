@@ -17,7 +17,7 @@ public class IngameMenuController : MonoBehaviour
     private List<TMPro.TextMeshProUGUI> labelsToHideWhenActive;
     private List<SpriteRenderer> spritesToHideWhenActive;
 
-    private static string subtitleSuffix = "points scored";
+    private static readonly string subtitleSuffix = " points scored";
     [SerializeField] private string titleOnPause    = default;
     [SerializeField] private string titleOnGameOver = default;
     [TagSelector] [SerializeField] private string[] tagsOfButtonsToHideOnMenuOpen = new string[] { };
