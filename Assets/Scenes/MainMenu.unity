@@ -341,58 +341,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9642ff0266a49474fa67d90e1a2f2784, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &883597673
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 883597674}
-  - component: {fileID: 883597675}
-  m_Layer: 0
-  m_Name: MainMenuManager
-  m_TagString: Scripter
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
---- !u!4 &883597674
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883597673}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &883597675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883597673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 947f5d3659532d244a2b55f9ecbd5140, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startButton: {fileID: 654611497}
-  settingsButton: {fileID: 1250114576}
-  aboutButton: {fileID: 149932780}
-  quitButton: {fileID: 2485890}
-  mainMenuPanelController: {fileID: 1678574996}
-  tagsOfButtonsToHideWhenPanelIsOpen:
-  - Button
-  tagsOfLabelsToHideWhenPanelIsOpen:
-  - Subtitle
 --- !u!1001 &930906539
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1188,6 +1136,7 @@ GameObject:
   m_Component:
   - component: {fileID: 580242444010156195}
   - component: {fileID: 580242444010156194}
+  - component: {fileID: 580242444010156199}
   - component: {fileID: 580242444010156193}
   - component: {fileID: 580242444010156192}
   m_Layer: 5
@@ -1197,6 +1146,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &580242444010156199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 580242444010156198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 947f5d3659532d244a2b55f9ecbd5140, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startButton: {fileID: 654611497}
+  settingsButton: {fileID: 1250114576}
+  aboutButton: {fileID: 149932780}
+  quitButton: {fileID: 2485890}
+  mainMenuPanelController: {fileID: 1678574996}
+  tagsOfButtonsToHideWhenPanelIsOpen:
+  - Button
+  tagsOfLabelsToHideWhenPanelIsOpen:
+  - Subtitle
 --- !u!1 &1098113354629006298 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5040701810079079401, guid: 6b1e4d00147fb6e448f3dcc8c6f5658a,
@@ -1707,7 +1677,7 @@ PrefabInstance:
     - target: {fileID: 5286118289620823963, guid: 264b980b324a7c04e8e2470d20bf6a0e,
         type: 3}
       propertyPath: m_Name
-      value: MainMenuCamera
+      value: Camera
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 264b980b324a7c04e8e2470d20bf6a0e, type: 3}
