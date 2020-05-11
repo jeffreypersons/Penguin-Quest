@@ -6,6 +6,10 @@ public class MainMenuController : MonoBehaviour
 {
     [SerializeField] private TMPro.TextMeshProUGUI subtitle = default;
 
+    [Header("Scene to load on game start")]
+    [SerializeField] private string sceneName = default;
+
+    [Header("Menu Core Components")]
     [SerializeField] private GameObject buttonPanel = default;
     [SerializeField] private MainMenuPanelController mainMenuPanelController = default;
 
@@ -15,8 +19,14 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button aboutButton    = default;
     [SerializeField] private Button quitButton     = default;
 
+
+
     void Awake()
     {
+        if (!SceneUtils.IsSceneAbleToLoad(sceneName))
+        {
+            Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+        }
         mainMenuPanelController.SetActionOnStartPressed(() => LoadGame());
         mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMainMenuVisibility(false));
         mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMainMenuVisibility(true));
@@ -43,7 +53,7 @@ public class MainMenuController : MonoBehaviour
 
     private void LoadGame()
     {
-        SceneUtils.LoadScene("Game", () =>
+        SceneUtils.LoadScene(sceneName, () =>
         {
             GameEventCenter.startNewGame.Trigger(mainMenuPanelController.GetGameSettings());
         });

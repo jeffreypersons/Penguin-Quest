@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 
 public static class SceneUtils
 {
+    public static bool IsSceneAbleToLoad(string sceneName)
+    {
+        return Application.CanStreamedLevelBeLoaded(sceneName);
+    }
     public static string GetNameOfActiveScene()
     {
         return SceneManager.GetActiveScene().name;
