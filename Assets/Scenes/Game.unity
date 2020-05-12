@@ -603,6 +603,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 328adc502457bea42aae7fb88632a1e3, type: 3}
+--- !u!1 &1624175199 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5330158991354191735, guid: 328adc502457bea42aae7fb88632a1e3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1624175198}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1624175200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624175199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7f74ce3d66de2d4e876ac4c6a19bcb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 8734476180540727138}
+  offset: {x: 6, y: 6, z: -10}
 --- !u!20 &1636464658 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 5330158991354191732, guid: 328adc502457bea42aae7fb88632a1e3,
@@ -1487,6 +1507,8 @@ MonoBehaviour:
   levelLabel: {fileID: 6782805227341164722}
   scoreLabel: {fileID: 1165009680266626752}
   livesLabel: {fileID: 1350562951862725763}
+  scorePrefix: 'Score: '
+  livesPrefix: 'Lives Left: '
 --- !u!1001 &6373030746204779733
 PrefabInstance:
   m_ObjectHideFlags: 0
