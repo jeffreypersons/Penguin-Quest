@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 
@@ -8,29 +7,40 @@ public class IngameMenuController : MonoBehaviour
     [SerializeField] private GameObject ingameMenu = default;
     [SerializeField] private TMPro.TextMeshProUGUI title    = default;
     [SerializeField] private TMPro.TextMeshProUGUI subtitle = default;
+
+    [Header("Menu Buttons")]
     [SerializeField] private Button resumeButton   = default;
     [SerializeField] private Button mainMenuButton = default;
     [SerializeField] private Button restartButton  = default;
     [SerializeField] private Button quitButton     = default;
 
-    private List<Button> buttonsToHideWhenActive;
-    private List<TMPro.TextMeshProUGUI> labelsToHideWhenActive;
-    private List<SpriteRenderer> spritesToHideWhenActive;
-
-    private static readonly string subtitleSuffix = " points scored";
+    [Header("Menu Text")]
     [SerializeField] private string titleOnPause    = default;
     [SerializeField] private string titleOnGameOver = default;
-    [TagSelector] [SerializeField] private string[] tagsOfButtonsToHideOnMenuOpen = new string[] { };
-    [TagSelector] [SerializeField] private string[] tagsOfLabelsToHideOnMenuOpen  = new string[] { };
-    [TagSelector] [SerializeField] private string[] tagsOfSpritesToHideOnMenuOpen = new string[] { };
+    [SerializeField] private string subtitleSuffix  = default;
+
+    [Header("Scene Objects to Hide on Menu Open")]
+    [SerializeField] private GameObject topBanner = default;
+
+    private void ToggleMenuVisibility(bool isVisible)
+    {
+        if (isVisible)
+        {
+            Time.timeScale = 0;
+            topBanner.SetActive(false);
+            ingameMenu.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1;
+            topBanner.SetActive(true);
+            ingameMenu.SetActive(false);
+        }
+    }
 
     void Awake()
     {
-        ingameMenu.SetActive(false);  // ensures that the fetched objects are OUTSIDE the ingame menu
-        buttonsToHideWhenActive = ObjectUtils.FindAllComponentsInObjectsWithTags<Button>(tagsOfButtonsToHideOnMenuOpen);
-        labelsToHideWhenActive  = ObjectUtils.FindAllComponentsInObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideOnMenuOpen);
-        spritesToHideWhenActive = ObjectUtils.FindAllComponentsInObjectsWithTags<SpriteRenderer>(tagsOfSpritesToHideOnMenuOpen);
-
+        ingameMenu.SetActive(false);
         GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
         GameEventCenter.gameOver.AddListener(OpenAsEndGameMenu);
 
@@ -58,28 +68,6 @@ public class IngameMenuController : MonoBehaviour
         restartButton.onClick.RemoveListener(TriggerRestartGameEvent);
         quitButton.onClick.RemoveListener(SceneUtils.QuitGame);
     }
-    private void ToggleMenuVisibility(bool isVisible)
-    {
-        Time.timeScale = isVisible? 0 : 1;
-        ingameMenu.SetActive(isVisible);
-
-        bool hideBackground = !isVisible;
-        for (int i = 0; i < buttonsToHideWhenActive.Count; i++)
-        {
-            UiUtils.SetButtonVisibility(buttonsToHideWhenActive[i], hideBackground);
-        }
-        for (int i = 0; i < labelsToHideWhenActive.Count; i++)
-        {
-            UiUtils.SetLabelVisibility(labelsToHideWhenActive[i], hideBackground);
-        }
-        for (int i = 0; i < spritesToHideWhenActive.Count; i++)
-        {
-            UiUtils.SetSpriteVisibility(spritesToHideWhenActive[i], hideBackground);
-        }
-        #if UNITY_WEBGL
-            UiUtils.SetButtonActiveAndEnabled(quitButton, false);
-        #endif
-    }
 
     private void OpenAsPauseMenu(PlayerInfo playerInfo)
     {
@@ -88,7 +76,6 @@ public class IngameMenuController : MonoBehaviour
         UiUtils.SetButtonActiveAndEnabled(resumeButton, true);
         ToggleMenuVisibility(true);
     }
-
     private void OpenAsEndGameMenu(PlayerInfo playerInfo)
     {
         title.text    = titleOnGameOver;
@@ -99,18 +86,18 @@ public class IngameMenuController : MonoBehaviour
 
     private void ResumeGame()
     {
-        GameEventCenter.resumeGame.Trigger("Resuming game");
         ToggleMenuVisibility(false);
+        GameEventCenter.resumeGame.Trigger("Resuming game");
     }
     private void MoveToMainMenu()
     {
-        GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
         Time.timeScale = 1;
+        GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
         SceneUtils.LoadScene("MainMenu");
     }
     private void TriggerRestartGameEvent()
     {
-        GameEventCenter.restartGame.Trigger("Restarting game");
         ToggleMenuVisibility(false);
+        GameEventCenter.restartGame.Trigger("Restarting game");
     }
 }
