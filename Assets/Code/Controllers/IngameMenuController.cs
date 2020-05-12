@@ -1,41 +1,59 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 
 public class IngameMenuController : MonoBehaviour
 {
+    [Header("Scene to Load on Return to Main Menu")]
+    [SerializeField] private string sceneName = default;
+
+    [Header("Scene Objects to Hide on Menu Open")]
+    [SerializeField] private GameObject topBanner = default;
+
+    [Header("Menu Buttons")]
     [SerializeField] private GameObject ingameMenu = default;
     [SerializeField] private TMPro.TextMeshProUGUI title    = default;
     [SerializeField] private TMPro.TextMeshProUGUI subtitle = default;
+
+    [Header("Menu Text")]
+    [SerializeField] private string titleOnPause    = default;
+    [SerializeField] private string titleOnGameOver = default;
+    [SerializeField] private string subtitleSuffix  = default;
+
+    [Header("Menu Buttons")]
     [SerializeField] private Button resumeButton   = default;
     [SerializeField] private Button mainMenuButton = default;
     [SerializeField] private Button restartButton  = default;
     [SerializeField] private Button quitButton     = default;
 
-    private List<Button> buttonsToHideWhenActive;
-    private List<TMPro.TextMeshProUGUI> labelsToHideWhenActive;
-    private List<SpriteRenderer> spritesToHideWhenActive;
-
-    private static string subtitleSuffix = "points scored";
-    [SerializeField] private string titleOnPause    = default;
-    [SerializeField] private string titleOnGameOver = default;
-    [TagSelector] [SerializeField] private string[] tagsOfButtonsToHideOnMenuOpen = new string[] { };
-    [TagSelector] [SerializeField] private string[] tagsOfLabelsToHideOnMenuOpen  = new string[] { };
-    [TagSelector] [SerializeField] private string[] tagsOfSpritesToHideOnMenuOpen = new string[] { };
+    private void ToggleMenuVisibility(bool isVisible)
+    {
+        if (isVisible)
+        {
+            Time.timeScale = 0;
+            topBanner.SetActive(false);
+            ingameMenu.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1;
+            topBanner.SetActive(true);
+            ingameMenu.SetActive(false);
+        }
+    }
 
     void Awake()
     {
-        ingameMenu.SetActive(false);  // ensures that the fetched objects are OUTSIDE the ingame menu
-        buttonsToHideWhenActive = GameObjectUtils.FindAllObjectsWithTags<Button>(tagsOfButtonsToHideOnMenuOpen);
-        labelsToHideWhenActive  = GameObjectUtils.FindAllObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideOnMenuOpen);
-        spritesToHideWhenActive = GameObjectUtils.FindAllObjectsWithTags<SpriteRenderer>(tagsOfSpritesToHideOnMenuOpen);
-
+        if (!SceneUtils.IsSceneAbleToLoad(sceneName))
+        {
+            Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+        }
+        ingameMenu.SetActive(false);
         GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
         GameEventCenter.gameOver.AddListener(OpenAsEndGameMenu);
 
         #if UNITY_WEBGL
-            GameObjectUtils.SetButtonActiveAndEnabled(quitButton, false);
+            UiUtils.SetButtonActiveAndEnabled(quitButton, false);
         #endif
     }
     void OnDestroy()
@@ -58,59 +76,36 @@ public class IngameMenuController : MonoBehaviour
         restartButton.onClick.RemoveListener(TriggerRestartGameEvent);
         quitButton.onClick.RemoveListener(SceneUtils.QuitGame);
     }
-    private void ToggleMenuVisibility(bool isVisible)
-    {
-        Time.timeScale = isVisible? 0 : 1;
-        ingameMenu.SetActive(isVisible);
-
-        bool hideBackground = !isVisible;
-        for (int i = 0; i < buttonsToHideWhenActive.Count; i++)
-        {
-            GameObjectUtils.SetButtonVisibility(buttonsToHideWhenActive[i], hideBackground);
-        }
-        for (int i = 0; i < labelsToHideWhenActive.Count; i++)
-        {
-            GameObjectUtils.SetLabelVisibility(labelsToHideWhenActive[i], hideBackground);
-        }
-        for (int i = 0; i < spritesToHideWhenActive.Count; i++)
-        {
-            GameObjectUtils.SetSpriteVisibility(spritesToHideWhenActive[i], hideBackground);
-        }
-        #if UNITY_WEBGL
-            GameObjectUtils.SetButtonActiveAndEnabled(quitButton, false);
-        #endif
-    }
 
     private void OpenAsPauseMenu(PlayerInfo playerInfo)
     {
         title.text    = titleOnPause;
         subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-        GameObjectUtils.SetButtonActiveAndEnabled(resumeButton, true);
+        UiUtils.SetButtonActiveAndEnabled(resumeButton, true);
         ToggleMenuVisibility(true);
     }
-
     private void OpenAsEndGameMenu(PlayerInfo playerInfo)
     {
         title.text    = titleOnGameOver;
         subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-        GameObjectUtils.SetButtonActiveAndEnabled(resumeButton, false);
+        UiUtils.SetButtonActiveAndEnabled(resumeButton, false);
         ToggleMenuVisibility(true);
     }
 
     private void ResumeGame()
     {
-        GameEventCenter.resumeGame.Trigger("Resuming game");
         ToggleMenuVisibility(false);
+        GameEventCenter.resumeGame.Trigger("Resuming game");
     }
     private void MoveToMainMenu()
     {
-        GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
         Time.timeScale = 1;
-        SceneUtils.LoadScene("MainMenu");
+        GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
+        SceneUtils.LoadScene(sceneName);
     }
     private void TriggerRestartGameEvent()
     {
-        GameEventCenter.restartGame.Trigger("Restarting game");
         ToggleMenuVisibility(false);
+        GameEventCenter.restartGame.Trigger("Restarting game");
     }
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 
+// example offset: 6, 6, -10
 public class FollowCamController : MonoBehaviour
 {
     public Transform player;

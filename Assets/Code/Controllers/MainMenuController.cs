@@ -1,32 +1,36 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 
 public class MainMenuController : MonoBehaviour
 {
+    [SerializeField] private TMPro.TextMeshProUGUI subtitle = default;
+
+    [Header("Scene to load on game start")]
+    [SerializeField] private string sceneName = default;
+
+    [Header("Menu Core Components")]
+    [SerializeField] private GameObject buttonPanel = default;
+    [SerializeField] private MainMenuPanelController mainMenuPanelController = default;
+
+    [Header("Menu Buttons")]
     [SerializeField] private Button startButton    = default;
     [SerializeField] private Button settingsButton = default;
     [SerializeField] private Button aboutButton    = default;
     [SerializeField] private Button quitButton     = default;
-    [SerializeField] private MainMenuPanelController mainMenuPanelController = default;
-
-    private List<Button> buttonsToHideWhenPanelIsOpen;
-    private List<TMPro.TextMeshProUGUI> labelsToHideWhenPanelIsOpen;
-    [TagSelector] [SerializeField] private string[] tagsOfButtonsToHideWhenPanelIsOpen = new string[] { };
-    [TagSelector] [SerializeField] private string[] tagsOfLabelsToHideWhenPanelIsOpen  = new string[] { };
 
     void Awake()
     {
-        buttonsToHideWhenPanelIsOpen = GameObjectUtils.FindAllObjectsWithTags<Button>(tagsOfButtonsToHideWhenPanelIsOpen);
-        labelsToHideWhenPanelIsOpen  = GameObjectUtils.FindAllObjectsWithTags<TMPro.TextMeshProUGUI>(tagsOfLabelsToHideWhenPanelIsOpen);
-
+        if (!SceneUtils.IsSceneAbleToLoad(sceneName))
+        {
+            Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+        }
         mainMenuPanelController.SetActionOnStartPressed(() => LoadGame());
-        mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMenuVisibility(true));
-        mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMenuVisibility(false));
+        mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMainMenuVisibility(false));
+        mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMainMenuVisibility(true));
 
         #if UNITY_WEBGL
-            GameObjectUtils.SetButtonActiveAndEnabled(quitButton, false);
+            UiUtils.SetButtonActiveAndEnabled(quitButton, false);
         #endif
     }
 
@@ -47,25 +51,18 @@ public class MainMenuController : MonoBehaviour
 
     private void LoadGame()
     {
-        SceneUtils.LoadScene("Game", () =>
+        SceneUtils.LoadScene(sceneName, () =>
         {
             GameEventCenter.startNewGame.Trigger(mainMenuPanelController.GetGameSettings());
         });
     }
 
-    private void ToggleMenuVisibility(bool isVisible)
+    private void ToggleMainMenuVisibility(bool isVisible)
     {
-        bool hideBackground = !isVisible;
-        for (int i = 0; i < buttonsToHideWhenPanelIsOpen.Count; i++)
-        {
-            GameObjectUtils.SetButtonVisibility(buttonsToHideWhenPanelIsOpen[i], hideBackground);
-        }
-        for (int i = 0; i < labelsToHideWhenPanelIsOpen.Count; i++)
-        {
-            GameObjectUtils.SetLabelVisibility(labelsToHideWhenPanelIsOpen[i], hideBackground);
-        }
+        UiUtils.SetLabelVisibility(subtitle, isVisible);
+        buttonPanel.SetActive(isVisible);
         #if UNITY_WEBGL
-            GameObjectUtils.SetButtonActiveAndEnabled(quitButton, false);
+            UiUtils.SetButtonActiveAndEnabled(quitButton, false);
         #endif
     }
 }

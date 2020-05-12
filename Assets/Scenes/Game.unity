@@ -247,7 +247,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &52369773
 MonoBehaviour:
@@ -296,7 +296,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &753974409
 MonoBehaviour:
@@ -528,7 +528,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1624175198
 PrefabInstance:
@@ -537,15 +537,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1636464657, guid: 328adc502457bea42aae7fb88632a1e3, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 8734476180540727138}
     - target: {fileID: 5330158991354191735, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_Name
       value: FollowCam
-      objectReference: {fileID: 0}
-    - target: {fileID: 5330158991354191735, guid: 328adc502457bea42aae7fb88632a1e3,
-        type: 3}
-      propertyPath: m_TagString
-      value: Camera
       objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
@@ -604,19 +603,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 328adc502457bea42aae7fb88632a1e3, type: 3}
---- !u!1 &1636464655 stripped
+--- !u!1 &1624175199 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5330158991354191735, guid: 328adc502457bea42aae7fb88632a1e3,
     type: 3}
   m_PrefabInstance: {fileID: 1624175198}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1636464657
+--- !u!114 &1624175200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1636464655}
+  m_GameObject: {fileID: 1624175199}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7f74ce3d66de2d4e876ac4c6a19bcb2, type: 3}
@@ -630,78 +629,6 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 1624175198}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1812029251
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1812029252}
-  - component: {fileID: 1812029253}
-  - component: {fileID: 1812029254}
-  m_Layer: 0
-  m_Name: UiManager
-  m_TagString: Scripter
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
---- !u!4 &1812029252
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1812029251}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1812029253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1812029251}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e0074ddd7851b649add1d63a1d0c259, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseButton: {fileID: 2111221934}
-  levelLabel: {fileID: 6782805227341164722}
-  scoreLabel: {fileID: 1165009680266626752}
-  livesLabel: {fileID: 1350562951862725763}
---- !u!114 &1812029254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1812029251}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d28c07453915bd2498843bb36cac909d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ingameMenu: {fileID: 7044906180976781394}
-  title: {fileID: 2111221940}
-  subtitle: {fileID: 2111221939}
-  resumeButton: {fileID: 2111221938}
-  mainMenuButton: {fileID: 2111221937}
-  restartButton: {fileID: 2111221936}
-  quitButton: {fileID: 2111221935}
-  titleOnPause: Paused
-  titleOnGameOver: Game Over
-  tagsOfButtonsToHideOnMenuOpen: []
-  tagsOfLabelsToHideOnMenuOpen: []
-  tagsOfSpritesToHideOnMenuOpen: []
 --- !u!1001 &1891626405
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1530,6 +1457,8 @@ GameObject:
   - component: {fileID: 6209392993032531939}
   - component: {fileID: 6209392993032531938}
   - component: {fileID: 6209392993032531937}
+  - component: {fileID: 6209392993032531944}
+  - component: {fileID: 6209392993032531943}
   - component: {fileID: 6209392993032531936}
   m_Layer: 5
   m_Name: Hud
@@ -1538,6 +1467,48 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &6209392993032531943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6209392993032531942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d28c07453915bd2498843bb36cac909d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneName: MainMenu
+  topBanner: {fileID: 6782805226247431791}
+  ingameMenu: {fileID: 7044906180976781394}
+  title: {fileID: 2111221940}
+  subtitle: {fileID: 2111221939}
+  titleOnPause: Paused
+  titleOnGameOver: Game Over
+  subtitleSuffix: ' Points Scored'
+  resumeButton: {fileID: 2111221938}
+  mainMenuButton: {fileID: 2111221937}
+  restartButton: {fileID: 2111221936}
+  quitButton: {fileID: 2111221935}
+--- !u!114 &6209392993032531944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6209392993032531942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e0074ddd7851b649add1d63a1d0c259, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseButton: {fileID: 2111221934}
+  levelLabel: {fileID: 6782805227341164722}
+  scoreLabel: {fileID: 1165009680266626752}
+  livesLabel: {fileID: 1350562951862725763}
+  scorePrefix: 'Score: '
+  livesPrefix: 'Lives Left: '
 --- !u!1001 &6373030746204779733
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1654,11 +1625,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: IngameMenu
-      objectReference: {fileID: 0}
-    - target: {fileID: 4158235784630934663, guid: 5dab4a3365dcd3f4396debe01caf50f7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5dab4a3365dcd3f4396debe01caf50f7, type: 3}
