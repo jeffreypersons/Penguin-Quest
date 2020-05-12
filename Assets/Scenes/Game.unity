@@ -1459,17 +1459,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d28c07453915bd2498843bb36cac909d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneName: MainMenu
+  topBanner: {fileID: 6782805226247431791}
   ingameMenu: {fileID: 7044906180976781394}
   title: {fileID: 2111221940}
   subtitle: {fileID: 2111221939}
+  titleOnPause: Paused
+  titleOnGameOver: Game Over
+  subtitleSuffix: ' Points Scored'
   resumeButton: {fileID: 2111221938}
   mainMenuButton: {fileID: 2111221937}
   restartButton: {fileID: 2111221936}
   quitButton: {fileID: 2111221935}
-  titleOnPause: Paused
-  titleOnGameOver: Game Over
-  subtitleSuffix: ' Points Scored'
-  topBanner: {fileID: 6782805226247431791}
 --- !u!114 &6209392993032531944
 MonoBehaviour:
   m_ObjectHideFlags: 0

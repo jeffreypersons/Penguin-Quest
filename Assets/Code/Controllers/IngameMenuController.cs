@@ -4,23 +4,27 @@ using UnityEngine.UI;
 
 public class IngameMenuController : MonoBehaviour
 {
+    [Header("Scene to Load on Return to Main Menu")]
+    [SerializeField] private string sceneName = default;
+
+    [Header("Scene Objects to Hide on Menu Open")]
+    [SerializeField] private GameObject topBanner = default;
+
+    [Header("Menu Buttons")]
     [SerializeField] private GameObject ingameMenu = default;
     [SerializeField] private TMPro.TextMeshProUGUI title    = default;
     [SerializeField] private TMPro.TextMeshProUGUI subtitle = default;
-
-    [Header("Menu Buttons")]
-    [SerializeField] private Button resumeButton   = default;
-    [SerializeField] private Button mainMenuButton = default;
-    [SerializeField] private Button restartButton  = default;
-    [SerializeField] private Button quitButton     = default;
 
     [Header("Menu Text")]
     [SerializeField] private string titleOnPause    = default;
     [SerializeField] private string titleOnGameOver = default;
     [SerializeField] private string subtitleSuffix  = default;
 
-    [Header("Scene Objects to Hide on Menu Open")]
-    [SerializeField] private GameObject topBanner = default;
+    [Header("Menu Buttons")]
+    [SerializeField] private Button resumeButton   = default;
+    [SerializeField] private Button mainMenuButton = default;
+    [SerializeField] private Button restartButton  = default;
+    [SerializeField] private Button quitButton     = default;
 
     private void ToggleMenuVisibility(bool isVisible)
     {
@@ -40,6 +44,10 @@ public class IngameMenuController : MonoBehaviour
 
     void Awake()
     {
+        if (!SceneUtils.IsSceneAbleToLoad(sceneName))
+        {
+            Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+        }
         ingameMenu.SetActive(false);
         GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
         GameEventCenter.gameOver.AddListener(OpenAsEndGameMenu);
@@ -93,7 +101,7 @@ public class IngameMenuController : MonoBehaviour
     {
         Time.timeScale = 1;
         GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
-        SceneUtils.LoadScene("MainMenu");
+        SceneUtils.LoadScene(sceneName);
     }
     private void TriggerRestartGameEvent()
     {
