@@ -1852,7 +1852,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 4}
+    oldSize: {x: 0.76, y: 1.51}
     newSize: {x: 2, y: 4}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1891,7 +1891,7 @@ Transform:
   m_GameObject: {fileID: 8734476180540727143}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -25, y: -15, z: 0}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
@@ -1935,7 +1935,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -704
-  m_Sprite: {fileID: 21300000, guid: 01bc8a7aab7b5ec4eb4cd0d86b73197c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b8870f245c0c5d341859fe4d129e2611, type: 3}
   m_Color: {r: 0.7169812, g: 0.7159113, b: 0.67301536, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1960,7 +1960,7 @@ GameObject:
   - component: {fileID: 8734476180540727137}
   - component: {fileID: 2068292379632754550}
   m_Layer: 9
-  m_Name: PlayerPenguin
+  m_Name: Penguin
   m_TagString: Paddle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
