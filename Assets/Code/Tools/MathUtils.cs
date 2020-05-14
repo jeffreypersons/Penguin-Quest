@@ -7,6 +7,21 @@ using UnityEngine;
 // otherwise the methods make appropriate assumptions about input, stated in their corresponding comments
 public static class MathUtils
 {
+    // see: https://answers.unity.com/questions/10093/rigidbody-rotating-around-a-point-instead-on-self.html
+    public static void RotateRigidBodyAroundPointBy(Rigidbody2D rb, Vector3 origin, Vector3 axis, float angle)
+    {
+        Quaternion q = Quaternion.AngleAxis(angle, axis);
+        rb.MovePosition(q * (rb.transform.position - origin) + origin);
+        rb.MoveRotation(rb.transform.rotation * q);
+    }
+    // return 2d world space coords corresponding to given ratio from bottom left corner of bounding box
+    // note: does not currently support rotated bounds, and assumes offset is between 0 and 1
+    public static Vector3 GetPointInsideBounds(Bounds bounds, Vector2 ratioOffsetFromMin)
+    {
+        return new Vector2(bounds.min.x + (bounds.size.x * ratioOffsetFromMin.x),
+                           bounds.min.y + (bounds.size.y * ratioOffsetFromMin.y));
+    }
+
     // assuming given value is between 0, 100, convert to a ratio between 0.00 and 1.00
     public static float PercentToRatio(float percent)
     {

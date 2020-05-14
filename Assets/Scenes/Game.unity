@@ -1070,6 +1070,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkingSpeed: 25
   slidingSpeed: 50
+  inputTolerance: 0.15
+  pivotWhenRotatingDownToLying: {x: 0.95, y: 0.05}
+  pivotWhenRotatingUpToStanding: {x: 0.05, y: 0.95}
   horizontalInputAxisName: Horizontal
   verticalInputAxisName: Vertical
 --- !u!222 &3630940427074528988
@@ -1907,7 +1910,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8734476180540727143}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -32.23, y: -18.68, z: 0}
+  m_LocalPosition: {x: -22, y: -17.7, z: 0}
   m_LocalScale: {x: 2.5, y: 2.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1973,10 +1976,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8734476180540727138}
+  - component: {fileID: 2068292379632754550}
   - component: {fileID: 8734476180540727139}
   - component: {fileID: 8734476180540727136}
   - component: {fileID: 8734476180540727137}
-  - component: {fileID: 2068292379632754550}
   m_Layer: 9
   m_Name: Penguin
   m_TagString: Paddle

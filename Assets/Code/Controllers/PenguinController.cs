@@ -9,26 +9,42 @@ public class PenguinController : MonoBehaviour
     private enum Facing  { LEFT,     RIGHT }
     private enum Posture { STANDING, LYING }
 
+    [Header("Penguin Movement Speeds")]
     [SerializeField] private float walkingSpeed = default;
     [SerializeField] private float slidingSpeed = default;
 
-    private float inputTolerance = 0.15f;
-    [SerializeField] private string horizontalInputAxisName = default;
-    [SerializeField] private string verticalInputAxisName   = default;
+    [Header("Input Configuration")]
+    [SerializeField] private float   inputTolerance                = default;
+    [SerializeField] private Vector2 pivotWhenRotatingDownToLying  = default;
+    [SerializeField] private Vector2 pivotWhenRotatingUpToStanding = default;
+    [SerializeField] private string  horizontalInputAxisName       = default;
+    [SerializeField] private string  verticalInputAxisName         = default;
+
+    private Vector2 inputAxes;
+    private float inputMoveSpeed;
+    private float inputRotationAngle;
+    private Vector3 inputRotationPivot;
 
     private Vector2 initialSpawnPosition;
-    private Vector2 inputVelocity;
     private Rigidbody2D rigidBody;
     private BoxCollider2D collider;
 
     public void Reset()
     {
-        facing  = Facing.RIGHT;
-        posture = Posture.STANDING;
+        inputAxes = Vector2.zero;
+        inputMoveSpeed = walkingSpeed;
+        inputRotationAngle = 0.0f;
 
-        inputVelocity      = Vector2.zero;
-        rigidBody.velocity = inputVelocity;
+        rigidBody.rotation = inputRotationAngle;
+        rigidBody.velocity = inputAxes * inputMoveSpeed;
         rigidBody.position = initialSpawnPosition;
+
+        facing = Facing.RIGHT;
+        posture = Posture.STANDING;
+        if (rigidBody.transform.localScale.x < 0.0f)
+        {
+            rigidBody.transform.localScale *= new Vector2(-1, 0);
+        }
     }
     void Awake()
     {
@@ -40,88 +56,47 @@ public class PenguinController : MonoBehaviour
 
     void Update()
     {
-        float xInput = GetNormalizedInput(horizontalInputAxisName, inputTolerance);
-        if (xInput < 0 && facing == Facing.RIGHT)
+        inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
+        if (inputAxes.x < 0 && facing == Facing.RIGHT)
         {
+            rigidBody.transform.localScale *= posture == Posture.STANDING? new Vector2(-1, 1) : new Vector2(1, -1);
             facing = Facing.LEFT;
-            rigidBody.transform.localScale *= new Vector2(-1.00f, 1.00f);
         }
-        else if (xInput > 0 && facing == Facing.LEFT)
+        else if (inputAxes.x > 0 && facing == Facing.LEFT)
         {
+            rigidBody.transform.localScale *= posture == Posture.STANDING ? new Vector2(-1, 1) : new Vector2(1, -1);
             facing = Facing.RIGHT;
-            rigidBody.transform.localScale *= new Vector2(-1.00f, 1.00f);
         }
 
-        float yInput = GetNormalizedInput(verticalInputAxisName, inputTolerance);
-        if (yInput < 0 && posture == Posture.STANDING)
+        inputRotationAngle = 0.0f;
+        if (inputAxes.y < 0 && posture == Posture.STANDING)
         {
-            LieDown();
+            inputRotationAngle = -90;
+            inputRotationPivot = MathUtils.GetPointInsideBounds(collider.bounds, pivotWhenRotatingDownToLying);
+            inputMoveSpeed     = slidingSpeed;
+            posture            = Posture.LYING;
         }
-        else if (yInput > 0 && posture == Posture.LYING)
+        else if (inputAxes.y > 0 && posture == Posture.LYING)
         {
-            StandUp();
-        }
-
-        switch (posture)
-        {
-            case Posture.STANDING: inputVelocity = new Vector2(walkingSpeed * xInput, 0);          break;
-            case Posture.LYING:    inputVelocity = new Vector2(slidingSpeed * xInput, 0);          break;
-            default:               inputVelocity = new Vector2(0, 0); LogInvalidEnumError(facing); break;
+            inputRotationAngle = 90;
+            inputRotationPivot = MathUtils.GetPointInsideBounds(collider.bounds, pivotWhenRotatingUpToStanding);
+            inputMoveSpeed     = walkingSpeed;
+            posture            = Posture.STANDING;
         }
     }
     void FixedUpdate()
     {
-        rigidBody.velocity = inputVelocity;
-
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = new Quaternion(0.0f, transform.rotation.y, 0.0f, transform.rotation.w);
-        transform.rotation = Quaternion.Slerp(startRotation, endRotation, Time.fixedDeltaTime * 2.0f);
-    }
-
-    void ChangePosture(Posture newPosture)
-    {
-        if (newPosture == posture)
+        if (inputRotationAngle != 0.0f)
         {
-            return;
+            //rigidBody.rotation = inputRotationAngle;
+            MathUtils.RotateRigidBodyAroundPointBy(rigidBody, inputRotationPivot, Vector3.forward, inputRotationAngle);
         }
-        switch (newPosture)
-        {
-            case Posture.STANDING: StandUp(); break;
-            case Posture.LYING:    LieDown(); break;
-            default: LogInvalidEnumError(newPosture); break;
-        }
+        rigidBody.velocity = new Vector2(inputAxes.x * inputMoveSpeed, 0);
     }
 
-    void FaceLeft()
-    {
-        facing = Facing.LEFT;
-        rigidBody.transform.localScale *= new Vector2(-1.00f, 1.00f);
-    }
-    void FaceRight()
-    {
-        facing = Facing.RIGHT;
-        rigidBody.transform.localScale *= new Vector2(-1.00f, 1.00f);
-    }
-    void LieDown()
-    {
-        posture = Posture.LYING;
-    }
-    void StandUp()
-    {
-        posture = Posture.STANDING;
-
-    }
-    void RotateTo()
-    {
-    }
-
-    private static float GetNormalizedInput(string name, float tolerance)
+    private float GetNormalizedInput(string name)
     {
         float input = Input.GetAxisRaw(name);
-        return Math.Abs(input) >= tolerance ? input : 0.00f;
-    }
-    private void LogInvalidEnumError(Enum enumValue)
-    {
-        Debug.LogError($"{nameof(enumValue)}({enumValue}) is not a valid enum");
+        return Math.Abs(input) >= inputTolerance ? input : 0.00f;
     }
 }
