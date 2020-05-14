@@ -1068,8 +1068,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 166a20cd2a9d4f840ada04bd0fd97a9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penguinHorizontalSpeed: 25
-  inputAxisName: Horizontal
+  walkingSpeed: 25
+  slidingSpeed: 50
+  horizontalInputAxisName: Horizontal
+  verticalInputAxisName: Vertical
 --- !u!222 &3630940427074528988
 CanvasRenderer:
   m_ObjectHideFlags: 0
