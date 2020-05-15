@@ -15,6 +15,8 @@ public class PenguinController : MonoBehaviour
 
     [Header("Input Configuration")]
     [SerializeField] private float   inputTolerance                = default;
+    [Tooltip("How strong is the rotation when moving up slopes? 0.0 for max softness, 1.0f for no kinematic softness")]
+    [SerializeField] private float   kinematicRotationStrength     = default;
     [SerializeField] private Vector2 pivotWhenRotatingDownToLying  = default;
     [SerializeField] private Vector2 pivotWhenRotatingUpToStanding = default;
     [SerializeField] private string  horizontalInputAxisName       = default;
@@ -28,7 +30,7 @@ public class PenguinController : MonoBehaviour
     private Vector2 initialSpawnPosition;
     private Rigidbody2D rigidBody;
     private BoxCollider2D collider;
-
+    private Vector2 forward;
     public void Reset()
     {
         inputAxes = Vector2.zero;
@@ -86,13 +88,40 @@ public class PenguinController : MonoBehaviour
     }
     void FixedUpdate()
     {
+        // todo: account for sliding on slopes, and find a way to reduce computations per frame without the penguin falling back...
+        // also look into friction, slipperiness, etc...
+        // ideally, once penguin sliding adjust for slope angle, sliding can be used to quickly travel down slopes and back up them..
+        Vector3 groundNormal = GetSurfaceNormalOfGroundRelativeToPenguin();
+        AlignPenguinWithGivenUpAxis(groundNormal);
         if (inputRotationAngle != 0.0f)
         {
-            //rigidBody.rotation = inputRotationAngle;
-            MathUtils.RotateRigidBodyAroundPointBy(rigidBody, inputRotationPivot, Vector3.forward, inputRotationAngle);
+            MathUtils.RotateRigidBodyAroundPointBy(rigidBody, inputRotationPivot, groundNormal, inputRotationAngle);
         }
         rigidBody.velocity = new Vector2(inputAxes.x * inputMoveSpeed, 0);
     }
+
+    private Vector3 GetSurfaceNormalOfGroundRelativeToPenguin(float maxRayDistance=100.0f)
+    {
+        Vector3 colliderCenterInWorldSpace = collider.transform.TransformPoint(collider.bounds.center);
+        RaycastHit2D hitInfo = Physics2D.Raycast(colliderCenterInWorldSpace,
+            Vector3.down, maxRayDistance, LayerMask.GetMask("Ground"));
+        return (hitInfo.transform == null) ? Vector2.up : hitInfo.normal;
+    }
+
+    private void AlignPenguinWithGivenUpAxis(Vector3 newUp)
+    {
+        // we use the old forward direction of the penguin crossed with the axis we wish to align to, to get a perpendicular
+        // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
+        // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
+        // that's parallel with the slope that our given up is normal to.
+        Vector3 left = Vector3.Cross(rigidBody.transform.forward, newUp);
+        Vector3 newForward = Vector3.Cross(newUp, left);
+
+        Quaternion oldRotation = rigidBody.transform.rotation;
+        Quaternion newRotation = Quaternion.LookRotation(newForward, newUp);
+        rigidBody.MoveRotation(Quaternion.Lerp(oldRotation, newRotation, kinematicRotationStrength));
+    }
+
 
     private float GetNormalizedInput(string name)
     {
