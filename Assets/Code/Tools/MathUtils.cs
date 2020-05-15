@@ -7,12 +7,24 @@ using UnityEngine;
 // otherwise the methods make appropriate assumptions about input, stated in their corresponding comments
 public static class MathUtils
 {
+    // return unit vector parallel to the line[from, to]
+    public static Vector2 ComputeDirection(Vector2 from, Vector2 to)
+    {
+        return (from - to).normalized;
+    }
+    // return unit vector perpendicular to the line[from, to]
+    public static Vector2 ComputeDirectionPerpendicular(Vector2 from, Vector2 to)
+    {
+        Vector2 vector = (from - to);
+        return new Vector2(vector.y, -vector.x).normalized;
+    }
+
     // see: https://answers.unity.com/questions/10093/rigidbody-rotating-around-a-point-instead-on-self.html
-    public static void RotateRigidBodyAroundPointBy(Rigidbody2D rb, Vector3 origin, Vector3 axis, float angle)
+    public static void RotateRigidBodyAroundPointBy(Rigidbody2D rigidBody, Vector3 origin, Vector3 axis, float angle)
     {
         Quaternion q = Quaternion.AngleAxis(angle, axis);
-        rb.MovePosition(q * (rb.transform.position - origin) + origin);
-        rb.MoveRotation(rb.transform.rotation * q);
+        rigidBody.MovePosition(q * (rigidBody.transform.position - origin) + origin);
+        rigidBody.MoveRotation(rigidBody.transform.rotation * q);
     }
     // return 2d world space coords corresponding to given ratio from bottom left corner of bounding box
     // note: does not currently support rotated bounds, and assumes offset is between 0 and 1
