@@ -93,9 +93,8 @@ public class PenguinController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // todo: account for sliding on slopes, and find a way to reduce computations per frame without the penguin falling back...
-        // also look into friction, slipperiness, etc...
-        // ideally, once penguin sliding adjust for slope angle, sliding can be used to quickly travel down slopes and back up them..
+        // todo: find a way to reduce computations per frame by adding some movement/positional checks
+        // ideally, once penguin sliding is adjusted for slope angles, sliding can be used to quickly travel like a sled
         AlignPenguinWithUpAxis(newUp: GetSurfaceNormalOfGroundRelativeToPenguin());
         if (inputRotationAngle != 0.0f)
         {
