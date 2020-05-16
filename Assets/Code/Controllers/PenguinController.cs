@@ -17,10 +17,12 @@ public class PenguinController : MonoBehaviour
     [SerializeField] private float   inputTolerance                = default;
     [Tooltip("How strong is the rotation when moving up slopes? 0.0 for max softness, 1.0f for no kinematic softness")]
     [SerializeField] private float   kinematicRotationStrength     = default;
-    [SerializeField] private Vector2 pivotWhenRotatingDownToLying  = default;
-    [SerializeField] private Vector2 pivotWhenRotatingUpToStanding = default;
     [SerializeField] private string  horizontalInputAxisName       = default;
     [SerializeField] private string  verticalInputAxisName         = default;
+    [SerializeField] private Vector2 pivotWhenRightAndRotatingDownToLying  = default;
+    [SerializeField] private Vector2 pivotWhenLeftAndRotatingDownToLying   = default;
+    [SerializeField] private Vector2 pivotWhenRightAndRotatingUpToStanding = default;
+    [SerializeField] private Vector2 pivotWhenLeftAndRotatingUpToStanding  = default;
 
     private Vector2 inputAxes;
     private float inputMoveSpeed;
@@ -31,9 +33,9 @@ public class PenguinController : MonoBehaviour
     private Rigidbody2D   penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
-    private Vector3 PenguinAxisUp        { get => penguinRigidBody.transform.up;      }
-    private Vector3 PenguinAxisForward   { get => penguinRigidBody.transform.forward; }
-    private Vector3 PenguinCenter        { get => penguinCollider.bounds.center;      }
+    private Vector3 PenguinAxisUp      { get => penguinRigidBody.transform.up;      }
+    private Vector3 PenguinAxisForward { get => penguinRigidBody.transform.forward; }
+    private Vector3 PenguinCenter      { get => penguinCollider.bounds.center;      }
 
     public void Reset()
     {
@@ -77,15 +79,17 @@ public class PenguinController : MonoBehaviour
         inputRotationAngle = 0.0f;
         if (inputAxes.y < 0 && posture == Posture.STANDING)
         {
-            inputRotationAngle = -90;
-            inputRotationPivot = MathUtils.GetPointInsideBounds(penguinCollider.bounds, pivotWhenRotatingDownToLying);
+            Vector2 pivotRatio = facing == Facing.RIGHT? pivotWhenRightAndRotatingDownToLying : pivotWhenLeftAndRotatingDownToLying;
+            inputRotationAngle = facing == Facing.RIGHT? -90 : 90;
+            inputRotationPivot = MathUtils.GetPointInsideBounds(penguinCollider.bounds, pivotRatio);
             inputMoveSpeed     = slidingSpeed;
             posture            = Posture.LYING;
         }
         else if (inputAxes.y > 0 && posture == Posture.LYING)
         {
-            inputRotationAngle = 90;
-            inputRotationPivot = MathUtils.GetPointInsideBounds(penguinCollider.bounds, pivotWhenRotatingUpToStanding);
+            Vector2 pivotRatio = facing == Facing.RIGHT? pivotWhenRightAndRotatingUpToStanding : pivotWhenLeftAndRotatingUpToStanding;
+            inputRotationAngle = facing == Facing.RIGHT? 90 : -90;
+            inputRotationPivot = MathUtils.GetPointInsideBounds(penguinCollider.bounds, pivotRatio);
             inputMoveSpeed     = walkingSpeed;
             posture            = Posture.STANDING;
         }
@@ -93,9 +97,17 @@ public class PenguinController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // todo: add checking for succeeded lying/standing, and that it is in state where it can do so...
+        // ... (for example, it might not be able to right in front of a wall, so it shouldn't be toggled then)
+        //
         // todo: find a way to reduce computations per frame by adding some movement/positional checks
         // ideally, once penguin sliding is adjusted for slope angles, sliding can be used to quickly travel like a sled
-        AlignPenguinWithUpAxis(newUp: GetSurfaceNormalOfGroundRelativeToPenguin());
+        // (the above will probably mean that forward/up axes will need to be rotate in the opposite direction that the penguin
+        // is rotated when switching between standing and sliding states
+        if (posture == Posture.STANDING)
+        {
+            AlignPenguinWithUpAxis(newUp: GetSurfaceNormalOfGroundRelativeToPenguin());
+        }
         if (inputRotationAngle != 0.0f)
         {
             MathUtils.RotateRigidBodyAroundPointBy(

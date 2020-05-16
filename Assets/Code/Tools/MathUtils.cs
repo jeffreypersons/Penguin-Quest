@@ -7,6 +7,10 @@ using UnityEngine;
 // otherwise the methods make appropriate assumptions about input, stated in their corresponding comments
 public static class MathUtils
 {
+    public static Vector2 SwapCoords(Vector2 vector)
+    {
+        return new Vector2(vector.y, vector.x);
+    }
     // return unit vector parallel to the line[from, to]
     public static Vector2 ComputeDirection(Vector2 from, Vector2 to)
     {

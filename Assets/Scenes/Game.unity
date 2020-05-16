@@ -1260,10 +1260,12 @@ MonoBehaviour:
   slidingSpeed: 50
   inputTolerance: 0.15
   kinematicRotationStrength: 1
-  pivotWhenRotatingDownToLying: {x: 0.95, y: 0.05}
-  pivotWhenRotatingUpToStanding: {x: 0.05, y: 0.95}
   horizontalInputAxisName: Horizontal
   verticalInputAxisName: Vertical
+  pivotWhenRightAndRotatingDownToLying: {x: 0.95, y: 0.05}
+  pivotWhenLeftAndRotatingDownToLying: {x: 0.05, y: 0.05}
+  pivotWhenRightAndRotatingUpToStanding: {x: 0.05, y: 0.05}
+  pivotWhenLeftAndRotatingUpToStanding: {x: 0.95, y: 0.05}
 --- !u!222 &3630940427074528988
 CanvasRenderer:
   m_ObjectHideFlags: 0
