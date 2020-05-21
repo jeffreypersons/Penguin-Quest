@@ -585,16 +585,16 @@ Rigidbody2D:
   m_GameObject: {fileID: 1148857406}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 1
+  m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 100
-  m_LinearDrag: 0.001
+  m_Mass: 1
+  m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 0
 --- !u!61 &1148857408
 BoxCollider2D:
@@ -613,14 +613,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.5094178, y: 3.0125523}
-    newSize: {x: 1.5094178, y: 3.0125523}
+    oldSize: {x: 4.481248, y: 8.830001}
+    newSize: {x: 4.481248, y: 8.830001}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.5094178, y: 3.0125523}
+  m_Size: {x: 4.481248, y: 8.830001}
   m_EdgeRadius: 0
 --- !u!212 &1148857409
 SpriteRenderer:
@@ -640,7 +640,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 137d858a4eae4d34298f3cdcd31f5e0b, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -660,14 +660,14 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 100
-  m_Sprite: {fileID: 3286163911610860551, guid: ec017e87ddf454b46bf903d975731f53,
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 2484783896003582950, guid: 51be98bfd7577d840ade803ba7dc8eca,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.5094178, y: 3.0125523}
+  m_Size: {x: 4.481248, y: 8.830001}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
