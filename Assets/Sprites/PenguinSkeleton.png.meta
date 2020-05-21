@@ -190,7 +190,112 @@ TextureImporter:
       outline: []
       physicsShape: []
       tessellationDetail: 0
-      bones: []
+      bones:
+      - name: root
+        position: {x: 146.27017, y: -105.20691, z: 0}
+        rotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+        length: 29.153269
+        parentId: -1
+      - name: TorsoBottom2
+        position: {x: 129.36763, y: 5.466233, z: 0}
+        rotation: {x: 0, y: 0, z: 0.031203713, w: 0.9995131}
+        length: 29.210129
+        parentId: 0
+      - name: FrontFootTop
+        position: {x: -74.67346, y: 178.10236, z: 0}
+        rotation: {x: 0, y: -0, z: -1, w: -0.00000004371139}
+        length: 18.052021
+        parentId: 1
+      - name: BackFootTop
+        position: {x: -79.73982, y: -55.545746, z: 0}
+        rotation: {x: 0, y: -0, z: -0.9996679, w: 0.02577039}
+        length: 13.121393
+        parentId: 1
+      - name: TorsoBottom1
+        position: {x: 29.21013, y: 0.00002741804, z: 0}
+        rotation: {x: 0, y: 0, z: -0.03844537, w: 0.9992607}
+        length: 125.73673
+        parentId: 1
+      - name: TorsoMiddle2
+        position: {x: 125.73675, y: 0.000059990056, z: 0}
+        rotation: {x: 0, y: 0, z: -0.03155984, w: 0.9995019}
+        length: 164.48233
+        parentId: 4
+      - name: BackFootMiddle
+        position: {x: 13.12139, y: 0.0000025451789, z: 0}
+        rotation: {x: 0, y: 0, z: 0.44638425, w: 0.8948414}
+        length: 27.494377
+        parentId: 3
+      - name: FrontFootMiddle
+        position: {x: 18.052025, y: 0.0048574316, z: 0}
+        rotation: {x: 0, y: 0, z: 0.45653692, w: 0.8897045}
+        length: 24.477108
+        parentId: 2
+      - name: BackFootBottom
+        position: {x: 27.494387, y: 0.0000042641627, z: 0}
+        rotation: {x: 0, y: 0, z: 0.25911853, w: 0.9658456}
+        length: 67.951996
+        parentId: 6
+      - name: FrontFootBottom
+        position: {x: 24.477104, y: -0.0000013756633, z: 0}
+        rotation: {x: 0, y: 0, z: 0.24200922, w: 0.97027403}
+        length: 86.42218
+        parentId: 7
+      - name: FrontFlipperTop
+        position: {x: 338.66843, y: 257.2611, z: 0}
+        rotation: {x: 0, y: -0, z: 0.99989754, w: 0.0143201975}
+        length: 137.43126
+        parentId: 5
+      - name: FrontFlipperMiddle
+        position: {x: 137.43127, y: 0.00000438618, z: 0}
+        rotation: {x: 0, y: 0, z: 0.03699839, w: 0.9993153}
+        length: 56.51374
+        parentId: 10
+      - name: FrontFlipperBottom
+        position: {x: 56.513752, y: -0.0000061641845, z: 0}
+        rotation: {x: 0, y: 0, z: -0.0038640955, w: 0.9999926}
+        length: 91.17681
+        parentId: 11
+      - name: BackFlipperTop
+        position: {x: 378.9365, y: -260.46783, z: 0}
+        rotation: {x: 0, y: -0, z: 0.9995182, w: 0.031038381}
+        length: 117.7605
+        parentId: 5
+      - name: BackFlipperMiddle
+        position: {x: 117.76048, y: 0.000020987904, z: 0}
+        rotation: {x: 0, y: 0, z: -0.0011053936, w: 0.9999994}
+        length: 51.53618
+        parentId: 13
+      - name: BackFlipperBottom
+        position: {x: 51.536186, y: 0.000037614776, z: 0}
+        rotation: {x: 0, y: 0, z: 0.06006206, w: 0.99819463}
+        length: 83.835495
+        parentId: 14
+      - name: TorsoMiddle1
+        position: {x: 164.48233, y: 0.000011889587, z: 0}
+        rotation: {x: 0, y: 0, z: -0.0024717355, w: 0.99999696}
+        length: 154.64934
+        parentId: 5
+      - name: TorsoTop
+        position: {x: 154.64935, y: 0.00005687623, z: 0}
+        rotation: {x: 0, y: 0, z: 0.0068489714, w: 0.9999766}
+        length: 52.965923
+        parentId: 16
+      - name: HeadMiddle
+        position: {x: 51.65417, y: -0.00029326236, z: 0}
+        rotation: {x: 0, y: 0, z: -0.64226997, w: 0.7664785}
+        length: 75.058846
+        parentId: 20
+      - name: HeadBeak
+        position: {x: 75.05886, y: -0.00002658026, z: 0}
+        rotation: {x: 0, y: 0, z: -0.018662041, w: 0.9998259}
+        length: 91.26786
+        parentId: 18
+      - name: HeadBottom
+        position: {x: 272.66162, y: -41.05016, z: 0}
+        rotation: {x: 0, y: 0, z: -0.0048828125, w: 0.9999881}
+        length: 51.654133
+        parentId: 17
       spriteID: 6ca74871f931e99e0800000000000000
       internalID: -1612830042536772922
       vertices: []
