@@ -167,7 +167,7 @@ namespace Crosstales.TPS.EditorIntegration
          platformWindows = Helper.isValidBuildTarget(BuildTarget.StandaloneWindows) || Helper.isValidBuildTarget(BuildTarget.StandaloneWindows64);
          platformMac = Helper.isValidBuildTarget(BuildTarget.StandaloneOSX);
 #if UNITY_2019_2_OR_NEWER
-            platformLinux = Helper.isValidBuildTarget(BuildTarget.StandaloneLinux64);
+         platformLinux = Helper.isValidBuildTarget(BuildTarget.StandaloneLinux64);
 #else
          platformLinux = Helper.isValidBuildTarget(BuildTarget.StandaloneLinux) || Helper.isValidBuildTarget(BuildTarget.StandaloneLinux64) || Helper.isValidBuildTarget(BuildTarget.StandaloneLinuxUniversal);
 #endif
@@ -319,7 +319,9 @@ namespace Crosstales.TPS.EditorIntegration
 
             Config.DEBUG = EditorGUILayout.Toggle(new GUIContent("Debug", "Enable or disable debug logs (default: " + Constants.DEFAULT_DEBUG + ")."), Config.DEBUG);
 
-            Config.UPDATE_CHECK = EditorGUILayout.Toggle(new GUIContent("Update Check", "Enable or disable the update-check (default: " + Constants.DEFAULT_UPDATE_CHECK + ")"), Config.UPDATE_CHECK);
+            Config.UPDATE_CHECK = EditorGUILayout.Toggle(new GUIContent("Update Check", "Enable or disable the update-checks for the asset (default: " + Constants.DEFAULT_UPDATE_CHECK + ")"), Config.UPDATE_CHECK);
+
+            Config.COMPILE_DEFINES = EditorGUILayout.Toggle(new GUIContent("Compile Defines", "Enable or disable adding compile define 'CT_TPS' for the asset (default: " + Constants.DEFAULT_COMPILE_DEFINES + ")"), Config.COMPILE_DEFINES);
 
             //Config.REMINDER_CHECK = EditorGUILayout.Toggle(new GUIContent("Reminder Check", "Enable or disable the reminder-check (default: " + Constants.DEFAULT_REMINDER_CHECK + ")"), Config.REMINDER_CHECK);
 
@@ -1223,8 +1225,6 @@ namespace Crosstales.TPS.EditorIntegration
                }
             }
 
-            GUI.enabled = true;
-
             if (Config.SHOW_DELETE && Helper.isCached(target, texAndroid))
             {
                if (GUILayout.Button(new GUIContent(string.Empty, Helper.Icon_Delete_Big, "Delete cache from " + target)))
@@ -1238,6 +1238,8 @@ namespace Crosstales.TPS.EditorIntegration
                   }
                }
             }
+
+            GUI.enabled = true;
          }
          GUILayout.EndHorizontal();
 

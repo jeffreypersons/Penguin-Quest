@@ -1,4 +1,4 @@
-﻿# Turbo Builder PRO 2020.2.1
+﻿# Turbo Builder PRO 2020.2.2
 
 Thank you for buying our asset "Turbo Builder PRO"! 
 If you have questions about this asset, send us an email at [tpb@crosstales.com](mailto:tpb@crosstales.com). 
@@ -64,4 +64,4 @@ CH-8002 Zürich
 [Youtube-channel](https://www.youtube.com/c/Crosstales)
 
 
-`Version: 15.04.2020`
+`Version: 18.05.2020`

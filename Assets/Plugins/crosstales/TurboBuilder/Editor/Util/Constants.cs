@@ -15,16 +15,16 @@ namespace Crosstales.TPB.Util
       public const string ASSET_NAME_SHORT = "TPB PRO";
 
       /// <summary>Version of the asset.</summary>
-      public const string ASSET_VERSION = "2020.2.1";
+      public const string ASSET_VERSION = "2020.2.2";
 
       /// <summary>Build number of the asset.</summary>
-      public const int ASSET_BUILD = 20200415;
+      public const int ASSET_BUILD = 20200518;
 
       /// <summary>Create date of the asset (YYYY, MM, DD).</summary>
       public static readonly System.DateTime ASSET_CREATED = new System.DateTime(2018, 3, 4);
 
       /// <summary>Change date of the asset (YYYY, MM, DD).</summary>
-      public static readonly System.DateTime ASSET_CHANGED = new System.DateTime(2020, 4, 15);
+      public static readonly System.DateTime ASSET_CHANGED = new System.DateTime(2020, 5, 18);
 
       /// <summary>URL of the PRO asset in UAS.</summary>
       public const string ASSET_PRO_URL = "https://www.assetstore.unity3d.com/#!/content/98714?aid=1011lNGT";
@@ -83,6 +83,7 @@ namespace Crosstales.TPB.Util
       public const string KEY_CONFIRM_BUILD = KEY_PREFIX + "CONFIRM_BUILD";
       public const string KEY_DEBUG = KEY_PREFIX + "DEBUG";
       public const string KEY_UPDATE_CHECK = KEY_PREFIX + "UPDATE_CHECK";
+      public const string KEY_COMPILE_DEFINES = Util.Constants.KEY_PREFIX + "COMPILE_DEFINES";
 
 #if CT_TPS
         public const string KEY_TARGETS = KEY_PREFIX + "TARGETS";
@@ -149,6 +150,7 @@ namespace Crosstales.TPB.Util
 #endif
       public const bool DEFAULT_CONFIRM_BUILD = true;
       public const bool DEFAULT_UPDATE_CHECK = false;
+      public const bool DEFAULT_COMPILE_DEFINES = true;
 
       public const int DEFAULT_ARCH_WINDOWS = 1;
 

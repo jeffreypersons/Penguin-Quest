@@ -14,16 +14,16 @@ namespace Crosstales.TPS.Util
       public const string ASSET_NAME_SHORT = "TPS PRO";
 
       /// <summary>Version of the asset.</summary>
-      public const string ASSET_VERSION = "2020.2.1";
+      public const string ASSET_VERSION = "2020.2.2";
 
       /// <summary>Build number of the asset.</summary>
-      public const int ASSET_BUILD = 20200415;
+      public const int ASSET_BUILD = 20200518;
 
       /// <summary>Create date of the asset (YYYY, MM, DD).</summary>
       public static readonly System.DateTime ASSET_CREATED = new System.DateTime(2016, 9, 22);
 
       /// <summary>Change date of the asset (YYYY, MM, DD).</summary>
-      public static readonly System.DateTime ASSET_CHANGED = new System.DateTime(2020, 4, 15);
+      public static readonly System.DateTime ASSET_CHANGED = new System.DateTime(2020, 5, 18);
 
       /// <summary>URL of the PRO asset in UAS.</summary>
       public const string ASSET_PRO_URL = "https://assetstore.unity.com/packages/slug/60040?aid=1011lNGT";
@@ -81,7 +81,8 @@ namespace Crosstales.TPS.Util
       public const string KEY_CONFIRM_SWITCH = KEY_PREFIX + "CONFIRM_SWITCH";
       public const string KEY_DEBUG = KEY_PREFIX + "DEBUG";
       public const string KEY_UPDATE_CHECK = KEY_PREFIX + "UPDATE_CHECK";
-      public const string KEY_UPDATE_OPEN_UAS = KEY_PREFIX + "UPDATE_OPEN_UAS";
+      //public const string KEY_UPDATE_OPEN_UAS = KEY_PREFIX + "UPDATE_OPEN_UAS";
+      public const string KEY_COMPILE_DEFINES = Util.Constants.KEY_PREFIX + "COMPILE_DEFINES";
 
       public const string KEY_PLATFORM_WINDOWS = KEY_PREFIX + "PLATFORM_WINDOWS";
       public const string KEY_PLATFORM_MAC = KEY_PREFIX + "PLATFORM_MAC";
@@ -140,7 +141,7 @@ namespace Crosstales.TPS.Util
       public const bool DEFAULT_COPY_SETTINGS = false;
       public const bool DEFAULT_CONFIRM_SWITCH = true;
       public const bool DEFAULT_UPDATE_CHECK = false;
-
+      public const bool DEFAULT_COMPILE_DEFINES = true;
       /*
       public const bool DEFAULT_PLATFORM_WINDOWS = false;
       public const bool DEFAULT_PLATFORM_MAC = false;

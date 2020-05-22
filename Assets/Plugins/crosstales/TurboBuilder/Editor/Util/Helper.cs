@@ -223,6 +223,9 @@ namespace Crosstales.TPB.Util
       {
          get
          {
+#if UNITY_2019_2_OR_NEWER
+            return BuildTarget.StandaloneLinux64;
+#else
             if (Config.ARCH_LINUX == 0)
             {
                return BuildTarget.StandaloneLinux;
@@ -233,6 +236,7 @@ namespace Crosstales.TPB.Util
             }
 
             return BuildTarget.StandaloneLinuxUniversal;
+#endif
          }
       }
 
