@@ -356,7 +356,9 @@ namespace Crosstales.TPS.Util
          Config.SWITCH_DATE = System.DateTime.Now;
          Config.Save();
 
-         if (isV2enabled())
+            AssetDatabase.SaveAssets();
+
+            if (isV2enabled())
          {
             try
             {
@@ -389,6 +391,7 @@ namespace Crosstales.TPS.Util
 #if UNITY_2018_2_OR_NEWER
          AssetDatabase.ReleaseCachedFileHandles();
 #endif
+
          BuildTargetGroup group = BuildPipeline.GetBuildTargetGroup(target);
          if (EditorUserBuildSettings.SwitchActiveBuildTarget(group, target))
          {

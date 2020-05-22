@@ -11,7 +11,8 @@ namespace Crosstales.TPS.EditorTask
 
       static CompileDefines()
       {
-         addSymbolsToAllTargets(symbol);
+         if (Util.Config.COMPILE_DEFINES)
+            addSymbolsToAllTargets(symbol);
       }
    }
 }

@@ -91,6 +91,9 @@ namespace Crosstales.TPS.Util
       /// <summary>Enable or disable update-checks for the asset.</summary>
       public static bool UPDATE_CHECK = Constants.DEFAULT_UPDATE_CHECK;
 
+      /// <summary>Enable or disable adding compile define "CT_TPS" for the asset.</summary>
+      public static bool COMPILE_DEFINES = Constants.DEFAULT_COMPILE_DEFINES;
+
       /// <summary>Enable or disable the Windows platform.</summary>
       public static bool PLATFORM_WINDOWS;
 
@@ -270,6 +273,7 @@ namespace Crosstales.TPS.Util
             DEBUG = Constants.DEFAULT_DEBUG;
 
          UPDATE_CHECK = Constants.DEFAULT_UPDATE_CHECK;
+         COMPILE_DEFINES = Constants.DEFAULT_COMPILE_DEFINES;
 
          ARCH_WINDOWS = Constants.DEFAULT_ARCH_WINDOWS;
          //ARCH_MAC = Constants.DEFAULT_ARCH_MAC;
@@ -375,6 +379,11 @@ namespace Crosstales.TPS.Util
          if (Common.Util.CTPlayerPrefs.HasKey(Constants.KEY_UPDATE_CHECK))
          {
             UPDATE_CHECK = Common.Util.CTPlayerPrefs.GetBool(Constants.KEY_UPDATE_CHECK);
+         }
+
+         if (Common.Util.CTPlayerPrefs.HasKey(Constants.KEY_COMPILE_DEFINES))
+         {
+            COMPILE_DEFINES = Common.Util.CTPlayerPrefs.GetBool(Constants.KEY_COMPILE_DEFINES);
          }
 
          if (Common.Util.CTPlayerPrefs.HasKey(Constants.KEY_PLATFORM_WINDOWS))
@@ -525,6 +534,7 @@ namespace Crosstales.TPS.Util
             Common.Util.CTPlayerPrefs.SetBool(Constants.KEY_DEBUG, DEBUG);
 
          Common.Util.CTPlayerPrefs.SetBool(Constants.KEY_UPDATE_CHECK, UPDATE_CHECK);
+         Common.Util.CTPlayerPrefs.SetBool(Constants.KEY_COMPILE_DEFINES, COMPILE_DEFINES);
 
          Common.Util.CTPlayerPrefs.SetBool(Constants.KEY_PLATFORM_WINDOWS, PLATFORM_WINDOWS);
          Common.Util.CTPlayerPrefs.SetBool(Constants.KEY_PLATFORM_MAC, PLATFORM_MAC);

@@ -316,20 +316,24 @@ namespace Crosstales.TPB
                   modifier = "mac";
                   fileExtension = ".app";
                   break;
+#if !UNITY_2019_2_OR_NEWER
                case BuildTarget.StandaloneLinux:
-               case BuildTarget.StandaloneLinux64:
                case BuildTarget.StandaloneLinuxUniversal:
+#endif
+               case BuildTarget.StandaloneLinux64:
                   modifier = "linux";
                   switch (target)
                   {
+#if !UNITY_2019_2_OR_NEWER
                      case BuildTarget.StandaloneLinux:
                         fileExtension = ".x86";
                         break;
-                     case BuildTarget.StandaloneLinux64:
-                        fileExtension = ".x64";
-                        break;
                      case BuildTarget.StandaloneLinuxUniversal:
                         fileExtension = ".x86_64";
+                        break;
+#endif
+                     case BuildTarget.StandaloneLinux64:
+                        fileExtension = ".x64";
                         break;
                   }
 
