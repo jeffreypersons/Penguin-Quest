@@ -718,6 +718,36 @@ namespace Crosstales
 
       #endregion
 
+
+      #region Streams
+
+      /// <summary>
+      /// Extension method for Stream.
+      /// Reads the full content of a Stream.
+      /// </summary>
+      /// <param name="input">Stream-instance to read.</param>
+      /// <param name="bufferSize">Buffer size in bytes (default: 16384, optional).</param>
+      /// <returns>Byte-array of the Stream content.</returns>
+      public static byte[] CTReadFully(this System.IO.Stream input, int bufferSize = 16384)
+      {
+         if (input == null)
+            throw new System.ArgumentNullException("input");
+
+         byte[] buffer = new byte[bufferSize];
+         using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+         {
+            int read;
+            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+               ms.Write(buffer, 0, read);
+            }
+
+            return ms.ToArray();
+         }
+      }
+
+      #endregion
+
       /*
       /// <summary>
       /// Perform a deep Copy of the object.

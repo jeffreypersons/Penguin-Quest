@@ -14,6 +14,7 @@ namespace Crosstales.Common.Util
       {
          if (obj == null)
             throw new System.ArgumentNullException("obj");
+
          if (filename == null)
             throw new System.ArgumentNullException("filename");
 

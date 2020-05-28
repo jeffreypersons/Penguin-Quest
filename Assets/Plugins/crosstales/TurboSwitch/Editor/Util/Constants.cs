@@ -14,16 +14,16 @@ namespace Crosstales.TPS.Util
       public const string ASSET_NAME_SHORT = "TPS PRO";
 
       /// <summary>Version of the asset.</summary>
-      public const string ASSET_VERSION = "2020.2.2";
+      public const string ASSET_VERSION = "2020.2.3";
 
       /// <summary>Build number of the asset.</summary>
-      public const int ASSET_BUILD = 20200518;
+      public const int ASSET_BUILD = 20200524;
 
       /// <summary>Create date of the asset (YYYY, MM, DD).</summary>
       public static readonly System.DateTime ASSET_CREATED = new System.DateTime(2016, 9, 22);
 
       /// <summary>Change date of the asset (YYYY, MM, DD).</summary>
-      public static readonly System.DateTime ASSET_CHANGED = new System.DateTime(2020, 5, 18);
+      public static readonly System.DateTime ASSET_CHANGED = new System.DateTime(2020, 5, 24);
 
       /// <summary>URL of the PRO asset in UAS.</summary>
       public const string ASSET_PRO_URL = "https://assetstore.unity.com/packages/slug/60040?aid=1011lNGT";

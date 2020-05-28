@@ -1,4 +1,4 @@
-﻿# Turbo Switch PRO 2020.2.2
+﻿# Turbo Switch PRO 2020.2.3
 
 Thank you for buying our asset "Turbo Switch PRO" (TPS)! 
 If you have questions about this asset, send us an email at [tps@crosstales.com](mailto:tps@crosstales.com). 
@@ -93,4 +93,4 @@ CH-8002 Zürich
 * [Tutorial](https://youtu.be/J2zh0EjmrjQ?list=PLgtonIOr6Tb41XTMeeZ836tjHlKgOO84S)
 
 
-`Version: 18.05.2020`
+`Version: 24.05.2020`

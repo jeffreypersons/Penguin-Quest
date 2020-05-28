@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Crosstales.Common.Util
 {
@@ -56,7 +58,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor;
          }
       }
 
@@ -71,7 +72,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.OSXEditor;
          }
       }
 
@@ -86,7 +86,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.LinuxPlayer || Application.platform == RuntimePlatform.LinuxEditor;
          }
       }
 
@@ -108,7 +107,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.Android;
          }
       }
 
@@ -123,7 +121,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.IPhonePlayer;
          }
       }
 
@@ -138,7 +135,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.tvOS;
          }
       }
 
@@ -153,11 +149,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            /*
-            return Application.platform == RuntimePlatform.WSAPlayerARM ||
-                Application.platform == RuntimePlatform.WSAPlayerX86 ||
-                Application.platform == RuntimePlatform.WSAPlayerX64;
-                */
          }
       }
 
@@ -172,7 +163,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.XboxOne;
          }
       }
 
@@ -201,7 +191,6 @@ namespace Crosstales.Common.Util
 #else
             return false;
 #endif
-            //return Application.platform == RuntimePlatform.WebGLPlayer;
          }
       }
 
@@ -324,34 +313,22 @@ namespace Crosstales.Common.Util
          get
          {
             if (isWindowsPlatform)
-            {
                return Model.Enum.Platform.Windows;
-            }
 
             if (isMacOSPlatform)
-            {
                return Model.Enum.Platform.OSX;
-            }
 
             if (isLinuxPlatform)
-            {
                return Model.Enum.Platform.Linux;
-            }
 
             if (isAndroidPlatform)
-            {
                return Model.Enum.Platform.Android;
-            }
 
             if (isIOSBasedPlatform)
-            {
                return Model.Enum.Platform.IOS;
-            }
 
             if (isWSABasedPlatform)
-            {
                return Model.Enum.Platform.WSA;
-            }
 
             return isWebPlatform ? Model.Enum.Platform.Web : Model.Enum.Platform.Unsupported;
          }
@@ -364,14 +341,10 @@ namespace Crosstales.Common.Util
          get
          {
             if (isAndroidPlatform && !isEditor)
-            {
                return "jar:file://" + Application.dataPath + "!/assets/";
-            }
 
             if (isIOSBasedPlatform && !isEditor)
-            {
                return Application.dataPath + "/Raw/";
-            }
 
             return Application.dataPath + "/StreamingAssets/";
          }
@@ -381,6 +354,22 @@ namespace Crosstales.Common.Util
 
 
       #region Public methods
+
+      /// <summary>Opens the given URL with the file explorer or browser.</summary>
+      /// <param name="url">URL to open</param>
+      /// <returns>True uf the URL was valid.</returns>
+      public static bool OpenURL(string url)
+      {
+         if (isValidURL(url))
+         {
+            Application.OpenURL(url);
+
+            return true;
+         }
+
+         Debug.LogWarning("URL was invalid: " + url);
+         return false;
+      }
 
       /// <summary>Creates a string of characters with a given length.</summary>
       /// <param name="replaceChars">Characters to generate the string (if more than one character is used, the generated string will be a randomized result of all characters)</param>
@@ -408,17 +397,9 @@ namespace Crosstales.Common.Util
       /// <returns>True if the AudioSource has an active clip.</returns>
       public static bool hasActiveClip(AudioSource source)
       {
-         /*
-         Debug.Log("source.clip: " + source.clip);
-         Debug.Log("source.loop: " + source.loop);
-         Debug.Log("source.isPlaying: " + source.isPlaying);
-         Debug.Log("source.timeSamples: " + source.timeSamples);
-         Debug.Log("source.clip.samples: " + source.clip.samples);
-         */
-
-         int timeSamples;
+         int timeSamples = source.timeSamples;
          return source != null && source.clip != null &&
-                (!source.loop && (timeSamples = source.timeSamples) > 0 && timeSamples < source.clip.samples - 256 ||
+                (!source.loop && timeSamples > 0 && timeSamples < source.clip.samples - 256 ||
                  source.loop ||
                  source.isPlaying);
       }
@@ -439,13 +420,10 @@ namespace Crosstales.Common.Util
                t.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags
                   .RevocationStatusUnknown))
             {
-               chain.ChainPolicy.RevocationFlag =
-                  System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain;
-               chain.ChainPolicy.RevocationMode =
-                  System.Security.Cryptography.X509Certificates.X509RevocationMode.Online;
+               chain.ChainPolicy.RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain;
+               chain.ChainPolicy.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Online;
                chain.ChainPolicy.UrlRetrievalTimeout = new System.TimeSpan(0, 1, 0);
-               chain.ChainPolicy.VerificationFlags =
-                  System.Security.Cryptography.X509Certificates.X509VerificationFlags.AllFlags;
+               chain.ChainPolicy.VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.AllFlags;
 
                isOk = chain.Build((System.Security.Cryptography.X509Certificates.X509Certificate2)certificate);
             }
@@ -744,16 +722,12 @@ namespace Crosstales.Common.Util
          if (!string.IsNullOrEmpty(path))
          {
             if (!isValidURL(path))
-            {
-               return BaseConstants.PREFIX_FILE + ValidateFile(path).Replace(" ", "%20").Replace('\\', '/');
-            }
+               return BaseConstants.PREFIX_FILE + System.Uri.EscapeUriString(ValidateFile(path).Replace('\\', '/'));
 
-            return ValidateFile(path).Replace(" ", "%20").Replace('\\', '/');
+            return System.Uri.EscapeUriString(ValidateFile(path).Replace('\\', '/'));
          }
 
          return path;
-
-         //return System.Uri.EscapeDataString(path);
       }
 
       /// <summary>Cleans a given URL.</summary>
@@ -860,11 +834,8 @@ namespace Crosstales.Common.Util
                   {
                      if (ignoreCommentedLines)
                      {
-                        if (!lines[ii].StartsWith("#"))
-                        {
-                           //valid and not disabled line?
+                        if (!lines[ii].StartsWith("#")) //valid and not disabled line?
                            result.Add(lines[ii]);
-                        }
                      }
                      else
                      {
@@ -934,7 +905,7 @@ namespace Crosstales.Common.Util
       /// Generate nice HSV colors.
       /// Based on https://gist.github.com/rje/6206099
       /// </summary>
-      /// <param name="h">Hue</param>
+      /// <param name="_h">Hue</param>
       /// <param name="s">Saturation</param>
       /// <param name="v">Value</param>
       /// <param name="a">Alpha (optional)</param>
@@ -942,13 +913,11 @@ namespace Crosstales.Common.Util
       public static Color HSVToRGB(float h, float s, float v, float a = 1f)
       {
          if (Mathf.Abs(s) < BaseConstants.FLOAT_TOLERANCE)
-         {
             return new Color(v, v, v, a);
-         }
 
-         h /= 60f;
-         int sector = Mathf.FloorToInt(h);
-         float fact = h - sector;
+         float _h = h / 60f;
+         int sector = Mathf.FloorToInt(_h);
+         float fact = _h - sector;
          float p = v * (1f - s);
          float q = v * (1f - s * fact);
          float t = v * (1f - s * (1f - fact));
@@ -1063,38 +1032,45 @@ namespace Crosstales.Common.Util
 
             //Debug.Log("'" + path + "'");
 
-            if (System.IO.Directory.Exists(path))
+            try
             {
-#if ENABLE_IL2CPP
-               using (CTProcess process = new CTProcess())
+               if (System.IO.Directory.Exists(path))
                {
-                  if (isWindowsPlatform || isWindowsEditor)
+#if ENABLE_IL2CPP
+                  using (CTProcess process = new CTProcess())
                   {
-                      process.StartInfo.FileName = "explorer.exe";
-                      process.StartInfo.Arguments = "\"" + path + "\"";
-                      process.StartInfo.UseCmdExecute = true;
-                      process.StartInfo.CreateNoWindow = true;
-                  }
-                  else if (isMacOSPlatform || isMacOSEditor)
-                  {
-                      process.StartInfo.FileName = "open";
-                      process.StartInfo.Arguments = "\"" + path + "\"";
-                  }
-                  else
-                  {
-                      process.StartInfo.FileName = "xdg-open";
-                      process.StartInfo.Arguments = "\"" + path + "\"";
-                  }
+                     if (isWindowsPlatform || isWindowsEditor)
+                     {
+                         process.StartInfo.FileName = "explorer.exe";
+                         process.StartInfo.Arguments = "\"" + path + "\"";
+                         process.StartInfo.UseCmdExecute = true;
+                         process.StartInfo.CreateNoWindow = true;
+                     }
+                     else if (isMacOSPlatform || isMacOSEditor)
+                     {
+                         process.StartInfo.FileName = "open";
+                         process.StartInfo.Arguments = "\"" + path + "\"";
+                     }
+                     else
+                     {
+                         process.StartInfo.FileName = "xdg-open";
+                         process.StartInfo.Arguments = "\"" + path + "\"";
+                     }
 
-                  process.Start();
-               }
+                     process.Start();
+                  }
 #else
-               System.Diagnostics.Process.Start(path);
+                  System.Diagnostics.Process.Start(path);
 #endif
+               }
+               else
+               {
+                  Debug.LogWarning("Path to file doesn't exist: " + path);
+               }
             }
-            else
+            catch (System.Exception ex)
             {
-               Debug.LogWarning("Path to file doesn't exist: " + path);
+               Debug.LogError("Could not show file location: " + ex);
             }
 #endif
          }
@@ -1113,63 +1089,70 @@ namespace Crosstales.Common.Util
       {
          if (isStandalonePlatform || isEditor)
          {
+            try
+            {
 #if UNITY_STANDALONE || UNITY_EDITOR
-            if (System.IO.File.Exists(file))
-            {
+               if (System.IO.File.Exists(file))
+               {
 #if ENABLE_IL2CPP
-               using (CTProcess process = new CTProcess())
-               {
-                  if (isWindowsPlatform || isWindowsEditor)
+                  using (CTProcess process = new CTProcess())
                   {
-                      process.StartInfo.FileName = "explorer.exe";
-                      process.StartInfo.Arguments = "\"" + file + "\"";
-                      process.StartInfo.UseCmdExecute = true;
-                      process.StartInfo.CreateNoWindow = true;
-                  }
-                  else if (isMacOSPlatform || isMacOSEditor)
-                  {
-                      process.StartInfo.FileName = "open";
-                      process.StartInfo.Arguments = "\"" + file + "\"";
-                  }
-                  else
-                  {
-                      process.StartInfo.FileName = "xdg-open";
-                      process.StartInfo.Arguments = "\"" + file + "\"";
-                  }
+                     if (isWindowsPlatform || isWindowsEditor)
+                     {
+                         process.StartInfo.FileName = "explorer.exe";
+                         process.StartInfo.Arguments = "\"" + file + "\"";
+                         process.StartInfo.UseCmdExecute = true;
+                         process.StartInfo.CreateNoWindow = true;
+                     }
+                     else if (isMacOSPlatform || isMacOSEditor)
+                     {
+                         process.StartInfo.FileName = "open";
+                         process.StartInfo.Arguments = "\"" + file + "\"";
+                     }
+                     else
+                     {
+                         process.StartInfo.FileName = "xdg-open";
+                         process.StartInfo.Arguments = "\"" + file + "\"";
+                     }
 
-                  process.Start();
-               }
+                     process.Start();
+                  }
 #else
-               using (System.Diagnostics.Process process = new System.Diagnostics.Process())
-               {
-                  if (isMacOSPlatform || isMacOSEditor)
+                  using (System.Diagnostics.Process process = new System.Diagnostics.Process())
                   {
-                     process.StartInfo.FileName = "open";
-                     process.StartInfo.WorkingDirectory =
-                        System.IO.Path.GetDirectoryName(file) + BaseConstants.PATH_DELIMITER_UNIX;
-                     process.StartInfo.Arguments = "-t " + System.IO.Path.GetFileName(file);
-                  }
-                  else if (isLinuxPlatform || isLinuxEditor)
-                  {
-                     process.StartInfo.FileName = "xdg-open";
-                     process.StartInfo.WorkingDirectory =
-                        System.IO.Path.GetDirectoryName(file) + BaseConstants.PATH_DELIMITER_UNIX;
-                     process.StartInfo.Arguments = System.IO.Path.GetFileName(file);
-                  }
-                  else
-                  {
-                     process.StartInfo.FileName = file;
-                  }
+                     if (isMacOSPlatform || isMacOSEditor)
+                     {
+                        process.StartInfo.FileName = "open";
+                        process.StartInfo.WorkingDirectory =
+                           System.IO.Path.GetDirectoryName(file) + BaseConstants.PATH_DELIMITER_UNIX;
+                        process.StartInfo.Arguments = "-t " + System.IO.Path.GetFileName(file);
+                     }
+                     else if (isLinuxPlatform || isLinuxEditor)
+                     {
+                        process.StartInfo.FileName = "xdg-open";
+                        process.StartInfo.WorkingDirectory =
+                           System.IO.Path.GetDirectoryName(file) + BaseConstants.PATH_DELIMITER_UNIX;
+                        process.StartInfo.Arguments = System.IO.Path.GetFileName(file);
+                     }
+                     else
+                     {
+                        process.StartInfo.FileName = file;
+                     }
 
-                  process.Start();
+                     process.Start();
+                  }
+#endif
+               }
+               else
+               {
+                  Debug.LogWarning("File doesn't exist: " + file);
                }
 #endif
             }
-            else
+            catch (System.Exception ex)
             {
-               Debug.LogWarning("File doesn't exist: " + file);
+               Debug.LogError("Could not open file: " + ex);
             }
-#endif
          }
          else
          {

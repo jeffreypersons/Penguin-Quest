@@ -129,7 +129,7 @@ namespace Crosstales.TPS.Task
                switch (option)
                {
                   case 0:
-                     Application.OpenURL(Constants.ASSET_URL);
+                     Helper.OpenURL(Constants.ASSET_URL);
                      //UnityEditorInternal.AssetStore.Open("content/" + EditorConstants.ASSET_ID);
                      break;
                   case 1:
@@ -155,7 +155,7 @@ namespace Crosstales.TPS.Task
                switch (option)
                {
                   case 0:
-                     Application.OpenURL(Constants.ASSET_PRO_URL);
+                     Helper.OpenURL(Constants.ASSET_PRO_URL);
                      break;
                   case 1:
                      // do nothing!
@@ -180,7 +180,7 @@ namespace Crosstales.TPS.Task
                switch (option)
                {
                   case 0:
-                     Application.OpenURL(Constants.ASSET_2019_URL);
+                     Helper.OpenURL(Constants.ASSET_2019_URL);
                      break;
                   case 1:
                      // do nothing!
@@ -205,7 +205,7 @@ namespace Crosstales.TPS.Task
                switch (option)
                {
                   case 0:
-                     Application.OpenURL(Constants.ASSET_URL);
+                     Helper.OpenURL(Constants.ASSET_URL);
                      break;
                   case 1:
                      // do nothing!
@@ -230,7 +230,7 @@ namespace Crosstales.TPS.Task
                switch (option)
                {
                   case 0:
-                     Application.OpenURL(Constants.ASSET_AUTHOR_URL);
+                     Helper.OpenURL(Constants.ASSET_AUTHOR_URL);
                      break;
                   case 1:
                      // do nothing!

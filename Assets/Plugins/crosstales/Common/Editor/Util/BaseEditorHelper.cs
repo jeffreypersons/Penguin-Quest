@@ -416,8 +416,8 @@ namespace Crosstales.Common.EditorUtil
          if (!string.IsNullOrEmpty(build) && build.CTContains("osx"))
             return BuildTarget.StandaloneOSX;
 #if UNITY_2019_2_OR_NEWER
-            if (!string.IsNullOrEmpty(build) && build.CTContains("linux"))
-                return BuildTarget.StandaloneLinux64;
+         if (!string.IsNullOrEmpty(build) && build.CTContains("linux"))
+             return BuildTarget.StandaloneLinux64;
 #else
          if ("linux".CTEquals(build))
             return BuildTarget.StandaloneLinux;
@@ -480,8 +480,8 @@ namespace Crosstales.Common.EditorUtil
             case BuildTarget.StandaloneOSX:
                return "OSXUniversal";
 #if UNITY_2019_2_OR_NEWER
-                case BuildTarget.StandaloneLinux64:
-                    return "Linux64";
+            case BuildTarget.StandaloneLinux64:
+              return "Linux64";
 #else
             case BuildTarget.StandaloneLinux:
                return "Linux";
@@ -553,7 +553,7 @@ namespace Crosstales.Common.EditorUtil
          // header
          sb.AppendLine("echo ##############################################################################");
          sb.AppendLine("echo #                                                                            #");
-         sb.AppendLine("echo #  Common 2020.1.3 - Windows                                                 #");
+         sb.AppendLine("echo #  Common 2020.2.0 - Windows                                                 #");
          sb.AppendLine("echo #  Copyright 2018-2020 by www.crosstales.com                                 #");
          sb.AppendLine("echo #                                                                            #");
          sb.AppendLine("echo #  This script restarts Unity.                                               #");
@@ -576,10 +576,10 @@ namespace Crosstales.Common.EditorUtil
          sb.AppendLine("timeout /t 3");
          /*
 #if UNITY_2018_2_OR_NEWER
-                     sb.Append("del \"");
-                     sb.Append(Constants.PATH);
-                     sb.Append("Temp\\UnityLockfile\" /q");
-                     sb.AppendLine();
+         sb.Append("del \"");
+         sb.Append(Constants.PATH);
+         sb.Append("Temp\\UnityLockfile\" /q");
+         sb.AppendLine();
 #endif
          */
          sb.AppendLine("goto waitloop");
@@ -641,7 +641,7 @@ namespace Crosstales.Common.EditorUtil
          // header
          sb.AppendLine("echo \"+----------------------------------------------------------------------------+\"");
          sb.AppendLine("echo \"¦                                                                            ¦\"");
-         sb.AppendLine("echo \"¦  Common 2020.1.3 - macOS                                                   ¦\"");
+         sb.AppendLine("echo \"¦  Common 2020.2.0 - macOS                                                   ¦\"");
          sb.AppendLine("echo \"¦  Copyright 2018-2020 by www.crosstales.com                                 ¦\"");
          sb.AppendLine("echo \"¦                                                                            ¦\"");
          sb.AppendLine("echo \"¦  This script restarts Unity.                                               ¦\"");
@@ -663,10 +663,10 @@ namespace Crosstales.Common.EditorUtil
          sb.AppendLine("  sleep 3");
          /*
 #if UNITY_2018_2_OR_NEWER
-                     sb.Append("  rm \"");
-                     sb.Append(Constants.PATH);
-                     sb.Append("Temp/UnityLockfile\"");
-                     sb.AppendLine();
+         sb.Append("  rm \"");
+         sb.Append(Constants.PATH);
+         sb.Append("Temp/UnityLockfile\"");
+         sb.AppendLine();
 #endif
          */
          sb.AppendLine("done");
@@ -726,7 +726,7 @@ namespace Crosstales.Common.EditorUtil
          // header
          sb.AppendLine("echo \"+----------------------------------------------------------------------------+\"");
          sb.AppendLine("echo \"¦                                                                            ¦\"");
-         sb.AppendLine("echo \"¦  Common 2020.1.3 - Linux                                                   ¦\"");
+         sb.AppendLine("echo \"¦  Common 2020.2.0 - Linux                                                   ¦\"");
          sb.AppendLine("echo \"¦  Copyright 2018-2020 by www.crosstales.com                                 ¦\"");
          sb.AppendLine("echo \"¦                                                                            ¦\"");
          sb.AppendLine("echo \"¦  This script restarts Unity.                                               ¦\"");
@@ -748,10 +748,10 @@ namespace Crosstales.Common.EditorUtil
          sb.AppendLine("  sleep 3");
          /*
 #if UNITY_2018_2_OR_NEWER
-                     sb.Append("  rm \"");
-                     sb.Append(Constants.PATH);
-                     sb.Append("Temp/UnityLockfile\"");
-                     sb.AppendLine();
+         sb.Append("  rm \"");
+         sb.Append(Constants.PATH);
+         sb.Append("Temp/UnityLockfile\"");
+         sb.AppendLine();
 #endif
          */
          sb.AppendLine("done");
@@ -801,13 +801,10 @@ namespace Crosstales.Common.EditorUtil
 #if CT_DEVELOP
             logo = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Plugins/crosstales/Common/Icons/" + fileName, typeof(Texture2D));
 #else
-                logo = (Texture2D)EditorGUIUtility.Load("crosstales/Common/" + fileName);
+            logo = (Texture2D)EditorGUIUtility.Load("crosstales/Common/" + fileName);
 #endif
-
             if (logo == null)
-            {
                Debug.LogWarning("Image not found: " + fileName);
-            }
          }
 
          return logo;

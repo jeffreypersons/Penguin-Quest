@@ -89,12 +89,6 @@ namespace Crosstales.Common.EditorTask
          }
       }
 
-      //TODO remove in a later version
-      protected static void setCompileDefines(string[] symbols)
-      {
-         addSymbolsToAllTargets(symbols);
-      }
-
       #endregion
 
 
@@ -123,6 +117,7 @@ namespace Crosstales.Common.EditorTask
 
          System.Reflection.FieldInfo field = value.GetType().GetField(value.ToString());
          System.ObsoleteAttribute[] attributes = (System.ObsoleteAttribute[])field.GetCustomAttributes(typeof(System.ObsoleteAttribute), false);
+
          return attributes.Length > 0;
       }
 

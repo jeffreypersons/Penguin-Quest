@@ -439,32 +439,24 @@ namespace Crosstales.TPS.EditorIntegration
                GUILayout.BeginVertical();
                {
                   if (GUILayout.Button(new GUIContent(" Manual", Helper.Icon_Manual, "Show the manual.")))
-                  {
-                     Application.OpenURL(Constants.ASSET_MANUAL_URL);
-                  }
+                     Helper.OpenURL(Constants.ASSET_MANUAL_URL);
 
                   GUILayout.Space(6);
 
                   if (GUILayout.Button(new GUIContent(" Forum", Helper.Icon_Forum, "Visit the forum page.")))
-                  {
-                     Application.OpenURL(Constants.ASSET_FORUM_URL);
-                  }
+                     Helper.OpenURL(Constants.ASSET_FORUM_URL);
                }
                GUILayout.EndVertical();
 
                GUILayout.BeginVertical();
                {
                   if (GUILayout.Button(new GUIContent(" API", Helper.Icon_API, "Show the API.")))
-                  {
-                     Application.OpenURL(Constants.ASSET_API_URL);
-                  }
+                     Helper.OpenURL(Constants.ASSET_API_URL);
 
                   GUILayout.Space(6);
 
                   if (GUILayout.Button(new GUIContent(" Product", Helper.Icon_Product, "Visit the product page.")))
-                  {
-                     Application.OpenURL(Constants.ASSET_WEB_URL);
-                  }
+                     Helper.OpenURL(Constants.ASSET_WEB_URL);
                }
                GUILayout.EndVertical();
             }
@@ -477,32 +469,24 @@ namespace Crosstales.TPS.EditorIntegration
             GUILayout.BeginHorizontal();
             {
                if (GUILayout.Button(new GUIContent(" Promo", Helper.Video_Promo, "View the promotion video on 'Youtube'.")))
-               {
-                  Application.OpenURL(Constants.ASSET_VIDEO_PROMO);
-               }
+                  Helper.OpenURL(Constants.ASSET_VIDEO_PROMO);
 
                if (GUILayout.Button(new GUIContent(" Tutorial", Helper.Video_Tutorial, "View the tutorial video on 'Youtube'.")))
-               {
-                  Application.OpenURL(Constants.ASSET_VIDEO_TUTORIAL);
-               }
+                  Helper.OpenURL(Constants.ASSET_VIDEO_TUTORIAL);
             }
             GUILayout.EndHorizontal();
 
             GUILayout.Space(6);
 
             if (GUILayout.Button(new GUIContent(" All Videos", Helper.Icon_Videos, "Visit our 'Youtube'-channel for more videos.")))
-            {
-               Application.OpenURL(Constants.ASSET_SOCIAL_YOUTUBE);
-            }
+               Helper.OpenURL(Constants.ASSET_SOCIAL_YOUTUBE);
 
             Helper.SeparatorUI();
 
             GUILayout.Label("3rd Party Assets", EditorStyles.boldLabel);
 
             if (GUILayout.Button(new GUIContent(" RockTomate", Helper.Asset_RockTomate, "More information about 'RockTomate'.")))
-            {
-               Application.OpenURL(Util.Constants.ASSET_3P_ROCKTOMATE);
-            }
+               Helper.OpenURL(Util.Constants.ASSET_3P_ROCKTOMATE);
          }
          EditorGUILayout.EndScrollView();
 
@@ -557,9 +541,7 @@ namespace Crosstales.TPS.EditorIntegration
             GUILayout.BeginVertical(GUILayout.Width(64));
             {
                if (GUILayout.Button(new GUIContent(string.Empty, Helper.Logo_Asset, "Visit asset website")))
-               {
-                  Application.OpenURL(Constants.ASSET_URL);
-               }
+                  Helper.OpenURL(Constants.ASSET_URL);
             }
             GUILayout.EndVertical();
          }
@@ -572,14 +554,10 @@ namespace Crosstales.TPS.EditorIntegration
          GUILayout.BeginHorizontal();
          {
             if (GUILayout.Button(new GUIContent(" AssetStore", Helper.Logo_Unity, "Visit the 'Unity AssetStore' website.")))
-            {
-               Application.OpenURL(Constants.ASSET_CT_URL);
-            }
+               Helper.OpenURL(Constants.ASSET_CT_URL);
 
             if (GUILayout.Button(new GUIContent(" " + Constants.ASSET_AUTHOR, Helper.Logo_CT, "Visit the '" + Constants.ASSET_AUTHOR + "' website.")))
-            {
-               Application.OpenURL(Constants.ASSET_AUTHOR_URL);
-            }
+               Helper.OpenURL(Constants.ASSET_AUTHOR_URL);
          }
          GUILayout.EndHorizontal();
 
@@ -608,10 +586,7 @@ namespace Crosstales.TPS.EditorIntegration
                         GUILayout.Label(updateText);
 
                         if (GUILayout.Button(new GUIContent(" Download", "Visit the 'Unity AssetStore' to download the latest version.")))
-                        {
-                           //Application.OpenURL(Constants.ASSET_URL);
                            UnityEditorInternal.AssetStore.Open("content/" + Constants.ASSET_ID);
-                        }
 
                         break;
                      }
@@ -620,9 +595,7 @@ namespace Crosstales.TPS.EditorIntegration
                         GUILayout.Label(updateText);
 
                         if (GUILayout.Button(new GUIContent(" Upgrade", "Upgrade to the PRO-version in the 'Unity AssetStore'.")))
-                        {
-                           Application.OpenURL(Constants.ASSET_PRO_URL);
-                        }
+                           Helper.OpenURL(Constants.ASSET_PRO_URL);
 
                         break;
                      }
@@ -631,9 +604,7 @@ namespace Crosstales.TPS.EditorIntegration
                         GUILayout.Label(updateText);
 
                         if (GUILayout.Button(new GUIContent(" Upgrade", "Upgrade to the newer version in the 'Unity AssetStore'")))
-                        {
-                           Application.OpenURL(Constants.ASSET_CT_URL);
-                        }
+                           Helper.OpenURL(Constants.ASSET_CT_URL);
 
                         break;
                      }
@@ -642,9 +613,7 @@ namespace Crosstales.TPS.EditorIntegration
                         GUILayout.Label(updateText);
 
                         if (GUILayout.Button(new GUIContent(" More Information", "Visit the 'crosstales'-site for more information.")))
-                        {
-                           Application.OpenURL(Constants.ASSET_AUTHOR_URL);
-                        }
+                           Helper.OpenURL(Constants.ASSET_AUTHOR_URL);
 
                         break;
                      }
@@ -729,24 +698,16 @@ namespace Crosstales.TPS.EditorIntegration
          GUILayout.BeginHorizontal();
          {
             if (GUILayout.Button(new GUIContent(string.Empty, Helper.Social_Discord, "Communicate with us via 'Discord'.")))
-            {
-               Application.OpenURL(Constants.ASSET_SOCIAL_DISCORD);
-            }
+               Helper.OpenURL(Constants.ASSET_SOCIAL_DISCORD);
 
             if (GUILayout.Button(new GUIContent(string.Empty, Helper.Social_Facebook, "Follow us on 'Facebook'.")))
-            {
-               Application.OpenURL(Constants.ASSET_SOCIAL_FACEBOOK);
-            }
+               Helper.OpenURL(Constants.ASSET_SOCIAL_FACEBOOK);
 
             if (GUILayout.Button(new GUIContent(string.Empty, Helper.Social_Twitter, "Follow us on 'Twitter'.")))
-            {
-               Application.OpenURL(Constants.ASSET_SOCIAL_TWITTER);
-            }
+               Helper.OpenURL(Constants.ASSET_SOCIAL_TWITTER);
 
             if (GUILayout.Button(new GUIContent(string.Empty, Helper.Social_Linkedin, "Follow us on 'LinkedIn'.")))
-            {
-               Application.OpenURL(Constants.ASSET_SOCIAL_LINKEDIN);
-            }
+               Helper.OpenURL(Constants.ASSET_SOCIAL_LINKEDIN);
          }
          GUILayout.EndHorizontal();
 
@@ -775,9 +736,7 @@ namespace Crosstales.TPS.EditorIntegration
                   GUILayout.Space(4);
 
                   if (GUILayout.Button(new GUIContent(string.Empty, Helper.Logo_Asset_TPB, "Visit TPB in the Unity AssetStore")))
-                  {
-                     Application.OpenURL(Constants.ASSET_TPB);
-                  }
+                     Helper.OpenURL(Constants.ASSET_TPB);
                }
                GUILayout.EndVertical();
             }
