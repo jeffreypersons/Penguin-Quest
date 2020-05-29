@@ -740,8 +740,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 166a20cd2a9d4f840ada04bd0fd97a9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkingSpeed: 35
-  slidingSpeed: 70
+  walkingSpeed: 100
+  slidingSpeed: 200
   inputTolerance: 0.15
   kinematicRotationStrength: 1
   horizontalInputAxisName: Horizontal
