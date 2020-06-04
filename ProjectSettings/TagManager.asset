@@ -24,6 +24,7 @@ TagManager:
   - Panel
   - Floor
   - Background
+  - Character
   layers:
   - Default
   - TransparentFX
@@ -72,4 +73,7 @@ TagManager:
     locked: 0
   - name: Objects
     uniqueID: 4241911695
+    locked: 0
+  - name: Overlay
+    uniqueID: 1826290595
     locked: 0
