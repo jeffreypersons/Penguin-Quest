@@ -24,17 +24,17 @@ PrefabInstance:
     - target: {fileID: 10405006053755504, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
         type: 3}
       propertyPath: m_BackGroundColor.r
-      value: 0.5801887
+      value: 0.6392157
       objectReference: {fileID: 0}
     - target: {fileID: 10405006053755504, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
         type: 3}
       propertyPath: m_BackGroundColor.g
-      value: 0.85293585
+      value: 0.754717
       objectReference: {fileID: 0}
     - target: {fileID: 10405006053755504, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
         type: 3}
       propertyPath: m_BackGroundColor.b
-      value: 1
+      value: 0.754717
       objectReference: {fileID: 0}
     - target: {fileID: 10405006053755504, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
         type: 3}
@@ -56,15 +56,25 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 10405006053755507, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 10405006053755507, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 10405006053755535, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 60.4
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 10405006053755535, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 11.5
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 10405006053755535, guid: 2d2aa87f09491f04e98c4e1eda24c12d,
         type: 3}
