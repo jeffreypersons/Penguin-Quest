@@ -102,23 +102,23 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: FrontFlipper_Lower
-      position: {x: 528.1709, y: -0.00001765732, z: 4}
-      rotation: {x: 0, y: 0, z: -0.00075245363, w: 0.9999997}
-      length: 504.79285
+      position: {x: 528.17084, y: -0.000040176237, z: 4}
+      rotation: {x: 0, y: 0, z: -0.0007524116, w: 0.9999997}
+      length: 504.79266
       parentId: 1
     - name: FrontFlipper_Upper
-      position: {x: 153.18869, y: 0.000058428348, z: 5}
-      rotation: {x: 0, y: 0, z: 0.2175338, w: 0.97605276}
-      length: 528.1713
+      position: {x: 153.18846, y: 0.0002650722, z: 5}
+      rotation: {x: 0, y: 0, z: 0.21753368, w: 0.9760528}
+      length: 528.1711
       parentId: 2
     - name: FrontFlipper_Pivot
-      position: {x: 59.209328, y: 172.82468, z: 0}
-      rotation: {x: 0, y: 0, z: 0.9891643, w: 0.1468131}
-      length: 153.18886
+      position: {x: 59.20952, y: 172.82458, z: 0}
+      rotation: {x: 0, y: 0, z: 0.98916435, w: 0.14681293}
+      length: 153.18864
       parentId: 3
     - name: Torso_Shoulders
-      position: {x: 391.8667, y: 1132.2302, z: 0}
-      rotation: {x: 0, y: 0, z: 0.6388937, w: 0.76929504}
+      position: {x: 391.8667, y: 1132.2305, z: 0}
+      rotation: {x: 0, y: 0, z: 0.6388936, w: 0.7692951}
       length: 188.95103
       parentId: -1
     spriteOutline: []
@@ -6595,63 +6595,63 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: Torso_Chest
-      position: {x: 188.95102, y: -0.00006217312, z: 1}
-      rotation: {x: 0, y: 0, z: 0.08024396, w: 0.99677527}
-      length: 68.86457
+      position: {x: 188.95146, y: -0.000047006135, z: 1}
+      rotation: {x: 0, y: 0, z: 0.08024452, w: 0.99677527}
+      length: 68.86456
       parentId: 1
     - name: Torso_Shoulders
-      position: {x: 816.8464, y: 0.000043739226, z: 0}
-      rotation: {x: 0, y: 0, z: -0.04516468, w: 0.99897957}
-      length: 188.95103
+      position: {x: 816.84607, y: -0.0008682854, z: 0}
+      rotation: {x: 0, y: 0, z: -0.045165394, w: 0.99897957}
+      length: 188.95102
       parentId: 2
     - name: Torso_UpperSpine
-      position: {x: 473.938, y: 883.0143, z: 0}
-      rotation: {x: 0, y: 0, z: 0.67298675, w: 0.73965466}
-      length: 816.8465
+      position: {x: 473.93802, y: 883.01465, z: 0}
+      rotation: {x: 0, y: 0, z: 0.67298716, w: 0.73965424}
+      length: 816.8463
       parentId: -1
     - name: Torso_Hips
-      position: {x: 398.82367, y: 216.75809, z: 0}
-      rotation: {x: 0, y: 0, z: 0.6948966, w: 0.7191097}
-      length: 56.829967
+      position: {x: 398.8237, y: 216.75854, z: 0}
+      rotation: {x: 0, y: 0, z: 0.69489664, w: 0.7191097}
+      length: 56.82996
       parentId: -1
     - name: Head_LowerNeck
-      position: {x: 68.8646, y: 0.000046614296, z: 1}
-      rotation: {x: 0, y: 0, z: -0.06285213, w: 0.99802285}
+      position: {x: 68.86436, y: 0.0001572061, z: 1}
+      rotation: {x: 0, y: 0, z: -0.06285235, w: 0.99802285}
       length: 384.65402
       parentId: 0
     - name: Head_UpperNeck
-      position: {x: 268.73178, y: -0.00009856583, z: 0}
-      rotation: {x: 0, y: 0, z: -0.34468102, w: 0.9387199}
-      length: 159.59573
+      position: {x: 268.73175, y: -0.00014613362, z: 0}
+      rotation: {x: 0, y: 0, z: -0.34468096, w: 0.93871987}
+      length: 159.5957
       parentId: 11
     - name: Head_Center
-      position: {x: 159.59595, y: 0.000097823824, z: 0}
-      rotation: {x: 0, y: 0, z: -0.5847395, w: 0.8112211}
-      length: 218.24013
+      position: {x: 159.59549, y: 0.00015505671, z: 0}
+      rotation: {x: 0, y: 0, z: -0.58474, w: 0.8112208}
+      length: 218.24022
       parentId: 5
     - name: Head_FrontBeak
-      position: {x: 114.34781, y: -0.00012638324, z: 1}
-      rotation: {x: 0, y: 0, z: -0.044481065, w: 0.99901026}
-      length: 120.86744
+      position: {x: 114.34794, y: -0.00006720408, z: 1}
+      rotation: {x: 0, y: 0, z: -0.04448118, w: 0.9990102}
+      length: 120.86743
       parentId: 8
     - name: Head_BackBeak
-      position: {x: 218.2402, y: -0.00057199056, z: 1}
-      rotation: {x: 0, y: 0, z: 0.24036229, w: 0.9706832}
-      length: 114.34782
+      position: {x: 218.24048, y: 0.00021147466, z: 1}
+      rotation: {x: 0, y: 0, z: 0.24036294, w: 0.97068316}
+      length: 114.34786
       parentId: 6
     - name: _SkinClamp_BackNeck
-      position: {x: 167.72578, y: 322.70422, z: 0}
-      rotation: {x: 0, y: 0, z: -0.23913947, w: 0.97098523}
-      length: 131.17021
+      position: {x: 167.72604, y: 322.70416, z: 0}
+      rotation: {x: 0, y: 0, z: -0.2391395, w: 0.97098523}
+      length: 131.17017
       parentId: 4
     - name: _SkinClamp_FrontNeck
-      position: {x: 260.40622, y: -277.20987, z: 0}
+      position: {x: 260.40646, y: -277.20987, z: 0}
       rotation: {x: 0, y: 0, z: 0.17291798, w: 0.9849363}
-      length: 105.72761
+      length: 105.72759
       parentId: 4
     - name: Head_MiddleNeck
-      position: {x: 384.65396, y: 0.000093168695, z: 0}
-      rotation: {x: 0, y: 0, z: 0.090492025, w: 0.99589723}
+      position: {x: 384.6541, y: -0.000080930586, z: 0}
+      rotation: {x: 0, y: 0, z: 0.0904919, w: 0.9958972}
       length: 268.7315
       parentId: 4
     spriteOutline: []
@@ -11300,54 +11300,54 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: Torso_Chest
-      position: {x: 188.95097, y: -0.000036268306, z: 1}
-      rotation: {x: 0, y: 0, z: 0.08024394, w: 0.99677527}
-      length: 68.86458
+      position: {x: 188.95145, y: -0.0000012485234, z: 1}
+      rotation: {x: 0, y: 0, z: 0.080244526, w: 0.99677527}
+      length: 68.86457
       parentId: 1
     - name: Torso_Shoulders
-      position: {x: 291.86664, y: -260.76978, z: 0}
-      rotation: {x: 0, y: 0, z: 0.6388937, w: 0.76929504}
+      position: {x: 291.86664, y: -260.76953, z: 0}
+      rotation: {x: 0, y: 0, z: 0.6388936, w: 0.7692951}
       length: 188.95103
       parentId: -1
     - name: Head_FrontBeak
-      position: {x: 114.34729, y: -0.0002021583, z: 1}
-      rotation: {x: 0, y: 0, z: -0.044480804, w: 0.99901026}
-      length: 120.86749
+      position: {x: 114.34792, y: 0.00009268968, z: 1}
+      rotation: {x: 0, y: 0, z: -0.044481155, w: 0.99901026}
+      length: 120.86745
       parentId: 8
     - name: Head_LowerNeck
-      position: {x: 68.864655, y: 0.000022286975, z: 1}
-      rotation: {x: 0, y: 0, z: -0.06285215, w: 0.9980229}
+      position: {x: 68.86414, y: 0.000047738773, z: 1}
+      rotation: {x: 0, y: 0, z: -0.06285239, w: 0.99802285}
       length: 384.65408
       parentId: 0
     - name: Head_Center
-      position: {x: 159.59521, y: -0.00023304489, z: 0}
-      rotation: {x: 0, y: 0, z: -0.5847397, w: 0.81122106}
-      length: 218.24016
+      position: {x: 159.5961, y: 0.0001376013, z: 0}
+      rotation: {x: 0, y: 0, z: -0.58473986, w: 0.8112208}
+      length: 218.2402
       parentId: 5
     - name: Head_UpperNeck
-      position: {x: 268.7323, y: -0.000062303036, z: 0}
-      rotation: {x: 0, y: 0, z: -0.34468105, w: 0.9387198}
-      length: 159.59572
+      position: {x: 268.73184, y: -0.00012718172, z: 0}
+      rotation: {x: 0, y: 0, z: -0.344681, w: 0.93871987}
+      length: 159.5957
       parentId: 9
     - name: _SkinClamp_FrontNeck
-      position: {x: 260.40622, y: -277.20978, z: 0}
-      rotation: {x: 0, y: 0, z: 0.17291799, w: 0.9849363}
-      length: 105.72762
+      position: {x: 260.40622, y: -277.20975, z: 0}
+      rotation: {x: 0, y: 0, z: 0.17291798, w: 0.98493624}
+      length: 105.72759
       parentId: 3
     - name: _SkinClamp_BackNeck
-      position: {x: 167.72566, y: 322.7043, z: 0}
-      rotation: {x: 0, y: 0, z: -0.23913947, w: 0.97098523}
-      length: 131.1702
+      position: {x: 167.7257, y: 322.70428, z: 0}
+      rotation: {x: 0, y: 0, z: -0.2391395, w: 0.97098523}
+      length: 131.17018
       parentId: 3
     - name: Head_BackBeak
-      position: {x: 218.24039, y: -0.0000128474785, z: 1}
-      rotation: {x: 0, y: 0, z: 0.2403624, w: 0.9706833}
-      length: 114.347824
+      position: {x: 218.24031, y: -0.0003185589, z: 1}
+      rotation: {x: 0, y: 0, z: 0.24036285, w: 0.97068316}
+      length: 114.34788
       parentId: 4
     - name: Head_MiddleNeck
-      position: {x: 384.6539, y: 0.00020592682, z: 0}
-      rotation: {x: 0, y: 0, z: 0.09049203, w: 0.99589723}
-      length: 268.7315
+      position: {x: 384.6538, y: 0.00006306819, z: 0}
+      rotation: {x: 0, y: 0, z: 0.09049189, w: 0.9958972}
+      length: 268.73154
       parentId: 3
     spriteOutline: []
     vertices:
@@ -14570,29 +14570,29 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: FrontFoot_BackArch
-      position: {x: 135.22795, y: 0.00006141223, z: 5}
+      position: {x: 135.22789, y: -0.0002594671, z: 5}
       rotation: {x: 0, y: 0, z: 0.620788, w: 0.7839785}
       length: 130.24956
       parentId: 1
     - name: FrontFoot_Heel
-      position: {x: 189.95387, y: -1.6352512, z: -2}
-      rotation: {x: 0, y: 0, z: 0.19667065, w: 0.9804696}
-      length: 135.22801
+      position: {x: 189.95364, y: -1.6352808, z: -2}
+      rotation: {x: 0, y: 0, z: 0.19667079, w: 0.9804696}
+      length: 135.22797
       parentId: 2
     - name: FrontFoot_Ankle
-      position: {x: 34.480453, y: -56.48833, z: -2}
-      rotation: {x: 0, y: 0, z: -0.9999097, w: 0.013436838}
-      length: 49.30156
+      position: {x: 34.479942, y: -56.488323, z: -2}
+      rotation: {x: 0, y: 0, z: -0.99990976, w: 0.013436796}
+      length: 49.30155
       parentId: 3
     - name: Torso_Hips
-      position: {x: 75.82367, y: 358.75806, z: 0}
-      rotation: {x: 0, y: 0, z: 0.6948966, w: 0.7191097}
-      length: 56.829967
+      position: {x: 75.8237, y: 358.75854, z: 0}
+      rotation: {x: 0, y: 0, z: 0.69489664, w: 0.7191097}
+      length: 56.82996
       parentId: -1
     - name: FrontFoot_FrontArch
-      position: {x: 130.24966, y: -0.00006595528, z: 1}
-      rotation: {x: 0, y: 0, z: -0.1338536, w: 0.9910012}
-      length: 298.08783
+      position: {x: 130.24982, y: 0.00024486738, z: 1}
+      rotation: {x: 0, y: 0, z: -0.13385375, w: 0.99100107}
+      length: 298.0877
       parentId: 0
     spriteOutline: []
     vertices:
@@ -18083,29 +18083,29 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: BackFoot_BackArch
-      position: {x: 121.39846, y: -0.0000017028078, z: 5}
-      rotation: {x: 0, y: 0, z: 0.6061124, w: 0.79537904}
-      length: 117.94078
+      position: {x: 121.398125, y: -0.00007661028, z: 5}
+      rotation: {x: 0, y: 0, z: 0.6061124, w: 0.795379}
+      length: 117.94079
       parentId: 1
     - name: BackFoot_Heel
-      position: {x: 203.26483, y: -18.319548, z: -3}
-      rotation: {x: 0, y: 0, z: 0.1971289, w: 0.9803776}
-      length: 121.3983
+      position: {x: 203.26479, y: -18.319561, z: -3}
+      rotation: {x: 0, y: 0, z: 0.19712879, w: 0.9803776}
+      length: 121.39828
       parentId: 2
     - name: BackFoot_Ankle
-      position: {x: 37.33627, y: 56.32209, z: -3}
-      rotation: {x: 0, y: 0, z: -0.9992476, w: 0.038785312}
-      length: 48.463215
+      position: {x: 37.33625, y: 56.322018, z: -3}
+      rotation: {x: 0, y: 0, z: -0.9992476, w: 0.03878535}
+      length: 48.463196
       parentId: 3
     - name: Torso_Hips
-      position: {x: 166.82367, y: 352.75806, z: 0}
-      rotation: {x: 0, y: 0, z: 0.6948966, w: 0.7191097}
-      length: 56.829967
+      position: {x: 166.8237, y: 352.75854, z: 0}
+      rotation: {x: 0, y: 0, z: 0.69489664, w: 0.7191097}
+      length: 56.82996
       parentId: -1
     - name: BackFoot_FrontArch
-      position: {x: 117.94076, y: -0.000022949289, z: 1}
-      rotation: {x: 0, y: 0, z: -0.13988012, w: 0.99016845}
-      length: 305.95032
+      position: {x: 117.9408, y: -0.00027948784, z: 1}
+      rotation: {x: 0, y: 0, z: -0.13988021, w: 0.9901685}
+      length: 305.95023
       parentId: 0
     spriteOutline: []
     vertices:
@@ -21509,19 +21509,19 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: BackFlipper_Lower
-      position: {x: 429.79218, y: -0.000091873626, z: -4}
-      rotation: {x: 0, y: 0, z: 0.0022471715, w: 0.9999975}
-      length: 404.16495
+      position: {x: 429.79166, y: 0.000092202, z: -4}
+      rotation: {x: 0, y: 0, z: 0.0022472586, w: 0.99999756}
+      length: 404.16492
       parentId: 1
     - name: BackFlipper_Upper
-      position: {x: 127.51443, y: 0.00021466216, z: -3}
-      rotation: {x: 0, y: 0, z: 0.22611865, w: 0.97409976}
-      length: 429.79193
+      position: {x: 127.51507, y: -0.0001349166, z: -3}
+      rotation: {x: 0, y: 0, z: 0.22611862, w: 0.9740998}
+      length: 429.79196
       parentId: 2
     - name: BackFlipper_Pivot
       position: {x: 213.69165, y: 999.0117, z: -2}
-      rotation: {x: 0, y: 0, z: 0.8679761, w: -0.49660602}
-      length: 127.515045
+      rotation: {x: 0, y: 0, z: 0.8679761, w: -0.49660596}
+      length: 127.51501
       parentId: -1
     spriteOutline: []
     vertices:
@@ -28905,63 +28905,63 @@ ScriptedImporter:
   characterData:
     bones:
     - name: Root
-      position: {x: 653.0555, y: -367.37155, z: 1000}
-      rotation: {x: 0, y: 0, z: 0.7094079, w: 0.7047982}
-      length: 362.90973
+      position: {x: 590.0444, y: 7.8325186, z: 0}
+      rotation: {x: 0, y: 0, z: 0.6994972, w: 0.7146353}
+      length: 53.373558
       parentId: -1
     - name: Torso_Hips
-      position: {x: 727.7715, y: 249.49258, z: 0}
-      rotation: {x: 0, y: 0, z: -0.020380262, w: 0.99979234}
+      position: {x: 346.7521, y: 198.68922, z: 0}
+      rotation: {x: 0, y: 0, z: -0.0064175716, w: 0.99997944}
       length: 56.829967
       parentId: 0
     - name: Torso_UpperSpine
-      position: {x: 613.8359, y: -0.00032512264, z: 0}
-      rotation: {x: 0, y: 0, z: 0.012582128, w: 0.99992085}
-      length: 816.84644
+      position: {x: 613.8358, y: 0.0004885335, z: 0}
+      rotation: {x: 0, y: 0, z: 0.012583312, w: 0.99992085}
+      length: 816.8464
       parentId: 24
     - name: Torso_Shoulders
-      position: {x: 816.8463, y: 0.00007878062, z: 0}
-      rotation: {x: 0, y: 0, z: -0.045164697, w: 0.99897957}
-      length: 188.95102
+      position: {x: 816.8463, y: -0.0007597299, z: 0}
+      rotation: {x: 0, y: 0, z: -0.04516536, w: 0.99897957}
+      length: 188.95103
       parentId: 2
     - name: Torso_Chest
-      position: {x: 188.95105, y: -0.00007131393, z: 1}
-      rotation: {x: 0, y: 0, z: 0.080243945, w: 0.99677527}
+      position: {x: 188.95103, y: -0.000022570537, z: 1}
+      rotation: {x: 0, y: 0, z: 0.080244504, w: 0.9967752}
       length: 68.86457
       parentId: 3
     - name: Head_FrontBeak
-      position: {x: 114.34785, y: 0.000057095553, z: 1}
-      rotation: {x: 0, y: 0, z: -0.04448085, w: 0.99901026}
+      position: {x: 114.34791, y: -0.000012090961, z: 1}
+      rotation: {x: 0, y: 0, z: -0.04448105, w: 0.99901026}
       length: 120.86746
       parentId: 20
     - name: FrontFlipper_Pivot
       position: {x: 59.20922, y: 172.82455, z: 0}
-      rotation: {x: 0, y: -0, z: 0.9891643, w: 0.14681305}
-      length: 153.18881
+      rotation: {x: 0, y: -0, z: 0.9891643, w: 0.14681292}
+      length: 153.18869
       parentId: 3
     - name: FrontFlipper_Upper
-      position: {x: 153.18869, y: 0.000039211576, z: 5}
-      rotation: {x: 0, y: 0, z: 0.21753377, w: 0.9760528}
-      length: 528.17126
+      position: {x: 153.1887, y: 0.000073251016, z: 5}
+      rotation: {x: 0, y: 0, z: 0.21753362, w: 0.9760528}
+      length: 528.1712
       parentId: 6
     - name: FrontFlipper_Lower
-      position: {x: 528.1711, y: -0.0000044500885, z: 4}
-      rotation: {x: 0, y: 0, z: -0.0007523923, w: 0.99999976}
+      position: {x: 528.17114, y: 0.000005352634, z: 4}
+      rotation: {x: 0, y: 0, z: -0.0007523632, w: 0.99999976}
       length: 504.79282
       parentId: 7
     - name: BackFlipper_Pivot
       position: {x: 9.160517, y: -170.03424, z: -2}
-      rotation: {x: 0, y: -0, z: 0.9850081, w: 0.17250793}
-      length: 127.51504
+      rotation: {x: 0, y: -0, z: 0.9850082, w: 0.17250781}
+      length: 127.51501
       parentId: 3
     - name: BackFlipper_Upper
-      position: {x: 127.51502, y: -0.000001505352, z: -3}
-      rotation: {x: 0, y: 0, z: 0.22611865, w: 0.97409976}
-      length: 429.7919
+      position: {x: 127.51504, y: 0.00001711119, z: -3}
+      rotation: {x: 0, y: 0, z: 0.22611856, w: 0.9740998}
+      length: 429.79193
       parentId: 9
     - name: BackFlipper_Lower
-      position: {x: 429.79187, y: 0.000010706473, z: -4}
-      rotation: {x: 0, y: 0, z: 0.0022472201, w: 0.9999975}
+      position: {x: 429.79193, y: 0.00006462301, z: -4}
+      rotation: {x: 0, y: 0, z: 0.0022472492, w: 0.99999756}
       length: 404.1649
       parentId: 10
     - name: BackFoot_Ankle
@@ -28971,13 +28971,13 @@ ScriptedImporter:
       parentId: 1
     - name: BackFoot_Heel
       position: {x: 203.26492, y: -18.319563, z: -3}
-      rotation: {x: 0, y: 0, z: 0.19712886, w: 0.9803776}
+      rotation: {x: 0, y: 0, z: 0.19712882, w: 0.9803776}
       length: 121.398315
       parentId: 12
     - name: BackFoot_BackArch
-      position: {x: 121.39831, y: -0.000015912614, z: 5}
+      position: {x: 121.39831, y: -0.0000011785096, z: 5}
       rotation: {x: 0, y: 0, z: 0.6061124, w: 0.795379}
-      length: 117.94079
+      length: 117.940834
       parentId: 13
     - name: FrontFoot_Ankle
       position: {x: 34.480404, y: -56.488342, z: -2}
@@ -28986,32 +28986,32 @@ ScriptedImporter:
       parentId: 1
     - name: FrontFoot_Heel
       position: {x: 189.954, y: -1.6352661, z: -2}
-      rotation: {x: 0, y: 0, z: 0.19667071, w: 0.98046964}
-      length: 135.228
+      rotation: {x: 0, y: 0, z: 0.19667077, w: 0.9804696}
+      length: 135.22798
       parentId: 15
     - name: FrontFoot_BackArch
-      position: {x: 135.228, y: 0.00001883661, z: 5}
-      rotation: {x: 0, y: 0, z: 0.620788, w: 0.7839785}
-      length: 130.24956
+      position: {x: 135.22798, y: -0.0000048721204, z: 5}
+      rotation: {x: 0, y: 0, z: 0.6207879, w: 0.7839786}
+      length: 130.24957
       parentId: 16
     - name: Head_Center
       position: {x: 159.59569, y: 0.000024800993, z: 0}
-      rotation: {x: 0, y: 0, z: -0.5847396, w: 0.81122106}
-      length: 218.24013
+      rotation: {x: 0, y: 0, z: -0.58474, w: 0.8112208}
+      length: 218.24023
       parentId: 21
     - name: Head_LowerNeck
-      position: {x: 68.8645, y: 0.00006297623, z: 1}
-      rotation: {x: 0, y: 0, z: -0.06285211, w: 0.99802285}
-      length: 384.65408
+      position: {x: 68.86454, y: 0.000034896097, z: 1}
+      rotation: {x: 0, y: 0, z: -0.06285235, w: 0.99802285}
+      length: 384.6541
       parentId: 4
     - name: Head_BackBeak
-      position: {x: 218.24019, y: -0.00013972617, z: 1}
-      rotation: {x: 0, y: 0, z: 0.24036236, w: 0.9706832}
-      length: 114.34782
+      position: {x: 218.24028, y: 0.000074435025, z: 1}
+      rotation: {x: 0, y: 0, z: 0.24036293, w: 0.9706831}
+      length: 114.34788
       parentId: 18
     - name: Head_UpperNeck
-      position: {x: 268.73148, y: -0.00002598014, z: 0}
-      rotation: {x: 0, y: 0, z: -0.34468102, w: 0.9387199}
+      position: {x: 268.73166, y: -0.00007745473, z: 0}
+      rotation: {x: 0, y: 0, z: -0.34468105, w: 0.93871987}
       length: 159.5957
       parentId: 25
     - name: _SkinClamp_BackNeck
@@ -29026,22 +29026,22 @@ ScriptedImporter:
       parentId: 19
     - name: Torso_LowerSpine
       position: {x: 56.829967, y: -0.000059393078, z: 0}
-      rotation: {x: 0, y: 0, z: -0.042606242, w: 0.999092}
-      length: 613.8359
+      rotation: {x: 0, y: 0, z: -0.042606916, w: 0.999092}
+      length: 613.8358
       parentId: 1
     - name: Head_MiddleNeck
-      position: {x: 384.654, y: 0.00012752487, z: 0}
-      rotation: {x: 0, y: 0, z: 0.09049202, w: 0.9958972}
-      length: 268.7315
+      position: {x: 384.6541, y: 0.0000015011319, z: 0}
+      rotation: {x: 0, y: 0, z: 0.090491906, w: 0.99589723}
+      length: 268.73154
       parentId: 19
     - name: BackFoot_FrontArch
-      position: {x: 117.9408, y: -0.000017301569, z: 1}
-      rotation: {x: 0, y: 0, z: -0.13988014, w: 0.9901685}
+      position: {x: 117.94083, y: -0.0000125519655, z: 1}
+      rotation: {x: 0, y: 0, z: -0.1398802, w: 0.9901685}
       length: 305.95035
       parentId: 14
     - name: FrontFoot_FrontArch
-      position: {x: 130.24957, y: -0.000014497428, z: 1}
-      rotation: {x: 0, y: 0, z: -0.13385361, w: 0.9910011}
+      position: {x: 130.24956, y: -0.00002566442, z: 1}
+      rotation: {x: 0, y: 0, z: -0.13385363, w: 0.9910011}
       length: 298.08774
       parentId: 17
     parts:
