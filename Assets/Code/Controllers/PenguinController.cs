@@ -116,7 +116,7 @@ public class PenguinController : MonoBehaviour
                 axis:      penguinRigidBody.transform.forward,
                 angle:     inputRotationAngle);
         }
-        penguinRigidBody.velocity = new Vector2(inputAxes.x * inputMoveSpeed, 0);
+        penguinRigidBody.velocity = new Vector2(inputAxes.x * inputMoveSpeed, penguinRigidBody.velocity.y);
     }
 
     private Vector2 GetSurfaceNormalOfGroundRelativeToPenguin(float maxRayDistance=100.0f)
