@@ -483,7 +483,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Solvers:
   - {fileID: 880723271}
-  - {fileID: 0}
   - {fileID: 826702227}
   - {fileID: 1611897890}
   - {fileID: 156482102}
@@ -492,13 +491,13 @@ MonoBehaviour:
   m_SolverEditorData:
   - color: {r: 0, g: 1, b: 0, a: 1}
     showGizmo: 1
-  - color: {r: 0.21537916, g: 0.8301887, b: 0.21537916, a: 1}
-    showGizmo: 1
   - color: {r: 1, g: 0.5686275, b: 0, a: 1}
     showGizmo: 1
   - color: {r: 1, g: 0.36862746, b: 0, a: 1}
     showGizmo: 1
-  - color: {r: 0, g: 0.7900574, b: 1, a: 1}
+  - color: {r: 0, g: 0.7882353, b: 1, a: 1}
+    showGizmo: 1
+  - color: {r: 0, g: 0.5921569, b: 1, a: 1}
     showGizmo: 1
   - color: {r: 0, g: 0.5913396, b: 1, a: 1}
     showGizmo: 1
