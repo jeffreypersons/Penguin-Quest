@@ -630,7 +630,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 483023945}
-  m_LocalRotation: {x: -0, y: -0, z: 0.04070964, w: 0.999171}
+  m_LocalRotation: {x: -0, y: -0, z: 0.0407097, w: 0.999171}
   m_LocalPosition: {x: 3.86, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1597,6 +1597,11 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.9992476
       objectReference: {fileID: 0}
+    - target: {fileID: 2893412454702432751, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -175.554
+      objectReference: {fileID: 0}
     - target: {fileID: 2942175741925397102, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -2138,12 +2143,6 @@ Transform:
 --- !u!4 &614028881 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2893412454702432751, guid: 5cce759ee5ac24846b2f816694957596,
-    type: 3}
-  m_PrefabInstance: {fileID: 614028875}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &614028882 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7451908155888305487, guid: 5cce759ee5ac24846b2f816694957596,
     type: 3}
   m_PrefabInstance: {fileID: 614028875}
   m_PrefabAsset: {fileID: 0}
@@ -2833,7 +2832,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1559087694}
-  m_LocalRotation: {x: -0, y: -0, z: -0.023425305, w: 0.9997256}
+  m_LocalRotation: {x: -0, y: -0, z: -0.023425246, w: 0.9997256}
   m_LocalPosition: {x: -0.51485133, y: -0.31599885, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -3073,23 +3072,20 @@ MonoBehaviour:
   m_Chain:
     m_EffectorTransform: {fileID: 483023946}
     m_TargetTransform: {fileID: 1559087695}
-    m_TransformCount: 6
+    m_TransformCount: 5
     m_Transforms:
-    - {fileID: 614028882}
     - {fileID: 614028881}
     - {fileID: 1208198996}
     - {fileID: 1298728410}
     - {fileID: 668418535}
     - {fileID: 483023946}
     m_DefaultLocalRotations:
-    - {x: 0, y: 0, z: 0.0139234625, w: 0.9999031}
     - {x: 0, y: 0, z: -0.9992476, w: 0.038785312}
     - {x: 0, y: 0, z: 0.19712886, w: 0.9803776}
     - {x: 0, y: 0, z: 0.6006354, w: 0.7995231}
     - {x: 0, y: 0, z: -0.17331354, w: 0.98486674}
-    - {x: -0, y: -0, z: 0.04070959, w: 0.9991711}
+    - {x: -0, y: -0, z: 0.04070964, w: 0.999171}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
