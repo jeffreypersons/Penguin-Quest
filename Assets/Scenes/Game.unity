@@ -709,6 +709,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -9223199100272243684, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: -8734109381874559158, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -767,7 +772,7 @@ PrefabInstance:
     - target: {fileID: -8189634954400973504, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Bodypart
       objectReference: {fileID: 0}
     - target: {fileID: -7784172399981655952, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -783,6 +788,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: -7507723635941343540, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: -7412052559222951371, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -829,6 +839,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -6635606752481697859, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: -6584951960068023504, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
@@ -842,7 +857,7 @@ PrefabInstance:
     - target: {fileID: -6584951960068023504, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Bodypart
       objectReference: {fileID: 0}
     - target: {fileID: -6380966065221799324, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1280,6 +1295,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -3640038831136932033, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: -3301197715747725037, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
@@ -1293,7 +1313,7 @@ PrefabInstance:
     - target: {fileID: -3301197715747725037, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Bodypart
       objectReference: {fileID: 0}
     - target: {fileID: -2468354940008353051, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1303,7 +1323,7 @@ PrefabInstance:
     - target: {fileID: -2468354940008353051, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Bodypart
       objectReference: {fileID: 0}
     - target: {fileID: -2278207107026237889, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1319,6 +1339,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: -2253776392279710197, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: -2222398971485160646, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1370,6 +1395,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -1115027506258831566, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: -895125723860846271, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1410,6 +1440,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -853424522968016185, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: -434632996317587552, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
@@ -1418,7 +1453,7 @@ PrefabInstance:
     - target: {fileID: -434632996317587552, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Bodypart
       objectReference: {fileID: 0}
     - target: {fileID: 295690749696769616, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1464,6 +1499,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 683223005896161503, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 819787821089386473, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1515,10 +1555,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 1564512913432609932, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 1659695200462451317, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1659695200462451317, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 1827445580340106163, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1579,6 +1629,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2399662712532176004, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 2537900415050468403, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1720,6 +1775,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 3235602158858621528, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 3398633260871065863, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -1770,10 +1830,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 3405448556842981434, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 3473527827608465617, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473527827608465617, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 3520003512454805217, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1790,6 +1860,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 3859009747891768929, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 4914138139052667223, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
@@ -1798,7 +1873,7 @@ PrefabInstance:
     - target: {fileID: 4914138139052667223, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Bodypart
       objectReference: {fileID: 0}
     - target: {fileID: 5055629399359587369, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -1890,6 +1965,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 5287789460497084210, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 5523458309310611074, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -1940,6 +2020,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 6182524133354002594, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 6304662718237591230, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -1980,6 +2065,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 6540254773915464672, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 7165358634478166469, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_LocalRotation.z
@@ -2014,6 +2104,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7259760462331793837, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 7451908155888305487, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -2065,15 +2160,30 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 7498233886733245615, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 7621028385528187859, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7621028385528187859, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 7869622213963558031, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7869622213963558031, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
-      propertyPath: m_Layer
-      value: 9
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 7888115205357359474, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
@@ -2150,20 +2260,40 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 8145711693071029257, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 8453896341312933848, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453896341312933848, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 8522928417011515444, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 8522928417011515444, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 8775127115022848733, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8775127115022848733, guid: 5cce759ee5ac24846b2f816694957596,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     - target: {fileID: 8837981141757784924, guid: 5cce759ee5ac24846b2f816694957596,
         type: 3}
