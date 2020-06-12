@@ -14647,7 +14647,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Solver_Ccd_Shoulders/Solver_Ccd_Shoulders_Target
+    path: Solver_Ccd_BackFoot/Solver_BackFoot_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14657,7 +14657,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Solver_Ccd_Shoulders/Solver_Ccd_Shoulders_Target
+    path: Solver_Ccd_BackFoot/Solver_BackFoot_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14667,7 +14667,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Solver_Ccd_Shoulders/Solver_Ccd_Shoulders_Target
+    path: Solver_Ccd_BackFoot/Solver_BackFoot_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14707,7 +14707,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/BackFoot_Ankle/BackFoot_Heel/BackFoot_BackArch/BackFoot_FrontArch/Effector_BackFoot_Tip
+    path: Root/Torso_Hips/FrontFoot_Ankle/FrontFoot_Heel/FrontFoot_BackArch/FrontFoot_FrontArch/Effector_FrontFoot_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14717,7 +14717,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/BackFoot_Ankle/BackFoot_Heel/BackFoot_BackArch/BackFoot_FrontArch/Effector_BackFoot_Tip
+    path: Root/Torso_Hips/FrontFoot_Ankle/FrontFoot_Heel/FrontFoot_BackArch/FrontFoot_FrontArch/Effector_FrontFoot_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14727,7 +14727,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/BackFoot_Ankle/BackFoot_Heel/BackFoot_BackArch/BackFoot_FrontArch/Effector_BackFoot_Tip
+    path: Root/Torso_Hips/FrontFoot_Ankle/FrontFoot_Heel/FrontFoot_BackArch/FrontFoot_FrontArch/Effector_FrontFoot_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14767,7 +14767,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Solver_Ccd_FrontFoot/Solver_FrontFoot_Target
+    path: Solver_Ccd_BackFlipper/Target_BackFlipper
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14777,7 +14777,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Solver_Ccd_FrontFoot/Solver_FrontFoot_Target
+    path: Solver_Ccd_BackFlipper/Target_BackFlipper
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14787,37 +14787,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Solver_Ccd_FrontFoot/Solver_FrontFoot_Target
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Effector_Torso_Lower
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Effector_Torso_Lower
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Effector_Torso_Lower
+    path: Solver_Ccd_BackFlipper/Target_BackFlipper
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14857,6 +14827,36 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
     path: Root/Torso_Hips/Torso_LowerSpine
     classID: 4
     script: {fileID: 0}
@@ -14887,7 +14887,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/FrontFoot_Ankle/FrontFoot_Heel/FrontFoot_BackArch/FrontFoot_FrontArch/Effector_FrontFoot_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/BackFlipper_Pivot/BackFlipper_Upper/BackFlipper_Lower/Effector_BackFlipper_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14897,7 +14897,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/FrontFoot_Ankle/FrontFoot_Heel/FrontFoot_BackArch/FrontFoot_FrontArch/Effector_FrontFoot_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/BackFlipper_Pivot/BackFlipper_Upper/BackFlipper_Lower/Effector_BackFlipper_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14907,7 +14907,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/FrontFoot_Ankle/FrontFoot_Heel/FrontFoot_BackArch/FrontFoot_FrontArch/Effector_FrontFoot_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/BackFlipper_Pivot/BackFlipper_Upper/BackFlipper_Lower/Effector_BackFlipper_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14917,7 +14917,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Solver_Ccd_FrontFlipper/Target_FrontFlipper
+    path: Solver_Ccd_Torso/Solver_Ccd_Torso_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14927,7 +14927,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Solver_Ccd_FrontFlipper/Target_FrontFlipper
+    path: Solver_Ccd_Torso/Solver_Ccd_Torso_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14937,7 +14937,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Solver_Ccd_FrontFlipper/Target_FrontFlipper
+    path: Solver_Ccd_Torso/Solver_Ccd_Torso_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14947,7 +14947,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14957,7 +14957,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -14967,7 +14967,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15247,7 +15247,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/FrontFlipper_Pivot/FrontFlipper_Upper/FrontFlipper_Lower/Effector_FrontFlipper_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Effector_Torso_Lower
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15257,7 +15257,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/FrontFlipper_Pivot/FrontFlipper_Upper/FrontFlipper_Lower/Effector_FrontFlipper_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Effector_Torso_Lower
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15267,7 +15267,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/FrontFlipper_Pivot/FrontFlipper_Upper/FrontFlipper_Lower/Effector_FrontFlipper_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Effector_Torso_Lower
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15367,7 +15367,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/BackFlipper_Pivot/BackFlipper_Upper/BackFlipper_Lower/Effector_BackFlipper_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/FrontFlipper_Pivot/FrontFlipper_Upper/FrontFlipper_Lower/Effector_FrontFlipper_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15377,7 +15377,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/BackFlipper_Pivot/BackFlipper_Upper/BackFlipper_Lower/Effector_BackFlipper_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/FrontFlipper_Pivot/FrontFlipper_Upper/FrontFlipper_Lower/Effector_FrontFlipper_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15387,7 +15387,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/BackFlipper_Pivot/BackFlipper_Upper/BackFlipper_Lower/Effector_BackFlipper_Tip
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/FrontFlipper_Pivot/FrontFlipper_Upper/FrontFlipper_Lower/Effector_FrontFlipper_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15547,7 +15547,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15557,7 +15557,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15567,7 +15567,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15577,7 +15577,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Solver_Ccd_BackFlipper/Target_BackFlipper
+    path: Solver_Ccd_FrontFlipper/Target_FrontFlipper
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15587,7 +15587,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Solver_Ccd_BackFlipper/Target_BackFlipper
+    path: Solver_Ccd_FrontFlipper/Target_FrontFlipper
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15597,7 +15597,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Solver_Ccd_BackFlipper/Target_BackFlipper
+    path: Solver_Ccd_FrontFlipper/Target_FrontFlipper
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15727,7 +15727,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15737,7 +15737,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15747,7 +15747,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15787,7 +15787,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Solver_Ccd_Torso/Solver_Ccd_Torso_Target
+    path: Solver_Head/Solver_Head_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15797,7 +15797,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Solver_Ccd_Torso/Solver_Ccd_Torso_Target
+    path: Solver_Head/Solver_Head_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15807,7 +15807,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Solver_Ccd_Torso/Solver_Ccd_Torso_Target
+    path: Solver_Head/Solver_Head_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15817,7 +15817,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Solver_Ccd_BackFoot/Solver_BackFoot_Target
+    path: Solver_Ccd_FrontFoot/Solver_FrontFoot_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15827,7 +15827,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Solver_Ccd_BackFoot/Solver_BackFoot_Target
+    path: Solver_Ccd_FrontFoot/Solver_FrontFoot_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15837,7 +15837,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Solver_Ccd_BackFoot/Solver_BackFoot_Target
+    path: Solver_Ccd_FrontFoot/Solver_FrontFoot_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15967,7 +15967,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Effector_Torso_Shoulders
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15977,7 +15977,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Effector_Torso_Shoulders
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -15987,7 +15987,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Effector_Torso_Shoulders
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -16027,7 +16027,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Effector_Torso_Shoulders
+    path: Root/Torso_Hips/BackFoot_Ankle/BackFoot_Heel/BackFoot_BackArch/BackFoot_FrontArch/Effector_BackFoot_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -16037,7 +16037,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Effector_Torso_Shoulders
+    path: Root/Torso_Hips/BackFoot_Ankle/BackFoot_Heel/BackFoot_BackArch/BackFoot_FrontArch/Effector_BackFoot_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -16047,7 +16047,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Effector_Torso_Shoulders
+    path: Root/Torso_Hips/BackFoot_Ankle/BackFoot_Heel/BackFoot_BackArch/BackFoot_FrontArch/Effector_BackFoot_Tip
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -16057,7 +16057,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Solver_Head/Solver_Head_Target
+    path: Solver_Ccd_Shoulders/Solver_Ccd_Shoulders_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -16067,7 +16067,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Solver_Head/Solver_Head_Target
+    path: Solver_Ccd_Shoulders/Solver_Ccd_Shoulders_Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -16077,7 +16077,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Solver_Head/Solver_Head_Target
+    path: Solver_Ccd_Shoulders/Solver_Ccd_Shoulders_Target
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0
