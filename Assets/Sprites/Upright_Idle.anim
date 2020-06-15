@@ -750,97 +750,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
     path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
     classID: 4
     script: {fileID: 0}
@@ -860,8 +770,98 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
+    attribute: m_LocalEulerAngles.x
     path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck/Head_Center
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: Root/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Torso_Chest/Head_LowerNeck/Head_MiddleNeck/Head_UpperNeck
     classID: 4
     script: {fileID: 0}
   - curve:
