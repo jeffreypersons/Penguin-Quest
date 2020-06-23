@@ -2537,7 +2537,7 @@ Transform:
   m_Children:
   - {fileID: 969627654}
   m_Father: {fileID: 1254078457}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &213419350
 MonoBehaviour:
@@ -2659,7 +2659,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 273593596}
-  m_LocalRotation: {x: 0, y: 0, z: 0.000000003228024, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0000000037244035, w: 1}
   m_LocalPosition: {x: 1.75, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -2786,7 +2786,7 @@ Transform:
   m_Children:
   - {fileID: 260648980}
   m_Father: {fileID: 1254078457}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &351635700
 MonoBehaviour:
@@ -2881,7 +2881,7 @@ MonoBehaviour:
     m_StoredLocalRotations:
     - {x: 0, y: 0, z: 0.0056995526, w: 0.9999838}
     - {x: 0, y: 0, z: -0.037286032, w: 0.99930465}
-    - {x: 0, y: 0, z: 0.0000000030622687, w: 1}
+    - {x: 0, y: 0, z: 0.0000000037241077, w: 1}
   m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -3455,7 +3455,7 @@ GameObject:
   - component: {fileID: 805851640}
   - component: {fileID: 805851641}
   m_Layer: 9
-  m_Name: Solver_Ccd_Eye
+  m_Name: Solver_Ccd_CenterEye
   m_TagString: IkSolver
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3474,7 +3474,7 @@ Transform:
   m_Children:
   - {fileID: 1938711373}
   m_Father: {fileID: 1254078457}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &805851641
 MonoBehaviour:
@@ -5179,9 +5179,9 @@ Transform:
   m_Children:
   - {fileID: 100335258}
   - {fileID: 1864225215}
+  - {fileID: 213419349}
   - {fileID: 805851640}
   - {fileID: 351635699}
-  - {fileID: 213419349}
   m_Father: {fileID: 23066395}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5280,7 +5280,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1357670056}
-  m_LocalRotation: {x: 0, y: 0, z: 0.113202944, w: 0.99357194}
+  m_LocalRotation: {x: 0, y: 0, z: 0.11320248, w: 0.99357194}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -6502,7 +6502,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.1326584, w: 0.9911618}
     - {x: 0, y: 0, z: -0.43104973, w: 0.90232825}
     - {x: 0, y: 0, z: -0.4581942, w: 0.8888522}
-    - {x: 0, y: 0, z: 0.11320317, w: 0.9935719}
+    - {x: 0, y: 0, z: 0.11320248, w: 0.99357194}
   m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
