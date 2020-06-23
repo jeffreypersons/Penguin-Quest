@@ -1711,6 +1711,12 @@ Transform:
   m_Father: {fileID: 1738978261}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &75674912 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3393802596232925311, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &97114684
 GameObject:
   m_ObjectHideFlags: 0
@@ -1758,13 +1764,25 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 402764393}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
-  m_Iterations: 10
+    m_TransformCount: 4
+    m_Transforms:
+    - {fileID: 949955203}
+    - {fileID: 159201557}
+    - {fileID: 572631839}
+    - {fileID: 402764393}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0.9798561, w: 0.19970524}
+    - {x: 0, y: 0, z: 0.2217991, w: 0.9750924}
+    - {x: 0, y: 0, z: 0.13846405, w: 0.99036753}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+  m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
 --- !u!1 &100335257
@@ -1814,15 +1832,24 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1984668721}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_TransformCount: 1
+    m_Transforms:
+    - {fileID: 1984668721}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 10
   m_Tolerance: 0.01
   m_Velocity: 0.5
+--- !u!4 &159201557 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4219920726551569434, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &176668530
 GameObject:
   m_ObjectHideFlags: 0
@@ -1870,12 +1897,24 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 287270525}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_TransformCount: 4
+    m_Transforms:
+    - {fileID: 640281776}
+    - {fileID: 1863615647}
+    - {fileID: 1066916367}
+    - {fileID: 287270525}
+    m_DefaultLocalRotations:
+    - {x: 0, y: -0, z: -0.99999386, w: 0.0035039869}
+    - {x: 0, y: 0, z: 0.023904605, w: 0.99971426}
+    - {x: 0, y: 0, z: -0.69362867, w: -0.7203328}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 10
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -1889,7 +1928,7 @@ GameObject:
   m_Component:
   - component: {fileID: 190950784}
   m_Layer: 9
-  m_Name: Effector_FrontFoot_Bottom
+  m_Name: _Effector_FrontFoot_Bottom
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1988,7 +2027,7 @@ GameObject:
   m_Component:
   - component: {fileID: 232741446}
   m_Layer: 9
-  m_Name: Effector_FrontFlipper_Tip
+  m_Name: _Effector_FrontFlipper_Tip
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2008,6 +2047,42 @@ Transform:
   m_Father: {fileID: 1897112652}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &247043840 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5346756492217966856, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &273593596
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 273593597}
+  m_Layer: 9
+  m_Name: Effector_Waist
+  m_TagString: IkEffector
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &273593597
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273593596}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.75, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1497794951}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &287270524
 GameObject:
   m_ObjectHideFlags: 0
@@ -2019,7 +2094,7 @@ GameObject:
   - component: {fileID: 287270525}
   m_Layer: 9
   m_Name: Effector_FrontFoot_Bottom
-  m_TagString: Untagged
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2032,7 +2107,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 287270524}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1066916367}
@@ -2082,16 +2157,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
-  m_SolveFromDefaultPose: 1
-  m_Weight: 1
+  m_SolveFromDefaultPose: 0
+  m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 273593597}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
-  m_Iterations: 10
+    m_TransformCount: 3
+    m_Transforms:
+    - {fileID: 1869437544}
+    - {fileID: 1497794951}
+    - {fileID: 273593597}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0.0056995526, w: 0.9999838}
+    - {x: 0, y: 0, z: -0.037286032, w: 0.99930465}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+  m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
 --- !u!1 &379527658
@@ -2141,12 +2225,24 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1963169898}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_TransformCount: 4
+    m_Transforms:
+    - {fileID: 1868023520}
+    - {fileID: 2125135329}
+    - {fileID: 1514729755}
+    - {fileID: 1963169898}
+    m_DefaultLocalRotations:
+    - {x: 0, y: -0, z: 0.9999742, w: 0.007188572}
+    - {x: 0, y: 0, z: 0.04305364, w: 0.9990728}
+    - {x: 0, y: 0, z: 0.6859531, w: 0.72764575}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 10
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -2161,7 +2257,7 @@ GameObject:
   - component: {fileID: 402764393}
   m_Layer: 9
   m_Name: Effector_FrontFlipper_Tip
-  m_TagString: Untagged
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2174,7 +2270,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 402764392}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 572631839}
@@ -2186,6 +2282,42 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 23066394}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &459397901 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5121635416707714846, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &464105185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 464105186}
+  m_Layer: 9
+  m_Name: Effector_Tail_Tip
+  m_TagString: IkEffector
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &464105186
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464105185}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1, y: 0.4, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1019348324}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &488384728
 GameObject:
   m_ObjectHideFlags: 0
@@ -2196,7 +2328,7 @@ GameObject:
   m_Component:
   - component: {fileID: 488384729}
   m_Layer: 9
-  m_Name: Effector_Head
+  m_Name: _Effector_Head
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2214,6 +2346,36 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1897112648}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &512689972
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 512689973}
+  m_Layer: 9
+  m_Name: Effector_Eye
+  m_TagString: IkEffector
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &512689973
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512689972}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 75674912}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &517434706
@@ -2418,36 +2580,12 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!1 &641288878
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 641288879}
-  m_Layer: 9
-  m_Name: Effector_Waist
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &641288879
+--- !u!4 &640281776 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: -1168430961506601103, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 641288878}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 822626390}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &753974407
 GameObject:
   m_ObjectHideFlags: 0
@@ -2569,12 +2707,15 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 512689973}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_TransformCount: 1
+    m_Transforms:
+    - {fileID: 512689973}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 10
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -2733,7 +2874,7 @@ GameObject:
   - component: {fileID: 925729456}
   m_Layer: 9
   m_Name: Effector_BackFlipper_Tip
-  m_TagString: Untagged
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2746,12 +2887,18 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 925729455}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 4.575, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1648907274}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &949955203 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3310611107013285772, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &968911526
 GameObject:
   m_ObjectHideFlags: 0
@@ -2902,6 +3049,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1010895675 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5483344875258157064, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1019348324 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8931198319330509726, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1066916367 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2262890828386079296, guid: c9587e548613a564c81ba23ebf263460,
@@ -2987,7 +3146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1109109189}
   m_Layer: 9
-  m_Name: Effector_BackFoot_Bottom
+  m_Name: _Effector_BackFoot_Bottom
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3047,7 +3206,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1138205465}
   m_Layer: 9
-  m_Name: Effector_Shoulders
+  m_Name: _Effector_Shoulders
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3136,6 +3295,12 @@ MonoBehaviour:
   m_Iterations: 10
   m_Tolerance: 0.01
   m_Velocity: 0.5
+--- !u!4 &1206529546 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -4263385094786354981, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1229133217
 GameObject:
   m_ObjectHideFlags: 0
@@ -3240,6 +3405,12 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 12, y: 27}
   m_EdgeRadius: 0
+--- !u!4 &1315412229 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1075489963852972304, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1354095964
 GameObject:
   m_ObjectHideFlags: 0
@@ -3251,7 +3422,7 @@ GameObject:
   - component: {fileID: 1354095965}
   m_Layer: 9
   m_Name: Effector_LowerBeak_Bottom
-  m_TagString: Untagged
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3264,7 +3435,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1354095964}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2044314065}
@@ -3281,7 +3452,7 @@ GameObject:
   - component: {fileID: 1357670057}
   m_Layer: 9
   m_Name: Effector_Head_Beak_Tip
-  m_TagString: Untagged
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3293,13 +3464,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1357670056}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0.11320323, w: 0.9935719}
+  m_LocalPosition: {x: 5.47, y: 0.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 912953875}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 13}
 --- !u!1 &1405067987
 GameObject:
   m_ObjectHideFlags: 0
@@ -3347,13 +3518,25 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 925729456}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
-  m_Iterations: 10
+    m_TransformCount: 4
+    m_Transforms:
+    - {fileID: 247043840}
+    - {fileID: 1206529546}
+    - {fileID: 1648907274}
+    - {fileID: 925729456}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0.9893386, w: 0.14563401}
+    - {x: 0, y: 0, z: 0.17454058, w: 0.98465}
+    - {x: 0, y: 0, z: 0.12274932, w: 0.9924377}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+  m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
 --- !u!1 &1449914234
@@ -3422,6 +3605,12 @@ MonoBehaviour:
   m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
+--- !u!4 &1497794951 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3115594237627616782, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1514729755 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5780422197205583035, guid: c9587e548613a564c81ba23ebf263460,
@@ -3438,7 +3627,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1551532460}
   m_Layer: 9
-  m_Name: Effector_Waist
+  m_Name: _Effector_Waist
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3627,7 +3816,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1723863803}
   m_Layer: 9
-  m_Name: Effector_Tail_Tip
+  m_Name: _Effector_Tail_Tip
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3760,16 +3949,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
-  m_SolveFromDefaultPose: 1
-  m_Weight: 1
+  m_SolveFromDefaultPose: 0
+  m_Weight: 0.5
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1357670057}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
-  m_Iterations: 10
+    m_TransformCount: 5
+    m_Transforms:
+    - {fileID: 1315412229}
+    - {fileID: 459397901}
+    - {fileID: 1010895675}
+    - {fileID: 912953875}
+    - {fileID: 1357670057}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: -0.09010376, w: 0.9959324}
+    - {x: 0, y: 0, z: 0.1326581, w: 0.99116194}
+    - {x: 0, y: 0, z: -0.4310487, w: 0.90232867}
+    - {x: 0, y: 0, z: -0.45819563, w: 0.8888514}
+    - {x: 0, y: 0, z: 0.11320323, w: 0.9935719}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+  m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
 --- !u!4 &1782882202 stripped
@@ -4402,6 +4606,12 @@ Avatar:
     m_HasTranslationDoF: 0
     m_HasExtraRoot: 0
     m_SkeletonHasParents: 1
+--- !u!4 &1863615647 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5737085165699556996, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1864225214
 GameObject:
   m_ObjectHideFlags: 0
@@ -4449,15 +4659,30 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1354095965}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_TransformCount: 1
+    m_Transforms:
+    - {fileID: 1354095965}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 10
   m_Tolerance: 0.01
   m_Velocity: 0.5
+--- !u!4 &1868023520 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4184828521219432440, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1869437544 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2971446514201235890, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1877309847
 GameObject:
   m_ObjectHideFlags: 0
@@ -7133,7 +7358,7 @@ GameObject:
   - component: {fileID: 1963169898}
   m_Layer: 9
   m_Name: Effector_BackFoot_Bottom
-  m_TagString: Untagged
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7146,7 +7371,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1963169897}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1514729755}
@@ -7197,15 +7422,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
   m_SolveFromDefaultPose: 1
-  m_Weight: 1
+  m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 464105186}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
-  m_Iterations: 10
+    m_TransformCount: 2
+    m_Transforms:
+    - {fileID: 1019348324}
+    - {fileID: 464105186}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0.8558406, w: 0.5172397}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+  m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
 --- !u!1 &1984668720
@@ -7218,8 +7449,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1984668721}
   m_Layer: 9
-  m_Name: Effector_UpperBeak_Bottom
-  m_TagString: Untagged
+  m_Name: Effector_UpperBeak_Top
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7232,7 +7463,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1984668720}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1782882202}
@@ -7317,7 +7548,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2016616047}
   m_Layer: 9
-  m_Name: Effector_BackFlipper_Tip
+  m_Name: _Effector_BackFlipper_Tip
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7382,15 +7613,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
   m_SolveFromDefaultPose: 1
-  m_Weight: 1
+  m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 2143189240}
     m_TargetTransform: {fileID: 0}
-    m_TransformCount: 0
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
-  m_Iterations: 10
+    m_TransformCount: 4
+    m_Transforms:
+    - {fileID: 1497794951}
+    - {fileID: 822626390}
+    - {fileID: 421353596}
+    - {fileID: 2143189240}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: -0.037286032, w: 0.99930465}
+    - {x: 0, y: 0, z: 0.016633837, w: 0.9998617}
+    - {x: 0, y: 0, z: -0.10358988, w: 0.9946201}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+  m_Iterations: 50
   m_Tolerance: 0.01
   m_Velocity: 0.5
 --- !u!4 &2044314065 stripped
@@ -7459,6 +7702,12 @@ Transform:
   m_Father: {fileID: 193939994}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &2125135329 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3890821998106742536, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 23066394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2143189239
 GameObject:
   m_ObjectHideFlags: 0
@@ -7470,7 +7719,7 @@ GameObject:
   - component: {fileID: 2143189240}
   m_Layer: 9
   m_Name: Effector_Shoulders
-  m_TagString: Untagged
+  m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
