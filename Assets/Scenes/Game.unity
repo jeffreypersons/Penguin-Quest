@@ -1672,6 +1672,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 1827445580340106163, guid: c9587e548613a564c81ba23ebf263460,
+        type: 3}
+      propertyPath: m_TagString
+      value: Character
+      objectReference: {fileID: 0}
     - target: {fileID: 1839342252863596285, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_TagString
@@ -2840,7 +2845,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 273593596}
-  m_LocalRotation: {x: 0, y: 0, z: 0.0010119181, w: 0.9999995}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0010122394, w: 0.9999995}
   m_LocalPosition: {x: 1.75, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -3062,7 +3067,7 @@ MonoBehaviour:
     m_StoredLocalRotations:
     - {x: 0, y: 0, z: 0.0056995526, w: 0.9999838}
     - {x: 0, y: 0, z: -0.0382976, w: 0.9992664}
-    - {x: 0, y: 0, z: 0.001011811, w: 0.9999995}
+    - {x: 0, y: 0, z: 0.0010122394, w: 0.9999995}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
