@@ -21,9 +21,10 @@ public class PenguinController : MonoBehaviour
     private Vector2 inputAxes;
     private Vector2 initialSpawnPosition;
 
-    [SerializeField] private Animator penguinAnimator;
-    private Rigidbody2D penguinRigidBody;
-    private BoxCollider2D penguinCollider;
+    [Header("Components from child")]
+    [SerializeField] private Animator      penguinAnimator;
+    [SerializeField] private Rigidbody2D   penguinRigidBody;
+    [SerializeField] private BoxCollider2D penguinCollider;
 
     private Vector3 PenguinCenter
     {
@@ -46,8 +47,6 @@ public class PenguinController : MonoBehaviour
     }
     void Awake()
     {
-        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        penguinCollider = gameObject.GetComponent<BoxCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
@@ -66,6 +65,7 @@ public class PenguinController : MonoBehaviour
 
             penguinAnimator.SetBool("IsWalking", true);
             penguinAnimator.applyRootMotion = true;
+            //thisAnim.SetFloat("Speed", Mathf.Abs(h));
             penguinAnimator.speed *= walkingSpeedMultiplier;
         }
     }
