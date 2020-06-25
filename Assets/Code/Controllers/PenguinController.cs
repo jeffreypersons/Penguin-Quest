@@ -58,7 +58,11 @@ public class PenguinController : MonoBehaviour
         inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
 
         penguinAnimator.SetFloat("Upright_Speed", Mathf.Abs(inputAxes.x));
-        TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
+        if (inputAxes.x != 0)
+        {
+            TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
+        }
+
         penguinAnimator.applyRootMotion = true;
     }
 
