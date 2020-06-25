@@ -8,7 +8,8 @@ public class PenguinController : MonoBehaviour
     private enum Facing { LEFT, RIGHT }
 
     [Header("Penguin Movement Speeds")]
-    [SerializeField] private float walkingSpeed = default;
+    [Tooltip("How fast can the penguin walk (as a multiple of its default animation speed)?")]
+    [SerializeField] private float walkingSpeedMultiplier = 1.00f;
 
     [Header("Input Configuration")]
     [Tooltip("How sensitive is the penguin to input? " +
@@ -38,7 +39,7 @@ public class PenguinController : MonoBehaviour
     {
         inputAxes = Vector2.zero;
 
-        penguinRigidBody.velocity = inputAxes * walkingSpeed;
+        penguinRigidBody.velocity = inputAxes * walkingSpeedMultiplier;
         penguinRigidBody.position = initialSpawnPosition;
 
         TurnToFace(Facing.RIGHT);
@@ -61,14 +62,12 @@ public class PenguinController : MonoBehaviour
         }
         else
         {
-            penguinAnimator.SetBool("IsWalking", true);
-            TurnToFace(inputAxes.x < 0? Facing.LEFT : Facing.RIGHT);
-        }
-    }
+            TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
 
-    void FixedUpdate()
-    {
-        penguinRigidBody.velocity = new Vector2(inputAxes.x * walkingSpeed, penguinRigidBody.velocity.y);
+            penguinAnimator.SetBool("IsWalking", true);
+            penguinAnimator.applyRootMotion = true;
+            penguinAnimator.speed *= walkingSpeedMultiplier;
+        }
     }
 
     private float GetNormalizedInput(string name)
