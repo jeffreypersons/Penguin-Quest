@@ -55,23 +55,17 @@ public class PenguinController : MonoBehaviour
     void Update()
     {
         inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
-        if (inputAxes.x == 0)
-        {
-            penguinAnimator.SetBool("IsWalking", false);
-        }
-        else
-        {
-            TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
 
-            // set walk speed only after resetting to defaults when changing parameter to true
-            if (!penguinAnimator.GetBool("IsWalking"))
-            {
-                penguinAnimator.SetBool("IsWalking", true);
-                penguinAnimator.WriteDefaultValues();
-                penguinAnimator.speed = walkingSpeedMultiplier * Mathf.Abs(inputAxes.x);
-                penguinAnimator.applyRootMotion = true;
-            }
+        penguinAnimator.SetFloat("Upright_Speed", Mathf.Abs(inputAxes.x));
+        TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
+        penguinAnimator.applyRootMotion = true;
+        /*
+         * todo: figure out best way to apply the `walkingSpeedMultiplier`
+        if (penguinAnimator.GetCurrentAnimatorStateInfo(0).IsName("Upright_Walk"))
+        {
+            penguinAnimator.speed = penguinAnimator.GetCurrentAnimatorStateInfo(0).speed * walkingSpeedMultiplier * Mathf.Abs(inputAxes.x);
         }
+        */
     }
 
     private float GetNormalizedInput(string name)
