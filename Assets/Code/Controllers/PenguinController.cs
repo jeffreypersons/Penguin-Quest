@@ -21,10 +21,9 @@ public class PenguinController : MonoBehaviour
     private Vector2 inputAxes;
     private Vector2 initialSpawnPosition;
 
-    [Header("Components from child")]
-    [SerializeField] private Animator      penguinAnimator;
-    [SerializeField] private Rigidbody2D   penguinRigidBody;
-    [SerializeField] private BoxCollider2D penguinCollider;
+    private Animator penguinAnimator;
+    private Rigidbody2D penguinRigidBody;
+    private BoxCollider2D penguinCollider;
 
     private Vector3 PenguinCenter
     {
@@ -47,11 +46,13 @@ public class PenguinController : MonoBehaviour
     }
     void Awake()
     {
+        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
+        penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
+        penguinAnimator  = gameObject.GetComponent<Animator>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
 
-    // currently assumes posture is walking
     void Update()
     {
         inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
@@ -59,13 +60,6 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.SetFloat("Upright_Speed", Mathf.Abs(inputAxes.x));
         TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
         penguinAnimator.applyRootMotion = true;
-        /*
-         * todo: figure out best way to apply the `walkingSpeedMultiplier`
-        if (penguinAnimator.GetCurrentAnimatorStateInfo(0).IsName("Upright_Walk"))
-        {
-            penguinAnimator.speed = penguinAnimator.GetCurrentAnimatorStateInfo(0).speed * walkingSpeedMultiplier * Mathf.Abs(inputAxes.x);
-        }
-        */
     }
 
     private float GetNormalizedInput(string name)
