@@ -14,7 +14,7 @@ public class PenguinController : MonoBehaviour
     [Header("Input Configuration")]
     [Tooltip("How sensitive is the penguin to input? " +
              "0.0 for all inputs to be recognized, 1.0 for only full strength presses to be recognized")]
-    [SerializeField] private float inputTolerance = 0.15f;
+    [SerializeField] private float inputTolerance = 0.10f;
     [SerializeField] private string horizontalInputAxisName = default;
     [SerializeField] private string verticalInputAxisName   = default;
 
@@ -63,10 +63,14 @@ public class PenguinController : MonoBehaviour
         {
             TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
 
-            penguinAnimator.SetBool("IsWalking", true);
-            penguinAnimator.applyRootMotion = true;
-            //thisAnim.SetFloat("Speed", Mathf.Abs(h));
-            penguinAnimator.speed *= walkingSpeedMultiplier;
+            // set walk speed only after resetting to defaults when changing parameter to true
+            if (!penguinAnimator.GetBool("IsWalking"))
+            {
+                penguinAnimator.SetBool("IsWalking", true);
+                penguinAnimator.WriteDefaultValues();
+                penguinAnimator.speed = walkingSpeedMultiplier * Mathf.Abs(inputAxes.x);
+                penguinAnimator.applyRootMotion = true;
+            }
         }
     }
 
