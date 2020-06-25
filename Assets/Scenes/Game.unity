@@ -3070,9 +3070,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286032, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.013345281, w: 0.99991095}
-    - {x: 0, y: 0, z: -0.02660546, w: 0.999646}
-    - {x: 0, y: 0, z: 0.076244265, w: 0.9970892}
+    - {x: 0, y: 0, z: -0.012322892, w: 0.99992406}
+    - {x: 0, y: 0, z: -0.019337907, w: 0.999813}
+    - {x: 0, y: 0, z: 0.022598311, w: 0.99974465}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -4117,11 +4117,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.4581942, w: 0.8888522}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.0917186, w: 0.995785}
-    - {x: 0, y: 0, z: 0.1300864, w: 0.9915027}
-    - {x: 0, y: 0, z: -0.43292803, w: 0.9014285}
-    - {x: 0, y: 0, z: -0.46128786, w: 0.88725054}
-    - {x: 0, y: 0, z: -0.009778721, w: -0.9999522}
+    - {x: 0, y: 0, z: -0.09172874, w: 0.99578404}
+    - {x: 0, y: 0, z: 0.13007179, w: 0.9915046}
+    - {x: 0, y: 0, z: -0.43290594, w: 0.90143913}
+    - {x: 0, y: 0, z: -0.46121708, w: 0.8872874}
+    - {x: 0, y: 0, z: -0.009699281, w: -0.999953}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -4368,12 +4368,12 @@ PrefabInstance:
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 30
+      value: 28.4375
       objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 15.03
+      value: 15.025312
       objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
