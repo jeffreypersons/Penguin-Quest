@@ -62,13 +62,25 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: Upright_Speed
+    m_Controller: {fileID: 0}
+  - m_Name: PlaySpeed_Upright
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
+  - m_Name: PlaySpeed_OnBelly
+    m_Type: 1
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
+  - m_Name: PlaySpeed_Midair
+    m_Type: 1
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Upright
@@ -104,7 +116,7 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: 6154073965464348694}
   m_Tag: Blend Tree
-  m_SpeedParameter: Blend
+  m_SpeedParameter: Locomotion_Blend
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
@@ -151,7 +163,7 @@ BlendTree:
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
     m_Mirror: 0
-  m_BlendParameter: Upright_Speed
+  m_BlendParameter: PlaySpeed_Upright
   m_BlendParameterY: Blend
   m_MinThreshold: 0
   m_MaxThreshold: 0.5
