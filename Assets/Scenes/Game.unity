@@ -3070,9 +3070,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286032, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.0021362696, w: 0.99999774}
-    - {x: 0, y: 0, z: -0.03333163, w: 0.99944437}
-    - {x: 0, y: 0, z: -0.0055785114, w: 0.99998444}
+    - {x: 0, y: 0, z: 0.0015840543, w: 0.99999875}
+    - {x: 0, y: 0, z: -0.038031276, w: 0.9992766}
+    - {x: 0, y: 0, z: 0.0000051887187, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -4121,7 +4121,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.13265426, w: 0.9911624}
     - {x: 0, y: 0, z: -0.43104658, w: 0.9023297}
     - {x: 0, y: 0, z: -0.458192, w: 0.88885325}
-    - {x: 0, y: 0, z: 0.000006683168, w: -1}
+    - {x: 0, y: 0, z: 0.000006563958, w: -1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -4368,7 +4368,7 @@ PrefabInstance:
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 22
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
