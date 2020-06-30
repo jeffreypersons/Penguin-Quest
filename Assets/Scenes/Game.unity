@@ -672,6 +672,11 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5741280297847825478, guid: c9587e548613a564c81ba23ebf263460,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -5539507166216342524, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_TagString
@@ -1465,12 +1470,12 @@ PrefabInstance:
     - target: {fileID: -838810932824111904, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.283025
+      value: 1.4623535
       objectReference: {fileID: 0}
     - target: {fileID: -838810932824111904, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.0000004211699
+      value: 0.032789808
       objectReference: {fileID: 0}
     - target: {fileID: -838810932824111904, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -2774,11 +2779,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.08631491, w: 0.9962679}
-    - {x: 0, y: 0, z: 0.13412134, w: 0.99096495}
-    - {x: 0, y: 0, z: -0.44262308, w: 0.8967078}
-    - {x: 0, y: 0, z: -0.49399757, w: 0.86946326}
-    - {x: 0, y: 0, z: 0.048280742, w: 0.99883384}
+    - {x: 0, y: 0, z: -0.08631664, w: 0.99626774}
+    - {x: 0, y: 0, z: 0.13864964, w: 0.9903415}
+    - {x: 0, y: 0, z: -0.43626636, w: 0.8998176}
+    - {x: 0, y: 0, z: -0.48124874, w: 0.8765841}
+    - {x: 0, y: 0, z: 0.022049036, w: 0.99975693}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -3315,9 +3320,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.006060888, w: 0.99998164}
-    - {x: 0, y: 0, z: -0.036415286, w: 0.9993368}
-    - {x: 0, y: 0, z: -0.1586575, w: 0.9873337}
+    - {x: 0, y: 0, z: 0.004517187, w: 0.9999898}
+    - {x: 0, y: 0, z: -0.0411601, w: 0.9991526}
+    - {x: 0, y: 0, z: -0.15877564, w: 0.9873147}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
