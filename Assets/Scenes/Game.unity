@@ -2784,11 +2784,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.0863984, w: 0.99626064}
-    - {x: 0, y: 0, z: 0.137071, w: 0.99056125}
-    - {x: 0, y: 0, z: -0.43644404, w: 0.8997314}
-    - {x: 0, y: 0, z: -0.47437844, w: 0.880321}
-    - {x: 0, y: 0, z: 0.016102612, w: 0.99987036}
+    - {x: 0, y: 0, z: -0.09010237, w: 0.9959325}
+    - {x: 0, y: 0, z: 0.13265426, w: 0.9911624}
+    - {x: 0, y: 0, z: -0.43104658, w: 0.9023297}
+    - {x: 0, y: 0, z: -0.458192, w: 0.88885325}
+    - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -3325,9 +3325,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.004517187, w: 0.9999898}
-    - {x: 0, y: 0, z: -0.0411601, w: 0.9991526}
-    - {x: 0, y: 0, z: -0.15944487, w: 0.9872069}
+    - {x: 0, y: 0, z: 0.0025854798, w: 0.99999666}
+    - {x: 0, y: 0, z: -0.044871535, w: 0.9989928}
+    - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -5216,7 +5216,7 @@ PrefabInstance:
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20
+      value: 40.354073
       objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
