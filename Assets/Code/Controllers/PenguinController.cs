@@ -28,6 +28,13 @@ public class PenguinController : MonoBehaviour
     private Rigidbody2D   penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
+    private const float MOTION_INTENSITY_MAX_INCREMENT = 0.10f;
+    private float MotionIntensity
+    {
+        get => penguinAnimator.GetFloat("Motion_Intensity");
+        set => penguinAnimator.SetFloat("Motion_Intensity",
+            Mathf.Clamp(penguinAnimator.GetFloat("Motion_Intensity") + value, min: 0.00f, max: 1.00f));
+    }
     private Vector3 PenguinCenter
     {
         get => penguinCollider.bounds.center;
@@ -43,6 +50,11 @@ public class PenguinController : MonoBehaviour
         inputAxes = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
+
+        MotionIntensity = 0.00f;
+        penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+        penguinAnimator.applyRootMotion = true;
+
         TurnToFace(Facing.RIGHT);
     }
     void Awake()
@@ -50,6 +62,7 @@ public class PenguinController : MonoBehaviour
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
         penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
         penguinAnimator  = gameObject.GetComponent<Animator>();
+
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
@@ -57,17 +70,17 @@ public class PenguinController : MonoBehaviour
     void Update()
     {
         inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
-        if (inputAxes.x == 0)
+        if (Mathf.Approximately(inputAxes.x, 0))
         {
-            SetAnimationPlaySpeed(0);
+            penguinAnimator.SetFloat("Motion_Intensity",
+                Mathf.Clamp(penguinAnimator.GetFloat("Motion_Intensity") - MOTION_INTENSITY_MAX_INCREMENT, min: 0.00f, max: 1.00f));
         }
         else
         {
+            penguinAnimator.SetFloat("Motion_Intensity",
+                Mathf.Clamp(penguinAnimator.GetFloat("Motion_Intensity") + (Mathf.Abs(inputAxes.x) * MOTION_INTENSITY_MAX_INCREMENT), 0.00f, 1.00f));
             TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
-            SetAnimationPlaySpeed(Mathf.Abs(inputAxes.x));
         }
-
-        penguinAnimator.applyRootMotion = true;
     }
 
     private float GetNormalizedInput(string name)
@@ -88,16 +101,6 @@ public class PenguinController : MonoBehaviour
             case Facing.LEFT:  PenguinScale = new Vector3(-Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
             case Facing.RIGHT: PenguinScale = new Vector3( Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
             default: Debug.LogError($"Given value `{facing}` is not a valid facing"); return;
-        }
-    }
-    private void SetAnimationPlaySpeed(float playSpeed)
-    {
-        switch (posture)
-        {
-            case Posture.UPRIGHT: penguinAnimator.SetFloat("PlaySpeed_Upright", playSpeed); break;
-            case Posture.ONBELLY: penguinAnimator.SetFloat("PlaySpeed_OnBelly", playSpeed); break;
-            case Posture.MIDAIR:  penguinAnimator.SetFloat("PlaySpeed_Midair",  playSpeed); break;
-            default: Debug.LogError($"Field value `{posture}` is not a valid posture"); break;
         }
     }
 }
