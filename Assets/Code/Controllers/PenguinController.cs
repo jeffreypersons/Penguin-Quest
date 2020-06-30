@@ -4,36 +4,36 @@ using UnityEngine;
 
 public class PenguinController : MonoBehaviour
 {
+    private bool isGrounded;
     private Facing  facing;
     private Posture posture;
-    private enum Facing  { LEFT, RIGHT }
-    private enum Posture { UPRIGHT, ONBELLY, MIDAIR }
+    private enum Facing  { LEFT,    RIGHT   }
+    private enum Posture { UPRIGHT, ONBELLY }
 
-    [Header("Penguin Movement Speeds")]
-    [Tooltip("How fast can the penguin walk (as a multiple of its default animation speed)?")]
-    [SerializeField] private float walkingSpeedMultiplier = 1.00f;
+    [Header("Movement")]
+    [Tooltip("Amount of progress made per frame when transitioning between states " +
+             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
+             "1.00 for an instant transition with no blending)")]
+    [SerializeField] [Range(0.01f, 1.00f)] private float stateTransitionSpeed = 0.10f;
 
     [Header("Input Configuration")]
-    [Tooltip("How sensitive is the penguin to input? " +
-             "0.0 for all inputs to be recognized, 1.0 for only full strength presses to be recognized")]
-    [SerializeField] private float  inputTolerance = 0.10f;
+    [Tooltip("Threshold for recognizing inputs (ie 0.0 for no filter, 1.0 for only sensing full keyboard presses)")]
+    [SerializeField] [Range(0, 1)] private float inputThreshold = 0.10f;
+
     [SerializeField] private string horizontalInputAxisName = default;
     [SerializeField] private string verticalInputAxisName   = default;
 
-    [Header("Input Configuration")]
     private Vector2 inputAxes;
     private Vector2 initialSpawnPosition;
-
     private Animator      penguinAnimator;
     private Rigidbody2D   penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
-    private const float MOTION_INTENSITY_MAX_INCREMENT = 0.10f;
-    private float MotionIntensity
+    // in general, we treat unmoving, idle-like states as our zero intensity default states
+    private float AnimatorMotionIntensity
     {
         get => penguinAnimator.GetFloat("Motion_Intensity");
-        set => penguinAnimator.SetFloat("Motion_Intensity",
-            Mathf.Clamp(penguinAnimator.GetFloat("Motion_Intensity") + value, min: 0.00f, max: 1.00f));
+        set => penguinAnimator.SetFloat("Motion_Intensity", value);
     }
     private Vector3 PenguinCenter
     {
@@ -51,11 +51,13 @@ public class PenguinController : MonoBehaviour
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
-        MotionIntensity = 0.00f;
+        AnimatorMotionIntensity = 0.00f;
         penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
         penguinAnimator.applyRootMotion = true;
 
+        GroundCheck();
         TurnToFace(Facing.RIGHT);
+        ChangeToPosture(Posture.UPRIGHT);
     }
     void Awake()
     {
@@ -69,24 +71,41 @@ public class PenguinController : MonoBehaviour
 
     void Update()
     {
+        GroundCheck();
+
         inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
-        if (Mathf.Approximately(inputAxes.x, 0))
+
+
+        if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
-            penguinAnimator.SetFloat("Motion_Intensity",
-                Mathf.Clamp(penguinAnimator.GetFloat("Motion_Intensity") - MOTION_INTENSITY_MAX_INCREMENT, min: 0.00f, max: 1.00f));
+            AnimatorMotionIntensity = Mathf.Clamp01(AnimatorMotionIntensity - (stateTransitionSpeed));
         }
         else
         {
-            penguinAnimator.SetFloat("Motion_Intensity",
-                Mathf.Clamp(penguinAnimator.GetFloat("Motion_Intensity") + (Mathf.Abs(inputAxes.x) * MOTION_INTENSITY_MAX_INCREMENT), 0.00f, 1.00f));
+            AnimatorMotionIntensity = Mathf.Clamp01(AnimatorMotionIntensity + (Mathf.Abs(inputAxes.x) * stateTransitionSpeed));
             TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
+        }
+
+        if (inputAxes.y < 0.00f)
+        {
+            ChangeToPosture(Posture.ONBELLY);
+        }
+        else if (inputAxes.y > 0.00f)
+        {
+            AttemptToJump();
         }
     }
 
     private float GetNormalizedInput(string name)
     {
         float input = Input.GetAxisRaw(name);
-        return Math.Abs(input) >= inputTolerance ? input : 0.00f;
+        return Math.Abs(input) >= inputThreshold ? input : 0.00f;
+    }
+
+    private void GroundCheck()
+    {
+        // todo: add proper raycasting against platform layers
+        isGrounded = true;
     }
     private void TurnToFace(Facing facing)
     {
@@ -95,12 +114,35 @@ public class PenguinController : MonoBehaviour
             return;
         }
 
+        // todo: take posture into account...
         this.facing = facing;
-        switch (facing)
+        switch (this.facing)
         {
             case Facing.LEFT:  PenguinScale = new Vector3(-Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
             case Facing.RIGHT: PenguinScale = new Vector3( Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
             default: Debug.LogError($"Given value `{facing}` is not a valid facing"); return;
+        }
+    }
+    private void ChangeToPosture(Posture posture)
+    {
+        if (this.posture == posture)
+        {
+            return;
+        }
+
+        this.posture = posture;
+        switch (this.posture)
+        {
+            case Posture.ONBELLY: /* todo: set animator parameters to try to trigger state change, if possible */; break;
+            case Posture.UPRIGHT: /* todo: set animator parameters to try to trigger state change, if possible */; break;
+            default: Debug.LogError($"Given value `{posture}` is not a valid posture"); return;
+        }
+    }
+    private void AttemptToJump()
+    {
+        if (this.posture == Posture.UPRIGHT)
+        {
+            // todo: apply an impulse force
         }
     }
 }
