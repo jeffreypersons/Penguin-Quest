@@ -1412,6 +1412,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 3.404866
       objectReference: {fileID: 0}
+    - target: {fileID: -1945957561236944367, guid: c9587e548613a564c81ba23ebf263460,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.9305091
+      objectReference: {fileID: 0}
     - target: {fileID: -1762084981674272582, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Layer
@@ -2769,11 +2774,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.088676155, w: 0.99606055}
-    - {x: 0, y: 0, z: 0.14872016, w: 0.9888793}
-    - {x: 0, y: 0, z: -0.45670602, w: 0.8896177}
-    - {x: 0, y: 0, z: -0.47978473, w: 0.8773863}
-    - {x: 0, y: 0, z: 0.04088381, w: 0.9991639}
+    - {x: 0, y: 0, z: -0.08631491, w: 0.9962679}
+    - {x: 0, y: 0, z: 0.13412134, w: 0.99096495}
+    - {x: 0, y: 0, z: -0.44262308, w: 0.8967078}
+    - {x: 0, y: 0, z: -0.49399757, w: 0.86946326}
+    - {x: 0, y: 0, z: 0.048280742, w: 0.99883384}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -2835,7 +2840,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.12804589, w: 0.99176824}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.1850552, w: 0.9827281}
+    - {x: 0, y: 0, z: 0.12804265, w: 0.99176866}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -3310,9 +3315,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.004925412, w: 0.9999879}
-    - {x: 0, y: 0, z: -0.040765896, w: 0.99916875}
-    - {x: 0, y: 0, z: -0.03293557, w: 0.9994575}
+    - {x: 0, y: 0, z: 0.006060888, w: 0.99998164}
+    - {x: 0, y: 0, z: -0.036415286, w: 0.9993368}
+    - {x: 0, y: 0, z: -0.1586575, w: 0.9873337}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -5004,7 +5009,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.004801332, w: 0.9999885}
+    - {x: 0, y: 0, z: -0.040419456, w: 0.9991828}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -5313,7 +5318,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.024578158, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.010164866, w: 0.9999484}
+    - {x: 0, y: 0, z: 0.024580445, w: 0.99969786}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
