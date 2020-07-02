@@ -4527,6 +4527,14 @@ PrefabInstance:
       propertyPath: subject
       value: 
       objectReference: {fileID: 27460619}
+    - target: {fileID: 1624175200, guid: 328adc502457bea42aae7fb88632a1e3, type: 3}
+      propertyPath: xOffset
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1624175200, guid: 328adc502457bea42aae7fb88632a1e3, type: 3}
+      propertyPath: yOffset
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191732, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_BackGroundColor.r
@@ -4565,7 +4573,7 @@ PrefabInstance:
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: -9.100037
       objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}

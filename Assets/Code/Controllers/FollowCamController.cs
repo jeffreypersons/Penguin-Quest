@@ -1,16 +1,31 @@
 ﻿using UnityEngine;
 
 
+// todo: look into adding some sort of smoothing when the camera moves
 [ExecuteAlways]
 public class FollowCamController : MonoBehaviour
 {
+    private Camera cam;
+
     [Header("Game object to follow")]
     [Tooltip("Subject for the camera to move in unison with")]
     [SerializeField] private Transform subject;
 
     [Header("Camera offset from subject")]
-    [Tooltip("ie offset(0, 10, 0) the subject will be centered 10 units above the subject")]
-    [SerializeField] private Vector3 offset;
+    [Tooltip("x offset from subject")]
+    [SerializeField] [Range(-30, 30)] private float xOffset = default;
+    [Tooltip("y offset from subject")]
+    [SerializeField] [Range(-30, 30)] private float yOffset = default;
+    float zOffset;
+
+    private Vector3 Offset
+    {
+        get
+        {
+            return new Vector3(xOffset, yOffset, zOffset);
+        }
+    }
+
 
     private Vector3 PositionToFollow
     {
@@ -19,13 +34,16 @@ public class FollowCamController : MonoBehaviour
 
     void Awake()
     {
+        cam = gameObject.GetComponent<Camera>();
+        zOffset = cam.ViewportToWorldPoint(new Vector3(0, 0, cam.nearClipPlane)).z;
+
         if (!subject)
         {
             Debug.LogError($"Subject must be provided to camera script `{GetType().Name}` - no object assigned");
         }
     }
-    void Update()
+    void LateUpdate()
     {
-        transform.position = PositionToFollow + offset;
+        transform.position = PositionToFollow + Offset;
     }
 }
