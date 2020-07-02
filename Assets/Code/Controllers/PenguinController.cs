@@ -120,7 +120,7 @@ public class PenguinController : MonoBehaviour
         {
             case Facing.LEFT:  PenguinScale = new Vector3(-Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
             case Facing.RIGHT: PenguinScale = new Vector3( Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
-            default: Debug.LogError($"Given value `{facing}` is not a valid facing"); return;
+            default: Debug.LogError($"Given value `{facing}` is not a valid Facing"); return;
         }
     }
     private void ChangeToPosture(Posture posture)
@@ -135,7 +135,7 @@ public class PenguinController : MonoBehaviour
         {
             case Posture.ONBELLY: /* todo: set animator parameters to try to trigger state change, if possible */; break;
             case Posture.UPRIGHT: /* todo: set animator parameters to try to trigger state change, if possible */; break;
-            default: Debug.LogError($"Given value `{posture}` is not a valid posture"); return;
+            default: Debug.LogError($"Given value `{posture}` is not a valid Posture"); return;
         }
     }
     private void AttemptToJump()
