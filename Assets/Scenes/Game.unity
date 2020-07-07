@@ -2585,7 +2585,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
-  inputThreshold: 0.098
+  inputThreshold: 0.1
   horizontalInputAxisName: Horizontal
   verticalInputAxisName: Vertical
 --- !u!114 &27460629
@@ -4573,7 +4573,7 @@ PrefabInstance:
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -9.100037
+      value: -8.500061
       objectReference: {fileID: 0}
     - target: {fileID: 5330158991354191755, guid: 328adc502457bea42aae7fb88632a1e3,
         type: 3}
