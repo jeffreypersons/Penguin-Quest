@@ -4,145 +4,145 @@ using UnityEngine;
 
 public class PenguinController : MonoBehaviour
 {
+    private bool isGrounded;
     private Facing  facing;
     private Posture posture;
-    private enum Facing  { LEFT,     RIGHT }
-    private enum Posture { STANDING, LYING }
+    private enum Facing  { LEFT,    RIGHT   }
+    private enum Posture { UPRIGHT, ONBELLY }
 
-    [Header("Penguin Movement Speeds")]
-    [SerializeField] private float walkingSpeed = default;
-    [SerializeField] private float slidingSpeed = default;
+    [Header("Movement")]
+    [Tooltip("Amount of progress made per frame when transitioning between states " +
+             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
+             "1.00 for an instant transition with no blending)")]
+    [SerializeField] [Range(0.01f, 1.00f)] private float stateTransitionSpeed = 0.10f;
 
     [Header("Input Configuration")]
-    [SerializeField] private float   inputTolerance                = default;
-    [Tooltip("How strong is the rotation when moving up slopes? 0.0 for max softness, 1.0f for no kinematic softness")]
-    [SerializeField] private float   kinematicRotationStrength     = default;
-    [SerializeField] private string  horizontalInputAxisName       = default;
-    [SerializeField] private string  verticalInputAxisName         = default;
-    [SerializeField] private Vector2 pivotWhenRightAndRotatingDownToLying  = default;
-    [SerializeField] private Vector2 pivotWhenLeftAndRotatingDownToLying   = default;
-    [SerializeField] private Vector2 pivotWhenRightAndRotatingUpToStanding = default;
-    [SerializeField] private Vector2 pivotWhenLeftAndRotatingUpToStanding  = default;
+    [Tooltip("Threshold for recognizing inputs (ie 0.0 for no filter, 1.0 for only sensing full keyboard presses)")]
+    [SerializeField] [Range(0, 1)] private float inputThreshold = 0.10f;
+
+    [SerializeField] private string horizontalInputAxisName = default;
+    [SerializeField] private string verticalInputAxisName   = default;
 
     private Vector2 inputAxes;
-    private float inputMoveSpeed;
-    private float inputRotationAngle;
-    private Vector3 inputRotationPivot;
-
     private Vector2 initialSpawnPosition;
+    private Animator      penguinAnimator;
     private Rigidbody2D   penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
-    private Vector3 PenguinAxisUp      { get => penguinRigidBody.transform.up;      }
-    private Vector3 PenguinAxisForward { get => penguinRigidBody.transform.forward; }
-    private Vector3 PenguinCenter      { get => penguinCollider.bounds.center;      }
+    // in general, we treat unmoving, idle-like states as our zero intensity default states
+    private float AnimatorMotionIntensity
+    {
+        get => penguinAnimator.GetFloat("Motion_Intensity");
+        set => penguinAnimator.SetFloat("Motion_Intensity", value);
+    }
+    private Vector3 PenguinCenter
+    {
+        get => penguinCollider.bounds.center;
+    }
+    private Vector3 PenguinScale
+    {
+        get => penguinRigidBody.transform.localScale;
+        set => penguinRigidBody.transform.localScale = value;
+    }
 
     public void Reset()
     {
         inputAxes = Vector2.zero;
-        inputMoveSpeed = walkingSpeed;
-        inputRotationAngle = 0.0f;
-
-        penguinRigidBody.rotation = inputRotationAngle;
-        penguinRigidBody.velocity = inputAxes * inputMoveSpeed;
+        penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
-        facing  = Facing.RIGHT;
-        posture = Posture.STANDING;
-        if (penguinRigidBody.transform.localScale.x < 0.0f)
-        {
-            penguinRigidBody.transform.localScale *= new Vector2(-1, 0);
-        }
+        AnimatorMotionIntensity = 0.00f;
+        penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+        penguinAnimator.applyRootMotion = true;
+
+        GroundCheck();
+        TurnToFace(Facing.RIGHT);
+        ChangeToPosture(Posture.UPRIGHT);
     }
     void Awake()
     {
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
         penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
+        penguinAnimator  = gameObject.GetComponent<Animator>();
+
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
 
     void Update()
     {
+        GroundCheck();
+
         inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
-        if (inputAxes.x < 0 && facing == Facing.RIGHT)
+
+
+        if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
-            penguinRigidBody.transform.localScale *= posture == Posture.STANDING? new Vector2(-1, 1) : new Vector2(1, -1);
-            facing = Facing.LEFT;
+            AnimatorMotionIntensity = Mathf.Clamp01(AnimatorMotionIntensity - (stateTransitionSpeed));
         }
-        else if (inputAxes.x > 0 && facing == Facing.LEFT)
+        else
         {
-            penguinRigidBody.transform.localScale *= posture == Posture.STANDING ? new Vector2(-1, 1) : new Vector2(1, -1);
-            facing = Facing.RIGHT;
+            AnimatorMotionIntensity = Mathf.Clamp01(AnimatorMotionIntensity + (Mathf.Abs(inputAxes.x) * stateTransitionSpeed));
+            TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
         }
 
-        inputRotationAngle = 0.0f;
-        if (inputAxes.y < 0 && posture == Posture.STANDING)
+        if (inputAxes.y < 0.00f)
         {
-            Vector2 pivotRatio = facing == Facing.RIGHT? pivotWhenRightAndRotatingDownToLying : pivotWhenLeftAndRotatingDownToLying;
-            inputRotationAngle = facing == Facing.RIGHT? -90 : 90;
-            inputRotationPivot = MathUtils.GetPointInsideBounds(penguinCollider.bounds, pivotRatio);
-            inputMoveSpeed     = slidingSpeed;
-            posture            = Posture.LYING;
+            ChangeToPosture(Posture.ONBELLY);
         }
-        else if (inputAxes.y > 0 && posture == Posture.LYING)
+        else if (inputAxes.y > 0.00f)
         {
-            Vector2 pivotRatio = facing == Facing.RIGHT? pivotWhenRightAndRotatingUpToStanding : pivotWhenLeftAndRotatingUpToStanding;
-            inputRotationAngle = facing == Facing.RIGHT? 90 : -90;
-            inputRotationPivot = MathUtils.GetPointInsideBounds(penguinCollider.bounds, pivotRatio);
-            inputMoveSpeed     = walkingSpeed;
-            posture            = Posture.STANDING;
+            AttemptToJump();
         }
-    }
-
-    void FixedUpdate()
-    {
-        // todo: add checking for succeeded lying/standing, and that it is in state where it can do so...
-        // ... (for example, it might not be able to right in front of a wall, so it shouldn't be toggled then)
-        //
-        // todo: find a way to reduce computations per frame by adding some movement/positional checks
-        // ideally, once penguin sliding is adjusted for slope angles, sliding can be used to quickly travel like a sled
-        // (the above will probably mean that forward/up axes will need to be rotate in the opposite direction that the penguin
-        // is rotated when switching between standing and sliding states
-        if (posture == Posture.STANDING)
-        {
-            AlignPenguinWithUpAxis(newUp: GetSurfaceNormalOfGroundRelativeToPenguin());
-        }
-        if (inputRotationAngle != 0.0f)
-        {
-            MathUtils.RotateRigidBodyAroundPointBy(
-                rigidBody: penguinRigidBody,
-                origin:    inputRotationPivot,
-                axis:      penguinRigidBody.transform.forward,
-                angle:     inputRotationAngle);
-        }
-        penguinRigidBody.velocity = new Vector2(inputAxes.x * inputMoveSpeed, penguinRigidBody.velocity.y);
-    }
-
-    private Vector2 GetSurfaceNormalOfGroundRelativeToPenguin(float maxRayDistance=100.0f)
-    {
-        RaycastHit2D hitInfo = Physics2D.Raycast(PenguinCenter,
-            Vector3.down, maxRayDistance, LayerMask.GetMask("Ground"));
-        return (hitInfo.transform == null) ? Vector2.up : hitInfo.normal;
-    }
-
-    private void AlignPenguinWithUpAxis(Vector3 newUp)
-    {
-        // we use the old forward direction of the penguin crossed with the axis we wish to align to, to get a perpendicular
-        // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
-        // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
-        // that's parallel with the slope that our given up is normal to.
-        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, newUp);
-        Vector3 newForward = Vector3.Cross(newUp, left);
-
-        Quaternion oldRotation = penguinRigidBody.transform.rotation;
-        Quaternion newRotation = Quaternion.LookRotation(newForward, newUp);
-        penguinRigidBody.MoveRotation(Quaternion.Lerp(oldRotation, newRotation, kinematicRotationStrength));
     }
 
     private float GetNormalizedInput(string name)
     {
         float input = Input.GetAxisRaw(name);
-        return Math.Abs(input) >= inputTolerance ? input : 0.00f;
+        return Math.Abs(input) >= inputThreshold ? input : 0.00f;
+    }
+
+    private void GroundCheck()
+    {
+        // todo: add proper raycasting against platform layers
+        isGrounded = true;
+    }
+    private void TurnToFace(Facing facing)
+    {
+        if (this.facing == facing)
+        {
+            return;
+        }
+
+        // todo: take posture into account...
+        this.facing = facing;
+        switch (this.facing)
+        {
+            case Facing.LEFT:  PenguinScale = new Vector3(-Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
+            case Facing.RIGHT: PenguinScale = new Vector3( Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
+            default: Debug.LogError($"Given value `{facing}` is not a valid Facing"); return;
+        }
+    }
+    private void ChangeToPosture(Posture posture)
+    {
+        if (this.posture == posture)
+        {
+            return;
+        }
+
+        this.posture = posture;
+        switch (this.posture)
+        {
+            case Posture.ONBELLY: /* todo: set animator parameters to try to trigger state change, if possible */; break;
+            case Posture.UPRIGHT: /* todo: set animator parameters to try to trigger state change, if possible */; break;
+            default: Debug.LogError($"Given value `{posture}` is not a valid Posture"); return;
+        }
+    }
+    private void AttemptToJump()
+    {
+        if (this.posture == Posture.UPRIGHT)
+        {
+            // todo: apply an impulse force
+        }
     }
 }
