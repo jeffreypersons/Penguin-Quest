@@ -17,19 +17,13 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(0.01f, 1.00f)] private float stateTransitionSpeed = 0.10f;
 
     [Header("Input Configuration")]
-    [Tooltip("Threshold for recognizing inputs (ie 0.0 for no filter, 1.0 for only sensing full keyboard presses)")]
-    [SerializeField] [Range(0, 1)] private float inputThreshold = 0.10f;
-
-    [SerializeField] private string horizontalInputAxisName = default;
-    [SerializeField] private string verticalInputAxisName   = default;
-
     private Vector2 inputAxes;
+
     private Vector2 initialSpawnPosition;
     private Animator      penguinAnimator;
     private Rigidbody2D   penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
-    // in general, we treat unmoving, idle-like states as our zero intensity default states
     private float AnimatorMotionIntensity
     {
         get => penguinAnimator.GetFloat("Motion_Intensity");
@@ -73,9 +67,7 @@ public class PenguinController : MonoBehaviour
     {
         GroundCheck();
 
-        inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
-
-
+        inputAxes = GetNormalizedInput("HorizontalAxis", "VerticalAxis");
         if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
             AnimatorMotionIntensity = Mathf.Clamp01(AnimatorMotionIntensity - (stateTransitionSpeed));
@@ -92,21 +84,20 @@ public class PenguinController : MonoBehaviour
         }
         else if (inputAxes.y > 0.00f)
         {
-            AttemptToJump();
+            Jump();
         }
     }
 
-    private float GetNormalizedInput(string name)
+    private Vector2 GetNormalizedInput(string xAxisName, string yAxisName)
     {
-        float input = Input.GetAxisRaw(name);
-        return Math.Abs(input) >= inputThreshold ? input : 0.00f;
+        return new Vector2(0.00f, 0.00f);
     }
-
     private void GroundCheck()
     {
         // todo: add proper raycasting against platform layers
         isGrounded = true;
     }
+
     private void TurnToFace(Facing facing)
     {
         if (this.facing == facing)
@@ -125,7 +116,7 @@ public class PenguinController : MonoBehaviour
     }
     private void ChangeToPosture(Posture posture)
     {
-        if (this.posture == posture)
+        if (this.posture == posture && isGrounded)
         {
             return;
         }
@@ -138,11 +129,17 @@ public class PenguinController : MonoBehaviour
             default: Debug.LogError($"Given value `{posture}` is not a valid Posture"); return;
         }
     }
-    private void AttemptToJump()
+
+    private void Jump()
     {
         if (this.posture == Posture.UPRIGHT)
         {
             // todo: apply an impulse force
         }
+    }
+    private void Fire()
+    {
+        // todo: throw a fish or something lol
+        Debug.Log("Fire!");
     }
 }
