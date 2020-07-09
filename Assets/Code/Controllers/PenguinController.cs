@@ -136,7 +136,7 @@ public class PenguinController : MonoBehaviour
     private void GroundCheck()
     {
         // todo: add proper raycasting against platform layers
-        isGrounded = true;
+        isGrounded = Physics2D.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, 0.30f, LayerMask.GetMask("Platform"));
     }
 
     private void TurnToFace(Facing facing)
@@ -160,11 +160,16 @@ public class PenguinController : MonoBehaviour
     }
     private void LieDown()
     {
+        Debug.Log("Lie Down!");
         posture = Posture.ONBELLY;
     }
     private void Jump()
     {
+        Debug.Log("Jump!");
+        float jumpForce = 50000.00f;
         // todo: apply an impulse force
+        penguinRigidBody.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+        penguinAnimator.SetTrigger("Jump");
     }
     private void Fire()
     {
