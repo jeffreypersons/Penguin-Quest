@@ -7,10 +7,10 @@ public class PlayerInfo
     public int Lives      { get; private set; }
     public int LivesGiven { get; private set; }
 
-    private static int MIN_SCORE = 0;
-    private static int MAX_SCORE = int.MaxValue;
-    private static int MIN_LIVES_GIVEN = 1;
-    private static int MAX_LIVES_GIVEN = int.MaxValue;
+    public static int MIN_SCORE = 0;
+    public static int MAX_SCORE = int.MaxValue;
+    public static int MIN_LIVES_GIVEN = 1;
+    public static int MAX_LIVES_GIVEN = int.MaxValue;
 
     public override string ToString()
     {

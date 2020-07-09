@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class IngameMenuController : MonoBehaviour
 {
     [Header("Scene to Load on Return to Main Menu")]
-    [SerializeField] private string sceneName = default;
+    [SerializeField] private string mainMenuSceneName = default;
 
     [Header("Scene Objects to Hide on Menu Open")]
     [SerializeField] private GameObject topBanner = default;
@@ -44,9 +44,9 @@ public class IngameMenuController : MonoBehaviour
 
     void Awake()
     {
-        if (!SceneUtils.IsSceneAbleToLoad(sceneName))
+        if (!SceneUtils.IsSceneAbleToLoad(mainMenuSceneName))
         {
-            Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+            Debug.LogError($"Scene cannot be loaded, perhaps `{mainMenuSceneName}` is misspelled?");
         }
         ingameMenu.SetActive(false);
         GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
@@ -101,7 +101,7 @@ public class IngameMenuController : MonoBehaviour
     {
         Time.timeScale = 1;
         GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
-        SceneUtils.LoadScene(sceneName);
+        SceneUtils.LoadScene(mainMenuSceneName);
     }
     private void TriggerRestartGameEvent()
     {
