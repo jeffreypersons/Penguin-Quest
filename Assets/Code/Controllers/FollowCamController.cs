@@ -39,11 +39,14 @@ public class FollowCamController : MonoBehaviour
 
         if (!subject)
         {
-            Debug.LogError($"Subject must be provided to camera script `{GetType().Name}` - no object assigned");
+            Debug.LogWarning($"No subject assigned to follow, `{GetType().Name}` - no object assigned");
         }
     }
     void LateUpdate()
     {
-        transform.position = PositionToFollow + Offset;
+        if (subject != null && subject.transform.hasChanged)
+        {
+            transform.position = PositionToFollow + Offset;
+        }
     }
 }
