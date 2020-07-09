@@ -16,6 +16,10 @@ public class IngameHudController : MonoBehaviour
 
     private PlayerInfo lastRecordedPlayerInfo;
 
+    void Awake()
+    {
+        lastRecordedPlayerInfo = new PlayerInfo(PlayerInfo.MIN_LIVES_GIVEN);
+    }
     void OnEnable()
     {
         GameEventCenter.scoreChange.AddListener(UpdateScore);
@@ -35,10 +39,6 @@ public class IngameHudController : MonoBehaviour
     }
     private void TriggerPauseGameEvent()
     {
-        if (lastRecordedPlayerInfo == null)
-        {
-            Debug.LogError($"LastRecordedScore received by {GetType().Name} is null");
-        }
         GameEventCenter.pauseGame.Trigger(lastRecordedPlayerInfo);
     }
 }

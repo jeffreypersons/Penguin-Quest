@@ -121,7 +121,7 @@ public class PenguinController : MonoBehaviour
             Standup();
         }
 
-        if (IsFireRequested)
+        if (true)
         {
             Fire();
         }

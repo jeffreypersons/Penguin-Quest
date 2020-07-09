@@ -14,7 +14,7 @@ public class EnemyController : MonoBehaviour
     private BoxCollider2D enemyCollider;
     private Vector2 initialPosition;
 
-    private float targetPaddleY;
+    private float targetY;
 
     public void Reset()
     {
@@ -60,7 +60,7 @@ public class EnemyController : MonoBehaviour
         {
             enemyBody.position = Vector2.MoveTowards(
                 enemyBody.position,
-                new Vector2(enemyBody.position.x, targetPaddleY),
+                new Vector2(enemyBody.position.x, targetY),
                 horizontalSpeed * Time.fixedDeltaTime
             );
         }
