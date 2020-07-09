@@ -90,7 +90,7 @@ public class PenguinController : MonoBehaviour
     }
     private Vector2 MovementRequested
     {
-        get => playerControls.Gameplay.Move.triggered ? playerControls.Gameplay.Move.ReadValue<Vector2>() : Vector2.zero;
+        get => playerControls.Gameplay.Move.ReadValue<Vector2>();
     }
 
     void Update()
