@@ -1,11 +1,14 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 
+// todo: look into a way to use enums directly in animator (perhaps via passing int and using editor script, etc?)
+[RequireComponent(typeof(PlayerInput))]
 public class PenguinController : MonoBehaviour
 {
     private bool isGrounded;
-    private Facing  facing;
+    private float xMotionIntensity;
+    private Facing facing;
     private Posture posture;
     private enum Facing  { LEFT,    RIGHT   }
     private enum Posture { UPRIGHT, ONBELLY }
@@ -17,24 +20,13 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(0.01f, 1.00f)] private float stateTransitionSpeed = 0.10f;
 
     [Header("Input Configuration")]
-    [Tooltip("Threshold for recognizing inputs (ie 0.0 for no filter, 1.0 for only sensing full keyboard presses)")]
-    [SerializeField] [Range(0, 1)] private float inputThreshold = 0.10f;
+    private PlayerControls playerControls;
 
-    [SerializeField] private string horizontalInputAxisName = default;
-    [SerializeField] private string verticalInputAxisName   = default;
-
-    private Vector2 inputAxes;
     private Vector2 initialSpawnPosition;
-    private Animator      penguinAnimator;
-    private Rigidbody2D   penguinRigidBody;
+    private Animator penguinAnimator;
+    private Rigidbody2D penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
-    // in general, we treat unmoving, idle-like states as our zero intensity default states
-    private float AnimatorMotionIntensity
-    {
-        get => penguinAnimator.GetFloat("Motion_Intensity");
-        set => penguinAnimator.SetFloat("Motion_Intensity", value);
-    }
     private Vector3 PenguinCenter
     {
         get => penguinCollider.bounds.center;
@@ -44,23 +36,41 @@ public class PenguinController : MonoBehaviour
         get => penguinRigidBody.transform.localScale;
         set => penguinRigidBody.transform.localScale = value;
     }
+    private void UpdateAnimatorParameters()
+    {
+        // ideally we would use the enums directly, but enum is not a supported parameter type for animator
+        penguinAnimator.SetBool("IsGrounded", isGrounded);
+        penguinAnimator.SetBool("IsUpright",  posture == Posture.UPRIGHT);
+        penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
+    }
 
+    // todo: add check for standup/facing-right/grounded/etc
     public void Reset()
     {
-        inputAxes = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
-        AnimatorMotionIntensity = 0.00f;
+        isGrounded = true;
+        xMotionIntensity = 0.00f;
         penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
         penguinAnimator.applyRootMotion = true;
 
-        GroundCheck();
+        Standup();
         TurnToFace(Facing.RIGHT);
-        ChangeToPosture(Posture.UPRIGHT);
+        UpdateAnimatorParameters();
+    }
+    void OnEnable()
+    {
+        playerControls.Gameplay.Enable();
+    }
+    void OnDisable()
+    {
+        playerControls.Gameplay.Disable();
     }
     void Awake()
     {
+        playerControls = new PlayerControls();
+
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
         penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
         penguinAnimator  = gameObject.GetComponent<Animator>();
@@ -69,44 +79,66 @@ public class PenguinController : MonoBehaviour
         Reset();
     }
 
+    // todo: incorporate object references for fire/use request (ie what object is being used?)
+    private bool IsFireRequested
+    {
+        get => playerControls.Gameplay.Fire.triggered;
+    }
+    private bool IsUseItemRequested
+    {
+        get => playerControls.Gameplay.Use.triggered;
+    }
+    private Vector2 MovementRequested
+    {
+        get => playerControls.Gameplay.Move.ReadValue<Vector2>();
+    }
+
     void Update()
     {
         GroundCheck();
-
-        inputAxes = new Vector2(GetNormalizedInput(horizontalInputAxisName), GetNormalizedInput(verticalInputAxisName));
-
+        Vector2 inputAxes = MovementRequested;
 
         if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
-            AnimatorMotionIntensity = Mathf.Clamp01(AnimatorMotionIntensity - (stateTransitionSpeed));
+            xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (stateTransitionSpeed));
         }
         else
         {
-            AnimatorMotionIntensity = Mathf.Clamp01(AnimatorMotionIntensity + (Mathf.Abs(inputAxes.x) * stateTransitionSpeed));
+            xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(inputAxes.x) * stateTransitionSpeed));
             TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
         }
 
-        if (inputAxes.y < 0.00f)
+        if (inputAxes.y < 0.00f && isGrounded && posture == Posture.UPRIGHT)
         {
-            ChangeToPosture(Posture.ONBELLY);
+            LieDown();
         }
-        else if (inputAxes.y > 0.00f)
+        else if (inputAxes.y > 0.00f && isGrounded && posture == Posture.UPRIGHT)
         {
-            AttemptToJump();
+            Jump();
         }
-    }
+        else if (inputAxes.y > 0.00f && isGrounded && posture == Posture.ONBELLY)
+        {
+            Standup();
+        }
 
-    private float GetNormalizedInput(string name)
-    {
-        float input = Input.GetAxisRaw(name);
-        return Math.Abs(input) >= inputThreshold ? input : 0.00f;
+        if (IsFireRequested)
+        {
+            Fire();
+        }
+        if (IsUseItemRequested)
+        {
+            Use();
+        }
+
+        UpdateAnimatorParameters();
     }
 
     private void GroundCheck()
     {
         // todo: add proper raycasting against platform layers
-        isGrounded = true;
+        isGrounded = Physics2D.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, 0.30f, LayerMask.GetMask("Platform"));
     }
+
     private void TurnToFace(Facing facing)
     {
         if (this.facing == facing)
@@ -114,7 +146,6 @@ public class PenguinController : MonoBehaviour
             return;
         }
 
-        // todo: take posture into account...
         this.facing = facing;
         switch (this.facing)
         {
@@ -123,26 +154,31 @@ public class PenguinController : MonoBehaviour
             default: Debug.LogError($"Given value `{facing}` is not a valid Facing"); return;
         }
     }
-    private void ChangeToPosture(Posture posture)
+    private void Standup()
     {
-        if (this.posture == posture)
-        {
-            return;
-        }
-
-        this.posture = posture;
-        switch (this.posture)
-        {
-            case Posture.ONBELLY: /* todo: set animator parameters to try to trigger state change, if possible */; break;
-            case Posture.UPRIGHT: /* todo: set animator parameters to try to trigger state change, if possible */; break;
-            default: Debug.LogError($"Given value `{posture}` is not a valid Posture"); return;
-        }
+        posture = Posture.UPRIGHT;
     }
-    private void AttemptToJump()
+    private void LieDown()
     {
-        if (this.posture == Posture.UPRIGHT)
-        {
-            // todo: apply an impulse force
-        }
+        Debug.Log("Lie Down!");
+        posture = Posture.ONBELLY;
+    }
+    private void Jump()
+    {
+        Debug.Log("Jump!");
+        float jumpForce = 50000.00f;
+        // todo: apply an impulse force
+        penguinRigidBody.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+        penguinAnimator.SetTrigger("Jump");
+    }
+    private void Fire()
+    {
+        // todo: throw a fish or something lol
+        Debug.Log("Fire!");
+    }
+    private void Use()
+    {
+        // todo: use something (like equip an item, maybe?)
+        Debug.Log("Using!");
     }
 }
