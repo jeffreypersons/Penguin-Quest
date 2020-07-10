@@ -1,14 +1,15 @@
 # meta data (never ignore, unless explicitly added after below line!)
 !/Assets/**/*.meta
 
+# ignore the general directory where all the external
+# folders/modules/packages/plugins/builtins are placed
+/Assets/ThirdParty/
+
 # build specific files
 Penguin Quest.zip
 /Builds/
-/Standalone Builds/
 /TBS_cache/
 /TPS_cache/
-WSATestCertificate.pfx
-WSATestCertificate.pfx.meta
 
 # plugin/module files to keep on local machine
 /Assets/Plugins/
