@@ -3,7 +3,7 @@
 
 // todo: look into adding some sort of smoothing when the camera moves
 [ExecuteAlways]
-public class FollowCamController : MonoBehaviour
+public class FollowCameraController : MonoBehaviour
 {
     private Camera cam;
 
