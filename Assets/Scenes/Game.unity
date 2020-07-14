@@ -2648,8 +2648,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Solvers:
-  - {fileID: 110818207}
   - {fileID: 696630564}
+  - {fileID: 110818207}
   - {fileID: 751885947}
   - {fileID: 2021943641}
   - {fileID: 1175957789}
@@ -5909,20 +5909,40 @@ PrefabInstance:
       propertyPath: subject
       value: 
       objectReference: {fileID: 27460619}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: xOffset
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: yOffset
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: keepSubjectInScreen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: isActivelyFollowing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 14.5
+      value: 19.5
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.2003174
+      value: -7.30011
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
