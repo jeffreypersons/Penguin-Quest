@@ -55,7 +55,7 @@ public class FollowCameraController : MonoBehaviour
     void Awake()
     {
         cam = gameObject.GetComponent<Camera>();
-        Debug.Log("A" + cam);
+        viewport = new ViewportInfo(cam);
         subjectRenderer = gameObject.GetComponent<Renderer>();
         if (!subject)
         {
@@ -78,14 +78,12 @@ public class FollowCameraController : MonoBehaviour
         bool isAtTargetFieldOfView = Mathf.Abs(fieldOfView - cam.fieldOfView) <= TARGET_DISTANCE_TOLERANCE;
         if (hasViewportChanged || !isAtTargetFieldOfView)
         {
-            Debug.Log("Fov");
             cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, fieldOfView, Time.deltaTime * zoomSpeed);
         }
         if (hasViewportChanged || !isAtTargetPosition)
         {
             Vector2 target = Vector2.MoveTowards(cam.transform.position, ComputeTargetPosition(), Time.deltaTime * moveSpeed);
             cam.transform.position = new Vector3(target.x, target.y, viewport.NearClipOffset);
-            Debug.Log(cam.transform.position);
         }
     }
 
