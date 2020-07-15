@@ -56,12 +56,12 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: -30
   far clip plane: 1000
-  field of view: 60
+  field of view: 50
   orthographic: 1
   orthographic size: 50
-  m_Depth: -1
+  m_Depth: -0.97
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -97,5 +97,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   subject: {fileID: 0}
-  xOffset: 20
-  yOffset: 15
+  moveSpeed: 10
+  xOffset: 0
+  yOffset: 0
+  followMode: 0
+  keepSubjectInView: 1
+  isActivelyRunning: 1
+  fieldOfView: 50
+  zoomSpeed: 10
