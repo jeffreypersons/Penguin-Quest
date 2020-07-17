@@ -43,7 +43,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.46666667, g: 0.7882353, b: 0.99607843, a: 1}
+  m_BackGroundColor: {r: 0.39215687, g: 0.6862745, b: 0.98039216, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -56,19 +56,19 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: -30
+  near clip plane: 0.3
   far clip plane: 1000
   field of view: 50
   orthographic: 1
   orthographic size: 50
-  m_Depth: -0.97
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
-  m_TargetEye: 0
+  m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
@@ -97,11 +97,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   subject: {fileID: 0}
-  moveSpeed: 10
   xOffset: 0
   yOffset: 0
+  zOffset: -10
   followMode: 0
   keepSubjectInView: 1
   isActivelyRunning: 1
+  moveSpeed: 50
   fieldOfView: 50
   zoomSpeed: 10

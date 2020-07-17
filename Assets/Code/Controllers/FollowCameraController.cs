@@ -4,6 +4,7 @@ using UnityEngine.SocialPlatforms;
 
 // todo: look into adding some sort of smoothing when the camera moves
 [ExecuteAlways]
+[RequireComponent(typeof(Camera))]
 public class FollowCameraController : MonoBehaviour
 {
     private const float FOV_DEFAULT    =   50.00f;
@@ -34,6 +35,8 @@ public class FollowCameraController : MonoBehaviour
     [Range(OFFSET_MIN, OFFSET_MAX)] [SerializeField] private float xOffset = OFFSET_DEFAULT;
     [Tooltip("y offset from subject (subject is bellow camera if positive, above if negative)")]
     [Range(OFFSET_MIN, OFFSET_MAX)] [SerializeField] private float yOffset = OFFSET_DEFAULT;
+    [Tooltip("z offset from subject (subject is 'into' screen camera if positive, 'out' of screen if negative)")]
+    [Range(OFFSET_MIN, OFFSET_MAX)] [SerializeField] private float zOffset = OFFSET_DEFAULT;
 
     [Header("Follow Behavior")]
     [Tooltip("Mode for camera movement relative to to subject")]
@@ -74,10 +77,11 @@ public class FollowCameraController : MonoBehaviour
         #if UNITY_EDITOR
             if (Application.isPlaying)
             {
-                Init();
                 cam.fieldOfView = fieldOfView;
+                viewportInfo.SyncChanges();
                 Vector2 target = ComputeTargetPosition();
-                cam.transform.position = new Vector3(target.x, target.y, viewportInfo.NearClipOffset);
+                cam.transform.position = new Vector3(target.x, target.y, zOffset);
+                return;
             }
         #endif
 
@@ -95,8 +99,9 @@ public class FollowCameraController : MonoBehaviour
         if (hasViewportChanged || !isAtTargetPosition)
         {
             Vector2 target = Vector2.MoveTowards(cam.transform.position, ComputeTargetPosition(), Time.deltaTime * moveSpeed);
-            cam.transform.position = new Vector3(target.x, target.y, viewportInfo.NearClipOffset);
+            cam.transform.position = new Vector3(target.x, target.y, zOffset);
         }
+        cam.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, zOffset);
     }
 
     // we don't worry about the case that the subject overlaps multiple sides,

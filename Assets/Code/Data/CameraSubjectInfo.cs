@@ -10,7 +10,7 @@ public class CameraSubjectInfo
     private readonly Transform subject;
     private readonly Renderer renderer;
 
-    public bool HasRenderer { get; private set; }
+    public bool HasRenderer { get => renderer != null; }
     public Vector2 Center   { get => HasRenderer? renderer.bounds.center  : subject.position; }
     public Vector2 Size     { get => HasRenderer? renderer.bounds.size    : Vector3.zero;     }
     public Vector2 Extents  { get => Size * 0.50f;     }
