@@ -5919,6 +5919,21 @@ PrefabInstance:
       propertyPath: isActivelyFollowing
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 87
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: xOffset
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: isActivelyRunning
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5927,12 +5942,12 @@ PrefabInstance:
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.5
+      value: -26.599998
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12.880005
+      value: -105.38031
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
@@ -6007,7 +6022,7 @@ PrefabInstance:
     - target: {fileID: 7110129387180373722, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: field of view
-      value: 120.80029
+      value: 55.938366
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373722, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
@@ -6028,6 +6043,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TargetEye
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7110129387180373722, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.x
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ea485da32399be4ebfab01cef57f2eb, type: 3}

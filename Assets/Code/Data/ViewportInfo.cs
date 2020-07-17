@@ -2,6 +2,7 @@
 
 
 // provides useful helper methods for given camera object
+// * assumes orthographic camera
 // * assumes a single display and eye
 // * all external functionality is in world space coords unless otherwise stated
 public class ViewportInfo
@@ -23,7 +24,6 @@ public class ViewportInfo
         _screenSize = Vector2.zero;
         Min = Vector2.zero;
         Max = Vector2.zero;
-        SyncChanges();
     }
     public ViewportInfo(Camera cam)
     {
