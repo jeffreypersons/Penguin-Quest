@@ -103,17 +103,8 @@ public class FollowCameraController : MonoBehaviour
             return;
         }
 
-        bool isAtTargetPosition    = Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) <= TARGET_DISTANCE_TOLERANCE;
-        bool isAtTargetFieldOfView = Mathf.Abs(fieldOfView - cam.fieldOfView) <= TARGET_DISTANCE_TOLERANCE;
-        if (!isAtTargetFieldOfView)
-        {
-            cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, fieldOfView, Time.deltaTime * zoomSpeed);
-        }
-        if (!isAtTargetPosition)
-        {
-            Vector2 target = Vector2.MoveTowards(transform.TransformVector(cam.transform.position), ComputeTargetPosition(), Time.deltaTime * moveSpeed);
-            cam.transform.position = new Vector3(target.x, target.y, zOffset);
-        }
+        AdjustZoom();
+        AdjustPosition();
     }
 
     void AdjustZoom(bool forceChange=false)
@@ -137,7 +128,9 @@ public class FollowCameraController : MonoBehaviour
             return;
         }
 
-        if (Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) > TARGET_DISTANCE_TOLERANCE)
+        if (Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) > TARGET_DISTANCE_TOLERANCE ||
+            Mathf.Abs(subjectInfo.Center.y - cam.transform.position.y) > TARGET_DISTANCE_TOLERANCE ||
+            viewportInfo.HasSizeChangedLastUpdate)
         {
             Vector2 target = Vector2.MoveTowards(transform.TransformVector(cam.transform.position),
                 ComputeTargetPosition(), Time.deltaTime * moveSpeed);

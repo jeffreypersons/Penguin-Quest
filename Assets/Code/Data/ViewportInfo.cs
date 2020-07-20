@@ -17,16 +17,27 @@ public class ViewportInfo
     public Vector2 Size    { get; private set; }
     public Vector2 Extents { get; private set; }
     public float NearClipOffset { get => _viewportOrigin.z; }
+    public bool HasSizeChangedLastUpdate { get; private set; }
 
     public ViewportInfo(Camera cam)
     {
         this.cam = cam;
         Update();
+        HasSizeChangedLastUpdate = false;
     }
 
     public void Update()
     {
-        _screenSize = new Vector3(Screen.width, Screen.height, 0.00f);
+        if (_screenSize.x == Screen.width && _screenSize.y == Screen.height)
+        {
+            HasSizeChangedLastUpdate = false;
+        }
+        else
+        {
+            _screenSize = new Vector3(Screen.width, Screen.height, 0.00f);
+            HasSizeChangedLastUpdate = true;
+        }
+
         _viewportOrigin = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, cam.nearClipPlane));
         Min = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, cam.nearClipPlane));
         Max = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, cam.nearClipPlane));
