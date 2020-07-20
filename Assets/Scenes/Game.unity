@@ -5911,23 +5911,33 @@ PrefabInstance:
       objectReference: {fileID: 27460619}
     - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
-      propertyPath: keepSubjectInView
-      value: 0
+      propertyPath: zOffset
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: xOffset
-      value: 4
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: yOffset
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: keepSubjectInView
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 14.5
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}

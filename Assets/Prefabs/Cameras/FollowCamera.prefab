@@ -97,11 +97,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   subject: {fileID: 0}
-  xOffset: 0
-  yOffset: 0
-  zOffset: -10
+  xOffset: -100
+  yOffset: -27
+  zOffset: -100
   followMode: 0
-  keepSubjectInView: 1
+  keepSubjectInView: 0
   isActivelyRunning: 1
   moveSpeed: 50
   fieldOfView: 50

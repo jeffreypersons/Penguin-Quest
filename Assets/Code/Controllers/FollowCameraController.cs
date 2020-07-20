@@ -71,14 +71,38 @@ public class FollowCameraController : MonoBehaviour
             Debug.LogError($"No subject assigned to follow, `{GetType().Name}` - no object assigned");
         }
         Init();
+        if (!cam.orthographic)
+        {
+            Debug.LogError($"Only orthographic camera mode is supported");
+        }
     }
+
+    #if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (cam != null && viewportInfo != null && subject != null && subjectInfo != null)
+        {
+            AdjustZoom(forceChange: true);
+            AdjustPosition(forceChange: true);
+        }
+    }
+    #endif
+
     void LateUpdate()
     {
+        #if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            AdjustZoom(forceChange: true);
+            AdjustPosition(forceChange: true);
+        }
+        #endif
+
         if (!isActivelyRunning)
         {
             return;
         }
-        viewportInfo.Update();
+
         bool isAtTargetPosition    = Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) <= TARGET_DISTANCE_TOLERANCE;
         bool isAtTargetFieldOfView = Mathf.Abs(fieldOfView - cam.fieldOfView) <= TARGET_DISTANCE_TOLERANCE;
         if (!isAtTargetFieldOfView)
@@ -92,9 +116,34 @@ public class FollowCameraController : MonoBehaviour
         }
     }
 
-    private Vector2 Offset
+    void AdjustZoom(bool forceChange=false)
     {
-        get => transform.TransformVector(new Vector2(xOffset, yOffset));
+        if (forceChange)
+        {
+            cam.fieldOfView = fieldOfView;
+            return;
+        }
+
+        if (Mathf.Abs(fieldOfView - cam.fieldOfView) > TARGET_DISTANCE_TOLERANCE)
+        {
+            cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, fieldOfView, Time.deltaTime * zoomSpeed);
+        }
+    }
+    void AdjustPosition(bool forceChange=false)
+    {
+        if (forceChange)
+        {
+            cam.transform.position = ComputeTargetPosition();
+            return;
+        }
+
+        if (Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) > TARGET_DISTANCE_TOLERANCE)
+        {
+            Vector2 target = Vector2.MoveTowards(transform.TransformVector(cam.transform.position),
+                ComputeTargetPosition(), Time.deltaTime * moveSpeed);
+            cam.transform.position = new Vector3(target.x, target.y, zOffset);
+        }
+
     }
     // we don't worry about the case that the subject overlaps multiple sides,
     // in other words, we assume its bounds are smaller than viewport
@@ -108,13 +157,13 @@ public class FollowCameraController : MonoBehaviour
             float upBound  = viewportInfo.Min.y - subjectInfo.Extents.y;
             Debug.Log($"min=({leftBound}, {lowBound}), max=({rightBound}, {upBound})");
             return new Vector3(
-                Mathf.Clamp(subjectInfo.Center.x + Offset.x, leftBound, rightBound),
-                Mathf.Clamp(subjectInfo.Center.y + Offset.y, lowBound,  upBound),
+                Mathf.Clamp(subjectInfo.Center.x + xOffset, leftBound, rightBound),
+                Mathf.Clamp(subjectInfo.Center.y + yOffset, lowBound,  upBound),
                 zOffset);
         }
         else
         {
-            return new Vector3(subjectInfo.Center.x + Offset.x, subjectInfo.Center.y + Offset.y, zOffset);
+            return new Vector3(subjectInfo.Center.x + xOffset, subjectInfo.Center.y + yOffset, zOffset);
         }
     }
 }
