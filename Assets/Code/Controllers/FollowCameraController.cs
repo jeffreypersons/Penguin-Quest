@@ -74,36 +74,28 @@ public class FollowCameraController : MonoBehaviour
     }
     void LateUpdate()
     {
-        #if UNITY_EDITOR
-            if (Application.isPlaying)
-            {
-                cam.fieldOfView = fieldOfView;
-                viewportInfo.SyncChanges();
-                Vector2 target = ComputeTargetPosition();
-                cam.transform.position = new Vector3(target.x, target.y, zOffset);
-                return;
-            }
-        #endif
-
         if (!isActivelyRunning)
         {
             return;
         }
-        bool hasViewportChanged = viewportInfo.SyncChanges();
+        viewportInfo.Update();
         bool isAtTargetPosition    = Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) <= TARGET_DISTANCE_TOLERANCE;
         bool isAtTargetFieldOfView = Mathf.Abs(fieldOfView - cam.fieldOfView) <= TARGET_DISTANCE_TOLERANCE;
-        if (hasViewportChanged || !isAtTargetFieldOfView)
+        if (!isAtTargetFieldOfView)
         {
             cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, fieldOfView, Time.deltaTime * zoomSpeed);
         }
-        if (hasViewportChanged || !isAtTargetPosition)
+        if (!isAtTargetPosition)
         {
-            Vector2 target = Vector2.MoveTowards(cam.transform.position, ComputeTargetPosition(), Time.deltaTime * moveSpeed);
+            Vector2 target = Vector2.MoveTowards(transform.TransformVector(cam.transform.position), ComputeTargetPosition(), Time.deltaTime * moveSpeed);
             cam.transform.position = new Vector3(target.x, target.y, zOffset);
         }
-        cam.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, zOffset);
     }
 
+    private Vector2 Offset
+    {
+        get => transform.TransformVector(new Vector2(xOffset, yOffset));
+    }
     // we don't worry about the case that the subject overlaps multiple sides,
     // in other words, we assume its bounds are smaller than viewport
     private Vector2 ComputeTargetPosition()
@@ -114,13 +106,15 @@ public class FollowCameraController : MonoBehaviour
             float rightBound = viewportInfo.Max.x - subjectInfo.Extents.x;
             float lowBound = viewportInfo.Min.y + subjectInfo.Extents.y;
             float upBound  = viewportInfo.Min.y - subjectInfo.Extents.y;
-            return new Vector2(
-                Mathf.Clamp(subjectInfo.Center.x + xOffset, leftBound, rightBound),
-                Mathf.Clamp(subjectInfo.Center.y + yOffset, lowBound,  upBound));
+            Debug.Log($"min=({leftBound}, {lowBound}), max=({rightBound}, {upBound})");
+            return new Vector3(
+                Mathf.Clamp(subjectInfo.Center.x + Offset.x, leftBound, rightBound),
+                Mathf.Clamp(subjectInfo.Center.y + Offset.y, lowBound,  upBound),
+                zOffset);
         }
         else
         {
-            return new Vector2(subjectInfo.Center.x + xOffset, subjectInfo.Center.y + yOffset);
+            return new Vector3(subjectInfo.Center.x + Offset.x, subjectInfo.Center.y + Offset.y, zOffset);
         }
     }
 }
