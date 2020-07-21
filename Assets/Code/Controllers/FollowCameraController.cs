@@ -130,7 +130,7 @@ public class FollowCameraController : MonoBehaviour
 
         if (Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) > TARGET_DISTANCE_TOLERANCE ||
             Mathf.Abs(subjectInfo.Center.y - cam.transform.position.y) > TARGET_DISTANCE_TOLERANCE ||
-            viewportInfo.HasSizeChangedLastUpdate)
+            viewportInfo.HasScreenSizeChangedLastUpdate)
         {
             Vector2 target = Vector2.MoveTowards(transform.TransformVector(cam.transform.position),
                 ComputeTargetPosition(), Time.deltaTime * moveSpeed);
