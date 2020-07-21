@@ -5927,12 +5927,17 @@ PrefabInstance:
     - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: keepSubjectInView
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: moveSpeed
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3122338546308357070, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: maxMoveSpeed
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 7110129387180373541, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
