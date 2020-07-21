@@ -147,6 +147,7 @@ public class FollowCameraController : MonoBehaviour
             cam.transform.position = new Vector3(position.x, position.y, target.z);
         }
     }
+
     // we don't worry about the case that the subject overlaps multiple sides,
     // in other words, we assume its bounds are smaller than viewport
     private Vector3 ComputeTarget()
@@ -157,7 +158,6 @@ public class FollowCameraController : MonoBehaviour
             float rightBound = viewportInfo.Max.x - subjectInfo.Extents.x;
             float lowBound = viewportInfo.Min.y + subjectInfo.Extents.y;
             float upBound  = viewportInfo.Max.y - subjectInfo.Extents.y;
-            Debug.Log($"min=({leftBound}, {lowBound}), max=({rightBound}, {upBound})");
             return new Vector3(
                 Mathf.Clamp(subjectInfo.Center.x + xOffset, leftBound, rightBound),
                 Mathf.Clamp(subjectInfo.Center.y + yOffset, lowBound,  upBound),
