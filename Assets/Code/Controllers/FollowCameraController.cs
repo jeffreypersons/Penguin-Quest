@@ -167,21 +167,20 @@ public class FollowCameraController : MonoBehaviour
     // in other words, we assume its bounds are smaller than viewport
     private Vector3 ComputeTarget()
     {
-        if (keepSubjectInView)
+        Vector3 target = new Vector3(subjectInfo.Center.x + xOffset, subjectInfo.Center.y + yOffset, zOffset);
+        if (!keepSubjectInView)
         {
-            float leftBound  = viewportInfo.Min.x + subjectInfo.Extents.x;
-            float rightBound = viewportInfo.Max.x - subjectInfo.Extents.x;
-            float lowBound = viewportInfo.Min.y + subjectInfo.Extents.y;
-            float upBound  = viewportInfo.Max.y - subjectInfo.Extents.y;
-            return new Vector3(
-                Mathf.Clamp(subjectInfo.Center.x + xOffset, leftBound, rightBound),
-                Mathf.Clamp(subjectInfo.Center.y + yOffset, lowBound,  upBound),
-                zOffset);
+            return target;
         }
-        else
-        {
-            return new Vector3(subjectInfo.Center.x + xOffset, subjectInfo.Center.y + yOffset, zOffset);
-        }
+
+        float leftBound  = viewportInfo.Min.x + subjectInfo.Extents.x;
+        float rightBound = viewportInfo.Max.x - subjectInfo.Extents.x;
+        float lowBound = viewportInfo.Min.y + subjectInfo.Extents.y;
+        float upBound  = viewportInfo.Max.y - subjectInfo.Extents.y;
+        return new Vector3(
+            Mathf.Clamp(target.x, leftBound, rightBound),
+            Mathf.Clamp(target.y, lowBound,  upBound),
+            zOffset);
     }
 
     private static bool IsTooClose(float current, float target)
