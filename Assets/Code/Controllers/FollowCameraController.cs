@@ -147,7 +147,7 @@ public class FollowCameraController : MonoBehaviour
             float leftBound  = viewportInfo.Min.x + subjectInfo.Extents.x;
             float rightBound = viewportInfo.Max.x - subjectInfo.Extents.x;
             float lowBound = viewportInfo.Min.y + subjectInfo.Extents.y;
-            float upBound  = viewportInfo.Min.y - subjectInfo.Extents.y;
+            float upBound  = viewportInfo.Max.y - subjectInfo.Extents.y;
             Debug.Log($"min=({leftBound}, {lowBound}), max=({rightBound}, {upBound})");
             return new Vector3(
                 Mathf.Clamp(subjectInfo.Center.x + xOffset, leftBound, rightBound),
