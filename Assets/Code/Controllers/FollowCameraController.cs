@@ -143,7 +143,7 @@ public class FollowCameraController : MonoBehaviour
         float target  = fieldOfView;
         if (!IsTooClose(current, target))
         {
-            cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, fieldOfView, Time.deltaTime * maxZoomSpeed);
+            cam.fieldOfView = Mathf.SmoothDamp(current, target, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
         }
     }
     private void AdjustPosition(bool forceChange=false)
