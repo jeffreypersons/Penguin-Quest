@@ -24,6 +24,8 @@ public class FollowCameraController : MonoBehaviour
     private Camera cam;
     private ViewportInfo viewportInfo;
     private CameraSubjectInfo subjectInfo;
+    private float zoomVelocity;
+    private Vector2 moveVelocity;
     public enum FollowMode { MoveWithSubject, MoveAfterLeavingView };
 
     [Header("Subject to Follow")]
@@ -47,13 +49,13 @@ public class FollowCameraController : MonoBehaviour
     [SerializeField] private bool isActivelyRunning = true;
 
     [Tooltip("Adjust move speed (how fast the camera follows the subject)")]
-    [Range(MOVE_SPEED_MIN, MOVE_SPEED_MAX)] [SerializeField] private float moveSpeed = MOVE_SPEED_DEFAULT;
+    [Range(MOVE_SPEED_MIN, MOVE_SPEED_MAX)] [SerializeField] private float maxMoveSpeed = MOVE_SPEED_DEFAULT;
 
     [Header("Zoom Behavior")]
     [Tooltip("Adjust field of view (how 'zoomed in' the camera is)")]
     [Range(FOV_MIN, FOV_MAX)] [SerializeField] private float fieldOfView = FOV_DEFAULT;
     [Tooltip("Adjust zoom speed (how fast the camera FOV is adjusted)")]
-    [Range(ZOOM_SPEED_MIN, ZOOM_SPEED_MAX)] [SerializeField] private float zoomSpeed = ZOOM_SPEED_DEFAULT;
+    [Range(ZOOM_SPEED_MIN, ZOOM_SPEED_MAX)] [SerializeField] private float maxZoomSpeed = ZOOM_SPEED_DEFAULT;
 
     private void Init()
     {
@@ -63,6 +65,9 @@ public class FollowCameraController : MonoBehaviour
 
         viewportInfo = new ViewportInfo(cam);
         subjectInfo  = new CameraSubjectInfo(subject);
+
+        zoomVelocity = 0.00f;
+        moveVelocity = Vector2.zero;
     }
     void Awake()
     {
@@ -103,11 +108,15 @@ public class FollowCameraController : MonoBehaviour
             return;
         }
 
+        if (keepSubjectInView)
+        {
+            viewportInfo.Update();
+        }
         AdjustZoom();
         AdjustPosition();
     }
 
-    void AdjustZoom(bool forceChange=false)
+    private void AdjustZoom(bool forceChange=false)
     {
         if (forceChange)
         {
@@ -115,32 +124,32 @@ public class FollowCameraController : MonoBehaviour
             return;
         }
 
-        if (Mathf.Abs(fieldOfView - cam.fieldOfView) > TARGET_DISTANCE_TOLERANCE)
+        float current = cam.fieldOfView;
+        float target  = fieldOfView;
+        if (!IsTooClose(current, target))
         {
-            cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, fieldOfView, Time.deltaTime * zoomSpeed);
+            cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, fieldOfView, Time.deltaTime * maxZoomSpeed);
         }
     }
-    void AdjustPosition(bool forceChange=false)
+    private void AdjustPosition(bool forceChange=false)
     {
+        Vector3 target = ComputeTarget();
         if (forceChange)
         {
-            cam.transform.position = ComputeTargetPosition();
+            cam.transform.position = target;
             return;
         }
 
-        if (Mathf.Abs(subjectInfo.Center.x - cam.transform.position.x) > TARGET_DISTANCE_TOLERANCE ||
-            Mathf.Abs(subjectInfo.Center.y - cam.transform.position.y) > TARGET_DISTANCE_TOLERANCE ||
-            viewportInfo.HasScreenSizeChangedLastUpdate)
+        Vector3 current = transform.TransformVector(cam.transform.position);
+        if (!IsTooClose(current, target) || (keepSubjectInView && viewportInfo.HasScreenSizeChangedLastUpdate))
         {
-            Vector2 target = Vector2.MoveTowards(transform.TransformVector(cam.transform.position),
-                ComputeTargetPosition(), Time.deltaTime * moveSpeed);
-            cam.transform.position = new Vector3(target.x, target.y, zOffset);
+            Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
+            cam.transform.position = new Vector3(position.x, position.y, target.z);
         }
-
     }
     // we don't worry about the case that the subject overlaps multiple sides,
     // in other words, we assume its bounds are smaller than viewport
-    private Vector2 ComputeTargetPosition()
+    private Vector3 ComputeTarget()
     {
         if (keepSubjectInView)
         {
@@ -158,5 +167,15 @@ public class FollowCameraController : MonoBehaviour
         {
             return new Vector3(subjectInfo.Center.x + xOffset, subjectInfo.Center.y + yOffset, zOffset);
         }
+    }
+
+    private static bool IsTooClose(float current, float target)
+    {
+        return Mathf.Abs(target - current) <= TARGET_DISTANCE_TOLERANCE;
+    }
+    private static bool IsTooClose(Vector2 current, Vector2 target)
+    {
+        return Mathf.Abs(target.x - current.x) <= TARGET_DISTANCE_TOLERANCE &&
+               Mathf.Abs(target.y - current.y) <= TARGET_DISTANCE_TOLERANCE;
     }
 }
