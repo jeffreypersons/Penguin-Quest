@@ -2,7 +2,11 @@
 using UnityEngine.SocialPlatforms;
 
 
-// todo: look into adding some sort of smoothing when the camera moves
+// features:
+// * option to restrict subject to camera viewport
+// * applies smoothing when following subject
+// * reduces jitter by avoids moving if super close to object
+// * forces immediate updates in editor so that offsets are always kept in sync prior to game start
 [ExecuteAlways]
 [RequireComponent(typeof(Camera))]
 public class FollowCameraController : MonoBehaviour
@@ -57,6 +61,10 @@ public class FollowCameraController : MonoBehaviour
     [Tooltip("Adjust zoom speed (how fast the camera FOV is adjusted)")]
     [Range(ZOOM_SPEED_MIN, ZOOM_SPEED_MAX)] [SerializeField] private float maxZoomSpeed = ZOOM_SPEED_DEFAULT;
 
+    private bool IsFullyInitialized
+    {
+        get => cam != null && viewportInfo != null && subject != null && subjectInfo != null;
+    }
     private void Init()
     {
         cam = gameObject.GetComponent<Camera>();
@@ -69,6 +77,17 @@ public class FollowCameraController : MonoBehaviour
         zoomVelocity = 0.00f;
         moveVelocity = Vector2.zero;
     }
+    private void ForceUpdate()
+    {
+        // force reinitialization since sometimes the references are modified after recompilation
+        if (!IsFullyInitialized)
+        {
+            Init();
+        }
+        AdjustZoom(forceChange: true);
+        AdjustPosition(forceChange: true);
+    }
+
     void Awake()
     {
         if (!subject)
@@ -85,21 +104,17 @@ public class FollowCameraController : MonoBehaviour
     #if UNITY_EDITOR
     void OnValidate()
     {
-        if (cam != null && viewportInfo != null && subject != null && subjectInfo != null)
-        {
-            AdjustZoom(forceChange: true);
-            AdjustPosition(forceChange: true);
-        }
+        ForceUpdate();
     }
     #endif
 
     void LateUpdate()
     {
         #if UNITY_EDITOR
-        if (!Application.isPlaying)
+        if (!Application.IsPlaying(this))
         {
-            AdjustZoom(forceChange: true);
-            AdjustPosition(forceChange: true);
+            ForceUpdate();
+            return;
         }
         #endif
 
