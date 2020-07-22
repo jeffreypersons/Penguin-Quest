@@ -145,14 +145,18 @@ public class FollowCameraController : MonoBehaviour
     private void AdjustPosition(bool forceChange=false)
     {
         Vector3 target = ComputeTarget();
+        if (keepSubjectInView)
+        {
+            viewportInfo.Update();
+        }
         if (forceChange)
         {
-            cam.transform.position = target;
+            cam.transform.position = ComputeTarget();
             return;
         }
 
         Vector3 current = transform.TransformVector(cam.transform.position);
-        if (!IsTooClose(current, target))
+        if (!IsTooClose(current, target) || (keepSubjectInView && viewportInfo.HasScreenSizeChangedLastUpdate))
         {
             Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
             cam.transform.position = new Vector3(position.x, position.y, target.z);
@@ -171,9 +175,6 @@ public class FollowCameraController : MonoBehaviour
             return new Vector3(targetX, targetY, zOffset);
         }
 
-        // todo: consider adding conditions to below so its computed...
-        // only if subject.transform.hasChanged || viewport.HasScreenSizeChanged
-        viewportInfo.Update();
         Vector2 targetMinBounds = new Vector3(subjectInfo.Min.x + xOffset, subjectInfo.Min.y + yOffset);
         Vector2 targetMaxBounds = new Vector3(subjectInfo.Max.x + xOffset, subjectInfo.Max.y + yOffset);
         if (xOffset < 0 && targetMinBounds.x < viewportInfo.Min.x)
