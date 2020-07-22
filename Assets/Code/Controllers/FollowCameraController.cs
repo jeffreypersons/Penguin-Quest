@@ -89,7 +89,7 @@ public class FollowCameraController : MonoBehaviour
         {
             Init();
         }
-        AdjustViewBounds(forceChange: true);
+        AdjustOffsets(forceChange: true);
         AdjustZoom(forceChange: true);
         AdjustPosition(forceChange: true);
     }
@@ -129,7 +129,7 @@ public class FollowCameraController : MonoBehaviour
             return;
         }
         AdjustZoom();
-        AdjustViewBounds();
+        AdjustOffsets();
         AdjustPosition();
     }
 
@@ -143,12 +143,12 @@ public class FollowCameraController : MonoBehaviour
 
         float current = cam.fieldOfView;
         float target  = fieldOfView;
-        if (!IsTooClose(current, target))
+        if (Mathf.Abs(target - current) > TARGET_DISTANCE_TOLERANCE)
         {
             cam.fieldOfView = Mathf.SmoothDamp(current, target, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
         }
     }
-    private void AdjustViewBounds(bool forceChange=false)
+    private void AdjustOffsets(bool forceChange=false)
     {
         viewportInfo.Update();
         subjectInfo.Update();
@@ -169,39 +169,21 @@ public class FollowCameraController : MonoBehaviour
     }
     private void AdjustPosition(bool forceChange=false)
     {
-        Vector3 target = ComputeTarget();
+        Vector3 target = new Vector3(x: subjectInfo.Center.x + normalizedOffsets.x,
+                                     y: subjectInfo.Center.y + normalizedOffsets.y,
+                                     z: normalizedOffsets.z);
         if (forceChange)
         {
-            cam.transform.position = ComputeTarget();
+            cam.transform.position = target;
             return;
         }
 
         Vector3 current = transform.TransformVector(cam.transform.position);
-        if (!IsTooClose(current, target) ||
-            ((keepSubjectInView && viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasPositionChangedSinceLastUpdate)))
+        if (Mathf.Abs(target.x - current.x) > TARGET_DISTANCE_TOLERANCE &&
+            Mathf.Abs(target.y - current.y) > TARGET_DISTANCE_TOLERANCE)
         {
             Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
             cam.transform.position = new Vector3(position.x, position.y, target.z);
         }
-    }
-
-    // compute displacements needed to constrain the subject bounds to the viewport
-    // assumes subject bounds are smaller than viewport
-    // note that if offset is zero, then no adjustments can be done since its already centered
-    private Vector3 ComputeTarget()
-    {
-        return new Vector3(x: subjectInfo.Center.x + normalizedOffsets.x,
-                           y: subjectInfo.Center.y + normalizedOffsets.y,
-                           z: normalizedOffsets.z);
-    }
-
-    private static bool IsTooClose(float current, float target)
-    {
-        return Mathf.Abs(target - current) <= TARGET_DISTANCE_TOLERANCE;
-    }
-    private static bool IsTooClose(Vector2 current, Vector2 target)
-    {
-        return Mathf.Abs(target.x - current.x) <= TARGET_DISTANCE_TOLERANCE &&
-               Mathf.Abs(target.y - current.y) <= TARGET_DISTANCE_TOLERANCE;
     }
 }

@@ -6219,15 +6219,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FollowCamera
       objectReference: {fileID: 0}
-    - target: {fileID: 2755626779757447955, guid: 4ea485da32399be4ebfab01cef57f2eb,
-        type: 3}
-      propertyPath: field of view
-      value: 50
-      objectReference: {fileID: 0}
     - target: {fileID: 2755626779757448172, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 50
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 2755626779757448172, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
@@ -6286,18 +6281,8 @@ PrefabInstance:
       objectReference: {fileID: 27460619}
     - target: {fileID: 8053971773797213703, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
-      propertyPath: keepSubjectInView
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8053971773797213703, guid: 4ea485da32399be4ebfab01cef57f2eb,
-        type: 3}
       propertyPath: xOffset
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 8053971773797213703, guid: 4ea485da32399be4ebfab01cef57f2eb,
-        type: 3}
-      propertyPath: yOffset
-      value: 15
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ea485da32399be4ebfab01cef57f2eb, type: 3}
