@@ -9,15 +9,16 @@ using UnityEngine.SocialPlatforms;
 // * forces immediate updates in editor so that offsets are always kept in sync prior to game start
 //
 // notes:
+// * ONLY orthographic mode is supported!
 // * assumes camera position is center of viewport
 //
 [ExecuteAlways]
 [RequireComponent(typeof(Camera))]
 public class FollowCameraController : MonoBehaviour
 {
-    private const float FOV_DEFAULT    =   50.00f;
-    private const float FOV_MIN        =   10.00f;
-    private const float FOV_MAX        =  100.00f;
+    private const float ORTHO_SIZE_DEFAULT =   50.00f;
+    private const float ORTHO_SIZE_MIN     =   10.00f;
+    private const float ORTHO_SIZE_MAX     =  100.00f;
     private const float OFFSET_DEFAULT =    0.00f;
     private const float OFFSET_MIN     = -1000.00f;
     private const float OFFSET_MAX     =  1000.00f;
@@ -61,8 +62,8 @@ public class FollowCameraController : MonoBehaviour
     [Range(MOVE_SPEED_MIN, MOVE_SPEED_MAX)] [SerializeField] private float maxMoveSpeed = MOVE_SPEED_DEFAULT;
 
     [Header("Zoom Behavior")]
-    [Tooltip("Adjust field of view (how 'zoomed in' the camera is)")]
-    [Range(FOV_MIN, FOV_MAX)] [SerializeField] private float fieldOfView = FOV_DEFAULT;
+    [Tooltip("Adjust orthographic size (how 'zoomed in' the camera is, by changing the viewport's half height)")]
+    [Range(ORTHO_SIZE_MIN, ORTHO_SIZE_MAX)] [SerializeField] private float orthographicSize = ORTHO_SIZE_DEFAULT;
     [Tooltip("Adjust zoom speed (how fast the camera FOV is adjusted)")]
     [Range(ZOOM_SPEED_MIN, ZOOM_SPEED_MAX)] [SerializeField] private float maxZoomSpeed = ZOOM_SPEED_DEFAULT;
 
@@ -75,6 +76,7 @@ public class FollowCameraController : MonoBehaviour
         cam = gameObject.GetComponent<Camera>();
         cam.nearClipPlane = 0.30f;
         cam.rect = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
+        cam.orthographic = true;
 
         viewportInfo = new CameraViewportInfo(cam);
         subjectInfo  = new CameraSubjectInfo(subject);
@@ -99,10 +101,6 @@ public class FollowCameraController : MonoBehaviour
         if (!subject)
         {
             Debug.LogError($"No subject assigned to follow, `{GetType().Name}` - no object assigned");
-        }
-        if (!cam.orthographic)
-        {
-            Debug.LogError($"Only orthographic camera mode is supported");
         }
         ForceUpdate();
     }
@@ -137,15 +135,15 @@ public class FollowCameraController : MonoBehaviour
     {
         if (forceChange)
         {
-            cam.fieldOfView = fieldOfView;
+            cam.orthographicSize = orthographicSize;
             return;
         }
 
-        float current = cam.fieldOfView;
-        float target  = fieldOfView;
+        float current = cam.orthographicSize;
+        float target  = orthographicSize;
         if (Mathf.Abs(target - current) > TARGET_DISTANCE_TOLERANCE)
         {
-            cam.fieldOfView = Mathf.SmoothDamp(current, target, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
+            cam.orthographicSize = Mathf.SmoothDamp(current, target, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
         }
     }
     private void AdjustOffsets(bool forceChange=false)
