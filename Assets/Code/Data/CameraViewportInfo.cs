@@ -9,12 +9,10 @@ public class CameraViewportInfo
 {
     private readonly Camera cam;
 
-    private Vector2 _screenSize;
-    private Vector3 _viewportOrigin;
-
-    public bool  HasScreenSizeChangedLastUpdate { get; private set; }
-    public float NearClipOffset { get => _viewportOrigin.z; }
-    public Vector2 Center       { get => _viewportOrigin;   }
+    public bool  HasPositionChangedSinceLastUpdate { get; private set; }
+    public bool  HasSizeChangedSinceLastUpdate     { get; private set; }
+    public float NearClipOffset { get; private set; }
+    public Vector2 Center       { get; private set; }
     public Vector2 Size         { get; private set; }
     public Vector2 Extents      { get; private set; }
     public Vector2 Min          { get; private set; }
@@ -24,25 +22,49 @@ public class CameraViewportInfo
     {
         this.cam = cam;
         Update();
-        HasScreenSizeChangedLastUpdate = false;
+        HasPositionChangedSinceLastUpdate = false;
+        HasSizeChangedSinceLastUpdate     = false;
     }
 
     public void Update()
     {
-        if (_screenSize.x == Screen.width && _screenSize.y == Screen.height)
+        UpdatePosition();
+        UpdateSize();
+    }
+
+    private void UpdatePosition()
+    {
+        Vector3 center = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, cam.nearClipPlane));
+        if (center.z != NearClipOffset)
         {
-            HasScreenSizeChangedLastUpdate = false;
+            NearClipOffset = center.z;
+        }
+
+        if (center.x != Center.x || center.y != Center.y)
+        {
+            Center = center;
+            HasPositionChangedSinceLastUpdate = true;
         }
         else
         {
-            _screenSize = new Vector3(Screen.width, Screen.height, 0.00f);
-            HasScreenSizeChangedLastUpdate = true;
+            HasPositionChangedSinceLastUpdate = false;
         }
-
-        _viewportOrigin = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, cam.nearClipPlane));
-        Min = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, cam.nearClipPlane));
-        Max = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, cam.nearClipPlane));
-        Size = Max - Min;
-        Extents = Size * 0.50f;
+    }
+    private void UpdateSize()
+    {
+        Vector2 min = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, cam.nearClipPlane));
+        Vector2 max = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, cam.nearClipPlane));
+        if (min.x != Min.x || min.y != Min.y || max.x != Max.x || max.y != Max.y)
+        {
+            Min = min;
+            Max = max;
+            Size = max - min;
+            Extents = Size * 0.50f;
+            HasSizeChangedSinceLastUpdate = true;
+        }
+        else
+        {
+            HasSizeChangedSinceLastUpdate = false;
+        }
     }
 }

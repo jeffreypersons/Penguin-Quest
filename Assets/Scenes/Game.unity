@@ -6227,12 +6227,12 @@ PrefabInstance:
     - target: {fileID: 2755626779757448172, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2755626779757448172, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 14.5
+      value: 28.75
       objectReference: {fileID: 0}
     - target: {fileID: 2755626779757448172, guid: 4ea485da32399be4ebfab01cef57f2eb,
         type: 3}
@@ -6288,6 +6288,16 @@ PrefabInstance:
         type: 3}
       propertyPath: keepSubjectInView
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8053971773797213703, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: xOffset
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8053971773797213703, guid: 4ea485da32399be4ebfab01cef57f2eb,
+        type: 3}
+      propertyPath: yOffset
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ea485da32399be4ebfab01cef57f2eb, type: 3}

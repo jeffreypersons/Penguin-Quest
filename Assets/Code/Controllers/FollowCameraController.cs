@@ -7,6 +7,10 @@ using UnityEngine.SocialPlatforms;
 // * applies smoothing when following subject
 // * reduces jitter by avoids moving if super close to object
 // * forces immediate updates in editor so that offsets are always kept in sync prior to game start
+//
+// notes:
+// * assumes camera position is center of viewport
+//
 [ExecuteAlways]
 [RequireComponent(typeof(Camera))]
 public class FollowCameraController : MonoBehaviour
@@ -15,8 +19,8 @@ public class FollowCameraController : MonoBehaviour
     private const float FOV_MIN        =   10.00f;
     private const float FOV_MAX        =  100.00f;
     private const float OFFSET_DEFAULT =    0.00f;
-    private const float OFFSET_MIN     = -100.00f;
-    private const float OFFSET_MAX     =  100.00f;
+    private const float OFFSET_MIN     = -1000.00f;
+    private const float OFFSET_MAX     =  1000.00f;
     private const float ZOOM_SPEED_DEFAULT =   10.00f;
     private const float ZOOM_SPEED_MIN     =    0.01f;
     private const float ZOOM_SPEED_MAX     =   50.00f;
@@ -30,11 +34,12 @@ public class FollowCameraController : MonoBehaviour
     private CameraSubjectInfo subjectInfo;
     private float zoomVelocity;
     private Vector2 moveVelocity;
+    private Vector3 normalizedOffsets;
     public enum FollowMode { MoveWithSubject, MoveAfterLeavingView };
 
     [Header("Subject to Follow")]
-    [Tooltip("Transform of subject for camera to follow (does not have to be 'visible')")]
-    [SerializeField]  private Transform subject;
+    [Tooltip("Transform of (any) subject for camera to follow (does not have to be 'visible')")]
+    [SerializeField] private Transform subject;
 
     [Header("Follow Position Relative to Subject")]
     [Tooltip("x offset from subject (subject is on left of camera if positive, right if negative)")]
@@ -47,7 +52,7 @@ public class FollowCameraController : MonoBehaviour
     [Header("Follow Behavior")]
     [Tooltip("Mode for camera movement relative to to subject")]
     [SerializeField] private FollowMode followMode = FollowMode.MoveWithSubject;
-    [Tooltip("Clamp offsets to prevent subject's renderer from leaving camera viewport")]
+    [Tooltip("Clamp offsets to prevent subject's collider from leaving camera viewport")]
     [SerializeField] private bool keepSubjectInView = true;
     [Tooltip("Toggle for actively following")]
     [SerializeField] private bool isActivelyRunning = true;
@@ -84,6 +89,7 @@ public class FollowCameraController : MonoBehaviour
         {
             Init();
         }
+        AdjustViewBounds(forceChange: true);
         AdjustZoom(forceChange: true);
         AdjustPosition(forceChange: true);
     }
@@ -94,11 +100,11 @@ public class FollowCameraController : MonoBehaviour
         {
             Debug.LogError($"No subject assigned to follow, `{GetType().Name}` - no object assigned");
         }
-        Init();
         if (!cam.orthographic)
         {
             Debug.LogError($"Only orthographic camera mode is supported");
         }
+        ForceUpdate();
     }
 
     #if UNITY_EDITOR
@@ -122,8 +128,8 @@ public class FollowCameraController : MonoBehaviour
         {
             return;
         }
-
         AdjustZoom();
+        AdjustViewBounds();
         AdjustPosition();
     }
 
@@ -142,13 +148,28 @@ public class FollowCameraController : MonoBehaviour
             cam.fieldOfView = Mathf.SmoothDamp(current, target, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
         }
     }
+    private void AdjustViewBounds(bool forceChange=false)
+    {
+        viewportInfo.Update();
+        subjectInfo.Update();
+
+        if (keepSubjectInView &&
+            (forceChange || viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasSizeChangedSinceLastUpdate))
+        {
+            Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
+            normalizedOffsets = new Vector3(x: Mathf.Clamp(xOffset, -limit.x, limit.x),
+                                            y: Mathf.Clamp(yOffset, -limit.y, limit.y),
+                                            z: zOffset);
+        }
+        else if (forceChange ||
+                 xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y || yOffset != normalizedOffsets.x)
+        {
+            normalizedOffsets = new Vector3(xOffset, yOffset, zOffset);
+        }
+    }
     private void AdjustPosition(bool forceChange=false)
     {
         Vector3 target = ComputeTarget();
-        if (keepSubjectInView)
-        {
-            viewportInfo.Update();
-        }
         if (forceChange)
         {
             cam.transform.position = ComputeTarget();
@@ -156,7 +177,8 @@ public class FollowCameraController : MonoBehaviour
         }
 
         Vector3 current = transform.TransformVector(cam.transform.position);
-        if (!IsTooClose(current, target) || (keepSubjectInView && viewportInfo.HasScreenSizeChangedLastUpdate))
+        if (!IsTooClose(current, target) ||
+            ((keepSubjectInView && viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasPositionChangedSinceLastUpdate)))
         {
             Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
             cam.transform.position = new Vector3(position.x, position.y, target.z);
@@ -168,34 +190,9 @@ public class FollowCameraController : MonoBehaviour
     // note that if offset is zero, then no adjustments can be done since its already centered
     private Vector3 ComputeTarget()
     {
-        float targetX = subjectInfo.Center.x + xOffset;
-        float targetY = subjectInfo.Center.y + yOffset;
-        if (!keepSubjectInView)
-        {
-            return new Vector3(targetX, targetY, zOffset);
-        }
-
-        Vector2 targetMinBounds = new Vector3(subjectInfo.Min.x + xOffset, subjectInfo.Min.y + yOffset);
-        Vector2 targetMaxBounds = new Vector3(subjectInfo.Max.x + xOffset, subjectInfo.Max.y + yOffset);
-        if (xOffset < 0 && targetMinBounds.x < viewportInfo.Min.x)
-        {
-            targetX += viewportInfo.Min.x - targetMinBounds.x;
-        }
-        else if (xOffset > 0 && targetMaxBounds.x > viewportInfo.Max.x)
-        {
-            targetX += viewportInfo.Max.x - targetMaxBounds.x;
-        }
-
-        if (yOffset < 0 && targetMinBounds.y < viewportInfo.Min.y)
-        {
-            targetY += viewportInfo.Min.y - targetMinBounds.y;
-        }
-        else if (yOffset > 0 && targetMaxBounds.y > viewportInfo.Max.y)
-        {
-            targetY += viewportInfo.Max.y - targetMaxBounds.y;
-        }
-
-        return new Vector3(targetX, targetY, zOffset);
+        return new Vector3(x: subjectInfo.Center.x + normalizedOffsets.x,
+                           y: subjectInfo.Center.y + normalizedOffsets.y,
+                           z: normalizedOffsets.z);
     }
 
     private static bool IsTooClose(float current, float target)
