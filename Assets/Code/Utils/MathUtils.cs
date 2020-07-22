@@ -53,6 +53,7 @@ public static class MathUtils
     {
         return Random.Range(0, 2) == 0? 1.0f : -1.0f;
     }
+
     public static bool IsWithinRange(float val, float min, float max)
     {
         return (min < max) && (min <= val && val <= max);

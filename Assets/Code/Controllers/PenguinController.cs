@@ -121,7 +121,7 @@ public class PenguinController : MonoBehaviour
             Standup();
         }
 
-        if (true)
+        if (IsFireRequested)
         {
             Fire();
         }
@@ -156,6 +156,7 @@ public class PenguinController : MonoBehaviour
     }
     private void Standup()
     {
+        Debug.Log("Standup!");
         posture = Posture.UPRIGHT;
     }
     private void LieDown()
@@ -167,18 +168,19 @@ public class PenguinController : MonoBehaviour
     {
         Debug.Log("Jump!");
         float jumpForce = 50000.00f;
-        // todo: apply an impulse force
         penguinRigidBody.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
         penguinAnimator.SetTrigger("Jump");
     }
     private void Fire()
     {
-        // todo: throw a fish or something lol
         Debug.Log("Fire!");
+
+        // todo: throw a fish or something lol
     }
     private void Use()
     {
-        // todo: use something (like equip an item, maybe?)
         Debug.Log("Using!");
+
+        // todo: use something (like equip an item, maybe?)
     }
 }
