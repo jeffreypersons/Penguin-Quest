@@ -179,7 +179,7 @@ public class FollowCameraController : MonoBehaviour
         }
 
         Vector3 current = transform.TransformVector(cam.transform.position);
-        if (Mathf.Abs(target.x - current.x) > TARGET_DISTANCE_TOLERANCE &&
+        if (Mathf.Abs(target.x - current.x) > TARGET_DISTANCE_TOLERANCE ||
             Mathf.Abs(target.y - current.y) > TARGET_DISTANCE_TOLERANCE)
         {
             Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
