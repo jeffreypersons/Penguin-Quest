@@ -11,6 +11,8 @@ using UnityEngine.SocialPlatforms;
 // notes:
 // * ONLY orthographic mode is supported!
 // * assumes camera position is center of viewport
+// * assumes subject's dimensions are less than viewport,
+//   although this could be handled in future by changing the orthographic size
 //
 [ExecuteAlways]
 [RequireComponent(typeof(Camera))]
@@ -18,7 +20,7 @@ public class FollowCameraController : MonoBehaviour
 {
     private const float TARGET_DISTANCE_TOLERANCE = 0.20f;
     private const float ORTHO_SIZE_DEFAULT =    50.00f;
-    private const float ORTHO_SIZE_MIN     =    10.00f;
+    private const float ORTHO_SIZE_MIN     =    15.00f;
     private const float ORTHO_SIZE_MAX     =   500.00f;
     private const float OFFSET_DEFAULT     =     0.00f;
     private const float OFFSET_MIN         = -1000.00f;
@@ -109,6 +111,11 @@ public class FollowCameraController : MonoBehaviour
     void OnValidate()
     {
         ForceUpdate();
+        if (followMode != FollowMode.MoveWithSubject)
+        {
+            Debug.LogWarning("Only `FollowMode.MoveWithSubject` mode is currently supported");
+            followMode = FollowMode.MoveWithSubject;
+        }
     }
     #endif
 
