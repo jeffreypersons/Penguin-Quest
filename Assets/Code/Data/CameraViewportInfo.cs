@@ -5,21 +5,22 @@
 // * assumes orthographic camera
 // * assumes a single display and eye
 // * all external functionality is in world space coords unless otherwise stated
-public class ViewportInfo
+public class CameraViewportInfo
 {
     private readonly Camera cam;
 
     private Vector2 _screenSize;
     private Vector3 _viewportOrigin;
 
-    public Vector2 Min     { get; private set; }
-    public Vector2 Max     { get; private set; }
-    public Vector2 Size    { get; private set; }
-    public Vector2 Extents { get; private set; }
+    public bool  HasScreenSizeChangedLastUpdate { get; private set; }
     public float NearClipOffset { get => _viewportOrigin.z; }
-    public bool HasScreenSizeChangedLastUpdate { get; private set; }
+    public Vector2 Center       { get => _viewportOrigin;   }
+    public Vector2 Size         { get; private set; }
+    public Vector2 Extents      { get; private set; }
+    public Vector2 Min          { get; private set; }
+    public Vector2 Max          { get; private set; }
 
-    public ViewportInfo(Camera cam)
+    public CameraViewportInfo(Camera cam)
     {
         this.cam = cam;
         Update();

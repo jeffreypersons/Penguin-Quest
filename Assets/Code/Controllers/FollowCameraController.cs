@@ -26,7 +26,7 @@ public class FollowCameraController : MonoBehaviour
     private const float TARGET_DISTANCE_TOLERANCE = 0.15f;
 
     private Camera cam;
-    private ViewportInfo viewportInfo;
+    private CameraViewportInfo viewportInfo;
     private CameraSubjectInfo subjectInfo;
     private float zoomVelocity;
     private Vector2 moveVelocity;
@@ -71,7 +71,7 @@ public class FollowCameraController : MonoBehaviour
         cam.nearClipPlane = 0.30f;
         cam.rect = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
 
-        viewportInfo = new ViewportInfo(cam);
+        viewportInfo = new CameraViewportInfo(cam);
         subjectInfo  = new CameraSubjectInfo(subject);
 
         zoomVelocity = 0.00f;
@@ -123,10 +123,6 @@ public class FollowCameraController : MonoBehaviour
             return;
         }
 
-        if (keepSubjectInView)
-        {
-            viewportInfo.Update();
-        }
         AdjustZoom();
         AdjustPosition();
     }
@@ -156,31 +152,49 @@ public class FollowCameraController : MonoBehaviour
         }
 
         Vector3 current = transform.TransformVector(cam.transform.position);
-        if (!IsTooClose(current, target) || (keepSubjectInView && viewportInfo.HasScreenSizeChangedLastUpdate))
+        if (!IsTooClose(current, target))
         {
             Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
             cam.transform.position = new Vector3(position.x, position.y, target.z);
         }
     }
 
-    // we don't worry about the case that the subject overlaps multiple sides,
-    // in other words, we assume its bounds are smaller than viewport
+    // compute displacements needed to constrain the subject bounds to the viewport
+    // assumes subject bounds are smaller than viewport
+    // note that if offset is zero, then no adjustments can be done since its already centered
     private Vector3 ComputeTarget()
     {
-        Vector3 target = new Vector3(subjectInfo.Center.x + xOffset, subjectInfo.Center.y + yOffset, zOffset);
+        float targetX = subjectInfo.Center.x + xOffset;
+        float targetY = subjectInfo.Center.y + yOffset;
         if (!keepSubjectInView)
         {
-            return target;
+            return new Vector3(targetX, targetY, zOffset);
         }
 
-        float leftBound  = viewportInfo.Min.x + subjectInfo.Extents.x;
-        float rightBound = viewportInfo.Max.x - subjectInfo.Extents.x;
-        float lowBound = viewportInfo.Min.y + subjectInfo.Extents.y;
-        float upBound  = viewportInfo.Max.y - subjectInfo.Extents.y;
-        return new Vector3(
-            Mathf.Clamp(target.x, leftBound, rightBound),
-            Mathf.Clamp(target.y, lowBound,  upBound),
-            zOffset);
+        // todo: consider adding conditions to below so its computed...
+        // only if subject.transform.hasChanged || viewport.HasScreenSizeChanged
+        viewportInfo.Update();
+        Vector2 targetMinBounds = new Vector3(subjectInfo.Min.x + xOffset, subjectInfo.Min.y + yOffset);
+        Vector2 targetMaxBounds = new Vector3(subjectInfo.Max.x + xOffset, subjectInfo.Max.y + yOffset);
+        if (xOffset < 0 && targetMinBounds.x < viewportInfo.Min.x)
+        {
+            targetX += viewportInfo.Min.x - targetMinBounds.x;
+        }
+        else if (xOffset > 0 && targetMaxBounds.x > viewportInfo.Max.x)
+        {
+            targetX += viewportInfo.Max.x - targetMaxBounds.x;
+        }
+
+        if (yOffset < 0 && targetMinBounds.y < viewportInfo.Min.y)
+        {
+            targetY += viewportInfo.Min.y - targetMinBounds.y;
+        }
+        else if (yOffset > 0 && targetMaxBounds.y > viewportInfo.Max.y)
+        {
+            targetY += viewportInfo.Max.y - targetMaxBounds.y;
+        }
+
+        return new Vector3(targetX, targetY, zOffset);
     }
 
     private static bool IsTooClose(float current, float target)
