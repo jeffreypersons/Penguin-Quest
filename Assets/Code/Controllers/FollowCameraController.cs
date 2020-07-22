@@ -16,18 +16,18 @@ using UnityEngine.SocialPlatforms;
 [RequireComponent(typeof(Camera))]
 public class FollowCameraController : MonoBehaviour
 {
-    private const float ORTHO_SIZE_DEFAULT =   50.00f;
-    private const float ORTHO_SIZE_MIN     =   10.00f;
-    private const float ORTHO_SIZE_MAX     =  100.00f;
-    private const float OFFSET_DEFAULT =    0.00f;
-    private const float OFFSET_MIN     = -1000.00f;
-    private const float OFFSET_MAX     =  1000.00f;
-    private const float ZOOM_SPEED_DEFAULT =   10.00f;
-    private const float ZOOM_SPEED_MIN     =    0.01f;
-    private const float ZOOM_SPEED_MAX     =   50.00f;
-    private const float MOVE_SPEED_DEFAULT =  100.00f;
-    private const float MOVE_SPEED_MIN     =   10.00f;
-    private const float MOVE_SPEED_MAX     =  500.00f;
+    private const float ORTHO_SIZE_DEFAULT =    50.00f;
+    private const float ORTHO_SIZE_MIN     =    10.00f;
+    private const float ORTHO_SIZE_MAX     =   100.00f;
+    private const float OFFSET_DEFAULT     =     0.00f;
+    private const float OFFSET_MIN         = -1000.00f;
+    private const float OFFSET_MAX         =  1000.00f;
+    private const float ZOOM_SPEED_DEFAULT =    10.00f;
+    private const float ZOOM_SPEED_MIN     =     0.01f;
+    private const float ZOOM_SPEED_MAX     =    50.00f;
+    private const float MOVE_SPEED_DEFAULT =   100.00f;
+    private const float MOVE_SPEED_MIN     =    10.00f;
+    private const float MOVE_SPEED_MAX     =   500.00f;
     private const float TARGET_DISTANCE_TOLERANCE = 0.15f;
 
     private Camera cam;
