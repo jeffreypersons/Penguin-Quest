@@ -2635,6 +2635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
+  jumpForce: 25000
 --- !u!114 &27460629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2921,6 +2922,25 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &27460654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27460624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7ff032402c77c4e963e4b105b29d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source: {fileID: 1725026792}
+  offset: {x: 0, y: 1}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  toleratedDistance: 0.3
+  showRaycastsInSceneView: 1
 --- !u!1 &52369770
 GameObject:
   m_ObjectHideFlags: 0
@@ -5738,6 +5758,12 @@ MonoBehaviour:
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
+--- !u!4 &1725026792 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -388933118533720201, guid: c9587e548613a564c81ba23ebf263460,
+    type: 3}
+  m_PrefabInstance: {fileID: 27460618}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1751776878
 GameObject:
   m_ObjectHideFlags: 0
@@ -6227,7 +6253,7 @@ MonoBehaviour:
   keepSubjectInView: 1
   isActivelyRunning: 1
   maxMoveSpeed: 250
-  fieldOfView: 50
+  orthographicSize: 50
   maxZoomSpeed: 10
 --- !u!4 &6127185479514728925 stripped
 Transform:
