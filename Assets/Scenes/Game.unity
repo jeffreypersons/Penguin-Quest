@@ -2635,6 +2635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
+  jumpForce: 50000
 --- !u!114 &27460629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2921,6 +2922,26 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &27460654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27460624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7ff032402c77c4e963e4b105b29d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  toleratedHeightFromGround: 0.3
+  displayVisualAids: 1
+  rayColorTop: {r: 0, g: 0.2924528, b: 0.2924528, a: 1}
+  rayColorLower: {r: 0, g: 0, b: 1, a: 1}
+  rayColorBottom: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &52369770
 GameObject:
   m_ObjectHideFlags: 0
@@ -6227,7 +6248,7 @@ MonoBehaviour:
   keepSubjectInView: 1
   isActivelyRunning: 1
   maxMoveSpeed: 250
-  fieldOfView: 50
+  orthographicSize: 50
   maxZoomSpeed: 10
 --- !u!4 &6127185479514728925 stripped
 Transform:

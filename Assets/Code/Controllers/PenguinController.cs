@@ -1,45 +1,63 @@
 ﻿using UnityEngine;
+using UnityEngine.Experimental.U2D.Animation;
 using UnityEngine.InputSystem;
 
 
-// todo: look into a way to use enums directly in animator (perhaps via passing int and using editor script, etc?)
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(SpriteLibrary))]
 [RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(GroundChecker))]
 public class PenguinController : MonoBehaviour
 {
-    private bool isGrounded;
+    private const float STATE_TRANSITION_SPEED_DEFAULT = 0.10f;
+    private const float STATE_TRANSITION_SPEED_MIN     = 0.10f;
+    private const float STATE_TRANSITION_SPEED_MAX     = 1.00f;
+    private const float JUMP_FORCE_DEFAULT =  50000.00f;
+    private const float JUMP_FORCE_MIN     =  25000.00f;
+    private const float JUMP_FORCE_MAX     = 250000.00f;
+
+    private Vector2 initialSpawnPosition;
+    private Animator penguinAnimator;
+    private Rigidbody2D penguinRigidBody;
+    private BoxCollider2D penguinCollider;
+    private PlayerControls playerControls;
+    private GroundChecker groundChecker;
+
     private float xMotionIntensity;
     private Facing facing;
     private Posture posture;
     private enum Facing  { LEFT,    RIGHT   }
     private enum Posture { UPRIGHT, ONBELLY }
 
-    [Header("Movement")]
+    [Header("Animation Settings")]
     [Tooltip("Amount of progress made per frame when transitioning between states " +
              "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
              "1.00 for an instant transition with no blending)")]
-    [SerializeField] [Range(0.01f, 1.00f)] private float stateTransitionSpeed = 0.10f;
+    [SerializeField] [Range(STATE_TRANSITION_SPEED_MIN, STATE_TRANSITION_SPEED_MAX)]
+    private float stateTransitionSpeed = STATE_TRANSITION_SPEED_DEFAULT;
 
-    [Header("Input Configuration")]
-    private PlayerControls playerControls;
+    [Header("Jump Settings")]
+    [Tooltip("Jump force in newtons")]
+    [SerializeField] [Range(JUMP_FORCE_MIN, JUMP_FORCE_MAX)]
+    private float jumpForce = JUMP_FORCE_DEFAULT;
 
-    private Vector2 initialSpawnPosition;
-    private Animator penguinAnimator;
-    private Rigidbody2D penguinRigidBody;
-    private BoxCollider2D penguinCollider;
-
-    private Vector3 PenguinCenter
-    {
-        get => penguinCollider.bounds.center;
-    }
     private Vector3 PenguinScale
     {
         get => penguinRigidBody.transform.localScale;
         set => penguinRigidBody.transform.localScale = value;
     }
+    // todo: incorporate object references for fire/use request (ie what object is being used?)
+    private bool    IsFireRequested    => playerControls.Gameplay.Fire.triggered;
+    private bool    IsUseItemRequested => playerControls.Gameplay.Use.triggered;
+    private Vector2 MovementRequested  => playerControls.Gameplay.Move.ReadValue<Vector2>();
+
+    // update all animator parameters (except for triggers, as those should be set directly)
     private void UpdateAnimatorParameters()
     {
         // ideally we would use the enums directly, but enum is not a supported parameter type for animator
-        penguinAnimator.SetBool("IsGrounded", isGrounded);
+        penguinAnimator.SetBool("IsGrounded", groundChecker.WasDetected);
         penguinAnimator.SetBool("IsUpright",  posture == Posture.UPRIGHT);
         penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
     }
@@ -50,13 +68,14 @@ public class PenguinController : MonoBehaviour
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
-        isGrounded = true;
         xMotionIntensity = 0.00f;
         penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
         penguinAnimator.applyRootMotion = true;
 
         Standup();
         TurnToFace(Facing.RIGHT);
+        groundChecker.Reset();
+        penguinAnimator.applyRootMotion = true;
         UpdateAnimatorParameters();
     }
     void OnEnable()
@@ -70,34 +89,20 @@ public class PenguinController : MonoBehaviour
     void Awake()
     {
         playerControls = new PlayerControls();
-
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
         penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
         penguinAnimator  = gameObject.GetComponent<Animator>();
-
+        groundChecker    = gameObject.GetComponent<GroundChecker>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
 
-    // todo: incorporate object references for fire/use request (ie what object is being used?)
-    private bool IsFireRequested
-    {
-        get => playerControls.Gameplay.Fire.triggered;
-    }
-    private bool IsUseItemRequested
-    {
-        get => playerControls.Gameplay.Use.triggered;
-    }
-    private Vector2 MovementRequested
-    {
-        get => playerControls.Gameplay.Move.ReadValue<Vector2>();
-    }
-
     void Update()
     {
-        GroundCheck();
-        Vector2 inputAxes = MovementRequested;
+        groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
+                                     extraLineHeight: penguinCollider.bounds.extents.y);
 
+        Vector2 inputAxes = MovementRequested;
         if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
             xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (stateTransitionSpeed));
@@ -108,15 +113,15 @@ public class PenguinController : MonoBehaviour
             TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
         }
 
-        if (inputAxes.y < 0.00f && isGrounded && posture == Posture.UPRIGHT)
+        if (inputAxes.y < 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
             LieDown();
         }
-        else if (inputAxes.y > 0.00f && isGrounded && posture == Posture.UPRIGHT)
+        else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
             Jump();
         }
-        else if (inputAxes.y > 0.00f && isGrounded && posture == Posture.ONBELLY)
+        else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.ONBELLY)
         {
             Standup();
         }
@@ -131,12 +136,6 @@ public class PenguinController : MonoBehaviour
         }
 
         UpdateAnimatorParameters();
-    }
-
-    private void GroundCheck()
-    {
-        // todo: add proper raycasting against platform layers
-        isGrounded = Physics2D.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, 0.30f, LayerMask.GetMask("Platform"));
     }
 
     private void TurnToFace(Facing facing)
@@ -167,7 +166,6 @@ public class PenguinController : MonoBehaviour
     private void Jump()
     {
         Debug.Log("Jump!");
-        float jumpForce = 50000.00f;
         penguinRigidBody.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
         penguinAnimator.SetTrigger("Jump");
     }
