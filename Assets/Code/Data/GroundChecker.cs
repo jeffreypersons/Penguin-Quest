@@ -32,13 +32,14 @@ public class GroundChecker : MonoBehaviour
     private const float TOLERANCE_DEFAULT =  0.30f;
     private const float TOLERANCE_MIN     =  0.05f;
     private const float TOLERANCE_MAX     = 10.00f;
-    private static readonly Color RAY_HIT_COLOR_DEFAULT  = Color.green;
-    private static readonly Color RAY_MISS_COLOR_DEFAULT = Color.red;
+    private static readonly Color RAY_EXTENSION_COLOR_DEFAULT     = Color.cyan;
+    private static readonly Color RAY_BELOW_SOURCE_COLOR_DEFAULT  = Color.blue;
+    private static readonly Color RAY_HIT_INDICATED_COLOR_DEFAULT = Color.green;
 
     private Vector2 origin;
     private float extraLineHeight;
-    public Contact Result       { get; private set; }
-    public bool WasDetected     { get; private set; }
+    public Contact Result   { get; private set; }
+    public bool WasDetected { get; private set; }
 
     [Tooltip("What do we consider to be 'ground'?")]
     [SerializeField] private LayerMask groundMask = default;
@@ -49,14 +50,17 @@ public class GroundChecker : MonoBehaviour
     private float toleratedHeightFromGround = TOLERANCE_DEFAULT;
 
     [Header("Debug Settings")]
-    [Tooltip("Draw raycasts in scene view for debugging purposes")]
-    [SerializeField] private bool showRaycastsInSceneView = true;
+    [Tooltip("Enable drawing of visual aids in scene view to indicate raycasts and results")]
+    [SerializeField] private bool displayVisualAids = true;
 
-    [Tooltip("Color of ray to draw if enabled and detected ground")]
-    [SerializeField] private Color rayColorIfHit = RAY_HIT_COLOR_DEFAULT;
+    [Tooltip("Color of the ray extending from y='extraLineHeight' above origin to given origin")]
+    [SerializeField] private Color rayColorTop = RAY_EXTENSION_COLOR_DEFAULT;
 
-    [Tooltip("Color of ray to draw if enabled and didn't detect ground")]
-    [SerializeField] private Color rayColorIfMiss = RAY_MISS_COLOR_DEFAULT;
+    [Tooltip("Color of the ray extending from given origin to tolerated height below origin")]
+    [SerializeField] private Color rayColorLower = RAY_BELOW_SOURCE_COLOR_DEFAULT;
+
+    [Tooltip("Color of ray to draw perpendicular to above lines if ground detected")]
+    [SerializeField] private Color rayColorBottom = RAY_HIT_INDICATED_COLOR_DEFAULT;
 
     public override string ToString()
     {
@@ -89,7 +93,7 @@ public class GroundChecker : MonoBehaviour
         origin           = new Vector2(fromPoint.x, fromPoint.y + extraLineHeight);
         Vector2 terminal = new Vector2(fromPoint.x, fromPoint.y - toleratedHeightFromGround);
 
-        Debug.Log($"from {origin} to {terminal}");
+        //Debug.Log($"from {origin} to {terminal}");
         RaycastHit2D hitInfo = Physics2D.Linecast(origin, terminal, groundMask);
         if (hitInfo && (hitInfo.distance - extraLineHeight) < toleratedHeightFromGround)
         {
@@ -102,15 +106,17 @@ public class GroundChecker : MonoBehaviour
             Result = default;
         }
 
-        Debug.Log(this);
         #if UNITY_EDITOR
-        if (showRaycastsInSceneView && WasDetected)
+        if (!displayVisualAids)
         {
-            Debug.DrawLine(origin, Result.point, rayColorIfHit, Time.deltaTime);
+            return;
         }
-        if (showRaycastsInSceneView && !WasDetected)
+        Debug.DrawLine(origin, fromPoint, rayColorTop, Time.deltaTime);
+        Debug.DrawLine(fromPoint, terminal, rayColorLower, Time.deltaTime);
+        if (WasDetected)
         {
-            Debug.DrawLine(origin, origin - new Vector2(0, toleratedHeightFromGround), rayColorIfMiss, Time.deltaTime);
+            Vector2 offset = new Vector2(toleratedHeightFromGround, 0);
+            Debug.DrawLine(Result.point - offset, Result.point + offset, rayColorBottom, Time.deltaTime);
         }
         #endif
     }

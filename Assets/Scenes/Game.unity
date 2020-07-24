@@ -2636,7 +2636,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
   jumpForce: 50000
-  skeletalRoot: {fileID: 1725026792}
 --- !u!114 &27460629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2939,9 +2938,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   toleratedHeightFromGround: 0.3
-  showRaycastsInSceneView: 1
-  rayColorIfHit: {r: 0, g: 1, b: 0, a: 1}
-  rayColorIfMiss: {r: 1, g: 0, b: 0, a: 1}
+  displayVisualAids: 1
+  rayColorTop: {r: 0, g: 0.2924528, b: 0.2924528, a: 1}
+  rayColorLower: {r: 0, g: 0, b: 1, a: 1}
+  rayColorBottom: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &52369770
 GameObject:
   m_ObjectHideFlags: 0
@@ -5759,12 +5759,6 @@ MonoBehaviour:
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
---- !u!4 &1725026792 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -388933118533720201, guid: c9587e548613a564c81ba23ebf263460,
-    type: 3}
-  m_PrefabInstance: {fileID: 27460618}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1751776878
 GameObject:
   m_ObjectHideFlags: 0
