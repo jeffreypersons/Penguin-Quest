@@ -2635,7 +2635,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
-  jumpForce: 25000
+  jumpForce: 50000
+  skeletalRoot: {fileID: 1725026792}
 --- !u!114 &27460629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2934,13 +2935,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c7ff032402c77c4e963e4b105b29d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  source: {fileID: 1725026792}
-  offset: {x: 0, y: 1}
   groundMask:
     serializedVersion: 2
     m_Bits: 256
-  toleratedDistance: 0.3
+  toleratedHeightFromGround: 0.3
   showRaycastsInSceneView: 1
+  rayColorIfHit: {r: 0, g: 1, b: 0, a: 1}
+  rayColorIfMiss: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &52369770
 GameObject:
   m_ObjectHideFlags: 0

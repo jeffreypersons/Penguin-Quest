@@ -43,6 +43,11 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(JUMP_FORCE_MIN, JUMP_FORCE_MAX)]
     private float jumpForce = JUMP_FORCE_DEFAULT;
 
+    [Header("Misc Settings")]
+    [Tooltip("Reference to the bottom-most root joint of the penguin skeletal model")]
+    [SerializeField]
+    private Transform skeletalRoot = default;
+
     private Vector3 PenguinScale
     {
         get => penguinRigidBody.transform.localScale;
@@ -74,7 +79,7 @@ public class PenguinController : MonoBehaviour
 
         Standup();
         TurnToFace(Facing.RIGHT);
-        groundChecker.CheckForGround();
+        groundChecker.Reset();
         UpdateAnimatorParameters();
     }
     void OnEnable()
@@ -98,10 +103,10 @@ public class PenguinController : MonoBehaviour
 
     void Update()
     {
-        groundChecker.CheckForGround();
-        Debug.Log(groundChecker);
-        Vector2 inputAxes = MovementRequested;
+        groundChecker.CheckForGround(fromPoint: skeletalRoot.position,
+                                     extraLineHeight: penguinCollider.bounds.extents.y);
 
+        Vector2 inputAxes = MovementRequested;
         if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
             xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (stateTransitionSpeed));
