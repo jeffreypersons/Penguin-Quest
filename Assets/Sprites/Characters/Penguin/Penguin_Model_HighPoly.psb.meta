@@ -1,5 +1,10 @@
 fileFormatVersion: 2
 guid: c9587e548613a564c81ba23ebf263460
+labels:
+- name
+- Penguin_FrontFlipper
+- spriteId
+- 407ceadb690bae54db1b32d31e5fc19f
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -24,6 +29,7 @@ ScriptedImporter:
     isReadable: 0
     streamingMipmaps: 1
     streamingMipmapsPriority: 0
+    vTOnly: 0
     nPOTScale: 1
     sRGBTexture: 1
     spriteMode: 2
@@ -42,6 +48,7 @@ ScriptedImporter:
     textureType: 8
     textureShape: 1
     singleChannelComponent: 0
+    ignorePngGamma: 0
     filterMode: 1
     aniso: 1
     mipBias: 0
