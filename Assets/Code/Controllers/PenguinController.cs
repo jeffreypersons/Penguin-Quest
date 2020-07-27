@@ -62,9 +62,9 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
     }
 
-    // todo: add check for standup/facing-right/grounded/etc
     public void Reset()
     {
+        groundChecker.Reset();
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
@@ -74,8 +74,6 @@ public class PenguinController : MonoBehaviour
 
         Standup();
         TurnToFace(Facing.RIGHT);
-        groundChecker.Reset();
-        penguinAnimator.applyRootMotion = true;
         UpdateAnimatorParameters();
     }
     void OnEnable()
@@ -144,7 +142,6 @@ public class PenguinController : MonoBehaviour
         {
             return;
         }
-
         this.facing = facing;
         switch (this.facing)
         {
@@ -162,6 +159,7 @@ public class PenguinController : MonoBehaviour
     {
         Debug.Log("Lie Down!");
         posture = Posture.ONBELLY;
+        penguinAnimator.SetTrigger("Liedown");
     }
     private void Jump()
     {
@@ -172,13 +170,13 @@ public class PenguinController : MonoBehaviour
     private void Fire()
     {
         Debug.Log("Fire!");
-
+        penguinAnimator.SetTrigger("Fire");
         // todo: throw a fish or something lol
     }
     private void Use()
     {
         Debug.Log("Using!");
-
+        penguinAnimator.SetTrigger("Use");
         // todo: use something (like equip an item, maybe?)
     }
 }
