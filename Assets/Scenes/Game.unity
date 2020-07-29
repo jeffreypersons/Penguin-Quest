@@ -2642,7 +2642,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
-  jumpForce: 50000
+  jumpStrength: 50000
+  jumpAngle: 23.8
 --- !u!114 &27460629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3154,11 +3155,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.115682654, w: 0.99328625}
-    - {x: 0, y: 0, z: 0.10304164, w: 0.99467707}
-    - {x: 0, y: 0, z: -0.4286403, w: 0.9034753}
-    - {x: 0, y: 0, z: -0.4280424, w: 0.90375865}
-    - {x: 0, y: 0, z: 0.019229434, w: 0.9998151}
+    - {x: 0, y: 0, z: -0.09010361, w: 0.9959324}
+    - {x: 0, y: 0, z: 0.1326581, w: 0.9911619}
+    - {x: 0, y: 0, z: -0.4310487, w: 0.9023287}
+    - {x: 0, y: 0, z: -0.458195, w: 0.8888517}
+    - {x: -1e-45, y: 1e-45, z: -0.00000023841847, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -3220,7 +3221,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.12804589, w: 0.99176824}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.32745907, w: 0.94486535}
+    - {x: 0, y: 0, z: 0.12804592, w: 0.99176824}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -3707,9 +3708,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.0135354195, w: 0.9999084}
-    - {x: 0, y: 0, z: -0.031476714, w: 0.9995045}
-    - {x: 0, y: 0, z: 0.12752776, w: 0.99183506}
+    - {x: 0, y: 0, z: 0.005699533, w: 0.9999838}
+    - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
+    - {x: -3e-45, y: 3e-45, z: -0.000000026077032, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -4477,7 +4478,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.16220206, w: 0.9867576}
+    - {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -4838,7 +4839,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.024578158, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.11446586, w: 0.9934272}
+    - {x: 0, y: 0, z: 0.02457816, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
