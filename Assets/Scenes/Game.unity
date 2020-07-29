@@ -2576,7 +2576,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
   m_Mass: 330
-  m_LinearDrag: 0
+  m_LinearDrag: 0.05
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -2621,9 +2621,9 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 1918874976}
   m_Controller: {fileID: 9100000, guid: 0013560670859bb45b4295787e742d97, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 1
-  m_ApplyRootMotion: 1
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -3155,11 +3155,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.08963073, w: 0.9959751}
-    - {x: 0, y: 0, z: 0.13573837, w: 0.9907447}
-    - {x: 0, y: 0, z: -0.42411584, w: 0.905608}
-    - {x: 0, y: 0, z: -0.44383323, w: 0.8961094}
-    - {x: 0, y: 0, z: -0.027346473, w: 0.99962604}
+    - {x: 0, y: 0, z: -0.09010361, w: 0.9959324}
+    - {x: 0, y: 0, z: 0.1326581, w: 0.9911619}
+    - {x: 0, y: 0, z: -0.4310487, w: 0.9023287}
+    - {x: 0, y: 0, z: -0.458195, w: 0.8888517}
+    - {x: -1e-45, y: 1e-45, z: -0.00000023841847, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -3221,7 +3221,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.12804589, w: 0.99176824}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.20234549, w: 0.9793142}
+    - {x: 0, y: 0, z: 0.12804592, w: 0.99176824}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -3708,9 +3708,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.0054700132, w: 0.99998504}
-    - {x: 0, y: 0, z: -0.040301543, w: 0.9991876}
-    - {x: 0, y: 0, z: 0.009481546, w: 0.99995506}
+    - {x: 0, y: 0, z: 0.005699533, w: 0.9999838}
+    - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
+    - {x: -3e-45, y: 3e-45, z: -0.000000026077032, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -4478,7 +4478,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.08524554, w: 0.99636}
+    - {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -4839,7 +4839,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.024578158, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.025429398, w: 0.99967664}
+    - {x: 0, y: 0, z: 0.02457816, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -6318,7 +6318,7 @@ MonoBehaviour:
   followMode: 0
   keepSubjectInView: 1
   isActivelyRunning: 1
-  maxMoveSpeed: 250
+  maxMoveSpeed: 2500
   orthographicSize: 50
   maxZoomSpeed: 10
 --- !u!4 &6127185479514728925 stripped
