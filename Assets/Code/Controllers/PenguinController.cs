@@ -14,10 +14,31 @@ public class PenguinController : MonoBehaviour
     private const float STATE_TRANSITION_SPEED_DEFAULT = 0.10f;
     private const float STATE_TRANSITION_SPEED_MIN     = 0.10f;
     private const float STATE_TRANSITION_SPEED_MAX     = 1.00f;
-    private const float JUMP_FORCE_DEFAULT =  50000.00f;
-    private const float JUMP_FORCE_MIN     =  25000.00f;
-    private const float JUMP_FORCE_MAX     = 250000.00f;
+    private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
+    private const float JUMP_STRENGTH_MIN     =  25000.00f;
+    private const float JUMP_STRENGTH_MAX     = 250000.00f;
+    private const float JUMP_ANGLE_DEFAULT = 45.00f;
+    private const float JUMP_ANGLE_MIN     =  0.00f;
+    private const float JUMP_ANGLE_MAX     = 90.00f;
 
+    [Header("Animation Settings")]
+    [Tooltip("Amount of progress made per frame when transitioning between states " +
+             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
+             "1.00 for an instant transition with no blending)")]
+    [SerializeField] [Range(STATE_TRANSITION_SPEED_MIN, STATE_TRANSITION_SPEED_MAX)]
+    private float stateTransitionSpeed = STATE_TRANSITION_SPEED_DEFAULT;
+
+    [Header("Jump Settings")]
+    [Tooltip("Strength of jump force in newtons")]
+    [SerializeField] [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
+    private float jumpStrength = JUMP_STRENGTH_DEFAULT;
+
+    [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward axis)")]
+    [SerializeField] [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
+    private float jumpAngle = JUMP_ANGLE_DEFAULT;
+
+    private Vector3 upAxis;
+    private Vector3 forwardAxis;
     private Vector2 initialSpawnPosition;
     private Animator penguinAnimator;
     private Rigidbody2D penguinRigidBody;
@@ -31,24 +52,6 @@ public class PenguinController : MonoBehaviour
     private enum Facing  { LEFT,    RIGHT   }
     private enum Posture { UPRIGHT, ONBELLY }
 
-    [Header("Animation Settings")]
-    [Tooltip("Amount of progress made per frame when transitioning between states " +
-             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
-             "1.00 for an instant transition with no blending)")]
-    [SerializeField] [Range(STATE_TRANSITION_SPEED_MIN, STATE_TRANSITION_SPEED_MAX)]
-    private float stateTransitionSpeed = STATE_TRANSITION_SPEED_DEFAULT;
-
-    [Header("Jump Settings")]
-    [Tooltip("Jump force in newtons")]
-    [SerializeField] [Range(JUMP_FORCE_MIN, JUMP_FORCE_MAX)]
-    private float jumpForce = JUMP_FORCE_DEFAULT;
-
-    private Vector3 PenguinScale
-    {
-        get => penguinRigidBody.transform.localScale;
-        set => penguinRigidBody.transform.localScale = value;
-    }
-    // todo: incorporate object references for fire/use request (ie what object is being used?)
     private bool    IsFireRequested    => playerControls.Gameplay.Fire.triggered;
     private bool    IsUseItemRequested => playerControls.Gameplay.Use.triggered;
     private Vector2 MovementRequested  => playerControls.Gameplay.Move.ReadValue<Vector2>();
@@ -61,7 +64,27 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.SetBool("IsUpright",  posture == Posture.UPRIGHT);
         penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
     }
+    void OnLiedownAnimationEvent()
+    {
 
+    }
+    void OnJumpAnimationEvent()
+    {
+        Vector3 jumpDirection = MathUtils.RotateBy(forwardAxis, jumpAngle);
+        penguinRigidBody.AddForce(jumpStrength * jumpDirection, ForceMode2D.Impulse);
+    }
+    void OnStandupAnimationEvent()
+    {
+
+    }
+    void OnFireAnimationEvent()
+    {
+
+    }
+    void OnUseAnimationEvent()
+    {
+
+    }
     public void Reset()
     {
         groundChecker.Reset();
@@ -72,7 +95,8 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
         penguinAnimator.applyRootMotion = true;
 
-        Standup();
+        upAxis      = Vector3.up;
+        forwardAxis = Vector3.right;
         TurnToFace(Facing.RIGHT);
         UpdateAnimatorParameters();
     }
@@ -97,6 +121,7 @@ public class PenguinController : MonoBehaviour
 
     void Update()
     {
+        // todo: utilize quaternions to rotate `upAxis`/`forwardAxis` to match `groundChecker.SurfaceNormalOfLastContact`
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
                                      extraLineHeight: penguinCollider.bounds.extents.y);
 
@@ -113,24 +138,26 @@ public class PenguinController : MonoBehaviour
 
         if (inputAxes.y < 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
-            LieDown();
+            penguinAnimator.SetTrigger("Liedown");
+            posture = Posture.ONBELLY;
         }
         else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
-            Jump();
+            penguinAnimator.SetTrigger("Jump");
         }
         else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.ONBELLY)
         {
-            Standup();
+            penguinAnimator.SetTrigger("Standup");
+            posture = Posture.UPRIGHT;
         }
 
         if (IsFireRequested)
         {
-            Fire();
+            penguinAnimator.SetTrigger("Fire");
         }
         if (IsUseItemRequested)
         {
-            Use();
+            penguinAnimator.SetTrigger("Use");
         }
 
         UpdateAnimatorParameters();
@@ -142,41 +169,19 @@ public class PenguinController : MonoBehaviour
         {
             return;
         }
+
+        Vector3 scale = penguinRigidBody.transform.localScale;
         this.facing = facing;
         switch (this.facing)
         {
-            case Facing.LEFT:  PenguinScale = new Vector3(-Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
-            case Facing.RIGHT: PenguinScale = new Vector3( Mathf.Abs(PenguinScale.x), PenguinScale.y, PenguinScale.z); break;
-            default: Debug.LogError($"Given value `{facing}` is not a valid Facing"); return;
+            case Facing.LEFT:
+                penguinRigidBody.transform.localScale = new Vector3(-Mathf.Abs(scale.x), scale.y, scale.z);
+                break;
+            case Facing.RIGHT:
+                penguinRigidBody.transform.localScale = new Vector3( Mathf.Abs(scale.x), scale.y, scale.z);
+                break;
+            default:
+                Debug.LogError($"Given value `{facing}` is not a valid Facing"); return;
         }
-    }
-    private void Standup()
-    {
-        Debug.Log("Standup!");
-        posture = Posture.UPRIGHT;
-    }
-    private void LieDown()
-    {
-        Debug.Log("Lie Down!");
-        posture = Posture.ONBELLY;
-        penguinAnimator.SetTrigger("Liedown");
-    }
-    private void Jump()
-    {
-        Debug.Log("Jump!");
-        penguinRigidBody.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
-        penguinAnimator.SetTrigger("Jump");
-    }
-    private void Fire()
-    {
-        Debug.Log("Fire!");
-        penguinAnimator.SetTrigger("Fire");
-        // todo: throw a fish or something lol
-    }
-    private void Use()
-    {
-        Debug.Log("Using!");
-        penguinAnimator.SetTrigger("Use");
-        // todo: use something (like equip an item, maybe?)
     }
 }

@@ -322,7 +322,7 @@ PrefabInstance:
     - target: {fileID: -9170363698874357841, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -9170363698874357841, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -657,6 +657,11 @@ PrefabInstance:
     - target: {fileID: -5741280297847825478, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5741280297847825478, guid: c9587e548613a564c81ba23ebf263460,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -5539507166216342524, guid: c9587e548613a564c81ba23ebf263460,
@@ -1202,7 +1207,7 @@ PrefabInstance:
     - target: {fileID: -3310611107013285772, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -3310611107013285772, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -1432,7 +1437,7 @@ PrefabInstance:
     - target: {fileID: -1945957561236944367, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -1945957561236944367, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -2571,7 +2576,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
   m_Mass: 330
-  m_LinearDrag: 0
+  m_LinearDrag: 0.05
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -2616,9 +2621,9 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 1918874976}
   m_Controller: {fileID: 9100000, guid: 0013560670859bb45b4295787e742d97, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 1
-  m_ApplyRootMotion: 1
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -2637,7 +2642,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
-  jumpForce: 50000
+  jumpStrength: 125000
+  jumpAngle: 70
 --- !u!114 &27460629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6312,7 +6318,7 @@ MonoBehaviour:
   followMode: 0
   keepSubjectInView: 1
   isActivelyRunning: 1
-  maxMoveSpeed: 250
+  maxMoveSpeed: 2500
   orthographicSize: 50
   maxZoomSpeed: 10
 --- !u!4 &6127185479514728925 stripped

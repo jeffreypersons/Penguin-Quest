@@ -40,6 +40,7 @@ public class GroundChecker : MonoBehaviour
     private float extraLineHeight;
     public Contact Result   { get; private set; }
     public bool WasDetected { get; private set; }
+    public Vector2 SurfaceNormalOfLastContact { get; private set; }
 
     [Tooltip("What do we consider to be 'ground'?")]
     [SerializeField] private LayerMask groundMask = default;
@@ -99,6 +100,7 @@ public class GroundChecker : MonoBehaviour
         {
             WasDetected = true;
             Result = new Contact(hitInfo.centroid, hitInfo.normal, hitInfo.distance - extraLineHeight);
+            SurfaceNormalOfLastContact = hitInfo.normal;
         }
         else
         {

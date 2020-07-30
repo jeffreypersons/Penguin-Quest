@@ -7,6 +7,17 @@ using UnityEngine;
 // otherwise the methods make appropriate assumptions about input, stated in their corresponding comments
 public static class MathUtils
 {
+    // rotate given vector by degrees counter-clockwise (or clockwise if negative)
+    public static Vector2 RotateBy(Vector2 vector, float degrees)
+    {
+        float radians = degrees * Mathf.Deg2Rad;
+        float ca = Mathf.Cos(radians);
+        float sa = Mathf.Sin(radians);
+        float rx = vector.x * ca - vector.y * sa;
+
+        return new Vector2(rx, vector.x * sa + vector.y * ca);
+    }
+
     public static Vector2 SwapCoords(Vector2 vector)
     {
         return new Vector2(vector.y, vector.x);
