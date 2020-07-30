@@ -2621,9 +2621,9 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 1918874976}
   m_Controller: {fileID: 9100000, guid: 0013560670859bb45b4295787e742d97, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_CullingMode: 1
+  m_UpdateMode: 1
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -2642,7 +2642,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateTransitionSpeed: 0.1
-  jumpStrength: 125000
+  jumpStrength: 75000
   jumpAngle: 70
 --- !u!114 &27460629
 MonoBehaviour:
