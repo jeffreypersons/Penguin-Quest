@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(GroundChecker))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 public class PenguinController : MonoBehaviour
 {
     private const float STATE_TRANSITION_SPEED_DEFAULT = 0.10f;
@@ -36,10 +38,10 @@ public class PenguinController : MonoBehaviour
     private Vector3 upAxis;
     private Vector3 forwardAxis;
     private Vector2 initialSpawnPosition;
-    private Animator penguinAnimator;
-    private PlayerControls playerControls;
-    private GroundChecker groundChecker;
 
+    private GroundChecker groundChecker;
+    private PlayerControls playerControls;
+    private Animator penguinAnimator;
     private Rigidbody2D penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
@@ -110,8 +112,8 @@ public class PenguinController : MonoBehaviour
         playerControls = new PlayerControls();
         penguinAnimator  = gameObject.GetComponent<Animator>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
-        penguinRigidBody = gameObject.GetComponentInChildren<Rigidbody2D>();
-        penguinCollider  = gameObject.GetComponentInChildren<BoxCollider2D>();
+        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
+        penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
@@ -163,6 +165,7 @@ public class PenguinController : MonoBehaviour
     {
         Vector3 jumpDirection = MathUtils.RotateBy(forwardAxis, jumpAngle);
         penguinRigidBody.AddForce(jumpStrength * jumpDirection, ForceMode2D.Impulse);
+        Debug.Log(jumpStrength * jumpDirection);
     }
     private void TurnToFace(Facing facing)
     {
