@@ -121,7 +121,6 @@ public class FollowCameraController : MonoBehaviour
 
     void LateUpdate()
     {
-        Debug.Log(maxMoveSpeed);
         #if UNITY_EDITOR
         if (!Application.IsPlaying(this))
         {
