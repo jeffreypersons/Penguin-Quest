@@ -72,7 +72,6 @@ public class PenguinController : MonoBehaviour
     {
         Vector3 jumpDirection = MathUtils.RotateBy(forwardAxis, jumpAngle);
         penguinRigidBody.AddForce(jumpStrength * jumpDirection, ForceMode2D.Impulse);
-        Debug.Log($"jump_force={jumpStrength * jumpDirection}");
     }
     void OnStandupAnimationEvent()
     {
