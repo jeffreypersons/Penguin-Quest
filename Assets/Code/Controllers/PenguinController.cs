@@ -91,7 +91,7 @@ public class PenguinController : MonoBehaviour
         penguinRigidBody.position = initialSpawnPosition;
 
         xMotionIntensity = 0.00f;
-        penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
+        penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
         penguinAnimator.applyRootMotion = true;
 
         upAxis      = Vector3.up;
