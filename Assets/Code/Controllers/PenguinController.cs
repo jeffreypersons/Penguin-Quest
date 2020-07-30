@@ -55,6 +55,8 @@ public class PenguinController : MonoBehaviour
     private bool    IsUseItemRequested => playerControls.Gameplay.Use.triggered;
     private Vector2 MovementRequested  => playerControls.Gameplay.Move.ReadValue<Vector2>();
 
+    private Vector2 netImpulseForce;
+
     // update all animator parameters (except for triggers, as those should be set directly)
     private void UpdateAnimatorParameters()
     {
@@ -63,18 +65,20 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.SetBool("IsUpright",  posture == Posture.UPRIGHT);
         penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
     }
-    void OnLiedownAnimationEvent()
-    {
-
-    }
     void OnJumpAnimationEvent()
     {
-        Vector3 jumpDirection = MathUtils.RotateBy(forwardAxis, jumpAngle);
-        penguinRigidBody.AddForce(jumpStrength * jumpDirection, ForceMode2D.Impulse);
+        // clear jump trigger to avoid triggering a jump after landing,
+        // in the case that jump is pressed twice in a row
+        penguinAnimator.ResetTrigger("Jump");
+        netImpulseForce = jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
+    }
+    void OnLiedownAnimationEvent()
+    {
+        posture = Posture.ONBELLY;
     }
     void OnStandupAnimationEvent()
     {
-
+        posture = Posture.UPRIGHT;
     }
     void OnFireAnimationEvent()
     {
@@ -86,6 +90,7 @@ public class PenguinController : MonoBehaviour
     }
     public void Reset()
     {
+        netImpulseForce = Vector2.zero;
         groundChecker.Reset();
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
@@ -118,6 +123,11 @@ public class PenguinController : MonoBehaviour
         Reset();
     }
 
+    void FixedUpdate()
+    {
+        // any constant forces set from animation events should go here
+    }
+
     void Update()
     {
         // todo: utilize quaternions to rotate `upAxis`/`forwardAxis` to match `groundChecker.SurfaceNormalOfLastContact`
@@ -137,15 +147,18 @@ public class PenguinController : MonoBehaviour
 
         if (inputAxes.y < 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
+            penguinAnimator.ResetTrigger("Jump");
             penguinAnimator.SetTrigger("Liedown");
             posture = Posture.ONBELLY;
         }
         else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
+            penguinAnimator.ResetTrigger("Liedown");
             penguinAnimator.SetTrigger("Jump");
         }
         else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.ONBELLY)
         {
+            penguinAnimator.ResetTrigger("Liedown");
             penguinAnimator.SetTrigger("Standup");
             posture = Posture.UPRIGHT;
         }
@@ -161,12 +174,17 @@ public class PenguinController : MonoBehaviour
 
         UpdateAnimatorParameters();
     }
+
+    // things we want to do AFTER the animator updates positions
     void LateUpdate()
     {
-        Vector3 jumpDirection = MathUtils.RotateBy(forwardAxis, jumpAngle);
-        penguinRigidBody.AddForce(jumpStrength * jumpDirection, ForceMode2D.Impulse);
-        Debug.Log(jumpStrength * jumpDirection);
+        if (netImpulseForce != Vector2.zero)
+        {
+            penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
+            netImpulseForce = Vector2.zero;
+        }
     }
+
     private void TurnToFace(Facing facing)
     {
         if (this.facing == facing)
