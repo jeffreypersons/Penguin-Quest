@@ -9,9 +9,9 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Collider2D))]
 public class PenguinController : MonoBehaviour
 {
-    private const float STATE_TRANSITION_SPEED_DEFAULT = 0.10f;
-    private const float STATE_TRANSITION_SPEED_MIN     = 0.10f;
-    private const float STATE_TRANSITION_SPEED_MAX     = 1.00f;
+    private const float BLEND_SPEED_DEFAULT = 0.10f;
+    private const float BLEND_SPEED_MIN     = 0.10f;
+    private const float BLEND_SPEED_MAX     = 1.00f;
     private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
     private const float JUMP_STRENGTH_MIN     =  25000.00f;
     private const float JUMP_STRENGTH_MAX     = 250000.00f;
@@ -20,11 +20,11 @@ public class PenguinController : MonoBehaviour
     private const float JUMP_ANGLE_MAX     = 90.00f;
 
     [Header("Animation Settings")]
-    [Tooltip("Amount of progress made per frame when transitioning between states " +
+    [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
              "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
              "1.00 for an instant transition with no blending)")]
-    [SerializeField] [Range(STATE_TRANSITION_SPEED_MIN, STATE_TRANSITION_SPEED_MAX)]
-    private float stateTransitionSpeed = STATE_TRANSITION_SPEED_DEFAULT;
+    [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
+    private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -127,11 +127,11 @@ public class PenguinController : MonoBehaviour
         Vector2 inputAxes = MovementRequested;
         if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
-            xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (stateTransitionSpeed));
+            xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
         }
         else
         {
-            xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(inputAxes.x) * stateTransitionSpeed));
+            xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(inputAxes.x) * locomotionBlendSpeed));
             TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
         }
 
