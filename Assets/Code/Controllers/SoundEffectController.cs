@@ -47,7 +47,7 @@ public class SoundEffectController : MonoBehaviour
         GameEventCenter.gameOver.RemoveListener(PlayerSoundOnGameOver);
     }
 
-    private void PauseAnyActiveSoundEffects(PlayerInfo _)
+    private void PauseAnyActiveSoundEffects(PlayerStatsInfo _)
     {
         audioSource.Pause();
     }
@@ -69,7 +69,7 @@ public class SoundEffectController : MonoBehaviour
     {
         audioSource.PlayOneShot(opponentScored, volumeScaleGoalHit);
     }
-    private void PlayerSoundOnGameOver(PlayerInfo playerInfo)
+    private void PlayerSoundOnGameOver(PlayerStatsInfo playerInfo)
     {
         // todo: add some sort of extra field for victory/failure conditions
         bool placeHolderVictoryCondition = false;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-public class PlayerInfo
+public class PlayerStatsInfo
 {
     public int Score      { get; private set; }
     public int Lives      { get; private set; }
@@ -17,7 +17,7 @@ public class PlayerInfo
         return $"Score is currently set to {Score}, lives started at {LivesGiven} and is now {Lives}";
     }
 
-    public PlayerInfo(int livesGiven)
+    public PlayerStatsInfo(int livesGiven)
     {
         Reset(livesGiven);
     }
