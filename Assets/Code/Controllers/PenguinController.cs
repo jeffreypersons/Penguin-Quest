@@ -140,11 +140,6 @@ public class PenguinController : MonoBehaviour
         Reset();
     }
 
-    void FixedUpdate()
-    {
-        // any constant forces set from animation events should go here
-    }
-
     void Update()
     {
         // todo: utilize quaternions to rotate `upAxis`/`forwardAxis` to match `groundChecker.SurfaceNormalOfLastContact`
