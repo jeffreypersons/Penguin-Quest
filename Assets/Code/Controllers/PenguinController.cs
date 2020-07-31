@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 
 
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(PlayerInput))]
-[RequireComponent(typeof(GroundChecker))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(GroundChecker))]
+[RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
     private const float BLEND_SPEED_DEFAULT = 0.10f;
@@ -40,22 +39,18 @@ public class PenguinController : MonoBehaviour
     private Vector2 initialSpawnPosition;
 
     private GroundChecker groundChecker;
-    private PlayerControls playerControls;
+    private GameplayInputReciever input;
     private Animator penguinAnimator;
     private Rigidbody2D penguinRigidBody;
     private BoxCollider2D penguinCollider;
 
-    private float xMotionIntensity;
     private Facing facing;
     private Posture posture;
-    private enum Facing  { LEFT,    RIGHT   }
-    private enum Posture { UPRIGHT, ONBELLY }
-
-    private bool    IsFireRequested    => playerControls.Gameplay.Fire.triggered;
-    private bool    IsUseItemRequested => playerControls.Gameplay.Use.triggered;
-    private Vector2 MovementRequested  => playerControls.Gameplay.Move.ReadValue<Vector2>();
+    private enum Facing  { LEFT, RIGHT }
+    private enum Posture { UPRIGHT, ONBELLY, BENTOVER }
 
     private Vector2 netImpulseForce;
+    private float xMotionIntensity;
 
     // update all animator parameters (except for triggers, as those should be set directly)
     private void UpdateAnimatorParameters()
@@ -65,18 +60,32 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.SetBool("IsUpright",  posture == Posture.UPRIGHT);
         penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
     }
-    void OnJumpAnimationEvent()
+    private void ClearVerticalMovementTriggers()
+    {
+        penguinAnimator.ResetTrigger("Jump");
+        penguinAnimator.ResetTrigger("Standup");
+        penguinAnimator.ResetTrigger("Liedown");
+    }
+    void OnJumpAnimationEventImpulse()
     {
         // clear jump trigger to avoid triggering a jump after landing,
         // in the case that jump is pressed twice in a row
-        penguinAnimator.ResetTrigger("Jump");
+        ClearVerticalMovementTriggers();
         netImpulseForce = jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
     }
-    void OnLiedownAnimationEvent()
+    void OnLiedownAnimationEventStart()
+    {
+        posture = Posture.BENTOVER;
+    }
+    void OnLiedownAnimationEventEnd()
     {
         posture = Posture.ONBELLY;
     }
-    void OnStandupAnimationEvent()
+    void OnStandupAnimationEventStart()
+    {
+        posture = Posture.BENTOVER;
+    }
+    void OnStandupAnimationEventEnd()
     {
         posture = Posture.UPRIGHT;
     }
@@ -90,42 +99,30 @@ public class PenguinController : MonoBehaviour
     }
     public void Reset()
     {
-        netImpulseForce = Vector2.zero;
         groundChecker.Reset();
+        netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
         xMotionIntensity = 0.00f;
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
+        ClearVerticalMovementTriggers();
 
         upAxis = Vector3.up;
         forwardAxis = Vector3.right;
         TurnToFace(Facing.RIGHT);
         UpdateAnimatorParameters();
     }
-    void OnEnable()
-    {
-        playerControls.Gameplay.Enable();
-    }
-    void OnDisable()
-    {
-        playerControls.Gameplay.Disable();
-    }
     void Awake()
     {
-        playerControls = new PlayerControls();
         penguinAnimator  = gameObject.GetComponent<Animator>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
+        input    = gameObject.GetComponent<GameplayInputReciever>();
         penguinRigidBody = gameObject.GetComponentInChildren<Rigidbody2D>();
         penguinCollider  = gameObject.GetComponentInChildren<BoxCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
-    }
-
-    void FixedUpdate()
-    {
-        // any constant forces set from animation events should go here
     }
 
     void Update()
@@ -134,40 +131,34 @@ public class PenguinController : MonoBehaviour
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
                                      extraLineHeight: penguinCollider.bounds.extents.y);
 
-        Vector2 inputAxes = MovementRequested;
-        if (Mathf.Approximately(inputAxes.x, 0.00f))
+        if (Mathf.Approximately(input.Axes.x, 0.00f))
         {
             xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
         }
         else
         {
-            xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(inputAxes.x) * locomotionBlendSpeed));
-            TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
+            xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(input.Axes.x) * locomotionBlendSpeed));
+            TurnToFace(input.Axes.x < 0 ? Facing.LEFT : Facing.RIGHT);
         }
 
-        if (inputAxes.y < 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
+        if (input.Axes.y < 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
-            penguinAnimator.ResetTrigger("Jump");
             penguinAnimator.SetTrigger("Liedown");
-            posture = Posture.ONBELLY;
         }
-        else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
+        else if (input.Axes.y > 0.00f && groundChecker.WasDetected && posture == Posture.ONBELLY)
         {
-            penguinAnimator.ResetTrigger("Liedown");
+            penguinAnimator.SetTrigger("Standup");
+        }
+        else if (input.Axes.y > 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
+        {
             penguinAnimator.SetTrigger("Jump");
         }
-        else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.ONBELLY)
-        {
-            penguinAnimator.ResetTrigger("Liedown");
-            penguinAnimator.SetTrigger("Standup");
-            posture = Posture.UPRIGHT;
-        }
 
-        if (IsFireRequested)
+        if (input.FireHeldThisFrame)
         {
             penguinAnimator.SetTrigger("Fire");
         }
-        if (IsUseItemRequested)
+        if (input.UseHeldThisFrame)
         {
             penguinAnimator.SetTrigger("Use");
         }

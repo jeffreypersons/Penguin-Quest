@@ -77,14 +77,14 @@ public class IngameMenuController : MonoBehaviour
         quitButton.onClick.RemoveListener(SceneUtils.QuitGame);
     }
 
-    private void OpenAsPauseMenu(PlayerInfo playerInfo)
+    private void OpenAsPauseMenu(PlayerStatsInfo playerInfo)
     {
         title.text    = titleOnPause;
         subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
         UiUtils.SetButtonActiveAndEnabled(resumeButton, true);
         ToggleMenuVisibility(true);
     }
-    private void OpenAsEndGameMenu(PlayerInfo playerInfo)
+    private void OpenAsEndGameMenu(PlayerStatsInfo playerInfo)
     {
         title.text    = titleOnGameOver;
         subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;

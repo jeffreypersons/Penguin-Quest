@@ -14,11 +14,11 @@ public class IngameHudController : MonoBehaviour
     [SerializeField] private string scorePrefix = default;
     [SerializeField] private string livesPrefix = default;
 
-    private PlayerInfo lastRecordedPlayerInfo;
+    private PlayerStatsInfo lastRecordedPlayerInfo;
 
     void Awake()
     {
-        lastRecordedPlayerInfo = new PlayerInfo(PlayerInfo.MIN_LIVES_GIVEN);
+        lastRecordedPlayerInfo = new PlayerStatsInfo(PlayerStatsInfo.MIN_LIVES_GIVEN);
     }
     void OnEnable()
     {
@@ -31,7 +31,7 @@ public class IngameHudController : MonoBehaviour
         pauseButton.onClick.RemoveListener(TriggerPauseGameEvent);
     }
 
-    private void UpdateScore(PlayerInfo playerInfo)
+    private void UpdateScore(PlayerStatsInfo playerInfo)
     {
         lastRecordedPlayerInfo = playerInfo;
         scoreLabel.text = scorePrefix + playerInfo.Score.ToString();

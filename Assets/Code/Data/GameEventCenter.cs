@@ -6,12 +6,12 @@ public static class GameEventCenter
 {
     public static GameEvent<string>     enemyHit    = new GameEvent<string>();
     public static GameEvent<int>        enemyKilled = new GameEvent<int>();
-    public static GameEvent<PlayerInfo> scoreChange = new GameEvent<PlayerInfo>();
+    public static GameEvent<PlayerStatsInfo> scoreChange = new GameEvent<PlayerStatsInfo>();
 
     public static GameEvent<GameSettingsInfo> startNewGame = new GameEvent<GameSettingsInfo>();
-    public static GameEvent<PlayerInfo>       pauseGame    = new GameEvent<PlayerInfo>();
+    public static GameEvent<PlayerStatsInfo>  pauseGame    = new GameEvent<PlayerStatsInfo>();
     public static GameEvent<string>           resumeGame   = new GameEvent<string>();
     public static GameEvent<string>           gotoMainMenu = new GameEvent<string>();
-    public static GameEvent<PlayerInfo>       gameOver     = new GameEvent<PlayerInfo>();
+    public static GameEvent<PlayerStatsInfo>  gameOver     = new GameEvent<PlayerStatsInfo>();
     public static GameEvent<string>           restartGame  = new GameEvent<string>();
 }

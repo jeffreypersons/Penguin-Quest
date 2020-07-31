@@ -5,7 +5,7 @@
 // expect null parameters, and just run from main menu instead
 public class GameController : MonoBehaviour
 {
-    private PlayerInfo playerInfo;
+    private PlayerStatsInfo playerInfo;
 
     // todo: replace with MoveController interfaces, and use like `MoveController.Reset()`
     [SerializeField] private GameObject playerPenguin = default;
@@ -28,14 +28,14 @@ public class GameController : MonoBehaviour
 
     private void StartNewGame(GameSettingsInfo gameSettings)
     {
-        playerInfo = new PlayerInfo(gameSettings.NumberOfLives);
+        playerInfo = new PlayerStatsInfo(gameSettings.NumberOfLives);
         //enemy.foreach().GetComponent<AiController>().SetDifficultyLevel(gameSettings.DifficultyLevel);
         GameEventCenter.scoreChange.Trigger(playerInfo);
     }
     private void RestartGame(string status)
     {
         ResetMovingObjects();
-        playerInfo = new PlayerInfo(playerInfo.Lives);
+        playerInfo = new PlayerStatsInfo(playerInfo.Lives);
         GameEventCenter.scoreChange.Trigger(playerInfo);
     }
     private void UpdateScore(int points)

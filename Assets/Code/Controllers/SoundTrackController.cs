@@ -41,7 +41,7 @@ public class SoundTrackController : MonoBehaviour
         track.Stop();
         track.Play();
     }
-    private void PauseTrack(PlayerInfo _)
+    private void PauseTrack(PlayerStatsInfo _)
     {
         track.Pause();
     }
@@ -49,7 +49,7 @@ public class SoundTrackController : MonoBehaviour
     {
         track.UnPause();
     }
-    private void EndTrack(PlayerInfo _)
+    private void EndTrack(PlayerStatsInfo _)
     {
         track.Stop();
     }
