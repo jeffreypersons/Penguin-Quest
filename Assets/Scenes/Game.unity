@@ -3233,18 +3233,6 @@ MonoBehaviour:
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
---- !u!114 &590785237 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 481601335934478071, guid: 6fc3cd80adb2f6542ab1e50a650c8138,
-    type: 3}
-  m_PrefabInstance: {fileID: 1522957906}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &598816035
 GameObject:
   m_ObjectHideFlags: 0
@@ -5248,13 +5236,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1429373696}
+  - component: {fileID: 1429373700}
   - component: {fileID: 1429373698}
   - component: {fileID: 1429373697}
-  - component: {fileID: 1429373700}
   - component: {fileID: 1429373699}
   - component: {fileID: 1429373701}
   - component: {fileID: 1429373702}
-  - component: {fileID: 1429373703}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -5340,28 +5327,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1429373695}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Script: {fileID: 11500000, guid: b5ccffe04088eb247a27b499f6c9eb63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_NotificationBehavior: 3
-  m_UIInputModule: {fileID: 590785237}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Keyboard&Mouse
-  m_DefaultActionMap: Gameplay
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!61 &1429373701
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5409,19 +5377,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1429373703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1429373695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5ccffe04088eb247a27b499f6c9eb63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerInput: {fileID: 1429373700}
 --- !u!1 &1436611640
 GameObject:
   m_ObjectHideFlags: 0
