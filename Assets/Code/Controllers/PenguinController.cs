@@ -96,10 +96,10 @@ public class PenguinController : MonoBehaviour
         penguinRigidBody.position = initialSpawnPosition;
 
         xMotionIntensity = 0.00f;
-        penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
         penguinAnimator.applyRootMotion = true;
+        penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
 
-        upAxis      = Vector3.up;
+        upAxis = Vector3.up;
         forwardAxis = Vector3.right;
         TurnToFace(Facing.RIGHT);
         UpdateAnimatorParameters();
@@ -117,8 +117,8 @@ public class PenguinController : MonoBehaviour
         playerControls = new PlayerControls();
         penguinAnimator  = gameObject.GetComponent<Animator>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
-        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
+        penguinRigidBody = gameObject.GetComponentInChildren<Rigidbody2D>();
+        penguinCollider  = gameObject.GetComponentInChildren<BoxCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
