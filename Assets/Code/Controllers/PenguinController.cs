@@ -1,19 +1,17 @@
 ﻿using UnityEngine;
-using UnityEngine.Experimental.U2D.Animation;
 using UnityEngine.InputSystem;
 
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(SpriteLibrary))]
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(GroundChecker))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 public class PenguinController : MonoBehaviour
 {
-    private const float STATE_TRANSITION_SPEED_DEFAULT = 0.10f;
-    private const float STATE_TRANSITION_SPEED_MIN     = 0.10f;
-    private const float STATE_TRANSITION_SPEED_MAX     = 1.00f;
+    private const float BLEND_SPEED_DEFAULT = 0.10f;
+    private const float BLEND_SPEED_MIN     = 0.10f;
+    private const float BLEND_SPEED_MAX     = 1.00f;
     private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
     private const float JUMP_STRENGTH_MIN     =  25000.00f;
     private const float JUMP_STRENGTH_MAX     = 250000.00f;
@@ -22,11 +20,11 @@ public class PenguinController : MonoBehaviour
     private const float JUMP_ANGLE_MAX     = 90.00f;
 
     [Header("Animation Settings")]
-    [Tooltip("Amount of progress made per frame when transitioning between states " +
+    [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
              "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
              "1.00 for an instant transition with no blending)")]
-    [SerializeField] [Range(STATE_TRANSITION_SPEED_MIN, STATE_TRANSITION_SPEED_MAX)]
-    private float stateTransitionSpeed = STATE_TRANSITION_SPEED_DEFAULT;
+    [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
+    private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -40,11 +38,12 @@ public class PenguinController : MonoBehaviour
     private Vector3 upAxis;
     private Vector3 forwardAxis;
     private Vector2 initialSpawnPosition;
+
+    private GroundChecker groundChecker;
+    private PlayerControls playerControls;
     private Animator penguinAnimator;
     private Rigidbody2D penguinRigidBody;
     private BoxCollider2D penguinCollider;
-    private PlayerControls playerControls;
-    private GroundChecker groundChecker;
 
     private float xMotionIntensity;
     private Facing facing;
@@ -56,6 +55,8 @@ public class PenguinController : MonoBehaviour
     private bool    IsUseItemRequested => playerControls.Gameplay.Use.triggered;
     private Vector2 MovementRequested  => playerControls.Gameplay.Move.ReadValue<Vector2>();
 
+    private Vector2 netImpulseForce;
+
     // update all animator parameters (except for triggers, as those should be set directly)
     private void UpdateAnimatorParameters()
     {
@@ -64,18 +65,20 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.SetBool("IsUpright",  posture == Posture.UPRIGHT);
         penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
     }
-    void OnLiedownAnimationEvent()
-    {
-
-    }
     void OnJumpAnimationEvent()
     {
-        Vector3 jumpDirection = MathUtils.RotateBy(forwardAxis, jumpAngle);
-        penguinRigidBody.AddForce(jumpStrength * jumpDirection, ForceMode2D.Impulse);
+        // clear jump trigger to avoid triggering a jump after landing,
+        // in the case that jump is pressed twice in a row
+        penguinAnimator.ResetTrigger("Jump");
+        netImpulseForce = jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
+    }
+    void OnLiedownAnimationEvent()
+    {
+        posture = Posture.ONBELLY;
     }
     void OnStandupAnimationEvent()
     {
-
+        posture = Posture.UPRIGHT;
     }
     void OnFireAnimationEvent()
     {
@@ -87,15 +90,16 @@ public class PenguinController : MonoBehaviour
     }
     public void Reset()
     {
+        netImpulseForce = Vector2.zero;
         groundChecker.Reset();
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
         xMotionIntensity = 0.00f;
-        penguinAnimator.updateMode = AnimatorUpdateMode.AnimatePhysics;
         penguinAnimator.applyRootMotion = true;
+        penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
 
-        upAxis      = Vector3.up;
+        upAxis = Vector3.up;
         forwardAxis = Vector3.right;
         TurnToFace(Facing.RIGHT);
         UpdateAnimatorParameters();
@@ -111,12 +115,17 @@ public class PenguinController : MonoBehaviour
     void Awake()
     {
         playerControls = new PlayerControls();
-        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        penguinCollider  = gameObject.GetComponent<BoxCollider2D>();
         penguinAnimator  = gameObject.GetComponent<Animator>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
+        penguinRigidBody = gameObject.GetComponentInChildren<Rigidbody2D>();
+        penguinCollider  = gameObject.GetComponentInChildren<BoxCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
+    }
+
+    void FixedUpdate()
+    {
+        // any constant forces set from animation events should go here
     }
 
     void Update()
@@ -128,25 +137,28 @@ public class PenguinController : MonoBehaviour
         Vector2 inputAxes = MovementRequested;
         if (Mathf.Approximately(inputAxes.x, 0.00f))
         {
-            xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (stateTransitionSpeed));
+            xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
         }
         else
         {
-            xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(inputAxes.x) * stateTransitionSpeed));
+            xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(inputAxes.x) * locomotionBlendSpeed));
             TurnToFace(inputAxes.x < 0 ? Facing.LEFT : Facing.RIGHT);
         }
 
         if (inputAxes.y < 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
+            penguinAnimator.ResetTrigger("Jump");
             penguinAnimator.SetTrigger("Liedown");
             posture = Posture.ONBELLY;
         }
         else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
         {
+            penguinAnimator.ResetTrigger("Liedown");
             penguinAnimator.SetTrigger("Jump");
         }
         else if (inputAxes.y > 0.00f && groundChecker.WasDetected && posture == Posture.ONBELLY)
         {
+            penguinAnimator.ResetTrigger("Liedown");
             penguinAnimator.SetTrigger("Standup");
             posture = Posture.UPRIGHT;
         }
@@ -161,6 +173,16 @@ public class PenguinController : MonoBehaviour
         }
 
         UpdateAnimatorParameters();
+    }
+
+    // things we want to do AFTER the animator updates positions
+    void LateUpdate()
+    {
+        if (netImpulseForce != Vector2.zero)
+        {
+            penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
+            netImpulseForce = Vector2.zero;
+        }
     }
 
     private void TurnToFace(Facing facing)
