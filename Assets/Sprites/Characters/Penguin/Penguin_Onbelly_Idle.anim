@@ -1578,7 +1578,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 1
-        value: {x: 0, y: 0, z: -31.624}
+        value: {x: 0, y: 0, z: -31.464}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -3329,7 +3329,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 1
-        value: {x: 3.267934, y: 1.0398467, z: 0.04}
+        value: {x: 4.307108, y: 1.8659258, z: 0.04}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -3654,7 +3654,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 1
-        value: {x: -1.0793731, y: 4.6815515, z: 0}
+        value: {x: -1.2968054, y: 4.7487, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -4225,6 +4225,13 @@ AnimationClip:
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
+      path: 1565842706
+      attribute: 1
+      script: {fileID: 0}
+      typeID: 4
+      customType: 0
+      isPPtrCurve: 0
+    - serializedVersion: 2
       path: 891207103
       attribute: 1
       script: {fileID: 0}
@@ -4667,13 +4674,6 @@ AnimationClip:
       isPPtrCurve: 0
     - serializedVersion: 2
       path: 26119147
-      attribute: 1
-      script: {fileID: 0}
-      typeID: 4
-      customType: 0
-      isPPtrCurve: 0
-    - serializedVersion: 2
-      path: 1565842706
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -13605,7 +13605,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 3.267934
+        value: 4.307108
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -13633,7 +13633,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 1.0398467
+        value: 1.8659258
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -15789,7 +15789,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: -1.0793731
+        value: -1.2968054
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -15817,7 +15817,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 4.6815515
+        value: 4.7487
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -15929,7 +15929,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: -31.624
+        value: -31.464
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -20361,7 +20361,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Neck_Pivot/Neck_Lower/_SkinClamp_BackNeck
+    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_Tail
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -20371,7 +20371,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Neck_Pivot/Neck_Lower/_SkinClamp_BackNeck
+    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_Tail
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -20381,7 +20381,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Neck_Pivot/Neck_Lower/_SkinClamp_BackNeck
+    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_Tail
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -21771,7 +21771,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_Tail
+    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Neck_Pivot/Neck_Lower/_SkinClamp_BackNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -21781,7 +21781,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_Tail
+    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Neck_Pivot/Neck_Lower/_SkinClamp_BackNeck
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -21791,7 +21791,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_Tail
+    path: PenguinModel/SkeletonRoot/Torso_Pivot/Torso_Hips/Torso_LowerSpine/Torso_UpperSpine/Torso_Shoulders/Neck_Pivot/Neck_Lower/_SkinClamp_BackNeck
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0
