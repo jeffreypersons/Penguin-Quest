@@ -9,7 +9,7 @@
 public class PenguinController : MonoBehaviour
 {
     private const float BLEND_SPEED_DEFAULT = 0.10f;
-    private const float BLEND_SPEED_MIN     = 0.10f;
+    private const float BLEND_SPEED_MIN     = 0.01f;
     private const float BLEND_SPEED_MAX     = 1.00f;
     private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
     private const float JUMP_STRENGTH_MIN     =  25000.00f;
