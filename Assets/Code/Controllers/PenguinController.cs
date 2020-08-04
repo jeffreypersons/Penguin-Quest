@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 
 [RequireComponent(typeof(Animator))]
@@ -97,6 +98,13 @@ public class PenguinController : MonoBehaviour
     {
 
     }
+
+    public override string ToString()
+    {
+        return $"Penguin with a {Enum.GetName(typeof(Posture), posture)} posture and " +
+               $"facing towards the {Enum.GetName(typeof(Facing), facing)}";
+    }
+
     public void Reset()
     {
         groundChecker.Reset();
