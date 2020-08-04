@@ -71,7 +71,7 @@ public class PenguinController : MonoBehaviour
         // clear jump trigger to avoid triggering a jump after landing,
         // in the case that jump is pressed twice in a row
         ClearVerticalMovementTriggers();
-        netImpulseForce = jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
+        netImpulseForce += jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
     }
     void OnLiedownAnimationEventStart()
     {
@@ -118,7 +118,7 @@ public class PenguinController : MonoBehaviour
     {
         penguinAnimator  = gameObject.GetComponent<Animator>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
-        input    = gameObject.GetComponent<GameplayInputReciever>();
+        input            = gameObject.GetComponent<GameplayInputReciever>();
         penguinRigidBody = gameObject.GetComponentInChildren<Rigidbody2D>();
         penguinCollider  = gameObject.GetComponentInChildren<BoxCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
