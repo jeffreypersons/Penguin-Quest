@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 
 [RequireComponent(typeof(Animator))]
@@ -9,7 +10,7 @@
 public class PenguinController : MonoBehaviour
 {
     private const float BLEND_SPEED_DEFAULT = 0.10f;
-    private const float BLEND_SPEED_MIN     = 0.10f;
+    private const float BLEND_SPEED_MIN     = 0.01f;
     private const float BLEND_SPEED_MAX     = 1.00f;
     private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
     private const float JUMP_STRENGTH_MIN     =  25000.00f;
@@ -71,7 +72,7 @@ public class PenguinController : MonoBehaviour
         // clear jump trigger to avoid triggering a jump after landing,
         // in the case that jump is pressed twice in a row
         ClearVerticalMovementTriggers();
-        netImpulseForce = jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
+        netImpulseForce += jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
     }
     void OnLiedownAnimationEventStart()
     {
@@ -97,6 +98,13 @@ public class PenguinController : MonoBehaviour
     {
 
     }
+
+    public override string ToString()
+    {
+        return $"Penguin with a {Enum.GetName(typeof(Posture), posture)} posture and " +
+               $"facing towards the {Enum.GetName(typeof(Facing), facing)}";
+    }
+
     public void Reset()
     {
         groundChecker.Reset();
@@ -118,7 +126,7 @@ public class PenguinController : MonoBehaviour
     {
         penguinAnimator  = gameObject.GetComponent<Animator>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
-        input    = gameObject.GetComponent<GameplayInputReciever>();
+        input            = gameObject.GetComponent<GameplayInputReciever>();
         penguinRigidBody = gameObject.GetComponentInChildren<Rigidbody2D>();
         penguinCollider  = gameObject.GetComponentInChildren<BoxCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
