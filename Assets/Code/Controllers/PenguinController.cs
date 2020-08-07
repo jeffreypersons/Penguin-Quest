@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(CompositeCollider2D))]
 [RequireComponent(typeof(GroundChecker))]
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
@@ -44,15 +44,24 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
     private float jumpAngle = JUMP_ANGLE_DEFAULT;
 
-    private Vector3 upAxis;
-    private Vector3 forwardAxis;
+    /*
+    [Header("Collider References")]
+    [Tooltip("Reference of collider attached to model's torso")]
+    [SerializeField] private CapsuleCollider2D torsoCollider = default;
+
+    [Tooltip("Reference of collider attached to model's back foot")]
+    [SerializeField] private CapsuleCollider2D backFootCollider = default;
+
+    [Tooltip("Reference of collider attached to model's front foot")]
+    [SerializeField] private CapsuleCollider2D frontFootCollider = default;
+    */
     private Vector2 initialSpawnPosition;
 
     private GroundChecker groundChecker;
     private GameplayInputReciever input;
     private Animator penguinAnimator;
     private Rigidbody2D penguinRigidBody;
-    private BoxCollider2D penguinCollider;
+    private CompositeCollider2D penguinCollider;
 
     private Facing facing;
     private Posture posture;
@@ -81,7 +90,7 @@ public class PenguinController : MonoBehaviour
         // clear jump trigger to avoid triggering a jump after landing,
         // in the case that jump is pressed twice in a row
         ClearVerticalMovementTriggers();
-        netImpulseForce += jumpStrength * MathUtils.RotateBy(forwardAxis, jumpAngle);
+        netImpulseForce += jumpStrength * MathUtils.RotateBy(penguinRigidBody.transform.forward, jumpAngle);
     }
     void OnLiedownAnimationEventStart()
     {
@@ -142,15 +151,14 @@ public class PenguinController : MonoBehaviour
         penguinAnimator  = gameObject.GetComponent<Animator>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
         input            = gameObject.GetComponent<GameplayInputReciever>();
-        penguinRigidBody = gameObject.GetComponentInChildren<Rigidbody2D>();
-        penguinCollider  = gameObject.GetComponentInChildren<BoxCollider2D>();
+        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
+        penguinCollider  = gameObject.GetComponent<CompositeCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
 
     void Update()
     {
-        // todo: utilize quaternions to rotate `upAxis`/`forwardAxis` to match `groundChecker.SurfaceNormalOfLastContact`
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
                                      extraLineHeight: penguinCollider.bounds.extents.y);
 
@@ -194,7 +202,7 @@ public class PenguinController : MonoBehaviour
         if (posture != Posture.BENTOVER &&
             groundChecker.WasDetected && groundChecker.SurfaceNormalOfLastContact != Vector2.up)
         {
-            AlignPenguinWithUpAxis(upAxisToAlignTowards: groundChecker.SurfaceNormalOfLastContact);
+            //AlignPenguinWithUpAxis(upAxisToAlignTowards: groundChecker.SurfaceNormalOfLastContact);
         }
     }
 
@@ -241,7 +249,6 @@ public class PenguinController : MonoBehaviour
 
         Quaternion oldRotation = penguinRigidBody.transform.rotation;
         Quaternion newRotation = Quaternion.LookRotation(newForward, upAxisToAlignTowards);
-
         if (forceInstantUpdate)
         {
             penguinRigidBody.MoveRotation(newRotation);
