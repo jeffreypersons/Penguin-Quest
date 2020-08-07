@@ -33,7 +33,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Upright Landing
-  m_Speed: 2.5
+  m_Speed: 3
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -5421232031935440742}
@@ -459,7 +459,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Upright Midair
-  m_Speed: 2.5
+  m_Speed: 3
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -3716648061533991343}
@@ -521,7 +521,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: 30e6f21fed73ccb48ae4f8d7d76f230c, type: 2}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
-    m_TimeScale: 2.5
+    m_TimeScale: 5
     m_CycleOffset: 0
     m_DirectBlendParameter: XMotionIntensity
     m_Mirror: 0
@@ -529,7 +529,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: c8a9b2acdaa39584e8373b89a3d64497, type: 2}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
-    m_TimeScale: 5
+    m_TimeScale: 7
     m_CycleOffset: 0
     m_DirectBlendParameter: XMotionIntensity
     m_Mirror: 0
@@ -914,7 +914,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Upright_Liedown
-  m_Speed: 3.5
+  m_Speed: 5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 482450468718091183}
@@ -1034,7 +1034,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Onbelly_Standup
-  m_Speed: 3.5
+  m_Speed: 5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 7198837617049924003}
@@ -1124,7 +1124,7 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: -1241894774223098344}
   m_Tag: GroundMotion
-  m_SpeedParameter: 
+  m_SpeedParameter: XMotionIntensity
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
@@ -1182,7 +1182,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: bd357b420ea374c4da83b18cabc44463, type: 2}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
-    m_TimeScale: 2.5
+    m_TimeScale: 5
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
     m_Mirror: 0
@@ -1190,7 +1190,7 @@ BlendTree:
     m_Motion: {fileID: 7400000, guid: 83f8f9e899016444a8cfae4c4751dc2d, type: 2}
     m_Threshold: 1
     m_Position: {x: 5, y: 1}
-    m_TimeScale: 5
+    m_TimeScale: 7
     m_CycleOffset: 0
     m_DirectBlendParameter: Motion_Intensity
     m_Mirror: 0
