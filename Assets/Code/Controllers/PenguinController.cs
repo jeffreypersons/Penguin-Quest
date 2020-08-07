@@ -9,6 +9,9 @@ using UnityEngine;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
+    private const float SURFACE_ALIGNMENT_STRENGTH_DEFAULT = 0.10f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_MIN     = 0.00f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_MAX     = 1.00f;
     private const float BLEND_SPEED_DEFAULT = 0.10f;
     private const float BLEND_SPEED_MIN     = 0.01f;
     private const float BLEND_SPEED_MAX     = 1.00f;
@@ -21,10 +24,16 @@ public class PenguinController : MonoBehaviour
 
     [Header("Animation Settings")]
     [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
-             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
+             "(ie 0.05 for a blended delayed transition taking at least 20 frames, " +
              "1.00 for an instant transition with no blending)")]
     [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
     private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
+
+    [Header("Slope Settings")]
+    [Tooltip("How strong are rotations to align with surface normal when moving up slopes? " +
+             "0.0 for max softness, 1.0f for no kinematic softness")]
+    [SerializeField] [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
+    private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -117,10 +126,16 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
         ClearVerticalMovementTriggers();
 
-        upAxis = Vector3.up;
-        forwardAxis = Vector3.right;
         TurnToFace(Facing.RIGHT);
         UpdateAnimatorParameters();
+
+        // align penguin with surface normal in a single update
+        posture = Posture.UPRIGHT;
+        groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
+                                     extraLineHeight: penguinCollider.bounds.extents.y);
+        Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
+        AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
+        groundChecker.Reset();
     }
     void Awake()
     {
@@ -174,6 +189,15 @@ public class PenguinController : MonoBehaviour
         UpdateAnimatorParameters();
     }
 
+    void FixedUpdate()
+    {
+        if (posture != Posture.BENTOVER &&
+            groundChecker.WasDetected && groundChecker.SurfaceNormalOfLastContact != Vector2.up)
+        {
+            AlignPenguinWithUpAxis(upAxisToAlignTowards: groundChecker.SurfaceNormalOfLastContact);
+        }
+    }
+
     // things we want to do AFTER the animator updates positions
     void LateUpdate()
     {
@@ -203,6 +227,28 @@ public class PenguinController : MonoBehaviour
                 break;
             default:
                 Debug.LogError($"Given value `{facing}` is not a valid Facing"); return;
+        }
+    }
+
+    private void AlignPenguinWithUpAxis(Vector3 upAxisToAlignTowards, bool forceInstantUpdate=false)
+    {
+        // we use the old forward direction of the penguin crossed with the axis we wish to align to, to get a perpendicular
+        // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
+        // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
+        // that's parallel with the slope that our given up is normal to.
+        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, upAxisToAlignTowards);
+        Vector3 newForward = Vector3.Cross(upAxisToAlignTowards, left);
+
+        Quaternion oldRotation = penguinRigidBody.transform.rotation;
+        Quaternion newRotation = Quaternion.LookRotation(newForward, upAxisToAlignTowards);
+
+        if (forceInstantUpdate)
+        {
+            penguinRigidBody.MoveRotation(newRotation);
+        }
+        else
+        {
+            penguinRigidBody.MoveRotation(Quaternion.Lerp(oldRotation, newRotation, surfaceAlignmentRotationalStrength));
         }
     }
 }
