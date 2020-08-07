@@ -133,6 +133,7 @@ public class PenguinController : MonoBehaviour
         xMotionIntensity = 0.00f;
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
+        penguinCollider.enabled = true;
         ClearVerticalMovementTriggers();
 
         TurnToFace(Facing.RIGHT);
@@ -160,7 +161,7 @@ public class PenguinController : MonoBehaviour
     void Update()
     {
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
-                                     extraLineHeight: penguinCollider.bounds.extents.y);
+                                     extraLineHeight: penguinCollider.bounds.extents.y + 10);
 
         if (Mathf.Approximately(input.Axes.x, 0.00f))
         {
