@@ -203,7 +203,7 @@ public class PenguinController : MonoBehaviour
         if (posture != Posture.BENTOVER &&
             groundChecker.WasDetected && groundChecker.SurfaceNormalOfLastContact != Vector2.up)
         {
-            //AlignPenguinWithUpAxis(upAxisToAlignTowards: groundChecker.SurfaceNormalOfLastContact);
+            AlignPenguinWithUpAxis(upAxisToAlignTowards: groundChecker.SurfaceNormalOfLastContact);
         }
     }
 
