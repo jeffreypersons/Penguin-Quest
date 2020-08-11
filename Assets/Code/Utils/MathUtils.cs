@@ -34,6 +34,12 @@ public static class MathUtils
         return new Vector2(vector.y, -vector.x).normalized;
     }
 
+    public static void RotateRigidBodyAroundPointBy(Rigidbody2D rigidBody, Vector3 axis, float angle)
+    {
+        Quaternion q = Quaternion.AngleAxis(angle, axis);
+        rigidBody.MovePosition(q * rigidBody.transform.position);
+        rigidBody.MoveRotation(rigidBody.transform.rotation * q);
+    }
     // see: https://answers.unity.com/questions/10093/rigidbody-rotating-around-a-point-instead-on-self.html
     public static void RotateRigidBodyAroundPointBy(Rigidbody2D rigidBody, Vector3 origin, Vector3 axis, float angle)
     {
