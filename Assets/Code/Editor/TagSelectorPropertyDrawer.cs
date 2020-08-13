@@ -3,47 +3,55 @@ using UnityEditor;
 using System;
 
 
-// adopted from: http://www.brechtos.com/tagselectorattribute/
 [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
 public class TagSelectorPropertyDrawer : PropertyDrawer
 {
-    private string[] tags;
-    private const string EMPTY_TAG_NAME = "<No Tag>";
-
-    private void UpdateTags()
+    internal static class Tags
     {
-        tags = CollectionUtils.PrependToArray(EMPTY_TAG_NAME, UnityEditorInternal.InternalEditorUtility.tags);
-    }
+        private static string[] _cachedTags;
+        public static string[] tags;
+        public static GUIContent[] DisplayContents { get; private set; }
+        public const string EMPTY_TAG = "";
+        public const string EMPTY_TAG_DISPLAY_NAME = "<No Tag>";
 
-    private int IndexOfTag(string tag)
-    {
-        return tag == "" ? 0 : Array.IndexOf(tags, tag, 1);
+        static Tags()
+        {
+            Update();
+        }
+        public static string Select(int index)
+        {
+            return index <= 0 ? EMPTY_TAG : _cachedTags[index];
+        }
+        public static int IndexOf(string tag)
+        {
+            return tag == EMPTY_TAG ? 0 : Array.IndexOf(_cachedTags, tag, 1);
+        }
+        public static void Update()
+        {
+            if (CollectionUtils.AreElementsEqual(_cachedTags, UnityEditorInternal.InternalEditorUtility.tags))
+            {
+                return;
+            }
+            _cachedTags = UnityEditorInternal.InternalEditorUtility.tags;
+            tags = CollectionUtils.PrependToArray(EMPTY_TAG_DISPLAY_NAME, UnityEditorInternal.InternalEditorUtility.tags);
+        }
     }
 
     // get the latest tags from editor and display them in a dropdown with our drawer getting the selected tag
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        if (property.propertyType == SerializedPropertyType.String)
-        {
-            EditorGUI.BeginProperty(position, label, property);
-
-            var attrib = this.attribute as TagSelectorAttribute;
-            if (attrib.UseDefaultTagFieldDrawer)
-            {
-                property.stringValue = EditorGUI.TagField(position, label, property.stringValue);
-            }
-            else
-            {
-                UpdateTags();
-                int selectedIndex = EditorGUI.Popup(position, label.text, IndexOfTag(property.stringValue), displayedOptions: tags);
-                property.stringValue = selectedIndex >= 1? tags[selectedIndex] : "";
-            }
-
-            EditorGUI.EndProperty();
-        }
-        else
+        if (property.propertyType != SerializedPropertyType.String)
         {
             EditorGUI.PropertyField(position, property, label);
+            return;
+        }
+
+        using (var scope = new EditorGUI.PropertyScope(position, label, property))
+        {
+            Tags.Update();
+            Debug.Log(Tags.IndexOf(property.stringValue));
+            property.stringValue = Tags.Select(
+                EditorGUI.Popup(position, label.text, Tags.IndexOf(property.stringValue), Tags.tags));
         }
     }
 }
