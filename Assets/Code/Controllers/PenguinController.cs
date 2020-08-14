@@ -4,7 +4,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(CompositeCollider2D))]
 [RequireComponent(typeof(GroundChecker))]
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
@@ -44,24 +43,25 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
     private float jumpAngle = JUMP_ANGLE_DEFAULT;
 
-    /*
     [Header("Collider References")]
     [Tooltip("Reference of collider attached to model's torso")]
-    [SerializeField] private CapsuleCollider2D torsoCollider = default;
+    [SerializeField] private CapsuleCollider2D bodyCollider = default;
 
     [Tooltip("Reference of collider attached to model's back foot")]
-    [SerializeField] private CapsuleCollider2D backFootCollider = default;
+    [SerializeField] private BoxCollider2D backFootCollider = default;
 
     [Tooltip("Reference of collider attached to model's front foot")]
-    [SerializeField] private CapsuleCollider2D frontFootCollider = default;
-    */
+    [SerializeField] private BoxCollider2D frontFootCollider = default;
+
+    [Tooltip("Center of Mass")]
+    [SerializeField] private Vector3 centerOfMass = default;
+
     private Vector2 initialSpawnPosition;
 
     private GroundChecker groundChecker;
     private GameplayInputReciever input;
     private Animator penguinAnimator;
     private Rigidbody2D penguinRigidBody;
-    private CompositeCollider2D penguinCollider;
 
     private Facing facing;
     private Posture posture;
@@ -133,7 +133,7 @@ public class PenguinController : MonoBehaviour
         xMotionIntensity = 0.00f;
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
-        penguinCollider.enabled = true;
+        bodyCollider.enabled = true;
         ClearVerticalMovementTriggers();
 
         TurnToFace(Facing.RIGHT);
@@ -142,7 +142,7 @@ public class PenguinController : MonoBehaviour
         // align penguin with surface normal in a single update
         posture = Posture.UPRIGHT;
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
-                                     extraLineHeight: penguinCollider.bounds.extents.y);
+                                     extraLineHeight: bodyCollider.bounds.extents.y);
         Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
         AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
         groundChecker.Reset();
@@ -153,7 +153,6 @@ public class PenguinController : MonoBehaviour
         groundChecker    = gameObject.GetComponent<GroundChecker>();
         input            = gameObject.GetComponent<GameplayInputReciever>();
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        penguinCollider  = gameObject.GetComponent<CompositeCollider2D>();
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
@@ -161,7 +160,7 @@ public class PenguinController : MonoBehaviour
     void Update()
     {
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
-                                     extraLineHeight: penguinCollider.bounds.extents.y + 10);
+                                     extraLineHeight: bodyCollider.bounds.extents.y);
 
         if (Mathf.Approximately(input.Axes.x, 0.00f))
         {
