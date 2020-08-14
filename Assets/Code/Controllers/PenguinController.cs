@@ -153,6 +153,8 @@ public class PenguinController : MonoBehaviour
         groundChecker    = gameObject.GetComponent<GroundChecker>();
         input            = gameObject.GetComponent<GameplayInputReciever>();
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
+        penguinRigidBody.centerOfMass = centerOfMass;
+
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
@@ -257,5 +259,11 @@ public class PenguinController : MonoBehaviour
         {
             penguinRigidBody.MoveRotation(Quaternion.Lerp(oldRotation, newRotation, surfaceAlignmentRotationalStrength));
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(transform.TransformVector(centerOfMass), 0.50f);
     }
 }
