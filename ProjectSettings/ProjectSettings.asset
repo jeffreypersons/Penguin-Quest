@@ -676,6 +676,7 @@ PlayerSettings:
   ps4ShareFilePath: 
   ps4ShareOverlayImagePath: 
   ps4PrivacyGuardImagePath: 
+  ps4ExtraSceSysFile: 
   ps4NPtitleDatPath: 
   ps4RemotePlayKeyAssignment: -1
   ps4RemotePlayKeyMappingDir: 
@@ -718,6 +719,8 @@ PlayerSettings:
   ps4disableAutoHideSplash: 0
   ps4videoRecordingFeaturesUsed: 0
   ps4contentSearchFeaturesUsed: 0
+  ps4CompatibilityPS5: 0
+  ps4GPU800MHz: 1
   ps4attribEyeToEyeDistanceSettingVR: 0
   ps4IncludedModules: []
   ps4attribVROutputEnabled: 0
@@ -742,17 +745,17 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: CT_TPB;CT_TPS
+    1: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
     4: CT_TPB;CT_TPS
-    7: CT_TPB;CT_TPS
-    13: CT_TPB;CT_TPS
+    7: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
+    13: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
     14: CT_TPB;CT_TPS
-    19: CT_TPB;CT_TPS
-    21: CT_TPB;CT_TPS
-    25: CT_TPB;CT_TPS
-    27: CT_TPB;CT_TPS
-    28: CT_TPB;CT_TPS
-    29: CT_TPB;CT_TPS
+    19: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
+    21: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
+    25: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
+    27: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
+    28: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
+    29: CT_TPB;CT_TPS;UNITY_POST_PROCESSING_STACK_V2
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration:
