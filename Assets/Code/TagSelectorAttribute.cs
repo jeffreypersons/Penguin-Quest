@@ -6,8 +6,10 @@ using UnityEngine;
 // example usage:
 //     [TagSelector] [SerializeField] private string[] tagsOfButtonsToHideOnMenuOpen = new string[] { };
 //
-// note: see `Editor/TagSelectorPropertyDrawer` for implementation
+// Notes
+// * see `Editor/TagSelectorPropertyDrawer` for implementation
+// * unlike the built in default tag selector in which a custom editor has to be written and the field is then
+// tagged like `EditorGUI.TagField(position, label, property.stringValue)`, this attribute works 'out of the box'
 public class TagSelectorAttribute : PropertyAttribute
 {
-    public bool UseDefaultTagFieldDrawer = false;
 }
