@@ -44,14 +44,23 @@ public class PenguinController : MonoBehaviour
     private float jumpAngle = JUMP_ANGLE_DEFAULT;
 
     [Header("Collider References")]
+    [Tooltip("Reference of collider attached to model's head")]
+    [SerializeField] private CapsuleCollider2D headCollider = default;
+
     [Tooltip("Reference of collider attached to model's torso")]
     [SerializeField] private CapsuleCollider2D bodyCollider = default;
 
-    [Tooltip("Reference of collider attached to model's back foot")]
-    [SerializeField] private BoxCollider2D backFootCollider = default;
+    [Tooltip("Reference of collider attached to model's front upper flipper")]
+    [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
+
+    [Tooltip("Reference of collider attached to model's front lower flipper")]
+    [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
 
     [Tooltip("Reference of collider attached to model's front foot")]
     [SerializeField] private BoxCollider2D frontFootCollider = default;
+
+    [Tooltip("Reference of collider attached to model's back foot")]
+    [SerializeField] private BoxCollider2D backFootCollider = default;
 
     [Tooltip("Center of Mass")]
     [SerializeField] private Vector3 centerOfMass = default;
@@ -95,18 +104,23 @@ public class PenguinController : MonoBehaviour
     void OnLiedownAnimationEventStart()
     {
         posture = Posture.BENTOVER;
+        penguinRigidBody.isKinematic = true;
+        SetParentCollidersToJoints();
     }
     void OnLiedownAnimationEventEnd()
     {
         posture = Posture.ONBELLY;
+        SetParentCollidersToRoot();
     }
     void OnStandupAnimationEventStart()
     {
         posture = Posture.BENTOVER;
+        SetParentCollidersToJoints();
     }
     void OnStandupAnimationEventEnd()
     {
         posture = Posture.UPRIGHT;
+        SetParentCollidersToRoot();
     }
     void OnFireAnimationEvent()
     {
@@ -115,6 +129,27 @@ public class PenguinController : MonoBehaviour
     void OnUseAnimationEvent()
     {
 
+    }
+
+    private Collider2D[] colliders;
+    private Transform[] colliderParents;
+    private void SetParentCollidersToJoints()
+    {
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = false;
+            colliders[i].transform.SetParent(colliderParents[i], worldPositionStays: true);
+            colliders[i].enabled = true;
+        }
+    }
+    private void SetParentCollidersToRoot()
+    {
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = false;
+            colliders[i].transform.SetParent(this.penguinAnimator.transform, worldPositionStays: true);
+            colliders[i].enabled = true;
+        }
     }
 
     public override string ToString()
@@ -134,6 +169,7 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
         bodyCollider.enabled = true;
+        penguinRigidBody.isKinematic = true;
         ClearVerticalMovementTriggers();
 
         TurnToFace(Facing.RIGHT);
@@ -145,6 +181,7 @@ public class PenguinController : MonoBehaviour
                                      extraLineHeight: bodyCollider.bounds.extents.y);
         Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
         AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
+        SetParentCollidersToJoints();
         groundChecker.Reset();
     }
     void Awake()
@@ -153,12 +190,30 @@ public class PenguinController : MonoBehaviour
         groundChecker    = gameObject.GetComponent<GroundChecker>();
         input            = gameObject.GetComponent<GameplayInputReciever>();
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        penguinRigidBody.centerOfMass = centerOfMass;
 
+        penguinRigidBody.centerOfMass = centerOfMass;
         initialSpawnPosition = penguinRigidBody.position;
+        colliders = new Collider2D[]
+        {
+            headCollider,
+            bodyCollider,
+            frontFlipperUpperCollider,
+            frontFlipperLowerCollider,
+            backFootCollider,
+            frontFootCollider
+        };
+        colliderParents = new Transform[colliders.Length];
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliderParents[i] = colliders[i].transform.parent;
+        }
         Reset();
     }
 
+    void Start()
+    {
+        SetParentCollidersToRoot();
+    }
     void Update()
     {
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
