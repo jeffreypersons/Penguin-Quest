@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.U2D.Animation;
 
 
 [RequireComponent(typeof(Animator))]
@@ -104,23 +105,26 @@ public class PenguinController : MonoBehaviour
     void OnLiedownAnimationEventStart()
     {
         posture = Posture.BENTOVER;
-        penguinRigidBody.isKinematic = true;
         SetParentCollidersToJoints();
     }
     void OnLiedownAnimationEventEnd()
     {
         posture = Posture.ONBELLY;
-        SetParentCollidersToRoot();
+        SetParentCollidersToParts();
+        frontFlipperUpperCollider.enabled = false;
+        frontFlipperLowerCollider.enabled = false;
     }
     void OnStandupAnimationEventStart()
     {
         posture = Posture.BENTOVER;
         SetParentCollidersToJoints();
+        frontFlipperUpperCollider.enabled = true;
+        frontFlipperLowerCollider.enabled = true;
     }
     void OnStandupAnimationEventEnd()
     {
         posture = Posture.UPRIGHT;
-        SetParentCollidersToRoot();
+        SetParentCollidersToParts();
     }
     void OnFireAnimationEvent()
     {
@@ -132,22 +136,23 @@ public class PenguinController : MonoBehaviour
     }
 
     private Collider2D[] colliders;
-    private Transform[] colliderParents;
+    private Transform[] bodyJointTransforms;
+    private Transform[] bodyPartTransforms;
     private void SetParentCollidersToJoints()
     {
         for (int i = 0; i < colliders.Length; i++)
         {
             colliders[i].enabled = false;
-            colliders[i].transform.SetParent(colliderParents[i], worldPositionStays: true);
+            colliders[i].transform.SetParent(bodyJointTransforms[i], worldPositionStays: true);
             colliders[i].enabled = true;
         }
     }
-    private void SetParentCollidersToRoot()
+    private void SetParentCollidersToParts()
     {
         for (int i = 0; i < colliders.Length; i++)
         {
             colliders[i].enabled = false;
-            colliders[i].transform.SetParent(this.penguinAnimator.transform, worldPositionStays: true);
+            //colliders[i].transform.SetParent(bodyPartTransforms[i], worldPositionStays: true);
             colliders[i].enabled = true;
         }
     }
@@ -169,7 +174,7 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
         bodyCollider.enabled = true;
-        penguinRigidBody.isKinematic = true;
+        penguinRigidBody.isKinematic = false;
         ClearVerticalMovementTriggers();
 
         TurnToFace(Facing.RIGHT);
@@ -199,20 +204,30 @@ public class PenguinController : MonoBehaviour
             bodyCollider,
             frontFlipperUpperCollider,
             frontFlipperLowerCollider,
+            frontFootCollider,
             backFootCollider,
-            frontFootCollider
         };
-        colliderParents = new Transform[colliders.Length];
+        bodyPartTransforms = new Transform[]
+        {
+            transform.Find("Penguin_Head"),
+            transform.Find("Penguin_Body"),
+            transform.Find("Penguin_FrontFlipper"),
+            transform.Find("Penguin_FrontFlipper"),
+            transform.Find("Penguin_FrontFoot"),
+            transform.Find("Penguin_BackFoot"),
+        };
+        bodyJointTransforms = new Transform[colliders.Length];
         for (int i = 0; i < colliders.Length; i++)
         {
-            colliderParents[i] = colliders[i].transform.parent;
+            bodyJointTransforms[i] = colliders[i].transform.parent;
         }
         Reset();
     }
 
     void Start()
     {
-        SetParentCollidersToRoot();
+        Debug.Log("A" + bodyPartTransforms[0]);
+        SetParentCollidersToParts();
     }
     void Update()
     {
