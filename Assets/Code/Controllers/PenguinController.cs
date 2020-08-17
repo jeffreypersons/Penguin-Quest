@@ -264,6 +264,6 @@ public class PenguinController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.TransformVector(centerOfMass), 0.50f);
+        Gizmos.DrawSphere(transform.position + transform.rotation * centerOfMass, 0.50f);
     }
 }
