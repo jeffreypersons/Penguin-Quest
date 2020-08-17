@@ -105,26 +105,22 @@ public class PenguinController : MonoBehaviour
     void OnLiedownAnimationEventStart()
     {
         posture = Posture.BENTOVER;
-        SetParentCollidersToJoints();
     }
     void OnLiedownAnimationEventEnd()
     {
         posture = Posture.ONBELLY;
-        SetParentCollidersToParts();
         frontFlipperUpperCollider.enabled = false;
         frontFlipperLowerCollider.enabled = false;
     }
     void OnStandupAnimationEventStart()
     {
         posture = Posture.BENTOVER;
-        SetParentCollidersToJoints();
         frontFlipperUpperCollider.enabled = true;
         frontFlipperLowerCollider.enabled = true;
     }
     void OnStandupAnimationEventEnd()
     {
         posture = Posture.UPRIGHT;
-        SetParentCollidersToParts();
     }
     void OnFireAnimationEvent()
     {
@@ -133,28 +129,6 @@ public class PenguinController : MonoBehaviour
     void OnUseAnimationEvent()
     {
 
-    }
-
-    private Collider2D[] colliders;
-    private Transform[] bodyJointTransforms;
-    private Transform[] bodyPartTransforms;
-    private void SetParentCollidersToJoints()
-    {
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            colliders[i].enabled = false;
-            colliders[i].transform.SetParent(bodyJointTransforms[i], worldPositionStays: true);
-            colliders[i].enabled = true;
-        }
-    }
-    private void SetParentCollidersToParts()
-    {
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            colliders[i].enabled = false;
-            //colliders[i].transform.SetParent(bodyPartTransforms[i], worldPositionStays: true);
-            colliders[i].enabled = true;
-        }
     }
 
     public override string ToString()
@@ -186,7 +160,6 @@ public class PenguinController : MonoBehaviour
                                      extraLineHeight: bodyCollider.bounds.extents.y);
         Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
         AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
-        SetParentCollidersToJoints();
         groundChecker.Reset();
     }
     void Awake()
@@ -198,36 +171,7 @@ public class PenguinController : MonoBehaviour
 
         penguinRigidBody.centerOfMass = centerOfMass;
         initialSpawnPosition = penguinRigidBody.position;
-        colliders = new Collider2D[]
-        {
-            headCollider,
-            bodyCollider,
-            frontFlipperUpperCollider,
-            frontFlipperLowerCollider,
-            frontFootCollider,
-            backFootCollider,
-        };
-        bodyPartTransforms = new Transform[]
-        {
-            transform.Find("Penguin_Head"),
-            transform.Find("Penguin_Body"),
-            transform.Find("Penguin_FrontFlipper"),
-            transform.Find("Penguin_FrontFlipper"),
-            transform.Find("Penguin_FrontFoot"),
-            transform.Find("Penguin_BackFoot"),
-        };
-        bodyJointTransforms = new Transform[colliders.Length];
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            bodyJointTransforms[i] = colliders[i].transform.parent;
-        }
         Reset();
-    }
-
-    void Start()
-    {
-        Debug.Log("A" + bodyPartTransforms[0]);
-        SetParentCollidersToParts();
     }
     void Update()
     {
@@ -306,7 +250,8 @@ public class PenguinController : MonoBehaviour
                 penguinRigidBody.transform.localScale = new Vector3( Mathf.Abs(scale.x), scale.y, scale.z);
                 break;
             default:
-                Debug.LogError($"Given value `{facing}` is not a valid Facing"); return;
+                Debug.LogError($"Given value `{facing}` is not a valid Facing");
+                break;
         }
     }
 
