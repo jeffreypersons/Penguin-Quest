@@ -3336,13 +3336,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 124587531}
-  m_LocalRotation: {x: -0, y: -0, z: -0.4347421, w: 0.900555}
-  m_LocalPosition: {x: -0.9535695, y: -1.3270748, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: -0.4422886, w: 0.89687276}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 27460645}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -10}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -52.5}
 --- !u!70 &124587533
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -3356,7 +3356,7 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.35, y: 0.25}
+  m_Offset: {x: 0.75, y: -1.25}
   m_Size: {x: 4.5, y: 7}
   m_Direction: 0
 --- !u!1 &150227426
@@ -6595,7 +6595,6 @@ MonoBehaviour:
   frontFlipperLowerCollider: {fileID: 851937867}
   frontFootCollider: {fileID: 309086114}
   backFootCollider: {fileID: 719415486}
-  colliderRootNode: {fileID: 360899390}
   centerOfMass: {x: 0, y: 0, z: 0}
 --- !u!114 &1429373699
 MonoBehaviour:
@@ -6641,7 +6640,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
-  m_Mass: 240.64209
+  m_Mass: 240.64207
   m_LinearDrag: 0.05
   m_AngularDrag: 0.05
   m_GravityScale: 1
