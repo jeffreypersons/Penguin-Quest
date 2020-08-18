@@ -34,7 +34,7 @@ public class GroundChecker : MonoBehaviour
     private const float TOLERANCE_MAX     = 10.00f;
     private static readonly Color RAY_EXTENSION_COLOR_DEFAULT     = Color.cyan;
     private static readonly Color RAY_BELOW_SOURCE_COLOR_DEFAULT  = Color.blue;
-    private static readonly Color RAY_HIT_INDICATED_COLOR_DEFAULT = Color.green;
+    private static readonly Color RAY_HIT_INDICATED_COLOR_DEFAULT = Color.magenta;
 
     private Vector2 origin;
     private float extraLineHeight;
@@ -94,7 +94,6 @@ public class GroundChecker : MonoBehaviour
         origin           = new Vector2(fromPoint.x, fromPoint.y + extraLineHeight);
         Vector2 terminal = new Vector2(fromPoint.x, fromPoint.y - toleratedHeightFromGround);
 
-        //Debug.Log($"from {origin} to {terminal}");
         RaycastHit2D hitInfo = Physics2D.Linecast(origin, terminal, groundMask);
         if (hitInfo && (hitInfo.distance - extraLineHeight) < toleratedHeightFromGround)
         {
@@ -107,19 +106,28 @@ public class GroundChecker : MonoBehaviour
             WasDetected = false;
             Result = default;
         }
+    }
 
-        #if UNITY_EDITOR
+    void OnDrawGizmos()
+    {
         if (!displayVisualAids)
         {
             return;
         }
-        Debug.DrawLine(origin, fromPoint, rayColorTop, Time.deltaTime);
-        Debug.DrawLine(fromPoint, terminal, rayColorLower, Time.deltaTime);
+
+        Vector2 mid    = new Vector2(origin.x, origin.y - extraLineHeight);
+        Vector2 bottom = new Vector2(origin.x, mid.y - toleratedHeightFromGround);
+        DrawLine(origin, mid, rayColorTop);
+        DrawLine(mid, bottom, rayColorLower);
         if (WasDetected)
         {
             Vector2 offset = new Vector2(toleratedHeightFromGround, 0);
-            Debug.DrawLine(Result.point - offset, Result.point + offset, rayColorBottom, Time.deltaTime);
+            DrawLine(Result.point - offset, Result.point + offset, rayColorBottom);
         }
-        #endif
+    }
+    private void DrawLine(Vector2 from, Vector2 to, Color color)
+    {
+        Gizmos.color = color;
+        Gizmos.DrawLine(from, to);
     }
 }
