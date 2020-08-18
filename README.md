@@ -1,5 +1,6 @@
 # Penguin Quest
- An emperor penguin on dangerous a quest to bring back food to his son.
- 
- Will he make it all the way the ocean's edge and successfully make it back to the inner Antarctic with fish in his belly?
- Only time will tell!
+A penguin on a quest to eat a bunch of fish and slide, jump, and walk his way to victory!
+
+Can play in-browser at itch.io!: https://jeffreypersons.itch.io/penguin-quest
+
+_Status: still in development_
