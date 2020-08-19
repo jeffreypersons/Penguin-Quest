@@ -246,15 +246,6 @@ public class PenguinController : MonoBehaviour
             AlignPenguinWithUpAxis(targetAxis: groundChecker.Result.normal);
             return;
         }
-
-        /*
-        penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-        if (Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance &&
-            Mathf.Abs(penguinRigidBody.velocity.y) <= nonMovingTolerance)
-        {
-            penguinRigidBody.constraints |= RigidbodyConstraints2D.FreezePosition;
-        }
-        */
     }
 
     // things we want to do AFTER the animator updates positions
@@ -264,6 +255,19 @@ public class PenguinController : MonoBehaviour
         {
             penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
             netImpulseForce = Vector2.zero;
+        }
+
+        if (groundChecker.WasDetected &&
+            posture != Posture.BENTOVER &&
+            MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) &&
+            Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance &&
+            Mathf.Abs(penguinRigidBody.velocity.y) <= nonMovingTolerance)
+        {
+            penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePosition;
+        }
+        else
+        {
+            penguinRigidBody.constraints = RigidbodyConstraints2D.None;
         }
     }
 
