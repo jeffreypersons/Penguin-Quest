@@ -18,6 +18,27 @@ public static class MathUtils
         return new Vector2(rx, vector.x * sa + vector.y * ca);
     }
 
+    // return true if floating point approximations of vectors a and b are the same
+    public static bool AreComponentsEqual(Vector2 a, Vector2 b)
+    {
+        return Mathf.Approximately(a.x, b.x) && Mathf.Approximately(a.y, b.y);
+    }
+    // return true if floating point approximations of magnitudes a and b are the same
+    public static bool AreMagnitudesEqual(Vector2 a, Vector2 b)
+    {
+        return Mathf.Approximately(a.magnitude, b.magnitude);
+    }
+    // return true if both vectors are pointed in the same direction
+    //
+    // Note
+    // * keep in mind that normalized vectors return vector2.zero if components are too small
+    //  `https://docs.unity3d.com/ScriptReference/Vector2-normalized.html`,
+    //  so comparing the directions of two tiny vectors with nonequal components may actually return true
+    public static bool AreDirectionsEqual(Vector2 a, Vector2 b)
+    {
+        return AreComponentsEqual(a, b) || AreComponentsEqual(a.normalized, b.normalized);
+    }
+
     public static Vector2 SwapCoords(Vector2 vector)
     {
         return new Vector2(vector.y, vector.x);
