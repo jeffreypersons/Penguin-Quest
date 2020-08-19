@@ -120,26 +120,26 @@ public class PenguinController : MonoBehaviour
     void OnLiedownAnimationEventStart()
     {
         posture = Posture.BENTOVER;
+        SetParentCollidersToJoints();
     }
     void OnLiedownAnimationEventEnd()
     {
         posture = Posture.ONBELLY;
+        SetParentCollidersToRoot();
         frontFlipperUpperCollider.enabled = false;
         frontFlipperLowerCollider.enabled = false;
-        frontFootCollider.enabled = false;
-        backFootCollider.enabled  = false;
     }
     void OnStandupAnimationEventStart()
     {
         posture = Posture.BENTOVER;
+        SetParentCollidersToJoints();
         frontFlipperUpperCollider.enabled = true;
         frontFlipperLowerCollider.enabled = true;
-        frontFootCollider.enabled = true;
-        backFootCollider.enabled  = true;
     }
     void OnStandupAnimationEventEnd()
     {
         posture = Posture.UPRIGHT;
+        SetParentCollidersToRoot();
     }
     void OnFireAnimationEvent()
     {
@@ -148,6 +148,27 @@ public class PenguinController : MonoBehaviour
     void OnUseAnimationEvent()
     {
 
+    }
+
+    private Collider2D[] colliders;
+    private Transform[] bodyJointTransforms;
+    private void SetParentCollidersToJoints()
+    {
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = false;
+            colliders[i].transform.SetParent(bodyJointTransforms[i], worldPositionStays: true);
+            colliders[i].enabled = true;
+        }
+    }
+    private void SetParentCollidersToRoot()
+    {
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = false;
+            colliders[i].transform.SetParent(this.transform, worldPositionStays: true);
+            colliders[i].enabled = true;
+        }
     }
 
     public override string ToString()
@@ -177,8 +198,9 @@ public class PenguinController : MonoBehaviour
         posture = Posture.UPRIGHT;
         groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
                                      extraLineHeight: bodyCollider.bounds.extents.y);
-        Vector3 targetUpAxis = groundChecker.WasDetected? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
+        Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
         AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
+        SetParentCollidersToJoints();
         groundChecker.Reset();
     }
     void Awake()
@@ -190,6 +212,20 @@ public class PenguinController : MonoBehaviour
 
         penguinRigidBody.centerOfMass = centerOfMass;
         initialSpawnPosition = penguinRigidBody.position;
+        colliders = new Collider2D[]
+        {
+            headCollider,
+            bodyCollider,
+            frontFlipperUpperCollider,
+            frontFlipperLowerCollider,
+            frontFootCollider,
+            backFootCollider,
+        };
+        bodyJointTransforms = new Transform[colliders.Length];
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            bodyJointTransforms[i] = colliders[i].transform.parent;
+        }
         Reset();
     }
 
