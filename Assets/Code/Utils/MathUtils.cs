@@ -8,14 +8,9 @@ using UnityEngine;
 public static class MathUtils
 {
     // rotate given vector by degrees counter-clockwise (or clockwise if negative)
-    public static Vector2 RotateBy(Vector2 vector, float degrees)
+    public static Vector2 RotateByA(Vector2 vector, float degrees)
     {
-        float radians = degrees * Mathf.Deg2Rad;
-        float ca = Mathf.Cos(radians);
-        float sa = Mathf.Sin(radians);
-        float rx = vector.x * ca - vector.y * sa;
-
-        return new Vector2(rx, vector.x * sa + vector.y * ca);
+        return Quaternion.AngleAxis(degrees, vector) * vector;
     }
 
     // return true if floating point approximations of vectors a and b are the same

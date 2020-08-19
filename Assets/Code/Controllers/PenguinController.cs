@@ -93,7 +93,7 @@ public class PenguinController : MonoBehaviour
     private enum Facing  { LEFT, RIGHT }
     private enum Posture { UPRIGHT, ONBELLY, BENTOVER }
 
-    private Vector2 netImpulseForce;
+    private Vector2 netRelativeImpulseForce;
     private float xMotionIntensity;
 
     void LockAllAxes()
@@ -125,12 +125,14 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.ResetTrigger("Standup");
         penguinAnimator.ResetTrigger("Liedown");
     }
+
     void OnJumpAnimationEventImpulse()
     {
         // clear jump trigger to avoid triggering a jump after landing,
         // in the case that jump is pressed twice in a row
         ClearVerticalMovementTriggers();
-        netImpulseForce += jumpStrength * MathUtils.RotateBy(penguinRigidBody.transform.forward, jumpAngle);
+        float angleFromGround = jumpAngle * Mathf.Deg2Rad;
+        netRelativeImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
     }
     void OnLiedownAnimationEventStart()
     {
@@ -178,7 +180,7 @@ public class PenguinController : MonoBehaviour
     {
         UnlockAllAxes();
         groundChecker.Reset();
-        netImpulseForce = Vector2.zero;
+        netRelativeImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
@@ -281,12 +283,11 @@ public class PenguinController : MonoBehaviour
     // things we want to do AFTER the animator updates positions
     void LateUpdate()
     {
-        if (netImpulseForce != Vector2.zero)
+        if (netRelativeImpulseForce != Vector2.zero)
         {
             UnlockAllAxes();
-            penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
-            netImpulseForce = Vector2.zero;
-            return;
+            penguinRigidBody.AddRelativeForce(netRelativeImpulseForce, ForceMode2D.Impulse);
+            netRelativeImpulseForce = Vector2.zero;
         }
     }
 
@@ -296,20 +297,23 @@ public class PenguinController : MonoBehaviour
         {
             return;
         }
-
+        LockAllAxes();
+        Vector2 impulse = netRelativeImpulseForce;
         Vector3 scale = penguinRigidBody.transform.localScale;
         this.facing = facing;
         switch (this.facing)
         {
             case Facing.LEFT:
+                netRelativeImpulseForce = new Vector2(-Mathf.Abs(impulse.x), impulse.y);
                 penguinRigidBody.transform.localScale = new Vector3(-Mathf.Abs(scale.x), scale.y, scale.z);
                 break;
             case Facing.RIGHT:
+                netRelativeImpulseForce = new Vector2( Mathf.Abs(impulse.x), impulse.y);
                 penguinRigidBody.transform.localScale = new Vector3( Mathf.Abs(scale.x), scale.y, scale.z);
                 break;
             default:
                 Debug.LogError($"Given value `{facing}` is not a valid Facing");
-                return;
+                break;
         }
     }
 
