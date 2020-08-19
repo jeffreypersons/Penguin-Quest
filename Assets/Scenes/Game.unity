@@ -3304,11 +3304,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.09149682, w: 0.9958054}
-    - {x: 0, y: 0, z: 0.14653677, w: 0.98920524}
-    - {x: 0, y: 0, z: -0.46760035, w: 0.88394004}
-    - {x: 0, y: 0, z: -0.49238917, w: 0.8703752}
-    - {x: 0, y: 0, z: 0.067117035, w: 0.99774516}
+    - {x: 0, y: 0, z: -0.09010237, w: 0.9959325}
+    - {x: 0, y: 0, z: 0.1326543, w: 0.9911624}
+    - {x: 0, y: 0, z: -0.4310466, w: 0.9023297}
+    - {x: 0, y: 0, z: -0.458192, w: 0.8888533}
+    - {x: 0, y: 0, z: -0.000008732075, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -3417,7 +3417,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.12804589, w: 0.99176824}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.21828014, w: 0.97588617}
+    - {x: 0, y: 0, z: 0.1280427, w: 0.9917687}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -4960,9 +4960,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.005045017, w: 0.9999873}
-    - {x: 0, y: 0, z: -0.04134816, w: 0.99914485}
-    - {x: 0, y: 0, z: -0.08800233, w: 0.9961203}
+    - {x: 0, y: 0, z: 0.005699533, w: 0.9999838}
+    - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
+    - {x: 0, y: 0, z: 0.000004649162, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -5824,7 +5824,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.019994391, w: 0.9998001}
+    - {x: 0, y: 0, z: -0.04041946, w: 0.9991828}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -6587,12 +6587,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   locomotionBlendSpeed: 0.1
   surfaceAlignmentRotationalStrength: 1
+  misalignmentTolerance: 1.25
+  nonMovingTolerance: 0.01
   jumpStrength: 75000
   jumpAngle: 60
-  headCollider: {fileID: 124587533}
-  bodyCollider: {fileID: 1540492274}
-  frontFlipperUpperCollider: {fileID: 1259579957}
-  frontFlipperLowerCollider: {fileID: 851937867}
+  headCollider: {fileID: 0}
+  bodyCollider: {fileID: 0}
+  frontFlipperUpperCollider: {fileID: 0}
+  frontFlipperLowerCollider: {fileID: 0}
   frontFootCollider: {fileID: 309086114}
   backFootCollider: {fileID: 719415486}
   centerOfMass: {x: 0, y: 0, z: 0}
@@ -6640,14 +6642,14 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
-  m_Mass: 240.64206
+  m_Mass: 73.397
   m_LinearDrag: 0.05
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!1 &1436611640
 GameObject:
@@ -6824,53 +6826,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6fc3cd80adb2f6542ab1e50a650c8138, type: 3}
---- !u!1 &1540492272
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1540492273}
-  - component: {fileID: 1540492274}
-  m_Layer: 9
-  m_Name: Collider_Body
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1540492273
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540492272}
-  m_LocalRotation: {x: 0, y: 0, z: -0.7002865, w: 0.7138619}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 27460638}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -88.9}
---- !u!70 &1540492274
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540492272}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.075, y: 7.275}
-  m_Size: {x: 8.5, y: 21.5}
-  m_Direction: 0
 --- !u!1 &1574968791
 GameObject:
   m_ObjectHideFlags: 0
@@ -6959,7 +6914,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.024578158, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.055518895, w: 0.9984577}
+    - {x: 0, y: 0, z: 0.02458045, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01

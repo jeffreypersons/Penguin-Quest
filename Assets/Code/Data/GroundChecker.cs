@@ -16,16 +16,48 @@
 [AddComponentMenu("GroundChecker")]
 public class GroundChecker : MonoBehaviour
 {
-    public struct Contact
+    public class Contact
     {
-        public Vector2 point;
-        public Vector2 normal;
-        public float distance;
-        public Contact(Vector2 point, Vector2 normal, float distance)
+        public Vector2 point            { get; private set; }
+        public Vector2 normal           { get; private set; }
+        public Vector2 pointOfReference { get; private set; }
+
+        // approximate slope at area of contact (negative degrees if descending left to right, positive if ascending)
+        public float slope         { get; private set; }
+        public float distance      { get; private set; }
+        public static readonly Vector2 axis = Vector2.up;
+        // calculate angle between given rotation and surface normal
+        // returns degrees between normal and given in the 2d plane (+ clockwise, - counter-clockwise)
+        public float DegreesFromSurfaceNormal(Quaternion rotation)
         {
-            this.point    = point;
-            this.normal   = normal;
-            this.distance = distance;
+            return Vector2.SignedAngle(normal, rotation * axis);
+        }
+        // assumes normalized vector
+        public float DegreesFromSurfaceNormal(Vector2 vector)
+        {
+            return Vector2.SignedAngle(normal, vector);
+        }
+
+        public Contact() { }
+
+        public void Update(Vector2 pointOfReference, Vector2 point, Vector2 normal)
+        {
+            bool isAngleSame = MathUtils.AreComponentsEqual(this.normal, normal);
+            if (isAngleSame &&
+                MathUtils.AreComponentsEqual(this.pointOfReference, pointOfReference) &&
+                MathUtils.AreComponentsEqual(this.point, point))
+            {
+                return;
+            }
+
+            this.point = point;
+            this.pointOfReference = pointOfReference;
+            this.distance = pointOfReference.y - point.y;
+            if (!isAngleSame)
+            {
+                this.normal   = normal;
+                this.slope    = DegreesFromSurfaceNormal(axis);
+            }
         }
     }
 
@@ -36,9 +68,10 @@ public class GroundChecker : MonoBehaviour
     private static readonly Color RAY_BELOW_SOURCE_COLOR_DEFAULT  = Color.blue;
     private static readonly Color RAY_HIT_INDICATED_COLOR_DEFAULT = Color.magenta;
 
-    private Vector2 origin;
+    private Vector2 linecastOrigin;
     private float extraLineHeight;
-    public Contact Result   { get; private set; }
+    private Contact _result;
+    public Contact Result   { get => WasDetected? _result : default; }
     public bool WasDetected { get; private set; }
     public Vector2 SurfaceNormalOfLastContact { get; private set; }
 
@@ -65,20 +98,19 @@ public class GroundChecker : MonoBehaviour
 
     public override string ToString()
     {
-        Vector2 givenPoint = new Vector2(origin.x, origin.y - extraLineHeight);
         if (WasDetected)
         {
-            return $"Ground detected from source position{givenPoint} {Result.distance} units " +
+            return $"Ground detected from source position{Result.pointOfReference} {Result.distance} units " +
                    $"below source object (at point {Result.point} with normal of {Result.normal}, " +
-                   $"using an origin yOffset of {extraLineHeight}";
+                   $"using an origin yOffset of {extraLineHeight} and with a slope of {Result.slope}";
         }
-        return $"No ground detected from source position{origin} " +
+        return $"No ground detected from reference point{linecastOrigin} " +
                $"using an origin yOffset of {extraLineHeight}";
     }
 
     public void Reset()
     {
-        Result = default;
+        _result = new Contact();
         WasDetected = false;
     }
     void Awake()
@@ -91,20 +123,19 @@ public class GroundChecker : MonoBehaviour
     public void CheckForGround(Vector2 fromPoint, float extraLineHeight=0.00f)
     {
         this.extraLineHeight = extraLineHeight;
-        origin           = new Vector2(fromPoint.x, fromPoint.y + extraLineHeight);
+        linecastOrigin = new Vector2(fromPoint.x, fromPoint.y + extraLineHeight);
         Vector2 terminal = new Vector2(fromPoint.x, fromPoint.y - toleratedHeightFromGround);
 
-        RaycastHit2D hitInfo = Physics2D.Linecast(origin, terminal, groundMask);
+        RaycastHit2D hitInfo = Physics2D.Linecast(linecastOrigin, terminal, groundMask);
         if (hitInfo && (hitInfo.distance - extraLineHeight) < toleratedHeightFromGround)
         {
             WasDetected = true;
-            Result = new Contact(hitInfo.centroid, hitInfo.normal, hitInfo.distance - extraLineHeight);
+            _result.Update(fromPoint, hitInfo.centroid, hitInfo.normal);
             SurfaceNormalOfLastContact = hitInfo.normal;
         }
         else
         {
             WasDetected = false;
-            Result = default;
         }
     }
 
@@ -115,9 +146,9 @@ public class GroundChecker : MonoBehaviour
             return;
         }
 
-        Vector2 mid    = new Vector2(origin.x, origin.y - extraLineHeight);
-        Vector2 bottom = new Vector2(origin.x, mid.y - toleratedHeightFromGround);
-        DrawLine(origin, mid, rayColorTop);
+        Vector2 mid    = new Vector2(linecastOrigin.x, linecastOrigin.y - extraLineHeight);
+        Vector2 bottom = new Vector2(linecastOrigin.x, mid.y - toleratedHeightFromGround);
+        DrawLine(linecastOrigin, mid, rayColorTop);
         DrawLine(mid, bottom, rayColorLower);
         if (WasDetected)
         {
