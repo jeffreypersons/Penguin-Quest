@@ -1009,6 +1009,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -5121635416707714846, guid: c9587e548613a564c81ba23ebf263460,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4979356286560641857, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_SortingLayerID
@@ -3519,7 +3524,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.01139813, w: 0.99993503}
+    - {x: 0, y: 0, z: -0.03961924, w: 0.9992149}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -6275,7 +6280,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
-  m_Mass: 236.40514
+  m_Mass: 236.40521
   m_LinearDrag: 0.05
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -6517,7 +6522,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.024578158, w: 0.9996979}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.034120515, w: 0.9994177}
+    - {x: 0, y: 0, z: -0.09088721, w: 0.99586123}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -6929,11 +6934,11 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: -0.087963186, w: 0.9961238}
-    - {x: 0, y: 0, z: 0.13343817, w: 0.99105716}
-    - {x: 0, y: 0, z: -0.43699142, w: 0.8994657}
-    - {x: 0, y: 0, z: -0.4731929, w: 0.88095886}
-    - {x: 0, y: 0, z: 0.020605892, w: 0.9997877}
+    - {x: 0, y: 0, z: -0.09010361, w: 0.9959324}
+    - {x: 0, y: 0, z: 0.13265814, w: 0.9911619}
+    - {x: 0, y: 0, z: -0.4310487, w: 0.90232867}
+    - {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
+    - {x: 0, y: 0, z: -0.000000029802312, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -7114,9 +7119,9 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.002552062, w: 0.9999968}
-    - {x: 0, y: 0, z: -0.044913746, w: 0.9989909}
-    - {x: 0, y: 0, z: -0.061074536, w: 0.99813324}
+    - {x: 0, y: 0, z: 0.019135168, w: 0.9998169}
+    - {x: 0, y: 0, z: -0.01292166, w: 0.99991655}
+    - {x: 0, y: 0, z: 0.5248135, w: 0.8512173}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -7288,7 +7293,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.12804589, w: 0.99176824}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 0, y: 0, z: 0.14898394, w: 0.9888396}
+    - {x: 0, y: 0, z: 0.18834469, w: 0.982103}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -7505,7 +7510,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7110129387491571187}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: 15, z: -10}
+  m_LocalPosition: {x: 20, y: 15, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
