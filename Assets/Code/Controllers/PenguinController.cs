@@ -274,8 +274,6 @@ public class PenguinController : MonoBehaviour
         if (groundChecker.WasDetected &&
             Mathf.Abs(groundChecker.Result.DegreesFromSurfaceNormal(penguinRigidBody.transform.rotation)) >= misalignmentTolerance)
         {
-            Debug.Log($"targetAxis={groundChecker.Result.normal}");
-            penguinRigidBody.freezeRotation = false;
             AlignPenguinWithUpAxis(targetAxis: groundChecker.Result.normal);
             return;
         }
