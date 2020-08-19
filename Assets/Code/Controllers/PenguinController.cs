@@ -187,7 +187,6 @@ public class PenguinController : MonoBehaviour
         xMotionIntensity = 0.00f;
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
-        bodyCollider.enabled = true;
         penguinRigidBody.isKinematic = false;
         ClearVerticalMovementTriggers();
 
