@@ -177,8 +177,7 @@ public class PenguinController : MonoBehaviour
 
         // align penguin with surface normal in a single update
         posture = Posture.UPRIGHT;
-        groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
-                                     extraLineHeight: bodyCollider.bounds.extents.y);
+        groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: bodyCollider.bounds.extents.y);
         Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
         AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
         groundChecker.Reset();
@@ -204,7 +203,6 @@ public class PenguinController : MonoBehaviour
     void Update()
     {
         groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: bodyCollider.bounds.extents.y);
-
         if (Mathf.Approximately(input.Axes.x, 0.00f))
         {
             xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
