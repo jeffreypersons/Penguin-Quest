@@ -121,6 +121,11 @@ public class PenguinController : MonoBehaviour
     {
         posture = Posture.BENTOVER;
     }
+    void OnLiedownAnimationEventMid()
+    {
+        frontFootCollider.enabled = false;
+        backFootCollider.enabled  = false;
+    }
     void OnLiedownAnimationEventEnd()
     {
         posture = Posture.ONBELLY;
@@ -132,6 +137,8 @@ public class PenguinController : MonoBehaviour
         posture = Posture.BENTOVER;
         frontFlipperUpperCollider.enabled = true;
         frontFlipperLowerCollider.enabled = true;
+        frontFootCollider.enabled = true;
+        backFootCollider.enabled  = true;
     }
     void OnStandupAnimationEventEnd()
     {
