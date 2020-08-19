@@ -228,10 +228,15 @@ public class PenguinController : MonoBehaviour
         Reset();
     }
 
+    private Vector2 ComputeReferencePoint()
+    {
+        Vector2 root = penguinAnimator.rootPosition;
+        return posture == Posture.UPRIGHT ? root + new Vector2(0, groundChecker.MaxDistanceFromGround) : root;
+    }
+
     void Update()
     {
-        groundChecker.CheckForGround(fromPoint: penguinAnimator.rootPosition,
-                                     extraLineHeight: bodyCollider.bounds.extents.y);
+        groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: bodyCollider.bounds.extents.y);
 
         if (Mathf.Approximately(input.Axes.x, 0.00f))
         {

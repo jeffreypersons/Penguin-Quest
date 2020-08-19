@@ -74,6 +74,7 @@ public class GroundChecker : MonoBehaviour
     public Contact Result   { get => WasDetected? _result : default; }
     public bool WasDetected { get; private set; }
     public Vector2 SurfaceNormalOfLastContact { get; private set; }
+    public float MaxDistanceFromGround { get => toleratedHeightFromGround; }
 
     [Tooltip("What do we consider to be 'ground'?")]
     [SerializeField] private LayerMask groundMask = default;
