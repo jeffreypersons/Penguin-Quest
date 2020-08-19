@@ -96,6 +96,21 @@ public class PenguinController : MonoBehaviour
     private Vector2 netImpulseForce;
     private float xMotionIntensity;
 
+    void LockAllAxes()
+    {
+        if (penguinRigidBody.constraints != RigidbodyConstraints2D.FreezeAll)
+        {
+            penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+    }
+    void UnlockAllAxes()
+    {
+        if (penguinRigidBody.constraints != RigidbodyConstraints2D.None)
+        {
+            penguinRigidBody.constraints = RigidbodyConstraints2D.None;
+        }
+    }
+
     // update all animator parameters (except for triggers, as those should be set directly)
     private void UpdateAnimatorParameters()
     {
@@ -161,6 +176,7 @@ public class PenguinController : MonoBehaviour
 
     public void Reset()
     {
+        UnlockAllAxes();
         groundChecker.Reset();
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
@@ -246,6 +262,20 @@ public class PenguinController : MonoBehaviour
             AlignPenguinWithUpAxis(targetAxis: groundChecker.Result.normal);
             return;
         }
+        // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
+        if (penguinRigidBody.constraints == RigidbodyConstraints2D.None &&
+            groundChecker.WasDetected &&
+            posture != Posture.BENTOVER &&
+            MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) &&
+            Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance &&
+            Mathf.Abs(penguinRigidBody.velocity.y) <= nonMovingTolerance)
+        {
+            LockAllAxes();
+        }
+        else
+        {
+            UnlockAllAxes();
+        }
     }
 
     // things we want to do AFTER the animator updates positions
@@ -253,22 +283,10 @@ public class PenguinController : MonoBehaviour
     {
         if (netImpulseForce != Vector2.zero)
         {
+            UnlockAllAxes();
             penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
             netImpulseForce = Vector2.zero;
             return;
-        }
-
-        if (groundChecker.WasDetected &&
-            posture != Posture.BENTOVER &&
-            MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) &&
-            Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance &&
-            Mathf.Abs(penguinRigidBody.velocity.y) <= nonMovingTolerance)
-        {
-            penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePosition;
-        }
-        else
-        {
-            penguinRigidBody.constraints = RigidbodyConstraints2D.None;
         }
     }
 
