@@ -255,6 +255,7 @@ public class PenguinController : MonoBehaviour
         {
             penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
             netImpulseForce = Vector2.zero;
+            return;
         }
 
         if (groundChecker.WasDetected &&
