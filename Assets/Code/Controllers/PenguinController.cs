@@ -93,7 +93,7 @@ public class PenguinController : MonoBehaviour
     private enum Facing  { LEFT, RIGHT }
     private enum Posture { UPRIGHT, ONBELLY, BENTOVER }
 
-    private Vector2 netRelativeImpulseForce;
+    private Vector2 netImpulseForce;
     private float xMotionIntensity;
 
     void LockAllAxes()
@@ -132,7 +132,7 @@ public class PenguinController : MonoBehaviour
         // in the case that jump is pressed twice in a row
         ClearVerticalMovementTriggers();
         float angleFromGround = jumpAngle * Mathf.Deg2Rad;
-        netRelativeImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
+        netImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
     }
     void OnLiedownAnimationEventStart()
     {
@@ -180,7 +180,7 @@ public class PenguinController : MonoBehaviour
     {
         UnlockAllAxes();
         groundChecker.Reset();
-        netRelativeImpulseForce = Vector2.zero;
+        netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
 
@@ -258,36 +258,41 @@ public class PenguinController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (groundChecker.WasDetected &&
-            Mathf.Abs(groundChecker.Result.DegreesFromSurfaceNormal(penguinRigidBody.transform.rotation)) >= misalignmentTolerance)
+        if (!groundChecker.WasDetected || posture == Posture.BENTOVER)
         {
-            AlignPenguinWithUpAxis(targetAxis: groundChecker.Result.normal);
+            UnlockAllAxes();
             return;
         }
+
+        float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(penguinRigidBody.transform.up);
+        if (Mathf.Abs(degreesUnaligned) > misalignmentTolerance)
+        {
+            AlignPenguinWithUpAxis(groundChecker.Result.normal);
+            return;
+        }
+
         // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-        if (penguinRigidBody.constraints == RigidbodyConstraints2D.None &&
-            groundChecker.WasDetected &&
-            posture != Posture.BENTOVER &&
-            MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) &&
-            Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance &&
+        if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) ||
+            Mathf.Abs(degreesUnaligned) <= misalignmentTolerance ||
+            Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance ||
             Mathf.Abs(penguinRigidBody.velocity.y) <= nonMovingTolerance)
         {
-            LockAllAxes();
+            UnlockAllAxes();
         }
         else
         {
-            UnlockAllAxes();
+            LockAllAxes();
         }
     }
 
     // things we want to do AFTER the animator updates positions
     void LateUpdate()
     {
-        if (netRelativeImpulseForce != Vector2.zero)
+        if (netImpulseForce != Vector2.zero)
         {
             UnlockAllAxes();
-            penguinRigidBody.AddRelativeForce(netRelativeImpulseForce, ForceMode2D.Impulse);
-            netRelativeImpulseForce = Vector2.zero;
+            penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
+            netImpulseForce = Vector2.zero;
         }
     }
 
@@ -297,18 +302,15 @@ public class PenguinController : MonoBehaviour
         {
             return;
         }
-        LockAllAxes();
-        Vector2 impulse = netRelativeImpulseForce;
-        Vector3 scale = penguinRigidBody.transform.localScale;
+
         this.facing = facing;
+        Vector3 scale = penguinRigidBody.transform.localScale;
         switch (this.facing)
         {
             case Facing.LEFT:
-                netRelativeImpulseForce = new Vector2(-Mathf.Abs(impulse.x), impulse.y);
                 penguinRigidBody.transform.localScale = new Vector3(-Mathf.Abs(scale.x), scale.y, scale.z);
                 break;
             case Facing.RIGHT:
-                netRelativeImpulseForce = new Vector2( Mathf.Abs(impulse.x), impulse.y);
                 penguinRigidBody.transform.localScale = new Vector3( Mathf.Abs(scale.x), scale.y, scale.z);
                 break;
             default:
@@ -317,17 +319,17 @@ public class PenguinController : MonoBehaviour
         }
     }
 
-    private void AlignPenguinWithUpAxis(Vector3 targetAxis, bool forceInstantUpdate=false)
+    private void AlignPenguinWithUpAxis(Vector3 targetUpAxis, bool forceInstantUpdate=false)
     {
         // we use the old forward direction of the penguin crossed with the axis we wish to align to, to get a perpendicular
         // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
         // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
         // that's parallel with the slope that our given up is normal to.
-        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, targetAxis);
-        Vector3 newForward = Vector3.Cross(targetAxis, left);
+        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, targetUpAxis);
+        Vector3 newForward = Vector3.Cross(targetUpAxis, left);
 
         Quaternion currentRotation = penguinRigidBody.transform.rotation;
-        Quaternion targetRotation  = Quaternion.LookRotation(newForward, targetAxis);
+        Quaternion targetRotation  = Quaternion.LookRotation(newForward, targetUpAxis);
         if (forceInstantUpdate)
         {
             penguinRigidBody.MoveRotation(targetRotation);

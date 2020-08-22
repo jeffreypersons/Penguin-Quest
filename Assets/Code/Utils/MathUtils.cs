@@ -7,8 +7,42 @@ using UnityEngine;
 // otherwise the methods make appropriate assumptions about input, stated in their corresponding comments
 public static class MathUtils
 {
+    // computed the unsigned degrees (between [0, 90]) between given vec and x axis
+    public static float AngleFromXAxis(Vector2 vector)
+    {
+        if (Mathf.Approximately(vector.y, 0.00f))
+        {
+            return 0.00f;
+        }
+        if (Mathf.Approximately(vector.x, 0.00f))
+        {
+            return 90.00f;
+        }
+        return vector.x < 0.00f ? Vector2.Angle(Vector2.left, vector) : Vector2.Angle(Vector2.right, vector);
+    }
+    // computed the unsigned degrees (between [0, 90]) between given vec and y axis
+    public static float AngleFromYAxis(Vector2 vector)
+    {
+        if (Mathf.Approximately(vector.x, 0.00f))
+        {
+            return 0.00f;
+        }
+        if (Mathf.Approximately(vector.y, 0.00f))
+        {
+            return 90.00f;
+        }
+        return vector.y < 0.00f ? Vector2.Angle(Vector2.down, vector) : Vector2.Angle(Vector2.up, vector);
+    }
+
+    // given vector, compute another perpendicular vector in given clockwise/counter-clockwise direction
+    public static Vector2 PerpendicularTo(Vector2 direction, bool isClockWise)
+    {
+        // unity's perpendicular always gives us the counter-clockwise, to flip it if we want the opposite
+        Vector2 perpendicular = Vector2.Perpendicular(direction);
+        return isClockWise ? new Vector2(-perpendicular.x, perpendicular.y) : perpendicular;
+    }
     // rotate given vector by degrees counter-clockwise (or clockwise if negative)
-    public static Vector2 RotateByA(Vector2 vector, float degrees)
+    public static Vector2 RotateBy(Vector2 vector, float degrees)
     {
         return Quaternion.AngleAxis(degrees, vector) * vector;
     }
