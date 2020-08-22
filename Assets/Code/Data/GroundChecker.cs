@@ -160,6 +160,8 @@ public class GroundChecker : MonoBehaviour
             return;
         }
 
+        DebugUtils.ForGizmo(new Vector3(0, 0, 0), Vector3.up);
+
         Vector2 mid    = new Vector2(linecastOrigin.x, linecastOrigin.y - extraLineHeight);
         Vector2 bottom = new Vector2(linecastOrigin.x, mid.y - toleratedHeightFromGround);
         DrawLine(linecastOrigin, mid, rayColorTop);
