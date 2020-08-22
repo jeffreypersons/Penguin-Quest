@@ -40,13 +40,15 @@ public static class MathUtils
         return Mathf.Approximately(vector.sqrMagnitude, 1.00f);
     }
 
-    // given vector, compute another perpendicular vector in given clockwise/counter-clockwise direction
-    public static Vector2 PerpendicularTo(Vector2 direction, bool isClockWise)
+    public static Vector2 PerpendicularClockwise(Vector2 vector)
     {
-        // unity's perpendicular always gives us the counter-clockwise, to flip it if we want the opposite
-        Vector2 perpendicular = Vector2.Perpendicular(direction);
-        return isClockWise ? new Vector2(-perpendicular.x, perpendicular.y) : perpendicular;
+        return new Vector2(vector.y, -vector.x);
     }
+    public static Vector2 PerpendicularCounterClockwise(Vector2 vector)
+    {
+        return new Vector2(-vector.y, vector.x);
+    }
+
     // rotate given vector by degrees counter-clockwise (or clockwise if negative)
     public static Vector2 RotateBy(Vector2 vector, float degrees)
     {

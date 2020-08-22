@@ -67,9 +67,8 @@ public class GroundChecker : MonoBehaviour
             if (!isNormalSameAsPrevious)
             {
                 this.normal  = normal;
-                this.tangent = MathUtils.PerpendicularTo(normal, isClockWise: true);
+                this.tangent = MathUtils.PerpendicularClockwise(normal);
                 this.slope   = MathUtils.AngleFromXAxis(this.tangent);
-                Debug.Log($"slope={slope}...tangent={tangent}...normal={normal}");
             }
         }
     }
@@ -161,6 +160,7 @@ public class GroundChecker : MonoBehaviour
         }
 
         GizmosUtils.DrawArrow(new Vector3(0, 0, 0), Vector3.up);
+        GizmosUtils.DrawArrow(new Vector3(10, 0, 0), Vector3.right, Color.red);
 
         Vector2 mid    = new Vector2(linecastOrigin.x, linecastOrigin.y - extraLineHeight);
         Vector2 bottom = new Vector2(linecastOrigin.x, mid.y - toleratedHeightFromGround);
