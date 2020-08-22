@@ -160,21 +160,16 @@ public class GroundChecker : MonoBehaviour
             return;
         }
 
-        DebugUtils.ForGizmo(new Vector3(0, 0, 0), Vector3.up);
+        GizmosUtils.DrawArrow(new Vector3(0, 0, 0), Vector3.up);
 
         Vector2 mid    = new Vector2(linecastOrigin.x, linecastOrigin.y - extraLineHeight);
         Vector2 bottom = new Vector2(linecastOrigin.x, mid.y - toleratedHeightFromGround);
-        DrawLine(linecastOrigin, mid, rayColorTop);
-        DrawLine(mid, bottom, rayColorLower);
+        GizmosUtils.DrawLine(linecastOrigin, mid, rayColorTop);
+        GizmosUtils.DrawLine(mid, bottom, rayColorLower);
         if (WasDetected)
         {
             Vector2 offset = new Vector2(toleratedHeightFromGround, 0);
-            DrawLine(Result.point - offset, Result.point + offset, rayColorBottom);
+            GizmosUtils.DrawLine(Result.point - offset, Result.point + offset, rayColorBottom);
         }
-    }
-    private void DrawLine(Vector2 from, Vector2 to, Color color)
-    {
-        Gizmos.color = color;
-        Gizmos.DrawLine(from, to);
     }
 }

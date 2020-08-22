@@ -34,6 +34,12 @@ public static class MathUtils
         return vector.y < 0.00f ? Vector2.Angle(Vector2.down, vector) : Vector2.Angle(Vector2.up, vector);
     }
 
+    // perform a quick check for normalization without having to do the expensive magnitude calculation
+    public static bool IsNormalized(Vector2 vector)
+    {
+        return Mathf.Approximately(vector.sqrMagnitude, 1.00f);
+    }
+
     // given vector, compute another perpendicular vector in given clockwise/counter-clockwise direction
     public static Vector2 PerpendicularTo(Vector2 direction, bool isClockWise)
     {
