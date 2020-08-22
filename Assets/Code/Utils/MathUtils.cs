@@ -92,27 +92,6 @@ public static class MathUtils
         return new Vector2(vector.y, -vector.x).normalized;
     }
 
-    public static void RotateRigidBodyAroundPointBy(Rigidbody2D rigidBody, Vector3 axis, float angle)
-    {
-        Quaternion q = Quaternion.AngleAxis(angle, axis);
-        rigidBody.MovePosition(q * rigidBody.transform.position);
-        rigidBody.MoveRotation(rigidBody.transform.rotation * q);
-    }
-    // see: https://answers.unity.com/questions/10093/rigidbody-rotating-around-a-point-instead-on-self.html
-    public static void RotateRigidBodyAroundPointBy(Rigidbody2D rigidBody, Vector3 origin, Vector3 axis, float angle)
-    {
-        Quaternion q = Quaternion.AngleAxis(angle, axis);
-        rigidBody.MovePosition(q * (rigidBody.transform.position - origin) + origin);
-        rigidBody.MoveRotation(rigidBody.transform.rotation * q);
-    }
-    // return 2d world space coords corresponding to given ratio from bottom left corner of bounding box
-    // note: does not currently support rotated bounds, and assumes offset is between 0 and 1
-    public static Vector3 GetPointInsideBounds(Bounds bounds, Vector2 ratioOffsetFromMin)
-    {
-        return new Vector2(bounds.min.x + (bounds.size.x * ratioOffsetFromMin.x),
-                           bounds.min.y + (bounds.size.y * ratioOffsetFromMin.y));
-    }
-
     // assuming given value is between 0, 100, convert to a ratio between 0.00 and 1.00
     public static float PercentToRatio(float percent)
     {
@@ -122,11 +101,6 @@ public static class MathUtils
     public static float RatioToPercent(float ratio)
     {
         return ratio * 100.00f;
-    }
-
-    public static float RandomSign()
-    {
-        return Random.Range(0, 2) == 0? 1.0f : -1.0f;
     }
 
     public static bool IsWithinRange(float val, float min, float max)
