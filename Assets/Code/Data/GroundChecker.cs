@@ -159,9 +159,6 @@ public class GroundChecker : MonoBehaviour
             return;
         }
 
-        GizmosUtils.DrawArrow(new Vector3(0, 0, 0), Vector3.up);
-        GizmosUtils.DrawArrow(new Vector3(10, 0, 0), Vector3.right, Color.red);
-
         Vector2 mid    = new Vector2(linecastOrigin.x, linecastOrigin.y - extraLineHeight);
         Vector2 bottom = new Vector2(linecastOrigin.x, mid.y - toleratedHeightFromGround);
         GizmosUtils.DrawLine(linecastOrigin, mid, rayColorTop);

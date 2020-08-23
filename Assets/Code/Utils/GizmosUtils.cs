@@ -6,8 +6,7 @@ using UnityEditor;
 // the color will likely have been changed via Gizmos.color = color
 public static class GizmosUtils
 {
-    private const float DEFAULT_ARROW_HEAD_LENGTH = 20.00f;
-    private const float DEFAULT_ARROW_HEAD_ANGLE  = 0.25f;
+    private const float DEFAULT_ARROWHEAD_LENGTH_RATIO = 0.10f;
     private static readonly Color DEFAULT_COLOR = Color.white;
 
     public static void DrawText(Vector2 position, string text, Color? color = null)
@@ -22,12 +21,15 @@ public static class GizmosUtils
     }
     // assumes arrow head length is nonzero and from to are nonequal
     // note: arrow head length and height are set to be equal
-    public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null, float arrowHeadLength = DEFAULT_ARROW_HEAD_LENGTH)
+    public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null,
+        float arrowHeadLengthRatio = DEFAULT_ARROWHEAD_LENGTH_RATIO)
     {
-        Vector2 vector = from - to;
-        Vector2 dir = vector.normalized;
-        Vector2 arrowHeadBottom = (vector.magnitude - arrowHeadLength) * dir;
-        Vector2 arrowHeadBaseExtents = MathUtils.PerpendicularClockwise(dir) * arrowHeadLength * 0.50f;
+        Vector2 vector = to - from;
+        Vector2 dir  = vector.normalized;
+        float length = vector.magnitude;
+        float arrowLength = arrowHeadLengthRatio * length;
+        Vector2 arrowHeadBottom = from + ((length - arrowLength) * dir);
+        Vector2 arrowHeadBaseExtents = MathUtils.PerpendicularCounterClockwise(dir) * arrowLength * 0.50f;
 
         Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
         Gizmos.DrawLine(from, to);
