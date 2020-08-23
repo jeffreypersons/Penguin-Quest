@@ -2,9 +2,11 @@
 using UnityEngine;
 
 
-// note: methods, where it makes sense to, logerrors (ie in conversion methods, or other methods
-// that wouldn't be used on a frame by frame basis.
-// otherwise the methods make appropriate assumptions about input, stated in their corresponding comments
+// Convenience methods for math related functionality such as conversions, x-y plane vector computations, etc
+//
+// Notes
+// * rotational functionality is for the x-y plane unless otherwise stated, so that we can use lightweight trig rather
+// than using the less intuitive (especially for 2d), and heavier/more-generalized 3d quaternion methods in unity
 public static class MathUtils
 {
     // computed the unsigned degrees (between [0, 90]) between given vec and x axis
@@ -34,12 +36,6 @@ public static class MathUtils
         return vector.y < 0.00f ? Vector2.Angle(Vector2.down, vector) : Vector2.Angle(Vector2.up, vector);
     }
 
-    // perform a quick check for normalization without having to do the expensive magnitude calculation
-    public static bool IsNormalized(Vector2 vector)
-    {
-        return Mathf.Approximately(vector.sqrMagnitude, 1.00f);
-    }
-
     public static Vector2 PerpendicularClockwise(Vector2 vector)
     {
         return new Vector2(vector.y, -vector.x);
@@ -49,12 +45,48 @@ public static class MathUtils
         return new Vector2(-vector.y, vector.x);
     }
 
-    // rotate given vector by degrees counter-clockwise (or clockwise if negative)
-    public static Vector2 RotateBy(Vector2 vector, float degrees)
+    public static Vector2 RotateClockwise_Q(Vector2 vector, float degrees)
+    {
+        return Quaternion.AngleAxis(-degrees, vector) * vector;
+    }
+    public static Vector2 RotateCounterClockwise_Q(Vector2 vector, float degrees)
     {
         return Quaternion.AngleAxis(degrees, vector) * vector;
     }
+    // return point rotated degrees clockwise about given local origin
+    //
+    // (determines point relative to origin, rotates, and translates back to get our newly rotated position)
+    public static Vector2 RotateClockwise(Vector2 point, float degrees, Vector2? origin = null)
+    {
+        Vector2 pivot = origin.GetValueOrDefault(Vector2.zero);
+        Vector2 pointLocalToPivot = point - pivot;
+        float radians = degrees * Mathf.Deg2Rad;
+        float cosTheta = Mathf.Cos(radians);
+        float sinTheta = Mathf.Sin(radians);
 
+        return new Vector2( (pointLocalToPivot.x * cosTheta) + (pointLocalToPivot.y * sinTheta) + pivot.x,
+                           -(pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
+    }
+    // return point rotated degrees counter-clockwise about given local origin
+    //
+    // (determines point relative to origin, rotates, and translates back to get our newly rotated position)
+    public static Vector2 RotateCounterClockwise(Vector2 point, float degrees, Vector2? origin = null)
+    {
+        Vector2 pivot = origin.GetValueOrDefault(Vector2.zero);
+        Vector2 pointLocalToPivot = point - pivot;
+        float radians = degrees * Mathf.Deg2Rad;
+        float cosTheta = Mathf.Cos(radians);
+        float sinTheta = Mathf.Sin(radians);
+
+        return new Vector2((pointLocalToPivot.x * cosTheta) - (pointLocalToPivot.y * sinTheta) + pivot.x,
+                           (pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
+    }
+
+    // perform a quick check for normalization without having to do the expensive magnitude calculation
+    public static bool IsNormalized(Vector2 vector)
+    {
+        return Mathf.Approximately(vector.sqrMagnitude, 1.00f);
+    }
     // return true if floating point approximations of vectors a and b are the same
     public static bool AreComponentsEqual(Vector2 a, Vector2 b)
     {
@@ -63,7 +95,7 @@ public static class MathUtils
     // return true if floating point approximations of magnitudes a and b are the same
     public static bool AreMagnitudesEqual(Vector2 a, Vector2 b)
     {
-        return Mathf.Approximately(a.magnitude, b.magnitude);
+        return (IsNormalized(a) && IsNormalized(b)) || Mathf.Approximately(a.magnitude, b.magnitude);
     }
     // return true if both vectors are pointed in the same direction
     //
@@ -73,23 +105,14 @@ public static class MathUtils
     //  so comparing the directions of two tiny vectors with nonequal components may actually return true
     public static bool AreDirectionsEqual(Vector2 a, Vector2 b)
     {
-        return AreComponentsEqual(a, b) || AreComponentsEqual(a.normalized, b.normalized);
-    }
+        if (AreComponentsEqual(a, b))
+        {
+            return true;
+        }
 
-    public static Vector2 SwapCoords(Vector2 vector)
-    {
-        return new Vector2(vector.y, vector.x);
-    }
-    // return unit vector parallel to the line[from, to]
-    public static Vector2 ComputeDirection(Vector2 from, Vector2 to)
-    {
-        return (from - to).normalized;
-    }
-    // return unit vector perpendicular to the line[from, to]
-    public static Vector2 ComputeDirectionPerpendicular(Vector2 from, Vector2 to)
-    {
-        Vector2 vector = (from - to);
-        return new Vector2(vector.y, -vector.x).normalized;
+        Vector2 directionA = IsNormalized(a)? a : a.normalized;
+        Vector2 directionB = IsNormalized(a)? b : b.normalized;
+        return AreComponentsEqual(directionA, directionB);
     }
 
     // assuming given value is between 0, 100, convert to a ratio between 0.00 and 1.00

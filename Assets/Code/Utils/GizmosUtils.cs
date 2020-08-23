@@ -8,7 +8,6 @@ public static class GizmosUtils
 {
     private const float DEFAULT_ARROW_HEAD_LENGTH = 20.00f;
     private const float DEFAULT_ARROW_HEAD_ANGLE  = 0.25f;
-    private static readonly float DEFAULT_ARROW_HEAD_HALF_ANGLE = Mathf.Tan(DEFAULT_ARROW_HEAD_HALF_ANGLE);
     private static readonly Color DEFAULT_COLOR = Color.white;
 
     public static void DrawText(Vector2 position, string text, Color? color = null)
@@ -21,16 +20,18 @@ public static class GizmosUtils
         Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
         Gizmos.DrawLine(from, to);
     }
-    public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null,
-        float arrowHeadLength = DEFAULT_ARROW_HEAD_LENGTH, float arrowHeadAngle = DEFAULT_ARROW_HEAD_ANGLE)
+    // assumes arrow head length is nonzero and from to are nonequal
+    // note: arrow head length and height are set to be equal
+    public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null, float arrowHeadLength = DEFAULT_ARROW_HEAD_LENGTH)
     {
-        Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
         Vector2 vector = from - to;
-        Vector3 right = Quaternion.LookRotation(to) * Quaternion.Euler(0, 180 + arrowHeadAngle, 0) * new Vector3(0, 0, 1);
-        Vector3 left  = Quaternion.LookRotation(to) * Quaternion.Euler(0, 180 - arrowHeadAngle, 0) * new Vector3(0, 0, 1);
+        Vector2 dir = vector.normalized;
+        Vector2 arrowHeadBottom = (vector.magnitude - arrowHeadLength) * dir;
+        Vector2 arrowHeadBaseExtents = MathUtils.PerpendicularClockwise(dir) * arrowHeadLength * 0.50f;
 
-        Gizmos.DrawRay(from, to);
-        Gizmos.DrawRay(from + to, right * arrowHeadLength);
-        Gizmos.DrawRay(from + to, left * arrowHeadLength);
+        Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+        Gizmos.DrawLine(from, to);
+        Gizmos.DrawLine(arrowHeadBottom + arrowHeadBaseExtents, to);
+        Gizmos.DrawLine(arrowHeadBottom - arrowHeadBaseExtents, to);
     }
 }
