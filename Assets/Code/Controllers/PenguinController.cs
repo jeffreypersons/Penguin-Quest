@@ -8,6 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
+    private const float SPEED_LIMIT_DEFAULT =  500.00f;
+    private const float SPEED_LIMIT_MIN     =  100.00f;
+    private const float SPEED_LIMIT_MAX     = 1000.00f;
     private const float LINEAR_SENSITIVITY_DEFAULT = 0.01f;
     private const float LINEAR_SENSITIVITY_MIN     = 0.10f;
     private const float LINEAR_SENSITIVITY_MAX     = 10.00f;
@@ -34,7 +37,7 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
     private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
 
-    [Header("Slope Settings")]
+    [Header("Movement Settings")]
     [Tooltip("How strong are rotations to align with surface normal when moving up slopes? " +
              "(ie 0.0 for max softness, 1.0f for no kinematic softness)")]
     [SerializeField] [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
@@ -49,6 +52,11 @@ public class PenguinController : MonoBehaviour
              "(ie 0.10 for ignoring differences of .10 units - useful for reducing jitter)")]
     [SerializeField] [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
     private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
+
+    [Tooltip("How fast can the penguin move? " +
+             "(ie clamping speed to 100)")]
+    [SerializeField] [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
+    private float maxSpeed = SPEED_LIMIT_DEFAULT;
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -96,19 +104,23 @@ public class PenguinController : MonoBehaviour
     private Vector2 netImpulseForce;
     private float xMotionIntensity;
 
-    void LockAllAxes()
+    private void LockAllAxes()
     {
         if (penguinRigidBody.constraints != RigidbodyConstraints2D.FreezeAll)
         {
             penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
         }
     }
-    void UnlockAllAxes()
+    private void UnlockAllAxes()
     {
         if (penguinRigidBody.constraints != RigidbodyConstraints2D.None)
         {
             penguinRigidBody.constraints = RigidbodyConstraints2D.None;
         }
+    }
+    private void ClampSpeed()
+    {
+        penguinRigidBody.velocity = Vector3.ClampMagnitude(penguinRigidBody.velocity, maxSpeed);
     }
 
     // update all animator parameters (except for triggers, as those should be set directly)
@@ -261,6 +273,7 @@ public class PenguinController : MonoBehaviour
         if (!groundChecker.WasDetected || posture == Posture.BENTOVER)
         {
             UnlockAllAxes();
+            ClampSpeed();
             return;
         }
 
@@ -272,12 +285,13 @@ public class PenguinController : MonoBehaviour
         }
 
         // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-        if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) ||
-            Mathf.Abs(degreesUnaligned) > misalignmentTolerance ||
+        if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero)     ||
+            Mathf.Abs(degreesUnaligned) > misalignmentTolerance         ||
             Mathf.Abs(penguinRigidBody.velocity.x) > nonMovingTolerance ||
             Mathf.Abs(penguinRigidBody.velocity.y) > nonMovingTolerance)
         {
             UnlockAllAxes();
+            ClampSpeed();
         }
         else
         {
