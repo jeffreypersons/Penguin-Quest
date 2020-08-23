@@ -18,45 +18,57 @@ public class GroundChecker : MonoBehaviour
 {
     public class Contact
     {
-        public Vector2 point            { get; private set; }
-        public Vector2 normal           { get; private set; }
-        public Vector2 pointOfReference { get; private set; }
-
         // approximate slope at area of contact (negative degrees if descending left to right, positive if ascending)
-        public float slope         { get; private set; }
-        public float distance      { get; private set; }
-        public static readonly Vector2 axis = Vector2.up;
-        // calculate angle between given rotation and surface normal
-        // returns degrees between normal and given in the 2d plane (+ clockwise, - counter-clockwise)
-        public float DegreesFromSurfaceNormal(Quaternion rotation)
-        {
-            return Vector2.SignedAngle(normal, rotation * axis);
-        }
-        // assumes normalized vector
+        public Vector2 tangent { get; private set; }
+        public Vector2 point   { get; private set; }
+        public Vector2 normal  { get; private set; }
+
+        // (unsigned) degrees slope of the line tangent to point of contact
+        public float slope                      { get; private set; }
+        public Vector2 referencePoint           { get; private set; }
+        public float distanceFromReferencePoint { get; private set; }
+
+        // compute angle between given vec and surface normal within the 2d plane
+        //
+        // Note
+        // * if vec points to the left of surface normal,  degrees are neg (vec is oriented counter-clockwise from normal)
+        // * if vec points to the right of surface normal, degrees are neg (vec is oriented clockwise from normal)
+        // (+ degrees: clockwise, - count-clockwise in other words, if vector points left of normal, degrees are
         public float DegreesFromSurfaceNormal(Vector2 vector)
         {
             return Vector2.SignedAngle(normal, vector);
+        }
+        // compute angle between given vec and surface tangent within the 2d plane
+        //
+        // Note
+        // * if vec points to the left of surface normal,  degrees are neg (vec is oriented counter-clockwise from tangent)
+        // * if vec points to the right of surface normal, degrees are neg (vec is oriented clockwise from tangent)
+        // (+ degrees: clockwise, - count-clockwise in other words, if vector points left of normal, degrees are
+        public float DegreesFromSurfaceTangent(Vector2 vector)
+        {
+            return Vector2.SignedAngle(tangent, vector);
         }
 
         public Contact() { }
 
         public void Update(Vector2 pointOfReference, Vector2 point, Vector2 normal)
         {
-            bool isAngleSame = MathUtils.AreComponentsEqual(this.normal, normal);
-            if (isAngleSame &&
-                MathUtils.AreComponentsEqual(this.pointOfReference, pointOfReference) &&
+            bool isNormalSameAsPrevious = MathUtils.AreComponentsEqual(this.normal, normal);
+            if (isNormalSameAsPrevious &&
+                MathUtils.AreComponentsEqual(this.referencePoint, pointOfReference) &&
                 MathUtils.AreComponentsEqual(this.point, point))
             {
                 return;
             }
 
             this.point = point;
-            this.pointOfReference = pointOfReference;
-            this.distance = pointOfReference.y - point.y;
-            if (!isAngleSame)
+            this.referencePoint = pointOfReference;
+            this.distanceFromReferencePoint = pointOfReference.y - point.y;
+            if (!isNormalSameAsPrevious)
             {
-                this.normal   = normal;
-                this.slope    = DegreesFromSurfaceNormal(axis);
+                this.normal  = normal;
+                this.tangent = MathUtils.PerpendicularClockwise(normal);
+                this.slope   = MathUtils.AngleFromXAxis(this.tangent);
             }
         }
     }
@@ -101,7 +113,7 @@ public class GroundChecker : MonoBehaviour
     {
         if (WasDetected)
         {
-            return $"Ground detected from source position{Result.pointOfReference} {Result.distance} units " +
+            return $"Ground detected from source position{Result.referencePoint} {Result.distanceFromReferencePoint} units " +
                    $"below source object (at point {Result.point} with normal of {Result.normal}, " +
                    $"using an origin yOffset of {extraLineHeight} and with a slope of {Result.slope}";
         }
@@ -149,17 +161,12 @@ public class GroundChecker : MonoBehaviour
 
         Vector2 mid    = new Vector2(linecastOrigin.x, linecastOrigin.y - extraLineHeight);
         Vector2 bottom = new Vector2(linecastOrigin.x, mid.y - toleratedHeightFromGround);
-        DrawLine(linecastOrigin, mid, rayColorTop);
-        DrawLine(mid, bottom, rayColorLower);
+        GizmosUtils.DrawLine(linecastOrigin, mid, rayColorTop);
+        GizmosUtils.DrawLine(mid, bottom, rayColorLower);
         if (WasDetected)
         {
             Vector2 offset = new Vector2(toleratedHeightFromGround, 0);
-            DrawLine(Result.point - offset, Result.point + offset, rayColorBottom);
+            GizmosUtils.DrawLine(Result.point - offset, Result.point + offset, rayColorBottom);
         }
-    }
-    private void DrawLine(Vector2 from, Vector2 to, Color color)
-    {
-        Gizmos.color = color;
-        Gizmos.DrawLine(from, to);
     }
 }

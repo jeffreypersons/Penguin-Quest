@@ -8,6 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
+    private const float SPEED_LIMIT_DEFAULT =  500.00f;
+    private const float SPEED_LIMIT_MIN     =  100.00f;
+    private const float SPEED_LIMIT_MAX     = 1000.00f;
     private const float LINEAR_SENSITIVITY_DEFAULT = 0.01f;
     private const float LINEAR_SENSITIVITY_MIN     = 0.10f;
     private const float LINEAR_SENSITIVITY_MAX     = 10.00f;
@@ -34,7 +37,7 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
     private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
 
-    [Header("Slope Settings")]
+    [Header("Movement Settings")]
     [Tooltip("How strong are rotations to align with surface normal when moving up slopes? " +
              "(ie 0.0 for max softness, 1.0f for no kinematic softness)")]
     [SerializeField] [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
@@ -49,6 +52,11 @@ public class PenguinController : MonoBehaviour
              "(ie 0.10 for ignoring differences of .10 units - useful for reducing jitter)")]
     [SerializeField] [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
     private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
+
+    [Tooltip("How fast can the penguin move? " +
+             "(ie clamping speed to 100)")]
+    [SerializeField] [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
+    private float maxSpeed = SPEED_LIMIT_DEFAULT;
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -96,19 +104,23 @@ public class PenguinController : MonoBehaviour
     private Vector2 netImpulseForce;
     private float xMotionIntensity;
 
-    void LockAllAxes()
+    private void LockAllAxes()
     {
         if (penguinRigidBody.constraints != RigidbodyConstraints2D.FreezeAll)
         {
             penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
         }
     }
-    void UnlockAllAxes()
+    private void UnlockAllAxes()
     {
         if (penguinRigidBody.constraints != RigidbodyConstraints2D.None)
         {
             penguinRigidBody.constraints = RigidbodyConstraints2D.None;
         }
+    }
+    private void ClampSpeed()
+    {
+        penguinRigidBody.velocity = Vector3.ClampMagnitude(penguinRigidBody.velocity, maxSpeed);
     }
 
     // update all animator parameters (except for triggers, as those should be set directly)
@@ -125,12 +137,14 @@ public class PenguinController : MonoBehaviour
         penguinAnimator.ResetTrigger("Standup");
         penguinAnimator.ResetTrigger("Liedown");
     }
+
     void OnJumpAnimationEventImpulse()
     {
         // clear jump trigger to avoid triggering a jump after landing,
         // in the case that jump is pressed twice in a row
         ClearVerticalMovementTriggers();
-        netImpulseForce += jumpStrength * MathUtils.RotateBy(penguinRigidBody.transform.forward, jumpAngle);
+        float angleFromGround = jumpAngle * Mathf.Deg2Rad;
+        netImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
     }
     void OnLiedownAnimationEventStart()
     {
@@ -256,25 +270,32 @@ public class PenguinController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (groundChecker.WasDetected &&
-            Mathf.Abs(groundChecker.Result.DegreesFromSurfaceNormal(penguinRigidBody.transform.rotation)) >= misalignmentTolerance)
+        if (!groundChecker.WasDetected || posture == Posture.BENTOVER)
         {
-            AlignPenguinWithUpAxis(targetAxis: groundChecker.Result.normal);
+            UnlockAllAxes();
+            ClampSpeed();
             return;
         }
-        // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-        if (penguinRigidBody.constraints == RigidbodyConstraints2D.None &&
-            groundChecker.WasDetected &&
-            posture != Posture.BENTOVER &&
-            MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) &&
-            Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance &&
-            Mathf.Abs(penguinRigidBody.velocity.y) <= nonMovingTolerance)
+
+        float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(penguinRigidBody.transform.up);
+        if (Mathf.Abs(degreesUnaligned) > misalignmentTolerance)
         {
-            LockAllAxes();
+            AlignPenguinWithUpAxis(groundChecker.Result.normal);
+            return;
+        }
+
+        // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
+        if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero)     ||
+            Mathf.Abs(degreesUnaligned) > misalignmentTolerance         ||
+            Mathf.Abs(penguinRigidBody.velocity.x) > nonMovingTolerance ||
+            Mathf.Abs(penguinRigidBody.velocity.y) > nonMovingTolerance)
+        {
+            UnlockAllAxes();
+            ClampSpeed();
         }
         else
         {
-            UnlockAllAxes();
+            LockAllAxes();
         }
     }
 
@@ -286,7 +307,6 @@ public class PenguinController : MonoBehaviour
             UnlockAllAxes();
             penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
             netImpulseForce = Vector2.zero;
-            return;
         }
     }
 
@@ -297,8 +317,8 @@ public class PenguinController : MonoBehaviour
             return;
         }
 
-        Vector3 scale = penguinRigidBody.transform.localScale;
         this.facing = facing;
+        Vector3 scale = penguinRigidBody.transform.localScale;
         switch (this.facing)
         {
             case Facing.LEFT:
@@ -309,21 +329,21 @@ public class PenguinController : MonoBehaviour
                 break;
             default:
                 Debug.LogError($"Given value `{facing}` is not a valid Facing");
-                return;
+                break;
         }
     }
 
-    private void AlignPenguinWithUpAxis(Vector3 targetAxis, bool forceInstantUpdate=false)
+    private void AlignPenguinWithUpAxis(Vector3 targetUpAxis, bool forceInstantUpdate=false)
     {
         // we use the old forward direction of the penguin crossed with the axis we wish to align to, to get a perpendicular
         // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
         // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
         // that's parallel with the slope that our given up is normal to.
-        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, targetAxis);
-        Vector3 newForward = Vector3.Cross(targetAxis, left);
+        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, targetUpAxis);
+        Vector3 newForward = Vector3.Cross(targetUpAxis, left);
 
         Quaternion currentRotation = penguinRigidBody.transform.rotation;
-        Quaternion targetRotation  = Quaternion.LookRotation(newForward, targetAxis);
+        Quaternion targetRotation  = Quaternion.LookRotation(newForward, targetUpAxis);
         if (forceInstantUpdate)
         {
             penguinRigidBody.MoveRotation(targetRotation);
