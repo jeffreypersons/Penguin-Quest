@@ -273,9 +273,9 @@ public class PenguinController : MonoBehaviour
 
         // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
         if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero) ||
-            Mathf.Abs(degreesUnaligned) <= misalignmentTolerance ||
-            Mathf.Abs(penguinRigidBody.velocity.x) <= nonMovingTolerance ||
-            Mathf.Abs(penguinRigidBody.velocity.y) <= nonMovingTolerance)
+            Mathf.Abs(degreesUnaligned) > misalignmentTolerance ||
+            Mathf.Abs(penguinRigidBody.velocity.x) > nonMovingTolerance ||
+            Mathf.Abs(penguinRigidBody.velocity.y) > nonMovingTolerance)
         {
             UnlockAllAxes();
         }
