@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using CustomAttributes;
 
 
 [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
