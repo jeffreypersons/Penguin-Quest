@@ -43,22 +43,22 @@ public class PenguinController : MonoBehaviour
     [Header("Movement Settings")]
     [Tooltip("How strong are rotations to align with surface normal when moving up slopes? " +
              "(ie 0.0 for max softness, 1.0f for no kinematic softness)")]
-    [SerializeField] [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
-    private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
+    [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
+    [SerializeField] private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
 
     [Tooltip("How sensitive is the penguin to small rotational differences? " +
              "(ie 0.10 for ignoring differences of .10 degrees - useful for reducing jitter)")]
-    [SerializeField] [Range(ROTATIONAL_SENSITIVITY_MIN, ROTATIONAL_SENSITIVITY_MAX)]
-    private float misalignmentTolerance = ROTATIONAL_SENSITIVITY_DEFAULT;
+    [Range(ROTATIONAL_SENSITIVITY_MIN, ROTATIONAL_SENSITIVITY_MAX)]
+    [SerializeField] private float misalignmentTolerance = ROTATIONAL_SENSITIVITY_DEFAULT;
 
     [Tooltip("How sensitive is the penguin to small velocities? " +
              "(ie 0.10 for ignoring differences of .10 units - useful for reducing jitter)")]
-    [SerializeField] [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
-    private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
+    [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
+    [SerializeField] private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
 
     [Tooltip("How fast can the penguin move at its maximum? (ie clamping speed to 100)")]
-    [SerializeField] [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
-    private float maxSpeed = SPEED_LIMIT_DEFAULT;
+    [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
+    [SerializeField] private float maxSpeed = SPEED_LIMIT_DEFAULT;
 
     [Tooltip("Enable automatic locking of movement axes when non-moving " +
              "(ie useful for reducing jitter, is enabled automatically when movement/input" +
@@ -67,36 +67,36 @@ public class PenguinController : MonoBehaviour
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
-    [SerializeField] [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
-    private float jumpStrength = JUMP_STRENGTH_DEFAULT;
+    [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
+    [SerializeField] private float jumpStrength = JUMP_STRENGTH_DEFAULT;
 
     [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward axis)")]
-    [SerializeField] [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
-    private float jumpAngle = JUMP_ANGLE_DEFAULT;
+    [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
+    [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
 
 
     [Header("Mass Settings")]
     [Tooltip("Constant (fixed) total mass for rigidbody")]
-    [SerializeField] [Range(MASS_MIN, MASS_MAX)]
-    private float mass = MASS_DEFAULT;
+    [Range(MASS_MIN, MASS_MAX)]
+    [SerializeField] private float mass = MASS_DEFAULT;
 
     [Tooltip("Center of mass x coordinate relative to skeleton root " +
              "(ie increase x and it will increase its tendency to lean forward)")]
-    [SerializeField] [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
-    private float centerOfMassX = CENTER_OF_MASS_COORD_DEFAULT;
+    [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
+    [SerializeField] private float centerOfMassX = CENTER_OF_MASS_COORD_DEFAULT;
 
     [Tooltip("Center of mass y coordinate relative to skeleton root " +
              "(ie increase y and it will increase its tendency to fall forward)")]
-    [SerializeField] [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
-    private float centerOfMassY = CENTER_OF_MASS_COORD_DEFAULT;
+    [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
+    [SerializeField] private float centerOfMassY = CENTER_OF_MASS_COORD_DEFAULT;
 
 
     [Header("Animation Settings")]
     [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
              "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
              " 1.00 for an instant transition with no blending)")]
-    [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
-    private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
+    [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
+    [SerializeField] private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
 
 
     [Header("Collider References")]
