@@ -8,6 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
+    private const float CENTER_OF_MASS_COORD_DEFAULT =    0.00f;
+    private const float CENTER_OF_MASS_COORD_MIN     = -500.00f;
+    private const float CENTER_OF_MASS_COORD_MAX     =  500.00f;
     private const float SPEED_LIMIT_DEFAULT =  500.00f;
     private const float SPEED_LIMIT_MIN     =  100.00f;
     private const float SPEED_LIMIT_MAX     = 1000.00f;
@@ -33,12 +36,6 @@ public class PenguinController : MonoBehaviour
     private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
     private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
 
-    [Header("Animation Settings")]
-    [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
-             "(ie 0.05 for a blended delayed transition taking at least 20 frames, " +
-             "1.00 for an instant transition with no blending)")]
-    [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
-    private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
 
     [Header("Movement Settings")]
     [Tooltip("How strong are rotations to align with surface normal when moving up slopes? " +
@@ -56,10 +53,10 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
     private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
 
-    [Tooltip("How fast can the penguin move? " +
-             "(ie clamping speed to 100)")]
+    [Tooltip("How fast can the penguin move at its maximum? (ie clamping speed to 100)")]
     [SerializeField] [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
     private float maxSpeed = SPEED_LIMIT_DEFAULT;
+
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -69,6 +66,25 @@ public class PenguinController : MonoBehaviour
     [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward axis)")]
     [SerializeField] [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
     private float jumpAngle = JUMP_ANGLE_DEFAULT;
+
+
+    [Header("Mass Settings")]
+    [Tooltip("Center of mass x coordinate (ie increase x and it will increase its tendency to lean forward)")]
+    [SerializeField] [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
+    private float centerOfMassX = CENTER_OF_MASS_COORD_DEFAULT;
+
+    [Tooltip("Center of mass y coordinate (ie increase y and it will increase its tendency to fall forward)")]
+    [SerializeField] [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
+    private float centerOfMassY = CENTER_OF_MASS_COORD_DEFAULT;
+
+
+    [Header("Animation Settings")]
+    [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
+             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
+             " 1.00 for an instant transition with no blending)")]
+    [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
+    private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
+
 
     [Header("Collider References")]
     [Tooltip("Reference of collider attached to model's head")]
@@ -89,8 +105,6 @@ public class PenguinController : MonoBehaviour
     [Tooltip("Reference of collider attached to model's back foot")]
     [SerializeField] private BoxCollider2D backFootCollider = default;
 
-    [Tooltip("Center of Mass")]
-    [SerializeField] private Vector3 centerOfMass = default;
 
     private Vector2 initialSpawnPosition;
 
@@ -198,8 +212,8 @@ public class PenguinController : MonoBehaviour
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
-        penguinRigidBody.isKinematic = false;
-        penguinRigidBody.centerOfMass = centerOfMass;
+        penguinRigidBody.isKinematic  = false;
+        penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
 
         xMotionIntensity = 0.00f;
         penguinAnimator.applyRootMotion = true;
@@ -219,13 +233,26 @@ public class PenguinController : MonoBehaviour
     void Awake()
     {
         penguinAnimator  = gameObject.GetComponent<Animator>();
+        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
         input            = gameObject.GetComponent<GameplayInputReciever>();
-        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
 
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
+
+    #if UNITY_EDITOR
+    void OnValidate()
+    {
+        // sync any in-editor changes to center of mass (but only if game is active, as otherwise rigidbody is null)
+        Vector2 newCenterOfMass = new Vector2(centerOfMassX, centerOfMassY);
+        if (penguinRigidBody && Application.IsPlaying(penguinRigidBody) &&
+            !MathUtils.AreComponentsEqual(newCenterOfMass, penguinRigidBody.centerOfMass))
+        {
+            penguinRigidBody.centerOfMass = newCenterOfMass;
+        }
+    }
+    #endif
 
     private Vector2 ComputeReferencePoint()
     {
@@ -359,6 +386,6 @@ public class PenguinController : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + (transform.rotation * centerOfMass), 0.50f);
+        Gizmos.DrawSphere(transform.position + (transform.rotation * new Vector2(centerOfMassX, centerOfMassY)), 0.50f);
     }
 }
