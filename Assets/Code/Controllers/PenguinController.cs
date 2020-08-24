@@ -60,6 +60,10 @@ public class PenguinController : MonoBehaviour
     [SerializeField] [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
     private float maxSpeed = SPEED_LIMIT_DEFAULT;
 
+    [Tooltip("Enable automatic locking of movement axes when non-moving " +
+             "(ie useful for reducing jitter, is enabled automatically when movement/input" +
+             " sensitivity is inside the thresholds set above)")]
+    [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = true;
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -217,6 +221,8 @@ public class PenguinController : MonoBehaviour
     public void Reset()
     {
         UnlockAllAxes();
+        enableAutomaticAxisLockingWhenIdle = true;
+
         groundChecker.Reset();
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
@@ -341,7 +347,7 @@ public class PenguinController : MonoBehaviour
             UnlockAllAxes();
             ClampSpeed();
         }
-        else
+        else if (enableAutomaticAxisLockingWhenIdle)
         {
             LockAllAxes();
         }
