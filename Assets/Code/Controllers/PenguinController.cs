@@ -8,6 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
+    private const float MASS_DEFAULT =   250.00f;
+    private const float MASS_MIN     =     0.00f;
+    private const float MASS_MAX     = 10000.00f;
     private const float CENTER_OF_MASS_COORD_DEFAULT =    0.00f;
     private const float CENTER_OF_MASS_COORD_MIN     = -500.00f;
     private const float CENTER_OF_MASS_COORD_MAX     =  500.00f;
@@ -69,11 +72,17 @@ public class PenguinController : MonoBehaviour
 
 
     [Header("Mass Settings")]
-    [Tooltip("Center of mass x coordinate (ie increase x and it will increase its tendency to lean forward)")]
+    [Tooltip("Constant (fixed) total mass for rigidbody")]
+    [SerializeField] [Range(MASS_MIN, MASS_MAX)]
+    private float mass = MASS_DEFAULT;
+
+    [Tooltip("Center of mass x coordinate relative to skeleton root " +
+             "(ie increase x and it will increase its tendency to lean forward)")]
     [SerializeField] [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
     private float centerOfMassX = CENTER_OF_MASS_COORD_DEFAULT;
 
-    [Tooltip("Center of mass y coordinate (ie increase y and it will increase its tendency to fall forward)")]
+    [Tooltip("Center of mass y coordinate relative to skeleton root " +
+             "(ie increase y and it will increase its tendency to fall forward)")]
     [SerializeField] [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
     private float centerOfMassY = CENTER_OF_MASS_COORD_DEFAULT;
 
@@ -212,7 +221,9 @@ public class PenguinController : MonoBehaviour
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
-        penguinRigidBody.isKinematic  = false;
+        penguinRigidBody.isKinematic = false;
+        penguinRigidBody.useAutoMass = false;
+        penguinRigidBody.mass = mass;
         penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
 
         xMotionIntensity = 0.00f;
@@ -244,12 +255,19 @@ public class PenguinController : MonoBehaviour
     #if UNITY_EDITOR
     void OnValidate()
     {
-        // sync any in-editor changes to center of mass (but only if game is active, as otherwise rigidbody is null)
-        Vector2 newCenterOfMass = new Vector2(centerOfMassX, centerOfMassY);
-        if (penguinRigidBody && Application.IsPlaying(penguinRigidBody) &&
-            !MathUtils.AreComponentsEqual(newCenterOfMass, penguinRigidBody.centerOfMass))
+        if (!penguinRigidBody || !Application.IsPlaying(penguinRigidBody))
         {
-            penguinRigidBody.centerOfMass = newCenterOfMass;
+            return;
+        }
+
+        if (!Mathf.Approximately(centerOfMassX, penguinRigidBody.centerOfMass.x) ||
+            !Mathf.Approximately(centerOfMassY, penguinRigidBody.centerOfMass.y))
+        {
+            penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
+        }
+        if (!Mathf.Approximately(mass, penguinRigidBody.mass))
+        {
+            penguinRigidBody.mass = mass;
         }
     }
     #endif
@@ -371,7 +389,7 @@ public class PenguinController : MonoBehaviour
         Vector3 left = Vector3.Cross(transform.forward, targetUpAxis);
         Vector3 newForward = Vector3.Cross(targetUpAxis, left);
 
-        Quaternion targetRotation  = Quaternion.LookRotation(newForward, targetUpAxis);
+        Quaternion targetRotation = Quaternion.LookRotation(newForward, targetUpAxis);
         if (forceInstantUpdate)
         {
             penguinRigidBody.MoveRotation(targetRotation);
