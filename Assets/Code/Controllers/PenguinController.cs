@@ -8,6 +8,12 @@ using UnityEngine;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
+    private const float MASS_DEFAULT =   250.00f;
+    private const float MASS_MIN     =     0.00f;
+    private const float MASS_MAX     = 10000.00f;
+    private const float CENTER_OF_MASS_COORD_DEFAULT =    0.00f;
+    private const float CENTER_OF_MASS_COORD_MIN     = -500.00f;
+    private const float CENTER_OF_MASS_COORD_MAX     =  500.00f;
     private const float SPEED_LIMIT_DEFAULT =  500.00f;
     private const float SPEED_LIMIT_MIN     =  100.00f;
     private const float SPEED_LIMIT_MAX     = 1000.00f;
@@ -30,42 +36,68 @@ public class PenguinController : MonoBehaviour
     private const float JUMP_ANGLE_MIN     =  0.00f;
     private const float JUMP_ANGLE_MAX     = 90.00f;
 
-    [Header("Animation Settings")]
-    [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
-             "(ie 0.05 for a blended delayed transition taking at least 20 frames, " +
-             "1.00 for an instant transition with no blending)")]
-    [SerializeField] [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
-    private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
+    private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
+    private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
+
 
     [Header("Movement Settings")]
     [Tooltip("How strong are rotations to align with surface normal when moving up slopes? " +
              "(ie 0.0 for max softness, 1.0f for no kinematic softness)")]
-    [SerializeField] [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
-    private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
+    [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
+    [SerializeField] private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
 
     [Tooltip("How sensitive is the penguin to small rotational differences? " +
              "(ie 0.10 for ignoring differences of .10 degrees - useful for reducing jitter)")]
-    [SerializeField] [Range(ROTATIONAL_SENSITIVITY_MIN, ROTATIONAL_SENSITIVITY_MAX)]
-    private float misalignmentTolerance = ROTATIONAL_SENSITIVITY_DEFAULT;
+    [Range(ROTATIONAL_SENSITIVITY_MIN, ROTATIONAL_SENSITIVITY_MAX)]
+    [SerializeField] private float misalignmentTolerance = ROTATIONAL_SENSITIVITY_DEFAULT;
 
     [Tooltip("How sensitive is the penguin to small velocities? " +
              "(ie 0.10 for ignoring differences of .10 units - useful for reducing jitter)")]
-    [SerializeField] [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
-    private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
+    [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
+    [SerializeField] private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
 
-    [Tooltip("How fast can the penguin move? " +
-             "(ie clamping speed to 100)")]
-    [SerializeField] [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
-    private float maxSpeed = SPEED_LIMIT_DEFAULT;
+    [Tooltip("How fast can the penguin move at its maximum? (ie clamping speed to 100)")]
+    [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
+    [SerializeField] private float maxSpeed = SPEED_LIMIT_DEFAULT;
+
+    [Tooltip("Enable automatic locking of movement axes when non-moving " +
+             "(ie useful for reducing jitter, is enabled automatically when movement/input" +
+             " sensitivity is inside the thresholds set above)")]
+    [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = true;
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
-    [SerializeField] [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
-    private float jumpStrength = JUMP_STRENGTH_DEFAULT;
+    [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
+    [SerializeField] private float jumpStrength = JUMP_STRENGTH_DEFAULT;
 
     [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward axis)")]
-    [SerializeField] [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
-    private float jumpAngle = JUMP_ANGLE_DEFAULT;
+    [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
+    [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
+
+
+    [Header("Mass Settings")]
+    [Tooltip("Constant (fixed) total mass for rigidbody")]
+    [Range(MASS_MIN, MASS_MAX)]
+    [SerializeField] private float mass = MASS_DEFAULT;
+
+    [Tooltip("Center of mass x coordinate relative to skeleton root " +
+             "(ie increase x and it will increase its tendency to lean forward)")]
+    [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
+    [SerializeField] private float centerOfMassX = CENTER_OF_MASS_COORD_DEFAULT;
+
+    [Tooltip("Center of mass y coordinate relative to skeleton root " +
+             "(ie increase y and it will increase its tendency to fall forward)")]
+    [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
+    [SerializeField] private float centerOfMassY = CENTER_OF_MASS_COORD_DEFAULT;
+
+
+    [Header("Animation Settings")]
+    [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
+             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
+             " 1.00 for an instant transition with no blending)")]
+    [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
+    [SerializeField] private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
+
 
     [Header("Collider References")]
     [Tooltip("Reference of collider attached to model's head")]
@@ -86,8 +118,6 @@ public class PenguinController : MonoBehaviour
     [Tooltip("Reference of collider attached to model's back foot")]
     [SerializeField] private BoxCollider2D backFootCollider = default;
 
-    [Tooltip("Center of Mass")]
-    [SerializeField] private Vector3 centerOfMass = default;
 
     private Vector2 initialSpawnPosition;
 
@@ -191,15 +221,20 @@ public class PenguinController : MonoBehaviour
     public void Reset()
     {
         UnlockAllAxes();
+        enableAutomaticAxisLockingWhenIdle = true;
+
         groundChecker.Reset();
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
+        penguinRigidBody.isKinematic = false;
+        penguinRigidBody.useAutoMass = false;
+        penguinRigidBody.mass = mass;
+        penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
 
         xMotionIntensity = 0.00f;
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
-        penguinRigidBody.isKinematic = false;
         ClearVerticalMovementTriggers();
 
         TurnToFace(Facing.RIGHT);
@@ -215,14 +250,33 @@ public class PenguinController : MonoBehaviour
     void Awake()
     {
         penguinAnimator  = gameObject.GetComponent<Animator>();
+        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
         groundChecker    = gameObject.GetComponent<GroundChecker>();
         input            = gameObject.GetComponent<GameplayInputReciever>();
-        penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
 
-        penguinRigidBody.centerOfMass = centerOfMass;
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
+
+    #if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (!penguinRigidBody || !Application.IsPlaying(penguinRigidBody))
+        {
+            return;
+        }
+
+        if (!Mathf.Approximately(centerOfMassX, penguinRigidBody.centerOfMass.x) ||
+            !Mathf.Approximately(centerOfMassY, penguinRigidBody.centerOfMass.y))
+        {
+            penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
+        }
+        if (!Mathf.Approximately(mass, penguinRigidBody.mass))
+        {
+            penguinRigidBody.mass = mass;
+        }
+    }
+    #endif
 
     private Vector2 ComputeReferencePoint()
     {
@@ -277,7 +331,7 @@ public class PenguinController : MonoBehaviour
             return;
         }
 
-        float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(penguinRigidBody.transform.up);
+        float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(transform.up);
         if (Mathf.Abs(degreesUnaligned) > misalignmentTolerance)
         {
             AlignPenguinWithUpAxis(groundChecker.Result.normal);
@@ -293,7 +347,7 @@ public class PenguinController : MonoBehaviour
             UnlockAllAxes();
             ClampSpeed();
         }
-        else
+        else if (enableAutomaticAxisLockingWhenIdle)
         {
             LockAllAxes();
         }
@@ -318,14 +372,13 @@ public class PenguinController : MonoBehaviour
         }
 
         this.facing = facing;
-        Vector3 scale = penguinRigidBody.transform.localScale;
         switch (this.facing)
         {
             case Facing.LEFT:
-                penguinRigidBody.transform.localScale = new Vector3(-Mathf.Abs(scale.x), scale.y, scale.z);
+                transform.localRotation = ROTATION_FACING_LEFT;
                 break;
             case Facing.RIGHT:
-                penguinRigidBody.transform.localScale = new Vector3( Mathf.Abs(scale.x), scale.y, scale.z);
+                transform.localRotation = ROTATION_FACING_RIGHT;
                 break;
             default:
                 Debug.LogError($"Given value `{facing}` is not a valid Facing");
@@ -339,11 +392,10 @@ public class PenguinController : MonoBehaviour
         // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
         // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
         // that's parallel with the slope that our given up is normal to.
-        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, targetUpAxis);
+        Vector3 left = Vector3.Cross(transform.forward, targetUpAxis);
         Vector3 newForward = Vector3.Cross(targetUpAxis, left);
 
-        Quaternion currentRotation = penguinRigidBody.transform.rotation;
-        Quaternion targetRotation  = Quaternion.LookRotation(newForward, targetUpAxis);
+        Quaternion targetRotation = Quaternion.LookRotation(newForward, targetUpAxis);
         if (forceInstantUpdate)
         {
             penguinRigidBody.MoveRotation(targetRotation);
@@ -351,13 +403,13 @@ public class PenguinController : MonoBehaviour
         else
         {
             penguinRigidBody.MoveRotation(
-                Quaternion.Lerp(currentRotation, targetRotation, surfaceAlignmentRotationalStrength));
+                Quaternion.Lerp(transform.rotation, targetRotation, surfaceAlignmentRotationalStrength));
         }
     }
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position + (transform.rotation * centerOfMass), 0.50f);
+        Gizmos.DrawSphere(transform.position + (transform.rotation * new Vector2(centerOfMassX, centerOfMassY)), 0.50f);
     }
 }

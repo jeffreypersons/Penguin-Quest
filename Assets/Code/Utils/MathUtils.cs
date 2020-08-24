@@ -5,8 +5,8 @@ using UnityEngine;
 // Convenience methods for math related functionality such as conversions, x-y plane vector computations, etc
 //
 // Notes
-// * rotational functionality is for the x-y plane unless otherwise stated, so that we can use lightweight trig rather
-// than using the less intuitive (especially for 2d), and heavier/more-generalized 3d quaternion methods in unity
+// * rotational functionality is for the x-y plane _unless_ otherwise stated, so that we can use lightweight trig rather
+//   than using the less intuitive (especially for 2d), and heavier/more-generalized 3d quaternion methods in unity
 public static class MathUtils
 {
     // computed the unsigned degrees (between [0, 90]) between given vec and x axis
@@ -45,14 +45,6 @@ public static class MathUtils
         return new Vector2(-vector.y, vector.x);
     }
 
-    public static Vector2 RotateClockwise_Q(Vector2 vector, float degrees)
-    {
-        return Quaternion.AngleAxis(-degrees, vector) * vector;
-    }
-    public static Vector2 RotateCounterClockwise_Q(Vector2 vector, float degrees)
-    {
-        return Quaternion.AngleAxis(degrees, vector) * vector;
-    }
     // return point rotated degrees clockwise about given local origin
     //
     // (determines point relative to origin, rotates, and translates back to get our newly rotated position)
@@ -63,7 +55,6 @@ public static class MathUtils
         float radians = degrees * Mathf.Deg2Rad;
         float cosTheta = Mathf.Cos(radians);
         float sinTheta = Mathf.Sin(radians);
-
         return new Vector2( (pointLocalToPivot.x * cosTheta) + (pointLocalToPivot.y * sinTheta) + pivot.x,
                            -(pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
     }
@@ -77,9 +68,16 @@ public static class MathUtils
         float radians = degrees * Mathf.Deg2Rad;
         float cosTheta = Mathf.Cos(radians);
         float sinTheta = Mathf.Sin(radians);
-
         return new Vector2((pointLocalToPivot.x * cosTheta) - (pointLocalToPivot.y * sinTheta) + pivot.x,
                            (pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
+    }
+    public static Vector2 RotateClockwise3D(Vector3 vector, float degrees)
+    {
+        return Quaternion.AngleAxis(-degrees, vector) * vector;
+    }
+    public static Vector2 RotateCounterClockwise3D(Vector3 vector, float degrees)
+    {
+        return Quaternion.AngleAxis(degrees, vector) * vector;
     }
 
     // perform a quick check for normalization without having to do the expensive magnitude calculation
