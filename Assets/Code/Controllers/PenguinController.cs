@@ -30,6 +30,9 @@ public class PenguinController : MonoBehaviour
     private const float JUMP_ANGLE_MIN     =  0.00f;
     private const float JUMP_ANGLE_MAX     = 90.00f;
 
+    private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
+    private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
+
     [Header("Animation Settings")]
     [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
              "(ie 0.05 for a blended delayed transition taking at least 20 frames, " +
@@ -195,11 +198,12 @@ public class PenguinController : MonoBehaviour
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
+        penguinRigidBody.isKinematic = false;
+        penguinRigidBody.centerOfMass = centerOfMass;
 
         xMotionIntensity = 0.00f;
         penguinAnimator.applyRootMotion = true;
         penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
-        penguinRigidBody.isKinematic = false;
         ClearVerticalMovementTriggers();
 
         TurnToFace(Facing.RIGHT);
@@ -219,7 +223,6 @@ public class PenguinController : MonoBehaviour
         input            = gameObject.GetComponent<GameplayInputReciever>();
         penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
 
-        penguinRigidBody.centerOfMass = centerOfMass;
         initialSpawnPosition = penguinRigidBody.position;
         Reset();
     }
@@ -277,7 +280,7 @@ public class PenguinController : MonoBehaviour
             return;
         }
 
-        float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(penguinRigidBody.transform.up);
+        float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(transform.up);
         if (Mathf.Abs(degreesUnaligned) > misalignmentTolerance)
         {
             AlignPenguinWithUpAxis(groundChecker.Result.normal);
@@ -318,14 +321,13 @@ public class PenguinController : MonoBehaviour
         }
 
         this.facing = facing;
-        Vector3 scale = penguinRigidBody.transform.localScale;
         switch (this.facing)
         {
             case Facing.LEFT:
-                penguinRigidBody.transform.localScale = new Vector3(-Mathf.Abs(scale.x), scale.y, scale.z);
+                transform.localRotation = ROTATION_FACING_LEFT;
                 break;
             case Facing.RIGHT:
-                penguinRigidBody.transform.localScale = new Vector3( Mathf.Abs(scale.x), scale.y, scale.z);
+                transform.localRotation = ROTATION_FACING_RIGHT;
                 break;
             default:
                 Debug.LogError($"Given value `{facing}` is not a valid Facing");
@@ -339,10 +341,9 @@ public class PenguinController : MonoBehaviour
         // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
         // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
         // that's parallel with the slope that our given up is normal to.
-        Vector3 left = Vector3.Cross(penguinRigidBody.transform.forward, targetUpAxis);
+        Vector3 left = Vector3.Cross(transform.forward, targetUpAxis);
         Vector3 newForward = Vector3.Cross(targetUpAxis, left);
 
-        Quaternion currentRotation = penguinRigidBody.transform.rotation;
         Quaternion targetRotation  = Quaternion.LookRotation(newForward, targetUpAxis);
         if (forceInstantUpdate)
         {
@@ -351,7 +352,7 @@ public class PenguinController : MonoBehaviour
         else
         {
             penguinRigidBody.MoveRotation(
-                Quaternion.Lerp(currentRotation, targetRotation, surfaceAlignmentRotationalStrength));
+                Quaternion.Lerp(transform.rotation, targetRotation, surfaceAlignmentRotationalStrength));
         }
     }
 
