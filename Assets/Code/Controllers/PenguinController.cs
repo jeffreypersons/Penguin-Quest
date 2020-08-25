@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using CustomAttributes;
 
 
 [RequireComponent(typeof(Animator))]
@@ -9,33 +8,35 @@ using CustomAttributes;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
-    private const float MASS_DEFAULT =   250.00f;
-    private const float MASS_MIN     =     0.00f;
-    private const float MASS_MAX     = 10000.00f;
-    private const float CENTER_OF_MASS_COORD_DEFAULT =    0.00f;
-    private const float CENTER_OF_MASS_COORD_MIN     = -500.00f;
-    private const float CENTER_OF_MASS_COORD_MAX     =  500.00f;
-    private const float SPEED_LIMIT_DEFAULT =  500.00f;
-    private const float SPEED_LIMIT_MIN     =  100.00f;
-    private const float SPEED_LIMIT_MAX     = 1000.00f;
-    private const float LINEAR_SENSITIVITY_DEFAULT = 0.01f;
-    private const float LINEAR_SENSITIVITY_MIN     = 0.10f;
-    private const float LINEAR_SENSITIVITY_MAX     = 10.00f;
-    private const float ROTATIONAL_SENSITIVITY_DEFAULT =  0.01f;
-    private const float ROTATIONAL_SENSITIVITY_MIN     =  0.10f;
-    private const float ROTATIONAL_SENSITIVITY_MAX     = 10.00f;
-    private const float SURFACE_ALIGNMENT_STRENGTH_DEFAULT = 0.10f;
-    private const float SURFACE_ALIGNMENT_STRENGTH_MIN     = 0.00f;
-    private const float SURFACE_ALIGNMENT_STRENGTH_MAX     = 1.00f;
-    private const float BLEND_SPEED_DEFAULT = 0.10f;
-    private const float BLEND_SPEED_MIN     = 0.01f;
-    private const float BLEND_SPEED_MAX     = 1.00f;
+    private const float BLEND_SPEED_DEFAULT   =      0.10f;
+    private const float BLEND_SPEED_MIN       =      0.01f;
+    private const float BLEND_SPEED_MAX       =      1.00f;
     private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
     private const float JUMP_STRENGTH_MIN     =  25000.00f;
     private const float JUMP_STRENGTH_MAX     = 250000.00f;
-    private const float JUMP_ANGLE_DEFAULT = 45.00f;
-    private const float JUMP_ANGLE_MIN     =  0.00f;
-    private const float JUMP_ANGLE_MAX     = 90.00f;
+    private const float JUMP_ANGLE_DEFAULT    =     45.00f;
+    private const float JUMP_ANGLE_MIN        =      0.00f;
+    private const float JUMP_ANGLE_MAX        =     90.00f;
+    private const float SPEED_LIMIT_DEFAULT   =    500.00f;
+    private const float SPEED_LIMIT_MIN       =    100.00f;
+    private const float SPEED_LIMIT_MAX       =   1000.00f;
+
+    private const float MASS_DEFAULT              =   250.00f;
+    private const float MASS_MIN                  =     0.00f;
+    private const float MASS_MAX                  = 10000.00f;
+    private const float CENTER_MASS_COORD_DEFAULT =     0.00f;
+    private const float CENTER_OF_MASS_COORD_MIN  =  -500.00f;
+    private const float CENTER_OF_MASS_COORD_MAX  =   500.00f;
+
+    private const float LINEAR_SENSITIVITY_DEFAULT         =  0.01f;
+    private const float LINEAR_SENSITIVITY_MIN             =  0.10f;
+    private const float LINEAR_SENSITIVITY_MAX             = 10.00f;
+    private const float ROTATIONAL_SENSITIVITY_DEFAULT     =  0.01f;
+    private const float ROTATIONAL_SENSITIVITY_MIN         =  0.10f;
+    private const float ROTATIONAL_SENSITIVITY_MAX         = 10.00f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_DEFAULT =  0.10f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_MIN     =  0.00f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_MAX     =  1.00f;
 
     private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
     private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
