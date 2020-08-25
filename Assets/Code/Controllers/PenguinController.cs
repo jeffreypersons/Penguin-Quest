@@ -8,59 +8,40 @@ using UnityEngine;
 [RequireComponent(typeof(GameplayInputReciever))]
 public class PenguinController : MonoBehaviour
 {
-    private const float BLEND_SPEED_DEFAULT   =      0.10f;
-    private const float BLEND_SPEED_MIN       =      0.01f;
-    private const float BLEND_SPEED_MAX       =      1.00f;
     private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
     private const float JUMP_STRENGTH_MIN     =  25000.00f;
     private const float JUMP_STRENGTH_MAX     = 250000.00f;
     private const float JUMP_ANGLE_DEFAULT    =     45.00f;
     private const float JUMP_ANGLE_MIN        =      0.00f;
     private const float JUMP_ANGLE_MAX        =     90.00f;
-    private const float SPEED_LIMIT_DEFAULT   =    500.00f;
-    private const float SPEED_LIMIT_MIN       =    100.00f;
-    private const float SPEED_LIMIT_MAX       =   1000.00f;
 
-    private const float MASS_DEFAULT                 =   250.00f;
-    private const float MASS_MIN                     =     0.00f;
-    private const float MASS_MAX                     = 10000.00f;
-    private const float CENTER_OF_MASS_COORD_DEFAULT =     0.00f;
-    private const float CENTER_OF_MASS_COORD_MIN     =  -500.00f;
-    private const float CENTER_OF_MASS_COORD_MAX     =   500.00f;
+    private const float LOCOMOTION_BLEND_STEP_DEFAULT = 0.10f;
+    private const float LOCOMOTION_BLEND_STEP_MIN     = 0.01f;
+    private const float LOCOMOTION_BLEND_STEP_MAX     = 1.00f;
 
-    private const float LINEAR_SENSITIVITY_DEFAULT         =  0.01f;
-    private const float LINEAR_SENSITIVITY_MIN             =  0.10f;
-    private const float LINEAR_SENSITIVITY_MAX             = 10.00f;
-    private const float ROTATIONAL_SENSITIVITY_DEFAULT     =  0.01f;
-    private const float ROTATIONAL_SENSITIVITY_MIN         =  0.10f;
-    private const float ROTATIONAL_SENSITIVITY_MAX         = 10.00f;
-    private const float SURFACE_ALIGNMENT_STRENGTH_DEFAULT =  0.10f;
-    private const float SURFACE_ALIGNMENT_STRENGTH_MIN     =  0.00f;
-    private const float SURFACE_ALIGNMENT_STRENGTH_MAX     =  1.00f;
+    private const float VELOCITY_THRESHOLD_DEFAULT         =    0.01f;
+    private const float VELOCITY_THRESHOLD_MIN             =    0.01f;
+    private const float VELOCITY_THRESHOLD_MAX             =   10.00f;
+    private const float ANGLE_THRESHOLD_DEFAULT            =    0.01f;
+    private const float ANGLE_THRESHOLD_MIN                =    0.01f;
+    private const float ANGLE_THRESHOLD_MAX                =   10.00f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_DEFAULT =    0.10f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_MIN     =    0.00f;
+    private const float SURFACE_ALIGNMENT_STRENGTH_MAX     =    1.00f;
+    private const float SPEED_LIMIT_DEFAULT                =  500.00f;
+    private const float SPEED_LIMIT_MIN                    =  100.00f;
+    private const float SPEED_LIMIT_MAX                    = 1000.00f;
+    private const bool  AUTOMATIC_AXIS_LOCKING_DEFAULT     =     true;
+
+    private const float MASS_AMOUNT_DEFAULT       =   250.00f;
+    private const float MASS_AMOUNT_MIN           =     0.00f;
+    private const float MASS_AMOUNT_MAX           = 10000.00f;
+    private const float MASS_CENTER_COORD_DEFAULT =     0.00f;
+    private const float MASS_CENTER_COORD_MIN     =  -500.00f;
+    private const float MASS_CENTER_COORD_MAX     =   500.00f;
 
     private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
     private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
-
-
-    [Header("Movement Settings")]
-    [Tooltip("rigidity of alignment with surface normal (ie 0 for max softness, 1 for no kinematic softness)")]
-    [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
-    [SerializeField] private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
-
-    [Tooltip("sensitivity to differences in alignment (ie .10 degree differences ignored [useful for jitter reduction])")]
-    [Range(ROTATIONAL_SENSITIVITY_MIN, ROTATIONAL_SENSITIVITY_MAX)]
-    [SerializeField] private float misalignmentTolerance = ROTATIONAL_SENSITIVITY_DEFAULT;
-
-    [Tooltip("sensitivity to small velocities (ie .10 units will be interpreted as zero [useful for jitter reduction])")]
-    [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
-    [SerializeField] private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
-
-    [Tooltip("How fast can the penguin move at its maximum? (ie clamping speed to 100)")]
-    [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
-    [SerializeField] private float maxSpeed = SPEED_LIMIT_DEFAULT;
-
-    [Tooltip("enable automatic locking of movement axes when no movement or input [useful for jitter reduction]")]
-    [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = true;
 
 
     [Header("Jump Settings")]
@@ -68,33 +49,50 @@ public class PenguinController : MonoBehaviour
     [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
     [SerializeField] private float jumpStrength = JUMP_STRENGTH_DEFAULT;
 
-    [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward axis)")]
-    [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)]
-    [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
+    [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward facing direction)")]
+    [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)] [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
+
+
+    [Header("Animation Settings")]
+    [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
+             "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
+    [Range(LOCOMOTION_BLEND_STEP_MIN, LOCOMOTION_BLEND_STEP_MAX)]
+    [SerializeField] private float locomotionBlendSpeed = LOCOMOTION_BLEND_STEP_DEFAULT;
+
+
+    [Header("Movement Sensitivities")]
+    [Tooltip("Sensitivity to small velocities (ie .10 units will be interpreted as zero [useful for jitter reduction])")]
+    [Range(VELOCITY_THRESHOLD_MIN, VELOCITY_THRESHOLD_MAX)]
+    [SerializeField] private float velocityThreshold = VELOCITY_THRESHOLD_DEFAULT;
+
+    [Tooltip("Sensitivity to differences in alignment (ie .10 degree differences ignored [useful for jitter reduction])")]
+    [Range(ANGLE_THRESHOLD_MIN, ANGLE_THRESHOLD_MAX)]
+    [SerializeField] private float degreesFromSurfaceNormalThreshold = ANGLE_THRESHOLD_DEFAULT;
+
+    [Tooltip("Rigidity of alignment with surface normal (ie 0 for max softness, 1 for no kinematic softness)")]
+    [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
+    [SerializeField] private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
+
+    [Tooltip("Maximum linear movement speed (ie clamp speed to 100)")]
+    [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
+    [SerializeField] private float maxSpeed = SPEED_LIMIT_DEFAULT;
+
+    [Tooltip("Enable automatic locking of movement axes when no movement or input [useful for jitter reduction]")]
+    [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = AUTOMATIC_AXIS_LOCKING_DEFAULT;
 
 
     [Header("Mass Settings")]
     [Tooltip("Constant (fixed) total mass for rigidbody")]
-    [Range(MASS_MIN, MASS_MAX)]
-    [SerializeField] private float mass = MASS_DEFAULT;
+    [Range(MASS_AMOUNT_MIN, MASS_AMOUNT_MAX)]
+    [SerializeField] private float mass = MASS_AMOUNT_DEFAULT;
 
+    [Tooltip("Center of mass x component relative to skeletal root (ie smaller x means more prone to fall backwards)")]
+    [Range(MASS_CENTER_COORD_MIN, MASS_CENTER_COORD_MAX)]
+    [SerializeField] private float centerOfMassX = MASS_CENTER_COORD_DEFAULT;
 
-    [Tooltip("center of mass x component relative to skeletal root (ie increase x and it will tend to lean forward more)")]
-    [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
-    [SerializeField] private float centerOfMassX = CENTER_OF_MASS_COORD_DEFAULT;
-
-    [Tooltip("center of mass y component relative to skeletal root (ie increase x and it will tend to fall forward more)")]
-    [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
-    [SerializeField] private float centerOfMassY = CENTER_OF_MASS_COORD_DEFAULT;
-
-
-    [Header("Animation Settings")]
-    [Tooltip("step size of blending when transitioning between idle/moving states " +
-             "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
-             " 1.00 for an instant transition with no blending)")]
-    [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
-    [SerializeField] private float locomotionBlendSpeed = BLEND_SPEED_DEFAULT;
-
+    [Tooltip("Center of mass y component relative to skeletal root (ie smaller y means more resistant to falling over)")]
+    [Range(MASS_CENTER_COORD_MIN, MASS_CENTER_COORD_MAX)]
+    [SerializeField] private float centerOfMassY = MASS_CENTER_COORD_DEFAULT;
 
     [Header("Collider References")]
     [SerializeField] private CapsuleCollider2D headCollider              = default;
@@ -104,11 +102,12 @@ public class PenguinController : MonoBehaviour
     [SerializeField] private BoxCollider2D     frontFootCollider         = default;
     [SerializeField] private BoxCollider2D     backFootCollider          = default;
 
+
     private Vector2 initialSpawnPosition;
     private GroundChecker groundChecker;
-    private GameplayInputReciever input;
-    private Animator penguinAnimator;
     private Rigidbody2D penguinRigidBody;
+    private Animator penguinAnimator;
+    private GameplayInputReciever input;
 
     private Facing facing;
     private Posture posture;
@@ -211,9 +210,9 @@ public class PenguinController : MonoBehaviour
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
-        penguinRigidBody.isKinematic = false;
-        penguinRigidBody.useAutoMass = false;
-        penguinRigidBody.mass = mass;
+        penguinRigidBody.isKinematic  = false;
+        penguinRigidBody.useAutoMass  = false;
+        penguinRigidBody.mass         = mass;
         penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
 
         xMotionIntensity = 0.00f;
@@ -316,17 +315,17 @@ public class PenguinController : MonoBehaviour
         }
 
         float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(transform.up);
-        if (Mathf.Abs(degreesUnaligned) > misalignmentTolerance)
+        if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
         {
             AlignPenguinWithUpAxis(groundChecker.Result.normal);
             return;
         }
 
         // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-        if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero)     ||
-            Mathf.Abs(degreesUnaligned) > misalignmentTolerance         ||
-            Mathf.Abs(penguinRigidBody.velocity.x) > nonMovingTolerance ||
-            Mathf.Abs(penguinRigidBody.velocity.y) > nonMovingTolerance)
+        if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero)         ||
+            Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold ||
+            Mathf.Abs(penguinRigidBody.velocity.x) > velocityThreshold      ||
+            Mathf.Abs(penguinRigidBody.velocity.y) > velocityThreshold)
         {
             UnlockAllAxes();
             ClampSpeed();
