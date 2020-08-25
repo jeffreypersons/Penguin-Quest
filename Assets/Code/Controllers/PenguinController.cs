@@ -21,12 +21,12 @@ public class PenguinController : MonoBehaviour
     private const float SPEED_LIMIT_MIN       =    100.00f;
     private const float SPEED_LIMIT_MAX       =   1000.00f;
 
-    private const float MASS_DEFAULT              =   250.00f;
-    private const float MASS_MIN                  =     0.00f;
-    private const float MASS_MAX                  = 10000.00f;
-    private const float CENTER_MASS_COORD_DEFAULT =     0.00f;
-    private const float CENTER_OF_MASS_COORD_MIN  =  -500.00f;
-    private const float CENTER_OF_MASS_COORD_MAX  =   500.00f;
+    private const float MASS_DEFAULT                 =   250.00f;
+    private const float MASS_MIN                     =     0.00f;
+    private const float MASS_MAX                     = 10000.00f;
+    private const float CENTER_OF_MASS_COORD_DEFAULT =     0.00f;
+    private const float CENTER_OF_MASS_COORD_MIN     =  -500.00f;
+    private const float CENTER_OF_MASS_COORD_MAX     =   500.00f;
 
     private const float LINEAR_SENSITIVITY_DEFAULT         =  0.01f;
     private const float LINEAR_SENSITIVITY_MIN             =  0.10f;
@@ -43,18 +43,15 @@ public class PenguinController : MonoBehaviour
 
 
     [Header("Movement Settings")]
-    [Tooltip("How strong are rotations to align with surface normal when moving up slopes? " +
-             "(ie 0.0 for max softness, 1.0f for no kinematic softness)")]
+    [Tooltip("rigidity of alignment with surface normal (ie 0 for max softness, 1 for no kinematic softness)")]
     [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
     [SerializeField] private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
 
-    [Tooltip("How sensitive is the penguin to small rotational differences? " +
-             "(ie 0.10 for ignoring differences of .10 degrees - useful for reducing jitter)")]
+    [Tooltip("sensitivity to differences in alignment (ie .10 degree differences ignored [useful for jitter reduction])")]
     [Range(ROTATIONAL_SENSITIVITY_MIN, ROTATIONAL_SENSITIVITY_MAX)]
     [SerializeField] private float misalignmentTolerance = ROTATIONAL_SENSITIVITY_DEFAULT;
 
-    [Tooltip("How sensitive is the penguin to small velocities? " +
-             "(ie 0.10 for ignoring differences of .10 units - useful for reducing jitter)")]
+    [Tooltip("sensitivity to small velocities (ie .10 units will be interpreted as zero [useful for jitter reduction])")]
     [Range(LINEAR_SENSITIVITY_MIN, LINEAR_SENSITIVITY_MAX)]
     [SerializeField] private float nonMovingTolerance = LINEAR_SENSITIVITY_DEFAULT;
 
@@ -62,10 +59,9 @@ public class PenguinController : MonoBehaviour
     [Range(SPEED_LIMIT_MIN, SPEED_LIMIT_MAX)]
     [SerializeField] private float maxSpeed = SPEED_LIMIT_DEFAULT;
 
-    [Tooltip("Enable automatic locking of movement axes when non-moving " +
-             "(ie useful for reducing jitter, is enabled automatically when movement/input" +
-             " sensitivity is inside the thresholds set above)")]
+    [Tooltip("enable automatic locking of movement axes when no movement or input [useful for jitter reduction]")]
     [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = true;
+
 
     [Header("Jump Settings")]
     [Tooltip("Strength of jump force in newtons")]
@@ -82,19 +78,18 @@ public class PenguinController : MonoBehaviour
     [Range(MASS_MIN, MASS_MAX)]
     [SerializeField] private float mass = MASS_DEFAULT;
 
-    [Tooltip("Center of mass x coordinate relative to skeleton root " +
-             "(ie increase x and it will increase its tendency to lean forward)")]
+
+    [Tooltip("center of mass x component relative to skeletal root (ie increase x and it will tend to lean forward more)")]
     [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
     [SerializeField] private float centerOfMassX = CENTER_OF_MASS_COORD_DEFAULT;
 
-    [Tooltip("Center of mass y coordinate relative to skeleton root " +
-             "(ie increase y and it will increase its tendency to fall forward)")]
+    [Tooltip("center of mass y component relative to skeletal root (ie increase x and it will tend to fall forward more)")]
     [Range(CENTER_OF_MASS_COORD_MIN, CENTER_OF_MASS_COORD_MAX)]
     [SerializeField] private float centerOfMassY = CENTER_OF_MASS_COORD_DEFAULT;
 
 
     [Header("Animation Settings")]
-    [Tooltip("Amount of progress made per frame when transitioning between idle/moving states " +
+    [Tooltip("step size of blending when transitioning between idle/moving states " +
              "(ie 0.05 for a blended delayed transition taking at least 20 frames," +
              " 1.00 for an instant transition with no blending)")]
     [Range(BLEND_SPEED_MIN, BLEND_SPEED_MAX)]
@@ -102,27 +97,14 @@ public class PenguinController : MonoBehaviour
 
 
     [Header("Collider References")]
-    [Tooltip("Reference of collider attached to model's head")]
-    [SerializeField] private CapsuleCollider2D headCollider = default;
-
-    [Tooltip("Reference of collider attached to model's torso")]
-    [SerializeField] private CapsuleCollider2D bodyCollider = default;
-
-    [Tooltip("Reference of collider attached to model's front upper flipper")]
+    [SerializeField] private CapsuleCollider2D headCollider              = default;
+    [SerializeField] private CapsuleCollider2D torsoCollider             = default;
     [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
-
-    [Tooltip("Reference of collider attached to model's front lower flipper")]
     [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
-
-    [Tooltip("Reference of collider attached to model's front foot")]
-    [SerializeField] private BoxCollider2D frontFootCollider = default;
-
-    [Tooltip("Reference of collider attached to model's back foot")]
-    [SerializeField] private BoxCollider2D backFootCollider = default;
-
+    [SerializeField] private BoxCollider2D     frontFootCollider         = default;
+    [SerializeField] private BoxCollider2D     backFootCollider          = default;
 
     private Vector2 initialSpawnPosition;
-
     private GroundChecker groundChecker;
     private GameplayInputReciever input;
     private Animator penguinAnimator;
@@ -244,7 +226,7 @@ public class PenguinController : MonoBehaviour
 
         // align penguin with surface normal in a single update
         posture = Posture.UPRIGHT;
-        groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: bodyCollider.bounds.extents.y);
+        groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: torsoCollider.bounds.extents.y);
         Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
         AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
         groundChecker.Reset();
@@ -288,7 +270,7 @@ public class PenguinController : MonoBehaviour
 
     void Update()
     {
-        groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: bodyCollider.bounds.extents.y);
+        groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: torsoCollider.bounds.extents.y);
         if (Mathf.Approximately(input.Axes.x, 0.00f))
         {
             xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
