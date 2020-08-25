@@ -11,8 +11,10 @@ public static class GizmosUtils
 
     public static void DrawText(Vector2 position, string text, Color? color = null)
     {
+        #if UNITY_EDITOR
         Handles.color = color.GetValueOrDefault(DEFAULT_COLOR);
         Handles.Label(position, text);
+        #endif
     }
     public static void DrawLine(Vector2 from, Vector2 to, Color? color = null)
     {
