@@ -211,9 +211,9 @@ public class PenguinController : MonoBehaviour
         netImpulseForce = Vector2.zero;
         penguinRigidBody.velocity = Vector2.zero;
         penguinRigidBody.position = initialSpawnPosition;
-        penguinRigidBody.isKinematic = false;
-        penguinRigidBody.useAutoMass = false;
-        penguinRigidBody.mass = mass;
+        penguinRigidBody.isKinematic  = false;
+        penguinRigidBody.useAutoMass  = false;
+        penguinRigidBody.mass         = mass;
         penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
 
         xMotionIntensity = 0.00f;
