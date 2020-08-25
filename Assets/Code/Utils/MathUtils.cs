@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using UnityEngine;
 
 
@@ -136,6 +137,11 @@ public static class MathUtils
         return startA <= endB && startB <= endA;
     }
 
+    // remove the decimal portion of given floating point value
+    public static float Truncate(float value)
+    {
+        return (float)Math.Truncate(value);
+    }
     public static bool IsInteger(float value)
     {
         return Mathf.Approximately(value - Mathf.Round(value), 0);

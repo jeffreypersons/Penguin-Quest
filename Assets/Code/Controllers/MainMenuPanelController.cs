@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using CustomAttributes;
 
 
 // controller for opening sub panels of the main menu
