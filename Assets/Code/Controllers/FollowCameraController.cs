@@ -166,8 +166,7 @@ public class FollowCameraController : MonoBehaviour
                                             y: Mathf.Clamp(yOffset, -limit.y, limit.y),
                                             z: zOffset);
         }
-        else if (forceChange ||
-                 xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y || yOffset != normalizedOffsets.x)
+        else if (forceChange || xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y)
         {
             normalizedOffsets = new Vector3(xOffset, yOffset, zOffset);
         }
