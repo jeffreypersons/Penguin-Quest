@@ -99,8 +99,8 @@ public class PenguinController : MonoBehaviour
     [SerializeField] private CapsuleCollider2D torsoCollider             = default;
     [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
     [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
-    [SerializeField] private BoxCollider2D     frontFootCollider         = default;
-    [SerializeField] private BoxCollider2D     backFootCollider          = default;
+    [SerializeField] private CapsuleCollider2D frontFootCollider         = default;
+    [SerializeField] private CapsuleCollider2D backFootCollider          = default;
 
 
     private Vector2 initialSpawnPosition;
