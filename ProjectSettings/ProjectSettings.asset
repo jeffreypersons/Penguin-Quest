@@ -548,6 +548,7 @@ PlayerSettings:
   managedStrippingLevel:
     WebGL: 2
   incrementalIl2cppBuild: {}
+  suppressCommonWarnings: 1
   allowUnsafeCode: 0
   useDeterministicCompilation: 1
   additionalIl2CppArgs: 
@@ -582,7 +583,7 @@ PlayerSettings:
   metroSplashScreenUseBackgroundColor: 0
   platformCapabilities:
     WindowsStoreApps:
-      EnterpriseAuthentication: False
+      CodeGeneration: False
       VideosLibrary: False
       Location: False
       HumanInterfaceDevice: False
@@ -616,10 +617,10 @@ PlayerSettings:
       PointOfService: False
       RecordedCallsFolder: False
       Contacts: False
-      InternetClient: False
-      CodeGeneration: False
-      BackgroundMediaPlayback: False
       Proximity: False
+      InternetClient: False
+      BackgroundMediaPlayback: False
+      EnterpriseAuthentication: False
   metroTargetDeviceFamilies:
     Desktop: True
     Holographic: False
