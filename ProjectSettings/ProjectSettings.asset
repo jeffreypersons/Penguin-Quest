@@ -534,6 +534,8 @@ PlayerSettings:
     28: UNITY_POST_PROCESSING_STACK_V2;CT_TPB;CT_TPS
     29: UNITY_POST_PROCESSING_STACK_V2;CT_TPB;CT_TPS
     30: UNITY_POST_PROCESSING_STACK_V2;CT_TPB;CT_TPS
+    31: UNITY_POST_PROCESSING_STACK_V2;CT_TPS;CT_TPB
+    32: UNITY_POST_PROCESSING_STACK_V2;CT_TPS;CT_TPB
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -550,6 +552,7 @@ PlayerSettings:
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
   gcIncremental: 1
+  assemblyVersionValidation: 1
   gcWBarrierValidation: 0
   apiCompatibilityLevelPerPlatform:
     WebGL: 3
@@ -646,6 +649,7 @@ PlayerSettings:
   XboxOneCapability: []
   XboxOneGameRating: {}
   XboxOneIsContentPackage: 0
+  XboxOneEnhancedXboxCompatibilityMode: 0
   XboxOneEnableGPUVariability: 1
   XboxOneSockets: {}
   XboxOneSplashScreen: {fileID: 0}
