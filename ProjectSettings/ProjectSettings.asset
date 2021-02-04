@@ -536,6 +536,7 @@ PlayerSettings:
     30: UNITY_POST_PROCESSING_STACK_V2;CT_TPB;CT_TPS
     31: UNITY_POST_PROCESSING_STACK_V2;CT_TPS;CT_TPB
     32: UNITY_POST_PROCESSING_STACK_V2;CT_TPS;CT_TPB
+    33: UNITY_POST_PROCESSING_STACK_V2;CT_TPS;CT_TPB
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -616,10 +617,10 @@ PlayerSettings:
       PointOfService: False
       RecordedCallsFolder: False
       Contacts: False
-      Proximity: False
       InternetClient: False
       CodeGeneration: False
       BackgroundMediaPlayback: False
+      Proximity: False
   metroTargetDeviceFamilies:
     Desktop: True
     Holographic: False
