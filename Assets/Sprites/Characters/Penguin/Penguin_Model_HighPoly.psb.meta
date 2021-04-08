@@ -111,30 +111,50 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: FrontFlipper_Lower
+      guid: 
       position: {x: 589.06335, y: -0.0001791497, z: 6}
       rotation: {x: 0, y: 0, z: 0.13846405, w: 0.9903675}
       length: 504.91382
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontFlipper_Upper
+      guid: 
       position: {x: 130.14687, y: 0.00006496243, z: 7}
       rotation: {x: 0, y: 0, z: 0.22180007, w: 0.97509223}
       length: 589.0635
       parentId: 2
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontFlipper_Pivot
+      guid: 
       position: {x: -62.53811, y: 75.25252, z: 2}
       rotation: {x: 0, y: 0, z: 0.9798559, w: 0.19970624}
       length: 130.14659
       parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Shoulders
+      guid: 
       position: {x: 396.77002, y: 1282.0024, z: 0}
       rotation: {x: 0, y: 0, z: 0.6114597, w: 0.7912756}
       length: 128.30269
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_FrontFlipper
+      guid: 
       position: {x: -13.887215, y: 17.836151, z: 0}
       rotation: {x: 0, y: 0, z: 0.8258952, w: 0.5638238}
       length: 175.90094
       parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 155.164, y: 0.6640625}
@@ -9957,65 +9977,113 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: Torso_Tail
+      guid: 
       position: {x: 29.305275, y: 277.8085, z: 0}
       rotation: {x: 0, y: 0, z: 0.8558407, w: 0.51723963}
       length: 31.46552
       parentId: 9
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Pivot
+      guid: 
       position: {x: 396.07065, y: 64.18039, z: 0}
       rotation: {x: 0, y: 0, z: 0.70088726, w: 0.7132721}
       length: 32.52096
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_FrontNeck
+      guid: 
       position: {x: 236.7912, y: -286.62225, z: 0}
       rotation: {x: 0, y: 0, z: 0.2671072, w: 0.9636668}
       length: 80.58119
       parentId: 4
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Shoulders
+      guid: 
       position: {x: 791.8962, y: 0.0001121173, z: 0}
       rotation: {x: 0, y: 0, z: -0.10359001, w: 0.9946201}
       length: 128.30267
       parentId: 6
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Lower
+      guid: 
       position: {x: 56.93782, y: 0.00006920567, z: 1}
       rotation: {x: 0, y: 0, z: -0.09010362, w: 0.9959324}
       length: 293.07944
       parentId: 11
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_BackNeck
+      guid: 
       position: {x: 119.536354, y: 231.95052, z: 0}
       rotation: {x: 0, y: 0, z: -0.12133332, w: 0.9926119}
       length: 90.977036
       parentId: 4
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_UpperSpine
+      guid: 
       position: {x: 556.92175, y: -0.0000053832264, z: 0}
       rotation: {x: 0, y: 0, z: 0.016633883, w: 0.99986166}
       length: 791.89594
       parentId: 7
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_LowerSpine
+      guid: 
       position: {x: 275.1969, y: 0.0012406834, z: 0}
       rotation: {x: 0, y: 0, z: -0.037286073, w: 0.99930465}
       length: 556.9218
       parentId: 9
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Middle
+      guid: 
       position: {x: 293.0794, y: -0.000027632308, z: 2}
       rotation: {x: 0, y: 0, z: 0.13265818, w: 0.9911618}
       length: 262.3408
       parentId: 4
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Hips
+      guid: 
       position: {x: 32.520947, y: -0.000060374863, z: 0}
       rotation: {x: 0, y: 0, z: 0.0056995526, w: 0.9999838}
       length: 275.19696
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_FrontFlipper
+      guid: 
       position: {x: -13.887624, y: 17.83606, z: 0}
       rotation: {x: 0, y: 0, z: 0.8258951, w: 0.5638239}
       length: 175.90097
       parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Pivot
+      guid: 
       position: {x: 128.30254, y: -0.000042116993, z: -3}
       rotation: {x: 0, y: 0, z: 0.10701522, w: 0.9942574}
       length: 56.938034
       parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 90.43799, y: 0.618042}
@@ -14448,20 +14516,32 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: Eye_Lower
+      guid: 
       position: {x: -21.944387, y: -15.905943, z: 4}
       rotation: {x: 0, y: 0, z: 0.024578132, w: 0.9996979}
       length: 56.22445
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Eye_Pivot
+      guid: 
       position: {x: 48.779053, y: 49.896484, z: 4}
       rotation: {x: 0, y: 0, z: 0.014728657, w: 0.9998915}
       length: 9.043414
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Eye_Upper
+      guid: 
       position: {x: -24.3334, y: 14.2434225, z: 4}
       rotation: {x: 0, y: 0, z: -0.04042204, w: 0.9991827}
       length: 60.53372
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 66.803955, y: 0.3380127}
@@ -15327,45 +15407,77 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: Neck_Lower
+      guid: 
       position: {x: 203.44043, y: -26.952148, z: 1}
       rotation: {x: 0, y: 0, z: 0.62481815, w: 0.7807704}
       length: 293.07944
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_FrontNeck
+      guid: 
       position: {x: 236.791, y: -286.62213, z: 0}
       rotation: {x: 0, y: 0, z: 0.26710722, w: 0.9636668}
       length: 80.58119
       parentId: 0
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Head_Center
+      guid: 
       position: {x: 86.798454, y: -0.00004378506, z: 3}
       rotation: {x: 0, y: 0, z: -0.458195, w: 0.88885176}
       length: 140.25229
       parentId: 4
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Middle
+      guid: 
       position: {x: 293.0794, y: -0.00004205648, z: 2}
       rotation: {x: 0, y: 0, z: 0.13265815, w: 0.9911619}
       length: 262.3408
       parentId: 0
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Upper
+      guid: 
       position: {x: 262.34097, y: -0.00013669384, z: 3}
       rotation: {x: 0, y: 0, z: -0.43104872, w: 0.9023287}
       length: 86.79858
       parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_BackNeck
+      guid: 
       position: {x: 119.53627, y: 231.95053, z: 0}
       rotation: {x: 0, y: 0, z: -0.12133332, w: 0.9926119}
       length: 90.977036
       parentId: 0
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_LowerBeak
+      guid: 
       position: {x: 229.53375, y: -112.17812, z: 0}
       rotation: {x: 0, y: 0, z: 0.5270303, w: 0.8498466}
       length: 14.697853
       parentId: 2
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_UpperBeak
+      guid: 
       position: {x: 165.47113, y: 96.90943, z: 0}
       rotation: {x: 0, y: 0, z: -0.06622167, w: 0.997805}
       length: 23.26374
       parentId: 2
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 288.67004, y: -0.44799805}
@@ -18378,20 +18490,32 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: UpperBeak
+      guid: 
       position: {x: 171.46347, y: 46.406868, z: 2}
       rotation: {x: 0, y: 0, z: 0.077337585, w: 0.997005}
       length: 309.1779
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Head_Center
+      guid: 
       position: {x: -99.15076, y: 35.605957, z: 3}
       rotation: {x: 0, y: 0, z: -0.11342453, w: 0.9935466}
       length: 140.25232
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_UpperBeak
+      guid: 
       position: {x: 165.4712, y: 96.90939, z: 0}
       rotation: {x: 0, y: 0, z: -0.06622168, w: 0.99780494}
       length: 23.263744
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 468, y: 8}
@@ -21249,20 +21373,32 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: LowerBeak
+      guid: 
       position: {x: 192.62276, y: -28.088354, z: 1}
       rotation: {x: 0, y: 0, z: 0.14922984, w: 0.98880255}
       length: 299.17654
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Head_Center
+      guid: 
       position: {x: -99.15076, y: 161.60596, z: 3}
       rotation: {x: 0, y: 0, z: -0.11342453, w: 0.9935466}
       length: 140.25232
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_LowerBeak
+      guid: 
       position: {x: 229.53377, y: -112.178246, z: 0}
       rotation: {x: 0, y: 0, z: 0.5270303, w: 0.84984654}
       length: 14.697856
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 105.65198, y: 2.9780273}
@@ -23426,20 +23562,32 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: FrontLeg_Foot
+      guid: 
       position: {x: 192.86018, y: -0.00014906662, z: 1}
       rotation: {x: 0, y: 0, z: 0.6651932, w: 0.7466713}
       length: 400.85638
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontLeg_Ankle
+      guid: 
       position: {x: 288.64844, y: 0.0007846931, z: -3}
       rotation: {x: 0, y: 0, z: 0.052404717, w: 0.998626}
       length: 192.86008
       parentId: 2
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontLeg_Shin
+      guid: 
       position: {x: 114.883545, y: 559.86, z: -3}
       rotation: {x: 0, y: 0, z: -0.705786, w: 0.7084251}
       length: 288.64838
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 155.104, y: 0.0020141602}
@@ -27677,20 +27825,32 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: BackLeg_Shin
+      guid: 
       position: {x: 110.997314, y: 563.2444, z: -3}
       rotation: {x: 0, y: 0, z: -0.70775855, w: 0.7064544}
       length: 289.5302
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackLeg_Ankle
+      guid: 
       position: {x: 289.5301, y: -0.00032775436, z: -3}
       rotation: {x: 0, y: 0, z: 0.055005915, w: 0.99848604}
       length: 193.82515
       parentId: 0
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackLeg_Foot
+      guid: 
       position: {x: 193.82526, y: -0.00012181353, z: 1}
       rotation: {x: 0, y: 0, z: 0.6652944, w: 0.74658114}
       length: 394.9568
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 161.45801, y: 0.001953125}
@@ -31849,25 +32009,41 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: BackFlipper_Lower
+      guid: 
       position: {x: 436.87277, y: -0.00009501728, z: -4}
       rotation: {x: 0, y: 0, z: 0.12274921, w: 0.9924377}
       length: 457.23132
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackFlipper_Upper
+      guid: 
       position: {x: 117.911156, y: 0.00009104282, z: -5}
       rotation: {x: 0, y: 0, z: 0.17454106, w: 0.98464996}
       length: 436.87253
       parentId: 2
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackFlipper_Pivot
+      guid: 
       position: {x: -153.96269, y: -300.67532, z: -6}
       rotation: {x: 0, y: 0, z: 0.9893386, w: 0.14563426}
       length: 117.91123
       parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Shoulders
+      guid: 
       position: {x: -3.2299805, y: 1276.0024, z: 0}
       rotation: {x: 0, y: 0, z: 0.6114597, w: 0.7912756}
       length: 128.30269
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     spriteOutline: []
     vertices:
     - position: {x: 135.48999, y: 0.63793945}
@@ -41537,175 +41713,311 @@ ScriptedImporter:
   characterData:
     bones:
     - name: SkeletonRoot
+      guid: 
       position: {x: 613.4271, y: 37.057766, z: 0}
       rotation: {x: 0, y: 0, z: 0.7069727, w: 0.7072408}
       length: 98.3138
       parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Pivot
+      guid: 
       position: {x: 214.05157, y: 187.43764, z: 0}
       rotation: {x: 0, y: 0, z: -0.008567829, w: 0.9999633}
       length: 32.520954
       parentId: 0
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Tail
+      guid: 
       position: {x: 29.30528, y: 277.80844, z: 0}
       rotation: {x: 0, y: 0, z: 0.8558406, w: 0.51723963}
       length: 31.465525
       parentId: 25
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackLeg_Shin
+      guid: 
       position: {x: 340.48654, y: 93.05091, z: -3}
       rotation: {x: 0, y: -0, z: -0.9999693, w: 0.007835264}
       length: 289.53018
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackLeg_Ankle
+      guid: 
       position: {x: 289.53012, y: -0.00034082204, z: -3}
       rotation: {x: 0, y: 0, z: 0.055005923, w: 0.99848604}
       length: 193.82515
       parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackLeg_Foot
+      guid: 
       position: {x: 193.82516, y: -0.000052226278, z: 1}
       rotation: {x: 0, y: 0, z: 0.6652944, w: 0.7465812}
       length: 394.95673
       parentId: 4
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontLeg_Shin
+      guid: 
       position: {x: 340.2532, y: -86.867, z: -3}
       rotation: {x: 0, y: -0, z: -0.9999436, w: 0.01062345}
       length: 288.64832
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontLeg_Ankle
+      guid: 
       position: {x: 288.64838, y: 0.00081158825, z: -3}
       rotation: {x: 0, y: 0, z: 0.052404717, w: 0.99862593}
       length: 192.86005
       parentId: 6
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontLeg_Foot
+      guid: 
       position: {x: 192.86005, y: -0.00011068435, z: 1}
       rotation: {x: 0, y: 0, z: 0.6651932, w: 0.7466713}
       length: 400.85626
       parentId: 7
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_LowerSpine
+      guid: 
       position: {x: 275.1969, y: 0.0012224091, z: 0}
       rotation: {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
       length: 556.9218
       parentId: 25
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Shoulders
+      guid: 
       position: {x: 791.89594, y: 0.00014484247, z: 0}
       rotation: {x: 0, y: 0, z: -0.103590034, w: 0.9946201}
       length: 128.30267
       parentId: 19
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Lower
+      guid: 
       position: {x: 56.938038, y: -0.0000013607751, z: 1}
       rotation: {x: 0, y: 0, z: -0.09010361, w: 0.9959324}
       length: 293.07944
       parentId: 26
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Middle
+      guid: 
       position: {x: 293.07947, y: -0.00006139725, z: 2}
       rotation: {x: 0, y: 0, z: 0.13265814, w: 0.9911619}
       length: 262.3408
       parentId: 11
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Upper
+      guid: 
       position: {x: 262.3409, y: 0.0000049932178, z: 3}
       rotation: {x: 0, y: 0, z: -0.4310487, w: 0.90232867}
       length: 86.79858
       parentId: 12
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Head_Center
+      guid: 
       position: {x: 86.79855, y: -0.0000070785754, z: 3}
       rotation: {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
       length: 140.25232
       parentId: 13
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: UpperBeak
+      guid: 
       position: {x: 171.46353, y: 46.406925, z: 2}
       rotation: {x: 0, y: 0, z: 0.077337705, w: 0.997005}
       length: 309.17786
       parentId: 14
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: LowerBeak
+      guid: 
       position: {x: 192.62294, y: -28.088238, z: 1}
       rotation: {x: 0, y: 0, z: 0.14922997, w: 0.98880255}
       length: 299.17654
       parentId: 14
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_FrontNeck
+      guid: 
       position: {x: 236.791, y: -286.62228, z: 0}
       rotation: {x: 0, y: 0, z: 0.26710725, w: 0.96366686}
       length: 80.581184
       parentId: 11
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_BackNeck
+      guid: 
       position: {x: 119.53625, y: 231.9505, z: 0}
       rotation: {x: 0, y: 0, z: -0.12133335, w: 0.9926118}
       length: 90.97704
       parentId: 11
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_UpperSpine
+      guid: 
       position: {x: 556.9218, y: 0.0000005597758, z: 0}
       rotation: {x: 0, y: 0, z: 0.016633853, w: 0.99986166}
       length: 791.89594
       parentId: 9
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontFlipper_Upper
+      guid: 
       position: {x: 130.14642, y: 0.00008047889, z: 7}
       rotation: {x: 0, y: 0, z: 0.22180006, w: 0.9750922}
       length: 589.0634
       parentId: 27
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontFlipper_Lower
+      guid: 
       position: {x: 589.06335, y: -0.00007578441, z: 6}
       rotation: {x: 0, y: 0, z: 0.13846402, w: 0.99036753}
       length: 504.91382
       parentId: 20
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackFlipper_Pivot
+      guid: 
       position: {x: -153.96284, y: -300.67535, z: -6}
       rotation: {x: 0, y: -0, z: 0.9893385, w: 0.14563422}
       length: 117.91123
       parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackFlipper_Upper
+      guid: 
       position: {x: 117.9112, y: -0.000046403904, z: -5}
       rotation: {x: 0, y: 0, z: 0.174541, w: 0.9846499}
       length: 436.87256
       parentId: 22
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: BackFlipper_Lower
+      guid: 
       position: {x: 436.87262, y: -0.000014520636, z: -4}
       rotation: {x: 0, y: 0, z: 0.12274923, w: 0.9924377}
       length: 457.23138
       parentId: 23
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Torso_Hips
+      guid: 
       position: {x: 32.52096, y: -0.000073566065, z: 0}
       rotation: {x: 0, y: 0, z: 0.0056995326, w: 0.9999838}
       length: 275.1969
       parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Neck_Pivot
+      guid: 
       position: {x: 128.30269, y: 0.000014386656, z: -3}
       rotation: {x: 0, y: 0, z: 0.10701524, w: 0.9942574}
       length: 56.938034
       parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: FrontFlipper_Pivot
+      guid: 
       position: {x: -62.53834, y: 75.252495, z: 2}
       rotation: {x: 0, y: -0, z: 0.9798559, w: 0.19970623}
       length: 130.14656
       parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_UpperBeak
+      guid: 
       position: {x: 165.47119, y: 96.9093, z: 0}
       rotation: {x: 0, y: 0, z: -0.06622154, w: 0.99780494}
       length: 23.263742
       parentId: 14
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_LowerBeak
+      guid: 
       position: {x: 229.53381, y: -112.17826, z: 0}
       rotation: {x: 0, y: 0, z: 0.52703035, w: 0.84984654}
       length: 14.697852
       parentId: 14
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: _SkinClamp_FrontFlipper
+      guid: 
       position: {x: -13.887457, y: 17.836117, z: 0}
       rotation: {x: 0, y: -0, z: 0.82589513, w: 0.56382376}
       length: 175.90097
       parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Eye_Pivot
+      guid: 
       position: {x: 84.99118, y: 40.487995, z: 4}
       rotation: {x: 0, y: 0, z: 0.12804589, w: 0.99176824}
       length: 9.043413
       parentId: 14
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Eye_Lower
+      guid: 
       position: {x: -21.944357, y: -15.905894, z: 4}
       rotation: {x: 0, y: 0, z: 0.024578158, w: 0.9996979}
       length: 56.22445
       parentId: 31
+      color:
+        serializedVersion: 2
+        rgba: 0
     - name: Eye_Upper
+      guid: 
       position: {x: -24.333393, y: 14.243469, z: 4}
       rotation: {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
       length: 60.53371
       parentId: 31
+      color:
+        serializedVersion: 2
+        rgba: 0
     parts:
     - spritePosition:
         x: 114
