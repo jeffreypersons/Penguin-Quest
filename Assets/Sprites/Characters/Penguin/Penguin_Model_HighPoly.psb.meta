@@ -30,6 +30,7 @@ ScriptedImporter:
     streamingMipmaps: 1
     streamingMipmapsPriority: 0
     vTOnly: 0
+    ignoreMasterTextureLimit: 0
     nPOTScale: 1
     sRGBTexture: 1
     spriteMode: 2
@@ -84,7 +85,6 @@ ScriptedImporter:
       width: 0
       height: 0
     spriteID: 
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -96,7 +96,7 @@ ScriptedImporter:
     uvTransform: {x: 0, y: 0}
   mosaicSpriteImportData: []
   rigSpriteImportData:
-  - name: Penguin_FrontFlipper
+  - name: Flipper_Front
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -108,7 +108,6 @@ ScriptedImporter:
       width: 380
       height: 1303
     spriteID: 407ceadb690bae54db1b32d31e5fc19f
-    internalID: 0
     spriteBone:
     - name: FrontFlipper_Lower
       guid: 
@@ -9962,7 +9961,7 @@ ScriptedImporter:
     tessellationDetail: 0.06
     parentGroupIndex: -1
     uvTransform: {x: -110, y: 1533}
-  - name: Penguin_Torso
+  - name: Torso
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -9974,7 +9973,6 @@ ScriptedImporter:
       width: 928
       height: 2144
     spriteID: 6162a64fcb291f84eb6940f360b4ab9e
-    internalID: 0
     spriteBone:
     - name: Torso_Tail
       guid: 
@@ -14501,7 +14499,7 @@ ScriptedImporter:
     tessellationDetail: 0.05
     parentGroupIndex: -1
     uvTransform: {x: -26, y: -183}
-  - name: Penguin_Eye
+  - name: Eye
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -14513,7 +14511,6 @@ ScriptedImporter:
       width: 110
       height: 95
     spriteID: c7ba7b29eeb3d0e4db4cebad0dc8c224
-    internalID: 0
     spriteBone:
     - name: Eye_Lower
       guid: 
@@ -15392,7 +15389,7 @@ ScriptedImporter:
     tessellationDetail: 0.01
     parentGroupIndex: -1
     uvTransform: {x: 866, y: -1688}
-  - name: Penguin_Head
+  - name: Head
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -15404,7 +15401,6 @@ ScriptedImporter:
       width: 543
       height: 717
     spriteID: 4c8ccadfc4a3e6c4cb9198162c078e19
-    internalID: 0
     spriteBone:
     - name: Neck_Lower
       guid: 
@@ -18475,7 +18471,7 @@ ScriptedImporter:
     tessellationDetail: 0.01
     parentGroupIndex: -1
     uvTransform: {x: 598, y: -2109}
-  - name: Penguin_UpperBeak
+  - name: Beak_Upper
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -18487,7 +18483,6 @@ ScriptedImporter:
       width: 468
       height: 96
     spriteID: ca7e4db187dee13469edd3f05782d274
-    internalID: 0
     spriteBone:
     - name: UpperBeak
       guid: 
@@ -21358,7 +21353,7 @@ ScriptedImporter:
     tessellationDetail: 0.01
     parentGroupIndex: -1
     uvTransform: {x: 810, y: -1786}
-  - name: Penguin_LowerBeak
+  - name: Beak_Lower
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -21370,7 +21365,6 @@ ScriptedImporter:
       width: 468
       height: 133
     spriteID: 1bc46375205045d42a68804527850291
-    internalID: 0
     spriteBone:
     - name: LowerBeak
       guid: 
@@ -23547,7 +23541,7 @@ ScriptedImporter:
     tessellationDetail: 0.01
     parentGroupIndex: -1
     uvTransform: {x: 810, y: -1801}
-  - name: Penguin_FrontFoot
+  - name: Foot_Front
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -23559,7 +23553,6 @@ ScriptedImporter:
       width: 624
       height: 600
     spriteID: dbb1ca07177239e458ff1957704a5cc1
-    internalID: 0
     spriteBone:
     - name: FrontLeg_Foot
       guid: 
@@ -27810,7 +27803,7 @@ ScriptedImporter:
     tessellationDetail: 0.01
     parentGroupIndex: -1
     uvTransform: {x: 536, y: 699}
-  - name: Penguin_BackFoot
+  - name: Foot_Back
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -27822,7 +27815,6 @@ ScriptedImporter:
       width: 624
       height: 600
     spriteID: dc69b893ae1125c45b81aa1aa49109e9
-    internalID: 0
     spriteBone:
     - name: BackLeg_Shin
       guid: 
@@ -31994,7 +31986,7 @@ ScriptedImporter:
     tessellationDetail: 0.01
     parentGroupIndex: -1
     uvTransform: {x: 712, y: 1307}
-  - name: Penguin_BackFlipper
+  - name: Flipper_Back
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -32006,7 +31998,6 @@ ScriptedImporter:
       width: 338
       height: 1134
     spriteID: d7e64fea1e3dec644b92e6e467700076
-    internalID: 0
     spriteBone:
     - name: BackFlipper_Lower
       guid: 
@@ -41998,9 +41989,8 @@ ScriptedImporter:
   documentPivot: {x: 0, y: 0}
   documentAlignment: 7
   importHiddenLayers: 0
-  importedTextureWidth: 1024
-  importedTextureHeight: 2048
-  documentSize: {x: 1260, y: 2860}
+  layerMappingOption: 2
+  generatePhysicsShape: 0
   paperDollMode: 0
   keepDupilcateSpriteName: 0
   skeletonAssetReferenceID: 
@@ -42042,8 +42032,6 @@ ScriptedImporter:
       labels:
       - name: Penguin_BackFlipper
         spriteId: d7e64fea1e3dec644b92e6e467700076
-  textureActualWidth: 2048
-  textureActualHeight: 4096
   spritePackingTag: 
   resliceFromLayer: 0
   mosaicPSDLayers: []
@@ -42055,6 +42043,9 @@ ScriptedImporter:
     spriteID: 407ceadb690bae54db1b32d31e5fc19f
     layerID: 14
     mosaicPosition: {x: 4, y: 2156}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Torso
     spriteName: Torso
     isGroup: 0
@@ -42062,6 +42053,9 @@ ScriptedImporter:
     spriteID: 6162a64fcb291f84eb6940f360b4ab9e
     layerID: 7
     mosaicPosition: {x: 4, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Eye
     spriteName: Eye
     isGroup: 0
@@ -42069,6 +42063,9 @@ ScriptedImporter:
     spriteID: c7ba7b29eeb3d0e4db4cebad0dc8c224
     layerID: 13
     mosaicPosition: {x: 1572, y: 974}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Head
     spriteName: Head
     isGroup: 0
@@ -42076,6 +42073,9 @@ ScriptedImporter:
     spriteID: 4c8ccadfc4a3e6c4cb9198162c078e19
     layerID: 12
     mosaicPosition: {x: 940, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Beak_Upper
     spriteName: Beak_Upper
     isGroup: 0
@@ -42083,6 +42083,9 @@ ScriptedImporter:
     spriteID: ca7e4db187dee13469edd3f05782d274
     layerID: 9
     mosaicPosition: {x: 1572, y: 870}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Beak_Lower
     spriteName: Beak_Lower
     isGroup: 0
@@ -42090,6 +42093,9 @@ ScriptedImporter:
     spriteID: 1bc46375205045d42a68804527850291
     layerID: 8
     mosaicPosition: {x: 1572, y: 729}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Foot_Front
     spriteName: Foot_Front
     isGroup: 0
@@ -42097,6 +42103,9 @@ ScriptedImporter:
     spriteID: dbb1ca07177239e458ff1957704a5cc1
     layerID: 6
     mosaicPosition: {x: 940, y: 729}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Foot_Back
     spriteName: Foot_Back
     isGroup: 0
@@ -42104,6 +42113,9 @@ ScriptedImporter:
     spriteID: dc69b893ae1125c45b81aa1aa49109e9
     layerID: 5
     mosaicPosition: {x: 940, y: 1337}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Flipper_Back
     spriteName: Flipper_Back
     isGroup: 0
@@ -42111,7 +42123,11 @@ ScriptedImporter:
     spriteID: d7e64fea1e3dec644b92e6e467700076
     layerID: 4
     mosaicPosition: {x: 392, y: 2156}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   sharedRigPSDLayers: []
+  pSDLayerImportSetting: []
   generateGOHierarchy: 0
   textureAssetName: PenguinSkeleton Texture
   prefabAssetName: PenguinSkeleton Prefab
