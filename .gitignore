@@ -1,6 +1,9 @@
 # meta data (never ignore, unless explicitly added after below line!)
 !/Assets/**/*.meta
 
+# ignore user specific editor settings
+/UserSettings
+
 # ignore the general directory where all the external
 # folders/modules/packages/plugins/builtins are placed
 /Assets/ThirdParty/
