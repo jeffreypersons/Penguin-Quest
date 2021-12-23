@@ -10,7 +10,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private string sceneName = default;
 
     [Header("Menu Core Components")]
-    [SerializeField] private GameObject buttonPanel = default;
+    [SerializeField] private GameObject              buttonPanel             = default;
     [SerializeField] private MainMenuPanelController mainMenuPanelController = default;
 
     [Header("Menu Buttons")]
@@ -36,17 +36,17 @@ public class MainMenuController : MonoBehaviour
 
     void OnEnable()
     {
-        startButton.onClick.AddListener(mainMenuPanelController.OpenStartPanel);
+        startButton   .onClick.AddListener(mainMenuPanelController.OpenStartPanel);
         settingsButton.onClick.AddListener(mainMenuPanelController.OpenSettingsPanel);
-        aboutButton.onClick.AddListener(mainMenuPanelController.OpenAboutPanel);
-        quitButton.onClick.AddListener(SceneUtils.QuitGame);
+        aboutButton   .onClick.AddListener(mainMenuPanelController.OpenAboutPanel);
+        quitButton    .onClick.AddListener(SceneUtils.QuitGame);
     }
     void OnDisable()
     {
-        startButton.onClick.RemoveListener(mainMenuPanelController.OpenStartPanel);
+        startButton   .onClick.RemoveListener(mainMenuPanelController.OpenStartPanel);
         settingsButton.onClick.RemoveListener(mainMenuPanelController.OpenSettingsPanel);
-        aboutButton.onClick.RemoveListener(mainMenuPanelController.OpenAboutPanel);
-        quitButton.onClick.RemoveListener(SceneUtils.QuitGame);
+        aboutButton   .onClick.RemoveListener(mainMenuPanelController.OpenAboutPanel);
+        quitButton    .onClick.RemoveListener(SceneUtils.QuitGame);
     }
 
     private void LoadGame()

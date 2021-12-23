@@ -1,18 +1,16 @@
 ﻿using UnityEngine;
 
 
-// provides useful helper methods for given game object, primarily for use by rendering/camera/etc scripts
-// * if given game object has a collider, then the bounds are set to match that, otherwise it's size is zero
-// * if collider:    only takes collider's center and size into account
-// * if no collider: only takes transform position into account
+/*
+Positional tracking for given transform, intended for use by rendering/camera/etc scripts.
+
+Center and size is synced from collider if attached,
+otherwise we use transform.position and assume size to be zero.
+*/
 public class CameraSubjectInfo
 {
-    private readonly Transform subject;
+    private readonly Transform  subject;
     private readonly Collider2D collider;
-
-    public bool HasPositionChangedSinceLastUpdate { get; private set; }
-    public bool HasSizeChangedSinceLastUpdate     { get; private set; }
-    public bool HasCollider { get => collider; }
 
     public Vector2 Center  { get; private set; }
     public Vector2 Size    { get; private set; }
@@ -20,10 +18,16 @@ public class CameraSubjectInfo
     public Vector2 Min     { get; private set; }
     public Vector2 Max     { get; private set; }
 
+    public bool HasCollider                       { get => collider;  }
+    public bool HasSizeChangedSinceLastUpdate     { get; private set; }
+    public bool HasPositionChangedSinceLastUpdate { get; private set; }
+
+
     public CameraSubjectInfo(Transform subject)
     {
-        this.subject = subject;
-        collider = subject.GetComponent<Collider2D>();
+        this.subject  = subject;
+        this.collider = subject.GetComponent<Collider2D>();
+
         Update();
         HasPositionChangedSinceLastUpdate = false;
         HasSizeChangedSinceLastUpdate     = false;
@@ -43,10 +47,10 @@ public class CameraSubjectInfo
 
     private void UpdatePosition()
     {
-        Vector2 center = HasCollider ? collider.bounds.center : subject.position;
-        if (center.x != Center.x || center.y != Center.y)
+        Vector2 newCenter = HasCollider ? collider.bounds.center : subject.position;
+        if (!MathUtils.AreComponentsEqual(newCenter, Center))
         {
-            Center = center;
+            Center = newCenter;
             HasPositionChangedSinceLastUpdate = true;
         }
         else
@@ -56,11 +60,11 @@ public class CameraSubjectInfo
     }
     private void UpdateSize()
     {
-        Vector2 size = HasCollider ? collider.bounds.size : Vector3.zero;
-        if (size.x != Size.x || size.y != Size.y)
+        Vector2 newSize = HasCollider ? collider.bounds.size : Vector3.zero;
+        if (!MathUtils.AreComponentsEqual(newSize, Size))
         {
-            Size    = size;
-            Extents = size * 0.50f;
+            Size    = newSize;
+            Extents = newSize * 0.50f;
             HasSizeChangedSinceLastUpdate = true;
         }
         else

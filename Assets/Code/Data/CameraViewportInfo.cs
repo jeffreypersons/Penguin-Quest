@@ -1,22 +1,28 @@
 ﻿using UnityEngine;
 
 
-// provides useful helper methods for given camera object
-// * assumes orthographic camera
-// * assumes a single display and eye
-// * all external functionality is in world space coords unless otherwise stated
+/*
+Camera viewport tracking for given camera.
+
+Assumptions
+- assumes orthographic camera
+- assumes a single display and eye
+- all external functionality is in world space coords unless otherwise stated
+*/
 public class CameraViewportInfo
 {
     private readonly Camera cam;
 
-    public bool  HasPositionChangedSinceLastUpdate { get; private set; }
-    public bool  HasSizeChangedSinceLastUpdate     { get; private set; }
-    public float NearClipOffset { get; private set; }
-    public Vector2 Center       { get; private set; }
-    public Vector2 Size         { get; private set; }
-    public Vector2 Extents      { get; private set; }
-    public Vector2 Min          { get; private set; }
-    public Vector2 Max          { get; private set; }
+    public float   NearClipOffset { get; private set; }
+    public Vector2 Center         { get; private set; }
+    public Vector2 Size           { get; private set; }
+    public Vector2 Extents        { get; private set; }
+    public Vector2 Min            { get; private set; }
+    public Vector2 Max            { get; private set; }
+
+    public bool HasSizeChangedSinceLastUpdate     { get; private set; }
+    public bool HasPositionChangedSinceLastUpdate { get; private set; }
+
 
     public CameraViewportInfo(Camera cam)
     {
@@ -52,13 +58,14 @@ public class CameraViewportInfo
     }
     private void UpdateSize()
     {
-        Vector2 min = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, cam.nearClipPlane));
-        Vector2 max = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, cam.nearClipPlane));
-        if (min.x != Min.x || min.y != Min.y || max.x != Max.x || max.y != Max.y)
+        Vector2 newMin = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, cam.nearClipPlane));
+        Vector2 newMax = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, cam.nearClipPlane));
+        
+        if (!MathUtils.AreComponentsEqual(newMin, Min) || !MathUtils.AreComponentsEqual(newMax, Max))
         {
-            Min = min;
-            Max = max;
-            Size = max - min;
+            Min     = newMin;
+            Max     = newMax;
+            Size    = newMax - newMin;
             Extents = Size * 0.50f;
             HasSizeChangedSinceLastUpdate = true;
         }

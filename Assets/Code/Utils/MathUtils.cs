@@ -3,11 +3,13 @@ using System.Globalization;
 using UnityEngine;
 
 
-// Convenience methods for math related functionality such as conversions, x-y plane vector computations, etc
-//
-// Notes
-// * rotational functionality is for the x-y plane _unless_ otherwise stated, so that we can use lightweight trig rather
-//   than using the less intuitive (especially for 2d), and heavier/more-generalized 3d quaternion methods in unity
+/*
+Convenience methods for math related functionality such as conversions, x-y plane vector computations, etc
+
+Notes
+- rotational functionality is for the x-y plane _unless_ otherwise stated, so that we can use lightweight trig rather
+  than using the less intuitive (especially for 2d), and heavier/more-generalized 3d quaternion methods in unity
+*/
 public static class MathUtils
 {
     // computed the unsigned degrees (between [0, 90]) between given vec and x axis
@@ -125,6 +127,14 @@ public static class MathUtils
         return ratio * 100.00f;
     }
 
+    public static bool IsWithinTolerance(float a, float b, float tolerance)
+    {
+        return Mathf.Abs(b - a) <= tolerance;
+    }
+    public static bool IsWithinTolerance(Vector2 a, Vector2 b, float tolerance)
+    {
+        return Mathf.Abs(b.x - a.x) <= tolerance && Mathf.Abs(b.y - a.y) <= tolerance;
+    }
     public static bool IsWithinRange(float val, float min, float max)
     {
         return (min < max) && (min <= val && val <= max);

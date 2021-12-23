@@ -1,22 +1,27 @@
 ﻿using UnityEngine;
 
 
-// features:
-// * option to restrict subject to camera viewport
-// * applies smoothing when following subject
-// * reduces jitter by avoids moving if super close to object
-// * forces immediate updates in editor so that offsets are always kept in sync prior to game start
-//
-// notes:
-// * ONLY orthographic mode is supported!
-// * assumes camera position is center of viewport
-// * assumes subject's dimensions are less than viewport,
-//   although this could be handled in future by changing the orthographic size
-//
+/*
+Camera behavior for following a subject.
+
+Features
+- option to restrict subject to camera viewport
+- applies smoothing when following subject
+- reduces jitter by avoids moving if super close to object
+- forces immediate updates in editor so that offsets are always kept in sync prior to game start
+
+Notes
+- only orthographic mode is supported
+- assumes camera position is center of viewport
+- assumes subject's dimensions are less than viewport
+- the above could possibly be handled in future by changing the orthographic size
+*/
 [ExecuteAlways]
 [RequireComponent(typeof(Camera))]
 public class FollowCameraController : MonoBehaviour
 {
+    public enum FollowMode { MoveWithSubject, MoveAfterLeavingView };
+
     private const float TARGET_DISTANCE_TOLERANCE = 0.20f;
     private const float ORTHO_SIZE_DEFAULT =     50.00f;
     private const float ORTHO_SIZE_MIN     =     15.00f;
@@ -33,11 +38,11 @@ public class FollowCameraController : MonoBehaviour
 
     private Camera cam;
     private CameraViewportInfo viewportInfo;
-    private CameraSubjectInfo subjectInfo;
-    private float zoomVelocity;
+    private CameraSubjectInfo  subjectInfo;
+
+    private float   zoomVelocity;
     private Vector2 moveVelocity;
     private Vector3 normalizedOffsets;
-    public enum FollowMode { MoveWithSubject, MoveAfterLeavingView };
 
     [Header("Subject to Follow")]
     [Tooltip("Transform of (any) subject for camera to follow (does not have to be 'visible')")]
@@ -68,22 +73,25 @@ public class FollowCameraController : MonoBehaviour
     [Tooltip("Adjust zoom speed (how fast the camera FOV is adjusted)")]
     [Range(ZOOM_SPEED_MIN, ZOOM_SPEED_MAX)] [SerializeField] private float maxZoomSpeed = ZOOM_SPEED_DEFAULT;
 
-    private bool IsFullyInitialized
-    {
-        get => cam != null && viewportInfo != null && subject != null && subjectInfo != null;
-    }
+    private bool IsFullyInitialized =>
+        cam          != null &&
+        viewportInfo != null &&
+        subject      != null &&
+        subjectInfo  != null;
+
     private void Init()
     {
         cam = gameObject.GetComponent<Camera>();
         cam.nearClipPlane = 0.30f;
-        cam.rect = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
-        cam.orthographic = true;
+        cam.rect          = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
+        cam.orthographic  = true;
 
         viewportInfo = new CameraViewportInfo(cam);
         subjectInfo  = new CameraSubjectInfo(subject);
 
-        zoomVelocity = 0.00f;
-        moveVelocity = Vector2.zero;
+        zoomVelocity      = 0.00f;
+        moveVelocity      = Vector2.zero;
+        normalizedOffsets = Vector2.zero;
     }
     private void ForceUpdate()
     {
@@ -92,8 +100,8 @@ public class FollowCameraController : MonoBehaviour
         {
             Init();
         }
-        AdjustOffsets(forceChange: true);
-        AdjustZoom(forceChange: true);
+        AdjustOffsets (forceChange: true);
+        AdjustZoom    (forceChange: true);
         AdjustPosition(forceChange: true);
     }
 
@@ -161,9 +169,11 @@ public class FollowCameraController : MonoBehaviour
             (forceChange || viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasSizeChangedSinceLastUpdate))
         {
             Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
-            normalizedOffsets = new Vector3(x: Mathf.Clamp(xOffset, -limit.x, limit.x),
-                                            y: Mathf.Clamp(yOffset, -limit.y, limit.y),
-                                            z: zOffset);
+            normalizedOffsets = new Vector3(
+                x: Mathf.Clamp(xOffset, -limit.x, limit.x),
+                y: Mathf.Clamp(yOffset, -limit.y, limit.y),
+                z: zOffset
+            );
         }
         else if (forceChange || xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y)
         {
@@ -172,9 +182,12 @@ public class FollowCameraController : MonoBehaviour
     }
     private void AdjustPosition(bool forceChange=false)
     {
-        Vector3 target = new Vector3(x: subjectInfo.Center.x + normalizedOffsets.x,
-                                     y: subjectInfo.Center.y + normalizedOffsets.y,
-                                     z: normalizedOffsets.z);
+        Vector3 target = new Vector3(
+            x: subjectInfo.Center.x + normalizedOffsets.x,
+            y: subjectInfo.Center.y + normalizedOffsets.y,
+            z: normalizedOffsets.z
+        );
+
         if (forceChange)
         {
             cam.transform.position = target;
@@ -182,6 +195,7 @@ public class FollowCameraController : MonoBehaviour
         }
 
         Vector3 current = transform.TransformVector(cam.transform.position);
+        //if (!MathUtils.IsWithinTolerance(current, target, TARGET_DISTANCE_TOLERANCE))
         if (Mathf.Abs(target.x - current.x) > TARGET_DISTANCE_TOLERANCE ||
             Mathf.Abs(target.y - current.y) > TARGET_DISTANCE_TOLERANCE)
         {
