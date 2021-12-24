@@ -36,14 +36,6 @@ public class FollowCameraController : MonoBehaviour
     private const float MOVE_SPEED_MIN     =     10.00f;
     private const float MOVE_SPEED_MAX     = 100000.00f;
 
-    private Camera cam;
-    private CameraViewportInfo viewportInfo;
-    private CameraSubjectInfo  subjectInfo;
-
-    private float   zoomVelocity;
-    private Vector2 moveVelocity;
-    private Vector3 normalizedOffsets;
-
     [Header("Subject to Follow")]
     [Tooltip("Transform of (any) subject for camera to follow (does not have to be 'visible')")]
     [SerializeField] private Transform subject;
@@ -73,6 +65,15 @@ public class FollowCameraController : MonoBehaviour
     [Tooltip("Adjust zoom speed (how fast the camera FOV is adjusted)")]
     [Range(ZOOM_SPEED_MIN, ZOOM_SPEED_MAX)] [SerializeField] private float maxZoomSpeed = ZOOM_SPEED_DEFAULT;
 
+
+    private Camera             cam;
+    private CameraViewportInfo viewportInfo;
+    private CameraSubjectInfo  subjectInfo;
+
+    private float   zoomVelocity;
+    private Vector2 moveVelocity;
+    private Vector3 normalizedOffsets;
+
     private bool IsFullyInitialized =>
         cam          != null &&
         viewportInfo != null &&
@@ -101,6 +102,8 @@ public class FollowCameraController : MonoBehaviour
             Init();
         }
 
+        viewportInfo.Update();
+        subjectInfo.Update();
         AdjustZoom_forced();
         AdjustOffsets_forced();
         AdjustPosition_forced();
@@ -137,12 +140,16 @@ public class FollowCameraController : MonoBehaviour
         }
         #endif
 
-        if (isActivelyRunning)
+        if (!isActivelyRunning)
         {
-            AdjustZoom();
-            AdjustOffsets();
-            AdjustPosition();
+            return;
         }
+
+        viewportInfo.Update();
+        subjectInfo.Update();
+        AdjustZoom();
+        AdjustOffsets();
+        AdjustPosition();
     }
 
     private void AdjustZoom_forced()
@@ -162,9 +169,6 @@ public class FollowCameraController : MonoBehaviour
 
     private void AdjustOffsets_forced()
     {
-        viewportInfo.Update();
-        subjectInfo.Update();
-
         if (keepSubjectInView)
         {
             Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
@@ -181,9 +185,6 @@ public class FollowCameraController : MonoBehaviour
     }
     private void AdjustOffsets()
     {
-        viewportInfo.Update();
-        subjectInfo.Update();
-
         if (keepSubjectInView &&
             (viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasSizeChangedSinceLastUpdate))
         {
@@ -211,12 +212,12 @@ public class FollowCameraController : MonoBehaviour
 
     private void AdjustPosition()
     {
+        Vector3 current = transform.TransformVector(cam.transform.position);
         Vector3 target = new Vector3(
             x: subjectInfo.Center.x + normalizedOffsets.x,
             y: subjectInfo.Center.y + normalizedOffsets.y,
             z: normalizedOffsets.z
         );
-        Vector3 current = transform.TransformVector(cam.transform.position);
 
         if (Mathf.Abs(target.x - current.x) > TARGET_DISTANCE_TOLERANCE ||
             Mathf.Abs(target.y - current.y) > TARGET_DISTANCE_TOLERANCE)
