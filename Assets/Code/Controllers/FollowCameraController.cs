@@ -80,6 +80,24 @@ public class FollowCameraController : MonoBehaviour
         subject      != null &&
         subjectInfo  != null;
 
+    private Vector3 ComputeNormalizedOffsets()
+    {
+        Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
+        return new Vector3(
+            x: Mathf.Clamp(xOffset, -limit.x, limit.x),
+            y: Mathf.Clamp(yOffset, -limit.y, limit.y),
+            z: zOffset
+        );
+    }
+    private Vector3 ComputeTargetPosition()
+    {
+        return new Vector3(
+            x: subjectInfo.Center.x + normalizedOffsets.x,
+            y: subjectInfo.Center.y + normalizedOffsets.y,
+            z: normalizedOffsets.z
+        );
+    }
+
     private void Init()
     {
         cam = gameObject.GetComponent<Camera>();
@@ -172,11 +190,7 @@ public class FollowCameraController : MonoBehaviour
         if (keepSubjectInView)
         {
             Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
-            normalizedOffsets = new Vector3(
-                x: Mathf.Clamp(xOffset, -limit.x, limit.x),
-                y: Mathf.Clamp(yOffset, -limit.y, limit.y),
-                z: zOffset
-            );
+            normalizedOffsets = ComputeNormalizedOffsets();
         }
         else
         {
@@ -188,12 +202,7 @@ public class FollowCameraController : MonoBehaviour
         if (keepSubjectInView &&
             (viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasSizeChangedSinceLastUpdate))
         {
-            Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
-            normalizedOffsets = new Vector3(
-                x: Mathf.Clamp(xOffset, -limit.x, limit.x),
-                y: Mathf.Clamp(yOffset, -limit.y, limit.y),
-                z: zOffset
-            );
+            normalizedOffsets = ComputeNormalizedOffsets();
         }
         else if (xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y)
         {
@@ -203,24 +212,14 @@ public class FollowCameraController : MonoBehaviour
 
     private void AdjustPosition_forced()
     {
-        cam.transform.position = new Vector3(
-            x: subjectInfo.Center.x + normalizedOffsets.x,
-            y: subjectInfo.Center.y + normalizedOffsets.y,
-            z: normalizedOffsets.z
-        );
+        cam.transform.position = ComputeTargetPosition();
     }
 
     private void AdjustPosition()
     {
         Vector3 current = transform.TransformVector(cam.transform.position);
-        Vector3 target = new Vector3(
-            x: subjectInfo.Center.x + normalizedOffsets.x,
-            y: subjectInfo.Center.y + normalizedOffsets.y,
-            z: normalizedOffsets.z
-        );
-
-        if (Mathf.Abs(target.x - current.x) > TARGET_DISTANCE_TOLERANCE ||
-            Mathf.Abs(target.y - current.y) > TARGET_DISTANCE_TOLERANCE)
+        Vector3 target = ComputeTargetPosition();
+        if (!MathUtils.IsWithinTolerance(current, target, TARGET_DISTANCE_TOLERANCE))
         {
             Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
             cam.transform.position = new Vector3(position.x, position.y, target.z);
