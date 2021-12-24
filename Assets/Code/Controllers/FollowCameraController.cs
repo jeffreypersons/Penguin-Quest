@@ -100,9 +100,10 @@ public class FollowCameraController : MonoBehaviour
         {
             Init();
         }
-        AdjustOffsets (forceChange: true);
-        AdjustZoom    (forceChange: true);
-        AdjustPosition(forceChange: true);
+
+        AdjustZoom_forced();
+        AdjustOffsets_forced();
+        AdjustPosition_forced();
     }
 
     void Awake()
@@ -136,23 +137,21 @@ public class FollowCameraController : MonoBehaviour
         }
         #endif
 
-        if (!isActivelyRunning)
+        if (isActivelyRunning)
         {
-            return;
+            AdjustZoom();
+            AdjustOffsets();
+            AdjustPosition();
         }
-        AdjustZoom();
-        AdjustOffsets();
-        AdjustPosition();
     }
 
-    private void AdjustZoom(bool forceChange=false)
+    private void AdjustZoom_forced()
     {
-        if (forceChange)
-        {
-            cam.orthographicSize = orthographicSize;
-            return;
-        }
+        cam.orthographicSize = orthographicSize;
+    }
 
+    private void AdjustZoom()
+    {
         float current = cam.orthographicSize;
         float target  = orthographicSize;
         if (Mathf.Abs(target - current) > TARGET_DISTANCE_TOLERANCE)
@@ -160,13 +159,13 @@ public class FollowCameraController : MonoBehaviour
             cam.orthographicSize = Mathf.SmoothDamp(current, target, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
         }
     }
-    private void AdjustOffsets(bool forceChange=false)
+
+    private void AdjustOffsets_forced()
     {
         viewportInfo.Update();
         subjectInfo.Update();
 
-        if (keepSubjectInView &&
-            (forceChange || viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasSizeChangedSinceLastUpdate))
+        if (keepSubjectInView)
         {
             Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
             normalizedOffsets = new Vector3(
@@ -175,27 +174,50 @@ public class FollowCameraController : MonoBehaviour
                 z: zOffset
             );
         }
-        else if (forceChange || xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y)
+        else
         {
             normalizedOffsets = new Vector3(xOffset, yOffset, zOffset);
         }
     }
-    private void AdjustPosition(bool forceChange=false)
+    private void AdjustOffsets()
+    {
+        viewportInfo.Update();
+        subjectInfo.Update();
+
+        if (keepSubjectInView &&
+            (viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasSizeChangedSinceLastUpdate))
+        {
+            Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
+            normalizedOffsets = new Vector3(
+                x: Mathf.Clamp(xOffset, -limit.x, limit.x),
+                y: Mathf.Clamp(yOffset, -limit.y, limit.y),
+                z: zOffset
+            );
+        }
+        else if (xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y)
+        {
+            normalizedOffsets = new Vector3(xOffset, yOffset, zOffset);
+        }
+    }
+
+    private void AdjustPosition_forced()
+    {
+        cam.transform.position = new Vector3(
+            x: subjectInfo.Center.x + normalizedOffsets.x,
+            y: subjectInfo.Center.y + normalizedOffsets.y,
+            z: normalizedOffsets.z
+        );
+    }
+
+    private void AdjustPosition()
     {
         Vector3 target = new Vector3(
             x: subjectInfo.Center.x + normalizedOffsets.x,
             y: subjectInfo.Center.y + normalizedOffsets.y,
             z: normalizedOffsets.z
         );
-
-        if (forceChange)
-        {
-            cam.transform.position = target;
-            return;
-        }
-
         Vector3 current = transform.TransformVector(cam.transform.position);
-        //if (!MathUtils.IsWithinTolerance(current, target, TARGET_DISTANCE_TOLERANCE))
+
         if (Mathf.Abs(target.x - current.x) > TARGET_DISTANCE_TOLERANCE ||
             Mathf.Abs(target.y - current.y) > TARGET_DISTANCE_TOLERANCE)
         {
