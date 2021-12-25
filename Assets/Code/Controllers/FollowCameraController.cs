@@ -49,8 +49,6 @@ public class FollowCameraController : MonoBehaviour
     [Range(OFFSET_MIN, OFFSET_MAX)] [SerializeField] private float zOffset = OFFSET_DEFAULT;
 
     [Header("Follow Behavior")]
-    [Tooltip("Mode for camera movement relative to to subject")]
-    [SerializeField] private FollowMode followMode = FollowMode.MoveWithSubject;
     [Tooltip("Clamp offsets to prevent subject's collider from leaving camera viewport")]
     [SerializeField] private bool keepSubjectInView = true;
     [Tooltip("Toggle for actively following")]
@@ -72,7 +70,6 @@ public class FollowCameraController : MonoBehaviour
 
     private float   zoomVelocity;
     private Vector2 moveVelocity;
-    private Vector3 normalizedOffsets;
 
     private bool IsFullyInitialized =>
         cam          != null &&
@@ -80,24 +77,31 @@ public class FollowCameraController : MonoBehaviour
         subject      != null &&
         subjectInfo  != null;
 
-    private Vector3 OffsetsClampedToFitInViewport()
+    private Vector3 SubjectPosition
     {
-        Vector2 limit = viewportInfo.Extents - subjectInfo.Extents;
-        return new Vector3(
-            x: Mathf.Clamp(xOffset, -limit.x, limit.x),
-            y: Mathf.Clamp(yOffset, -limit.y, limit.y),
-            z: zOffset
-        );
+        get
+        {
+            return subjectInfo.Center;
+        }
     }
-    private Vector3 ComputeTargetPosition()
+    private Vector3 OffsetFromSubject
     {
-        return new Vector3(
-            x: subjectInfo.Center.x + normalizedOffsets.x,
-            y: subjectInfo.Center.y + normalizedOffsets.y,
-            z: normalizedOffsets.z
-        );
+        get
+        {
+            if (keepSubjectInView)
+            {
+                Vector2 maxOffsetInsideViewport = viewportInfo.Extents - subjectInfo.Extents;
+                return new Vector3(
+                    x: Mathf.Clamp(xOffset, -maxOffsetInsideViewport.x, maxOffsetInsideViewport.x),
+                    y: Mathf.Clamp(yOffset, -maxOffsetInsideViewport.y, maxOffsetInsideViewport.y),
+                    z: zOffset);
+            }
+            else
+            {
+                return new Vector3(xOffset, yOffset, zOffset);
+            }
+        }
     }
-
 
     private void Init()
     {
@@ -109,43 +113,24 @@ public class FollowCameraController : MonoBehaviour
         viewportInfo = new CameraViewportInfo(cam);
         subjectInfo  = new CameraSubjectInfo(subject);
 
-        zoomVelocity      = 0.00f;
-        moveVelocity      = Vector2.zero;
-        normalizedOffsets = Vector2.zero;
+        zoomVelocity = 0.00f;
+        moveVelocity = Vector2.zero;
     }
-    private void ForceUpdate()
-    {
-        // force reinitialization since sometimes the references are modified after recompilation
-        if (!IsFullyInitialized)
-        {
-            Init();
-        }
-
-        viewportInfo.Update();
-        subjectInfo.Update();
-        cam.orthographicSize   = orthographicSize;
-        normalizedOffsets      = keepSubjectInView? OffsetsClampedToFitInViewport() : new Vector3(xOffset, yOffset, zOffset);
-        cam.transform.position = ComputeTargetPosition();
-    }
-
+    
     void Awake()
     {
+        // warn just once on update if subject is null, to avoid logging the error each frame
         if (!subject)
         {
             Debug.LogError($"No subject assigned to follow, `{GetType().Name}` - no object assigned");
         }
-        ForceUpdate();
+        ForcedUpdate();
     }
 
     #if UNITY_EDITOR
     void OnValidate()
     {
-        ForceUpdate();
-        if (followMode != FollowMode.MoveWithSubject)
-        {
-            Debug.LogWarning("Only `FollowMode.MoveWithSubject` mode is currently supported");
-            followMode = FollowMode.MoveWithSubject;
-        }
+        ForcedUpdate();
     }
     #endif
 
@@ -154,47 +139,49 @@ public class FollowCameraController : MonoBehaviour
         #if UNITY_EDITOR
         if (!Application.IsPlaying(this))
         {
-            ForceUpdate();
+            ForcedUpdate();
             return;
         }
         #endif
 
         if (isActivelyRunning)
         {
-            viewportInfo.Update();
-            subjectInfo.Update();
-            AdjustZoom();
-            AdjustOffsets();
-            AdjustPosition();
+            SmoothedUpdate();
         }
     }
 
-    private void AdjustZoom()
+    private void ForcedUpdate()
+    {
+        // force reinitialization if anything became null,
+        // since sometimes the references are modified after script recompilation in editor
+        if (!IsFullyInitialized)
+        {
+            Init();
+        }
+        viewportInfo.Update();
+        subjectInfo.Update();
+        cam.orthographicSize   = orthographicSize;
+        cam.transform.position = SubjectPosition + OffsetFromSubject;
+    }
+    private void SmoothedUpdate()
+    {
+        viewportInfo.Update();
+        subjectInfo.Update();
+        AdjustZoomTowards(orthographicSize);
+        MoveCameraTowards(SubjectPosition + OffsetFromSubject);
+    }
+
+    private void AdjustZoomTowards(float targetOrthoSize)
     {
         float current = cam.orthographicSize;
-        float target  = orthographicSize;
-        if (Mathf.Abs(target - current) > TARGET_DISTANCE_TOLERANCE)
+        if (!MathUtils.IsWithinTolerance(current, targetOrthoSize, TARGET_DISTANCE_TOLERANCE))
         {
-            cam.orthographicSize = Mathf.SmoothDamp(current, target, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
+            cam.orthographicSize = Mathf.SmoothDamp(current, targetOrthoSize, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
         }
     }
-    private void AdjustOffsets()
+    private void MoveCameraTowards(Vector3 target)
     {
-        if (keepSubjectInView &&
-            (viewportInfo.HasSizeChangedSinceLastUpdate || subjectInfo.HasSizeChangedSinceLastUpdate))
-        {
-            normalizedOffsets = OffsetsClampedToFitInViewport();
-        }
-        else if (xOffset != normalizedOffsets.x || yOffset != normalizedOffsets.y)
-        {
-            normalizedOffsets = new Vector3(xOffset, yOffset, zOffset);
-        }
-    }
-
-    private void AdjustPosition()
-    {
-        Vector3 current = transform.TransformVector(cam.transform.position);
-        Vector3 target  = ComputeTargetPosition();
+        Vector3 current = cam.transform.position;
         if (!MathUtils.IsWithinTolerance(current, target, TARGET_DISTANCE_TOLERANCE))
         {
             Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);

@@ -83,6 +83,11 @@ public static class MathUtils
         return Quaternion.AngleAxis(degrees, vector) * vector;
     }
 
+    public static bool AreScalarsEqual(float a, float b)
+    {
+        return Mathf.Approximately(a, b);
+    }
+
     // perform a quick check for normalization without having to do the expensive magnitude calculation
     public static bool IsNormalized(Vector2 vector)
     {

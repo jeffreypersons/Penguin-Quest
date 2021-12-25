@@ -20,6 +20,7 @@ public class CameraViewportInfo
     public Vector2 Min            { get; private set; }
     public Vector2 Max            { get; private set; }
 
+
     public bool HasSizeChangedSinceLastUpdate     { get; private set; }
     public bool HasPositionChangedSinceLastUpdate { get; private set; }
 
@@ -40,15 +41,15 @@ public class CameraViewportInfo
 
     private void UpdatePosition()
     {
-        Vector3 center = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, cam.nearClipPlane));
-        if (center.z != NearClipOffset)
+        Vector3 newCenter = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, cam.nearClipPlane));
+        if (!MathUtils.AreScalarsEqual(newCenter.z, NearClipOffset))
         {
-            NearClipOffset = center.z;
+            NearClipOffset = newCenter.z;
         }
-
-        if (center.x != Center.x || center.y != Center.y)
+        
+        if (!MathUtils.AreComponentsEqual(newCenter, Center))
         {
-            Center = center;
+            Center = newCenter;
             HasPositionChangedSinceLastUpdate = true;
         }
         else
