@@ -13,7 +13,11 @@ public static class CollectionUtils
         return newArray;
     }
 
-    // assumes comparator Equals is defined for given element type
+    /*
+    Return true if all elements of given arrays are matching.
+
+    Assumes comparator `Equals` is defined for given element type.
+    */
     public static bool AreArraysEqual<T>(T[] array1, T[] array2)
     {
         if (ReferenceEquals(array1, array2))
@@ -35,12 +39,12 @@ public static class CollectionUtils
         }
         return true;
     }
-    // Assumes
-    // * comparator `Equals` is defined for given element type
-    // * start <= array.length - 1
-    //
-    // Notes
-    // * segments considered equal IFF slice lengths AND each element are equal
+
+    /*
+    Are elements of given array segments array1[s1,] and array2[s2,] matching (in length and value)?
+
+    Assumes comparator `Equals` is defined for given element type, and start <= array.length - 1.
+    */
     public static bool AreArraySegmentsEqual<T>(T[] array1, T[] array2, int start1, int start2)
     {
         if (ReferenceEquals(array1, array2) && start1 == start2 && array1.Length == array2.Length)
@@ -69,13 +73,13 @@ public static class CollectionUtils
         }
         return true;
     }
-    // Assumes
-    // * comparator `Equals` is defined for given element type
-    // * start <= array.length - 1
-    //
-    // Notes
-    // * segments considered equal IFF slice lengths AND each element are equal
-    // * if start + count exceeds array.length, then the segment spans to that point
+
+    /*
+    Are elements of given array segments array1[s1,s1+count1] and array2[s2,s2+count2] matching (in length and value)?
+
+    Assumes comparator `Equals` is defined for given element type, and start <= array.length - 1.
+    Note that if start+count exceed array.length, then the segment spans to that point.
+    */
     public static bool AreArraySegmentsEqual<T>(T[] array1, T[] array2, int start1, int start2, int count1, int count2)
     {
         if (ReferenceEquals(array1, array2) && start1 == start2 && count1 == count2)

@@ -2,11 +2,16 @@
 using UnityEngine;
 
 
-// notes:
-// - all these methods use old style for loops so that the found value CAN be modified after return
-// - as typical in unity api, that aside from the topmost parent, children of inactive parents are _not_ searched
+/*
+Various generalized utilities for operating on gameobjects and transforms.
+
+Notes
+- All these methods use old style for loops so that the found value CAN be modified after return
+- To match Unity's convention, children of inactive parents are _not_ searched (aside from the topmost parent)
+*/
 public static class ObjectUtils
 {
+    /* internal Utility for checking if transform should be include according to active status and any matching tags. */
     private static bool IsMatchingCriteria(Transform transform, bool includeInactive, params string[] tags)
     {
         if (transform == null || (!includeInactive && !transform.gameObject.activeSelf))
@@ -24,8 +29,7 @@ public static class ObjectUtils
         return false;
     }
 
-    // note: only fetches active gameObjects
-    // warning: similar to find, this gets all objects, s
+    /* Fetch all (active) game objects in the scene with matching tags. */
     public static List<GameObject> FindAllObjectsWithTags(params string[] tags)
     {
         var objects = new List<GameObject>();
@@ -35,8 +39,8 @@ public static class ObjectUtils
         }
         return objects;
     }
-    // note: only fetches active gameObjects
-    // warning: similar to find, this gets all objects, s
+
+    /* For each active object in scene with matching tags, fetch all components. */
     public static List<T> FindAllComponentsInObjectsWithTags<T>(params string[] tags) where T : Component
     {
         var components = new List<T>();
@@ -54,6 +58,8 @@ public static class ObjectUtils
         return components;
     }
 
+
+    /* Return the first found child matching given tag and component type. */
     public static GameObject GetChildWithTag(GameObject parent, string tag, bool includeInactive = false)
     {
         for (int i = 0; i < parent.transform.childCount; i++)
@@ -66,7 +72,8 @@ public static class ObjectUtils
         }
         return default;
     }
-    // return FIRST found child matching given tag and component type
+
+    /* Return the first found child matching given tag and component type. */
     public static T GetComponentInChildWithTag<T>(GameObject parent, string tag, bool includeInactive = false)
     {
         for (int i = 0; i < parent.transform.childCount; i++)
@@ -81,7 +88,7 @@ public static class ObjectUtils
     }
 
 
-    // return ALL found children matching given tag and component type
+    /* Return ALL found children matching given tag and component type. */
     public static List<GameObject> GetChildrenWithTags(GameObject parent, string[] tags, bool includeInactive = false)
     {
         var objects = new List<GameObject>();
@@ -95,7 +102,8 @@ public static class ObjectUtils
         }
         return objects;
     }
-    // return ALL found child matching given tag and component type (note: any parent components are NOT included)
+
+    /* Return ALL found children matching given tag and component type (note: any parent components are NOT included). */
     public static List<T> GetComponentsInChildrenWithTags<T>(GameObject parent, string[] tags, bool includeInactive = false)
     {
         var components = new List<T>();
