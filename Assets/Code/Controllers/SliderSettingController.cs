@@ -1,7 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Globalization;
+using UnityEngine;
 using UnityEngine.UI;
 
 
+/*
+Dynamic controller for sliders that update text with configured suffixes and number types (ie float/int).
+ */
 [ExecuteAlways]
 public class SliderSettingController : MonoBehaviour
 {
@@ -53,8 +57,8 @@ public class SliderSettingController : MonoBehaviour
 
     private bool SetSliderValues(string initial, string min, string max)
     {
-        bool isAllInt   = MathUtils.IsAllInteger(initial, min, max);
-        bool isAllFloat = MathUtils.IsAllFloat(initial, min, max);
+        bool isAllInt   = IsAllInteger(initial, min, max);
+        bool isAllFloat = IsAllFloat(initial, min, max);
 
         if (isAllInt || isAllFloat)
         {
@@ -69,5 +73,28 @@ public class SliderSettingController : MonoBehaviour
                            $"recieved {initial}, {min}, {max}` instead");
             return false;
         }
+    }
+
+    public static bool IsAllInteger(params string[] values)
+    {
+        foreach (string value in values)
+        {
+            if (!int.TryParse(value, out _))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    public static bool IsAllFloat(params string[] values)
+    {
+        foreach (string value in values)
+        {
+            if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
