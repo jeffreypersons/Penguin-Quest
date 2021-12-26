@@ -5,12 +5,14 @@ using UnityEngine;
 
 namespace CustomAttributes
 {
-// example usage:  [ReadOnlyFieldAttribute] [SerializeField] private string myStatus;
-// implementation: `Editor/ReadOnlyPropertyDrawer`
-//
-// Summary
-// * Allows fields to be disabled in inspector with editing of the value disabled,
-//   providing an in-editor way of showing useful data without resorting to debug or print statements
+/*
+Example usage:  [ReadOnlyFieldAttribute] [SerializeField] private string myStatus;
+implementation: `Editor/ReadOnlyPropertyDrawer`
+
+Summary
+* Allows fields to be disabled in inspector with editing of the value disabled,
+   providing an in-editor way of showing useful data without resorting to debug or print statements
+*/
 public class ReadOnlyFieldAttribute : PropertyAttribute
 {
 }

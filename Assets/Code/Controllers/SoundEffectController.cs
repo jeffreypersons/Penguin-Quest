@@ -71,7 +71,6 @@ public class SoundEffectController : MonoBehaviour
     }
     private void PlayerSoundOnGameOver(PlayerStatsInfo playerInfo)
     {
-        // todo: add some sort of extra field for victory/failure conditions
         bool placeHolderVictoryCondition = false;
         if (placeHolderVictoryCondition)
         {

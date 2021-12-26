@@ -4,9 +4,14 @@ using UnityEngine.UI;
 using CustomAttributes;
 
 
-// controller for opening sub panels of the main menu
-// - only one panel can be open at a time
-// - all panels have a back button, and some may have a continue button
+/*
+Controller for opening sub panels of the main menu.
+
+
+Notes
+- Only one panel can be open at a time
+- All panels have a back button, and some may have a continue button
+*/
 public class MainMenuPanelController : MonoBehaviour
 {
     [Header("Sub-panels")]

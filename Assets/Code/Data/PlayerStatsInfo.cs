@@ -7,8 +7,8 @@ public class PlayerStatsInfo
     public int Lives      { get; private set; }
     public int LivesGiven { get; private set; }
 
-    public static int MIN_SCORE = 0;
-    public static int MAX_SCORE = int.MaxValue;
+    public static int MIN_SCORE       = 0;
+    public static int MAX_SCORE       = int.MaxValue;
     public static int MIN_LIVES_GIVEN = 1;
     public static int MAX_LIVES_GIVEN = int.MaxValue;
 
@@ -25,8 +25,8 @@ public class PlayerStatsInfo
     {
         if (ValidateBounds(livesGiven, MIN_LIVES_GIVEN, MAX_LIVES_GIVEN))
         {
-            Score = MIN_SCORE;
-            Lives = livesGiven;
+            Score      = MIN_SCORE;
+            Lives      = livesGiven;
             LivesGiven = livesGiven;
         }
     }
@@ -39,6 +39,7 @@ public class PlayerStatsInfo
             Score = newScore;
         }
     }
+
     public void AddToLives(int lives)
     {
         int newLives = Lives + lives;
@@ -47,6 +48,7 @@ public class PlayerStatsInfo
             LivesGiven = newLives;
         }
     }
+
 
     private static bool ValidateBounds(int value, int min, int max)
     {

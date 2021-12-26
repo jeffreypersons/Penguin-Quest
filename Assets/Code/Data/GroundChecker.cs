@@ -1,17 +1,19 @@
 ﻿using UnityEngine;
 
 
-// provides functionality for checking if 'ground' is directly below given point
-//
-// features:
-// * ray and object to check from are configured via inspector and tracked by the checker
-// * reassigns result each time the check function is invoked, null if ground was not detected
-// * vertical offsets (from source) can be set programmatically
-//
-// notes:
-// * all the queries and info reflect the results of the ground check, as last updated
-// * assumes that the project's physics settings are configured such that the raycast
-//   doesn't trigger the collider it starts in (otherwise, casting from inside ground layer will fail to get a result)
+/* 
+Provides functionality for checking if 'ground' is directly below given point
+
+Features:
+- Ray and object to check from are configured via inspector and tracked by the checker
+- Reassigns result each time the check function is invoked, null if ground was not detected
+- Vertical offsets (from source) can be set programmatically
+
+Notes
+- All the queries and info reflect the results of the ground check, as last updated
+- Assumes that the project's physics settings are configured such that the raycast
+- Doesn't trigger the collider it starts in (otherwise, casting from inside ground layer will fail to get a result)
+*/
 [System.Serializable]
 [AddComponentMenu("GroundChecker")]
 public class GroundChecker : MonoBehaviour
@@ -28,22 +30,27 @@ public class GroundChecker : MonoBehaviour
         public Vector2 referencePoint           { get; private set; }
         public float distanceFromReferencePoint { get; private set; }
 
-        // compute angle between given vec and surface normal within the 2d plane
-        //
-        // Note
-        // * if vec points to the left of surface normal,  degrees are neg (vec is oriented counter-clockwise from normal)
-        // * if vec points to the right of surface normal, degrees are neg (vec is oriented clockwise from normal)
-        // (+ degrees: clockwise, - count-clockwise in other words, if vector points left of normal, degrees are
+        /*
+        Compute angle between given vec and surface normal within the 2d plane.
+        
+        Notes
+        - if vec points to the left of surface normal,  degrees are neg (vec is oriented counter-clockwise from normal)
+        - if vec points to the right of surface normal, degrees are neg (vec is oriented clockwise from normal)
+        - (+ degrees: clockwise, - count-clockwise in other words, if vector points left of normal, degrees are negative)
+        */
         public float DegreesFromSurfaceNormal(Vector2 vector)
         {
             return Vector2.SignedAngle(normal, vector);
         }
-        // compute angle between given vec and surface tangent within the 2d plane
-        //
-        // Note
-        // * if vec points to the left of surface normal,  degrees are neg (vec is oriented counter-clockwise from tangent)
-        // * if vec points to the right of surface normal, degrees are neg (vec is oriented clockwise from tangent)
-        // (+ degrees: clockwise, - count-clockwise in other words, if vector points left of normal, degrees are
+
+        /*
+        Compute angle between given vec and surface tangent within the 2d plane
+        
+        Notes
+        - If vec points to the left of surface normal,  degrees are neg (vec is oriented counter-clockwise from tangent)
+        - If vec points to the right of surface normal, degrees are neg (vec is oriented clockwise from tangent)
+        - (+ degrees: clockwise, - count-clockwise in other words, if vector points left of normal, degrees are negative)
+        */
         public float DegreesFromSurfaceTangent(Vector2 vector)
         {
             return Vector2.SignedAngle(tangent, vector);
@@ -126,17 +133,21 @@ public class GroundChecker : MonoBehaviour
         _result = new Contact();
         WasDetected = false;
     }
+
     void Awake()
     {
         Reset();
     }
 
-    // check for ground below the our source object,
-    // with some extra line height to ensure it starts just above our targeted layer if given
+    /*
+    Check for ground below the our source object.
+    
+    Some extra line height is used as padding to ensure it starts just above our targeted layer if given.
+    */
     public void CheckForGround(Vector2 fromPoint, float extraLineHeight=0.00f)
     {
         this.extraLineHeight = extraLineHeight;
-        linecastOrigin = new Vector2(fromPoint.x, fromPoint.y + extraLineHeight);
+        linecastOrigin   = new Vector2(fromPoint.x, fromPoint.y + extraLineHeight);
         Vector2 terminal = new Vector2(fromPoint.x, fromPoint.y - toleratedHeightFromGround);
 
         RaycastHit2D hitInfo = Physics2D.Linecast(linecastOrigin, terminal, groundMask);

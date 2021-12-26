@@ -27,6 +27,7 @@ public class GameSettingsInfo
         }
     }
 
+
     private bool ValidPositiveInteger(int value)
     {
         if (value < 0)
@@ -36,6 +37,7 @@ public class GameSettingsInfo
         }
         return true;
     }
+
     private bool ValidatePercentage(int value)
     {
         if (!MathUtils.IsWithinRange(value, 0, 100))
