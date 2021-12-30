@@ -400,4 +400,12 @@ namespace PenguinQuest.Controllers
             Gizmos.DrawSphere(transform.position + (transform.rotation * new Vector2(centerOfMassX, centerOfMassY)), 0.50f);
         }
     }
+
+
+
+
+    class PenguinState
+    {
+
+    }
 }
