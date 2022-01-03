@@ -10,7 +10,7 @@ namespace PenguinQuest.Controllers
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(GroundChecker))]
     [RequireComponent(typeof(GameplayInputReciever))]
-    public class PenguinController : MonoBehaviour
+    public class PenguinController_Test : MonoBehaviour
     {
         private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
         private const float JUMP_STRENGTH_MIN     =  25000.00f;
