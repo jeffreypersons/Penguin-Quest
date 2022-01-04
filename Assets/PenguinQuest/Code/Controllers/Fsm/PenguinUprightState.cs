@@ -5,9 +5,9 @@ using PenguinQuest.Controllers.Fsm;
 
 namespace PenguinQuest.Controllers.Fsm
 {
-    public class SlidingState : FsmState
+    public class PenguinUprightState : FsmState
     {
-        public SlidingState(string name) : base(name) { }
+        public PenguinUprightState(string name) : base(name) { }
 
         public override void Enter()
         {

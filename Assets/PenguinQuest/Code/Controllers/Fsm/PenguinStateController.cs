@@ -7,8 +7,8 @@ namespace PenguinQuest.Controllers.Fsm
 {
     public class PenguinStateController : MonoBehaviour
     {
-        private WalkingState walking;
-        private SlidingState sliding;
+        private PenguinUprightState upright;
+        private PenguinOnBellyState onBelly;
 
         private GameplayInputReciever input;
         private FsmState CurrentState { get; set; }
@@ -17,8 +17,8 @@ namespace PenguinQuest.Controllers.Fsm
             return ReferenceEquals(CurrentState, state);
         }
 
-        private bool CanEnterUprightState => input.Axes.y > 0.0f && !IsCurrently(walking);
-        private bool CanEnterOnbellyState => input.Axes.y < 0.0f && !IsCurrently(sliding);
+        private bool CanEnterUprightState => input.Axes.y > 0.0f && !IsCurrently(upright);
+        private bool CanEnterOnbellyState => input.Axes.y < 0.0f && !IsCurrently(onBelly);
 
 
         private void TransitionToState(FsmState newState)
@@ -32,9 +32,9 @@ namespace PenguinQuest.Controllers.Fsm
 
         void Awake()
         {
-            walking = new WalkingState("Walking_State");
-            sliding = new SlidingState("Sliding_State");
-            CurrentState = walking;
+            upright = new PenguinUprightState("Upright_State");
+            onBelly = new PenguinOnBellyState("OnBelly_State");
+            CurrentState = upright;
         }
 
         void Start()
@@ -47,11 +47,11 @@ namespace PenguinQuest.Controllers.Fsm
 
             if (CanEnterUprightState)
             {
-                TransitionToState(walking);
+                TransitionToState(upright);
             }
             else if (CanEnterOnbellyState)
             {
-                TransitionToState(sliding);
+                TransitionToState(onBelly);
             }
         }
         void FixedUpdate()

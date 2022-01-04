@@ -248,7 +248,7 @@ namespace PenguinQuest.Controllers
         #if UNITY_EDITOR
         void OnValidate()
         {
-            if (!penguinRigidBody || !Application.IsPlaying(penguinRigidBody))
+            if (!penguinRigidBody || !Application.IsPlaying(penguinRigidBody) || penguinRigidBody.useAutoMass)
             {
                 return;
             }
