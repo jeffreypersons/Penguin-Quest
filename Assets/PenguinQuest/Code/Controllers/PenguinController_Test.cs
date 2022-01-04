@@ -246,8 +246,33 @@ namespace PenguinQuest.Controllers
         }
 
         #if UNITY_EDITOR
+        [Header("Test Settings")]
+        [Tooltip("Checking this button enables this test script instead of the original, and vice versa")]
+        [SerializeField] private bool useInsteadOfOriginal;
+        private void ToggleTestScriptUsage()
+        {
+            bool isUsingTestOverOriginal = enabled && !transform.GetComponent<PenguinController_Test>().enabled;
+            bool isUsingOriginalOverTest = !enabled && transform.GetComponent<PenguinController_Test>().enabled;
+
+            if (useInsteadOfOriginal && !isUsingTestOverOriginal)
+            {
+                enabled = true;
+                transform.GetComponent<PenguinController>().enabled = false;
+                Debug.Log("OnValidate - Using this script over original - enabled SitAnimationTimingTest and disabled PlayerSit");
+            }
+            else if (!useInsteadOfOriginal && !isUsingOriginalOverTest)
+            {
+                enabled = false;
+                transform.GetComponent<PenguinController>().enabled = true;
+                Debug.Log("OnValidate - Using original over this script - disabled SitAnimationTimingTest and enabled PlayerSit");
+            }
+        }
+
         void OnValidate()
         {
+            ToggleTestScriptUsage();
+
+
             if (!penguinRigidBody || !Application.IsPlaying(penguinRigidBody) || penguinRigidBody.useAutoMass)
             {
                 return;

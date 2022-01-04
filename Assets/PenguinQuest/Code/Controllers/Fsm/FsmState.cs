@@ -1,4 +1,7 @@
-﻿
+﻿using UnityEngine;
+using PenguinQuest.Data;
+using PenguinQuest.Controllers.Fsm;
+
 
 namespace PenguinQuest.Controllers.Fsm
 {
