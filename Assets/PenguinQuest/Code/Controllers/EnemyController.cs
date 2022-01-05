@@ -72,11 +72,11 @@ namespace PenguinQuest.Controllers
 
         void OnEnable()
         {
-            GlobalGameEventCenter.enemyHit.AddListener(RespondToHit);
+            GameEventCenter.enemyHit.AddListener(RespondToHit);
         }
         void OnDisable()
         {
-            GlobalGameEventCenter.enemyHit.RemoveListener(RespondToHit);
+            GameEventCenter.enemyHit.RemoveListener(RespondToHit);
         }
         public void RespondToHit(string hitZoneInfo)
         {

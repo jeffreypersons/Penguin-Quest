@@ -57,7 +57,7 @@ namespace PenguinQuest.Controllers.UI
         {
             SceneUtils.LoadScene(sceneName, () =>
             {
-                GlobalGameEventCenter.startNewGame.Trigger(mainMenuPanelController.GetGameSettings());
+                GameEventCenter.startNewGame.Trigger(mainMenuPanelController.GetGameSettings());
             });
         }
 

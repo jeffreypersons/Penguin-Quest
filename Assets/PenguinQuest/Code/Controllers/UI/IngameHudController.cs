@@ -25,12 +25,12 @@ namespace PenguinQuest.Controllers.UI
         }
         void OnEnable()
         {
-            GlobalGameEventCenter.scoreChange.AddListener(UpdateScore);
+            GameEventCenter.scoreChange.AddListener(UpdateScore);
             pauseButton.onClick.AddListener(TriggerPauseGameEvent);
         }
         void OnDisable()
         {
-            GlobalGameEventCenter.scoreChange.RemoveListener(UpdateScore);
+            GameEventCenter.scoreChange.RemoveListener(UpdateScore);
             pauseButton.onClick.RemoveListener(TriggerPauseGameEvent);
         }
 
@@ -42,7 +42,7 @@ namespace PenguinQuest.Controllers.UI
         }
         private void TriggerPauseGameEvent()
         {
-            GlobalGameEventCenter.pauseGame.Trigger(lastRecordedPlayerInfo);
+            GameEventCenter.pauseGame.Trigger(lastRecordedPlayerInfo);
         }
     }
 }

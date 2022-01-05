@@ -10,7 +10,7 @@ namespace PenguinQuest.Controllers
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(GroundChecker))]
     [RequireComponent(typeof(GameplayInputReciever))]
-    public class PenguinController : MonoBehaviour
+    public class PenguinController_Test : MonoBehaviour
     {
         private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
         private const float JUMP_STRENGTH_MIN     =  25000.00f;
@@ -61,7 +61,7 @@ namespace PenguinQuest.Controllers
         [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
                  "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
         [Range(LOCOMOTION_BLEND_STEP_MIN, LOCOMOTION_BLEND_STEP_MAX)]
-        [SerializeField] private float locomotionBlendSpeed = LOCOMOTION_BLEND_STEP_DEFAULT;
+        [SerializeField] private float locomotionBlendStep = LOCOMOTION_BLEND_STEP_DEFAULT;
 
 
         [Header("Movement Sensitivities")]
@@ -246,8 +246,33 @@ namespace PenguinQuest.Controllers
         }
 
         #if UNITY_EDITOR
+        [Header("Test Settings")]
+        [Tooltip("Checking this button enables this test script instead of the original, and vice versa")]
+        [SerializeField] private bool useInsteadOfOriginal;
+        private void ToggleTestScriptUsage()
+        {
+            bool isUsingTestOverOriginal = enabled && !transform.GetComponent<PenguinController_Test>().enabled;
+            bool isUsingOriginalOverTest = !enabled && transform.GetComponent<PenguinController_Test>().enabled;
+
+            if (useInsteadOfOriginal && !isUsingTestOverOriginal)
+            {
+                enabled = true;
+                transform.GetComponent<PenguinController>().enabled = false;
+                Debug.Log("OnValidate - Using this script over original - enabled SitAnimationTimingTest and disabled PlayerSit");
+            }
+            else if (!useInsteadOfOriginal && !isUsingOriginalOverTest)
+            {
+                enabled = false;
+                transform.GetComponent<PenguinController>().enabled = true;
+                Debug.Log("OnValidate - Using original over this script - disabled SitAnimationTimingTest and enabled PlayerSit");
+            }
+        }
+
         void OnValidate()
         {
+            ToggleTestScriptUsage();
+
+
             if (!penguinRigidBody || !Application.IsPlaying(penguinRigidBody) || penguinRigidBody.useAutoMass)
             {
                 return;
@@ -276,11 +301,11 @@ namespace PenguinQuest.Controllers
             groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: torsoCollider.bounds.extents.y);
             if (!input.MoveHorizontalHeldThisFrame)
             {
-                xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
+                xMotionIntensity = Mathf.Clamp01(xMotionIntensity - locomotionBlendStep);
             }
             else
             {
-                xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(input.HorizontalAxis) * locomotionBlendSpeed));
+                xMotionIntensity = Mathf.Clamp01(xMotionIntensity + locomotionBlendStep);
                 TurnToFace(input.HorizontalAxis < 0 ? Facing.LEFT : Facing.RIGHT);
             }
 
@@ -326,7 +351,7 @@ namespace PenguinQuest.Controllers
             }
 
             // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-            if (!MathUtils.AreScalarsEqual(input.HorizontalAxis, 0.00f)         ||
+            if (!input.MoveHorizontalHeldThisFrame                              ||
                 Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold ||
                 Mathf.Abs(penguinRigidBody.velocity.x) > velocityThreshold      ||
                 Mathf.Abs(penguinRigidBody.velocity.y) > velocityThreshold)

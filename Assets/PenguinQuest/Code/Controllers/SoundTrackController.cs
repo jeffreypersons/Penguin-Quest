@@ -19,19 +19,19 @@ namespace PenguinQuest.Controllers
 
         void OnEnable()
         {
-            GlobalGameEventCenter.startNewGame.AddListener(StartTrack);
-            GlobalGameEventCenter.restartGame .AddListener(RestartTrack);
-            GlobalGameEventCenter.pauseGame   .AddListener(PauseTrack);
-            GlobalGameEventCenter.resumeGame  .AddListener(ResumeTrack);
-            GlobalGameEventCenter.gameOver    .AddListener(EndTrack);
+            GameEventCenter.startNewGame.AddListener(StartTrack);
+            GameEventCenter.restartGame .AddListener(RestartTrack);
+            GameEventCenter.pauseGame   .AddListener(PauseTrack);
+            GameEventCenter.resumeGame  .AddListener(ResumeTrack);
+            GameEventCenter.gameOver    .AddListener(EndTrack);
         }
         void OnDisable()
         {
-            GlobalGameEventCenter.startNewGame.RemoveListener(StartTrack);
-            GlobalGameEventCenter.restartGame .RemoveListener(RestartTrack);
-            GlobalGameEventCenter.pauseGame   .RemoveListener(PauseTrack);
-            GlobalGameEventCenter.resumeGame  .RemoveListener(ResumeTrack);
-            GlobalGameEventCenter.gameOver    .RemoveListener(EndTrack);
+            GameEventCenter.startNewGame.RemoveListener(StartTrack);
+            GameEventCenter.restartGame .RemoveListener(RestartTrack);
+            GameEventCenter.pauseGame   .RemoveListener(PauseTrack);
+            GameEventCenter.resumeGame  .RemoveListener(ResumeTrack);
+            GameEventCenter.gameOver    .RemoveListener(EndTrack);
         }
 
         private void StartTrack(GameSettingsInfo gameSettings)
