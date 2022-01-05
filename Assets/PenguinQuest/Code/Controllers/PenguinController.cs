@@ -274,25 +274,25 @@ namespace PenguinQuest.Controllers
         void Update()
         {
             groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: torsoCollider.bounds.extents.y);
-            if (Mathf.Approximately(input.Axes.x, 0.00f))
+            if (!input.MoveHorizontalHeldThisFrame)
             {
                 xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
             }
             else
             {
-                xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(input.Axes.x) * locomotionBlendSpeed));
-                TurnToFace(input.Axes.x < 0 ? Facing.LEFT : Facing.RIGHT);
+                xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(input.HorizontalAxis) * locomotionBlendSpeed));
+                TurnToFace(input.HorizontalAxis < 0 ? Facing.LEFT : Facing.RIGHT);
             }
 
-            if (input.Axes.y < 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
+            if (input.LieDownHeldThisFrame && groundChecker.WasDetected && posture == Posture.UPRIGHT)
             {
                 penguinAnimator.SetTrigger("Liedown");
             }
-            else if (input.Axes.y > 0.00f && groundChecker.WasDetected && posture == Posture.ONBELLY)
+            else if (input.StandUpHeldThisFrame && groundChecker.WasDetected && posture == Posture.ONBELLY)
             {
                 penguinAnimator.SetTrigger("Standup");
             }
-            else if (input.Axes.y > 0.00f && groundChecker.WasDetected && posture == Posture.UPRIGHT)
+            else if (input.JumpUpHeldThisFrame && groundChecker.WasDetected && posture == Posture.UPRIGHT)
             {
                 penguinAnimator.SetTrigger("Jump");
             }
@@ -326,7 +326,7 @@ namespace PenguinQuest.Controllers
             }
 
             // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-            if (!MathUtils.AreComponentsEqual(input.Axes, Vector2.zero)         ||
+            if (!MathUtils.AreScalarsEqual(input.HorizontalAxis, 0.00f)         ||
                 Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold ||
                 Mathf.Abs(penguinRigidBody.velocity.x) > velocityThreshold      ||
                 Mathf.Abs(penguinRigidBody.velocity.y) > velocityThreshold)

@@ -53,8 +53,8 @@ namespace PenguinQuest.Controllers.UI
                 Debug.LogError($"Scene cannot be loaded, perhaps `{mainMenuSceneName}` is misspelled?");
             }
             ingameMenu.SetActive(false);
-            GlobalGameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
-            GlobalGameEventCenter.gameOver .AddListener(OpenAsEndGameMenu);
+            GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
+            GameEventCenter.gameOver .AddListener(OpenAsEndGameMenu);
 
             #if UNITY_WEBGL
             UiUtils.SetButtonActiveAndEnabled(quitButton, false);
@@ -62,8 +62,8 @@ namespace PenguinQuest.Controllers.UI
         }
         void OnDestroy()
         {
-            GlobalGameEventCenter.pauseGame.RemoveListener(OpenAsPauseMenu);
-            GlobalGameEventCenter.gameOver .RemoveListener(OpenAsEndGameMenu);
+            GameEventCenter.pauseGame.RemoveListener(OpenAsPauseMenu);
+            GameEventCenter.gameOver .RemoveListener(OpenAsEndGameMenu);
         }
 
         void OnEnable()
@@ -100,20 +100,20 @@ namespace PenguinQuest.Controllers.UI
         private void ResumeGame()
         {
             ToggleMenuVisibility(false);
-            GlobalGameEventCenter.resumeGame.Trigger("Resuming game");
+            GameEventCenter.resumeGame.Trigger("Resuming game");
         }
 
         private void MoveToMainMenu()
         {
             Time.timeScale = 1;
-            GlobalGameEventCenter.gotoMainMenu.Trigger("Opening main menu");
+            GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
             SceneUtils.LoadScene(mainMenuSceneName);
         }
 
         private void TriggerRestartGameEvent()
         {
             ToggleMenuVisibility(false);
-            GlobalGameEventCenter.restartGame.Trigger("Restarting game");
+            GameEventCenter.restartGame.Trigger("Restarting game");
         }
     }
 }

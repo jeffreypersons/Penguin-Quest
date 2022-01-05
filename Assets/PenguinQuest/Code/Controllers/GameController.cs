@@ -20,31 +20,31 @@ namespace PenguinQuest.Controllers
 
         void Awake()
         {
-            GlobalGameEventCenter.startNewGame.AddAutoUnsubscribeListener(StartNewGame);
+            GameEventCenter.startNewGame.AddAutoUnsubscribeListener(StartNewGame);
         }
 
         void OnEnable()
         {
-            GlobalGameEventCenter.enemyKilled.AddListener(UpdateScore);
-            GlobalGameEventCenter.restartGame.AddListener(RestartGame);
+            GameEventCenter.enemyKilled.AddListener(UpdateScore);
+            GameEventCenter.restartGame.AddListener(RestartGame);
         }
         void OnDisable()
         {
-            GlobalGameEventCenter.enemyKilled.RemoveListener(UpdateScore);
-            GlobalGameEventCenter.restartGame.RemoveListener(RestartGame);
+            GameEventCenter.enemyKilled.RemoveListener(UpdateScore);
+            GameEventCenter.restartGame.RemoveListener(RestartGame);
         }
 
         private void StartNewGame(GameSettingsInfo gameSettings)
         {
             playerInfo = new PlayerStatsInfo(gameSettings.NumberOfLives);
             //enemy.foreach().GetComponent<AiController>().SetDifficultyLevel(gameSettings.DifficultyLevel);
-            GlobalGameEventCenter.scoreChange.Trigger(playerInfo);
+            GameEventCenter.scoreChange.Trigger(playerInfo);
         }
         private void RestartGame(string status)
         {
             ResetMovingObjects();
             playerInfo = new PlayerStatsInfo(playerInfo.Lives);
-            GlobalGameEventCenter.scoreChange.Trigger(playerInfo);
+            GameEventCenter.scoreChange.Trigger(playerInfo);
         }
         private void UpdateScore(int points)
         {
@@ -56,10 +56,10 @@ namespace PenguinQuest.Controllers
             }
 
             playerInfo.AddToScore(points);
-            GlobalGameEventCenter.scoreChange.Trigger(playerInfo);
+            GameEventCenter.scoreChange.Trigger(playerInfo);
             if (LoseConditionMet() || WinConditionMet())
             {
-                GlobalGameEventCenter.gameOver.Trigger(playerInfo);
+                GameEventCenter.gameOver.Trigger(playerInfo);
             }
         }
 

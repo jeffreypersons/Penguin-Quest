@@ -31,23 +31,23 @@ namespace PenguinQuest.Controllers
 
         void OnEnable()
         {
-            GlobalGameEventCenter.enemyHit   .AddListener(PlaySoundOnEnemyHit);
-            GlobalGameEventCenter.enemyKilled.AddListener(PlaySoundOnEnemyKilled);
+            GameEventCenter.enemyHit   .AddListener(PlaySoundOnEnemyHit);
+            GameEventCenter.enemyKilled.AddListener(PlaySoundOnEnemyKilled);
 
-            GlobalGameEventCenter.startNewGame.AddListener(SetMasterVolume);
-            GlobalGameEventCenter.pauseGame   .AddListener(PauseAnyActiveSoundEffects);
-            GlobalGameEventCenter.resumeGame  .AddListener(ResumeAnyActiveSoundEffects);
-            GlobalGameEventCenter.gameOver    .AddListener(PlayerSoundOnGameOver);
+            GameEventCenter.startNewGame.AddListener(SetMasterVolume);
+            GameEventCenter.pauseGame   .AddListener(PauseAnyActiveSoundEffects);
+            GameEventCenter.resumeGame  .AddListener(ResumeAnyActiveSoundEffects);
+            GameEventCenter.gameOver    .AddListener(PlayerSoundOnGameOver);
         }
         void OnDisable()
         {
-            GlobalGameEventCenter.enemyHit   .AddListener(PlaySoundOnEnemyHit);
-            GlobalGameEventCenter.enemyKilled.AddListener(PlaySoundOnEnemyKilled);
+            GameEventCenter.enemyHit   .AddListener(PlaySoundOnEnemyHit);
+            GameEventCenter.enemyKilled.AddListener(PlaySoundOnEnemyKilled);
 
-            GlobalGameEventCenter.startNewGame.RemoveListener(SetMasterVolume);
-            GlobalGameEventCenter.pauseGame   .RemoveListener(PauseAnyActiveSoundEffects);
-            GlobalGameEventCenter.resumeGame  .RemoveListener(ResumeAnyActiveSoundEffects);
-            GlobalGameEventCenter.gameOver    .RemoveListener(PlayerSoundOnGameOver);
+            GameEventCenter.startNewGame.RemoveListener(SetMasterVolume);
+            GameEventCenter.pauseGame   .RemoveListener(PauseAnyActiveSoundEffects);
+            GameEventCenter.resumeGame  .RemoveListener(ResumeAnyActiveSoundEffects);
+            GameEventCenter.gameOver    .RemoveListener(PlayerSoundOnGameOver);
         }
 
         private void PauseAnyActiveSoundEffects(PlayerStatsInfo _)

@@ -17,8 +17,8 @@ namespace PenguinQuest.Controllers.Fsm
             return ReferenceEquals(CurrentState, state);
         }
 
-        private bool CanEnterUprightState => input.Axes.y > 0.0f && !IsCurrently(upright);
-        private bool CanEnterOnbellyState => input.Axes.y < 0.0f && !IsCurrently(onBelly);
+        private bool CanEnterUprightState => !IsCurrently(upright);
+        private bool CanEnterOnbellyState => !IsCurrently(onBelly);
 
 
         private void TransitionToState(FsmState newState)
