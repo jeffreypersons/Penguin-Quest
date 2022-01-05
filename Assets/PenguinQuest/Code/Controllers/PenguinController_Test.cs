@@ -144,18 +144,18 @@ namespace PenguinQuest.Controllers
         private void UpdateAnimatorParameters()
         {
             // ideally we would use the enums directly, but enum is not a supported parameter type for animator
-            penguinAnimator.SetBool("IsGrounded", groundChecker.WasDetected);
-            penguinAnimator.SetBool("IsUpright",  posture == Posture.UPRIGHT);
+            penguinAnimator.SetBool ("IsGrounded", groundChecker.WasDetected);
+            penguinAnimator.SetBool ("IsUpright",  posture == Posture.UPRIGHT);
             penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
         }
         private void ClearVerticalMovementTriggers()
         {
-            penguinAnimator.ResetTrigger("Jump");
-            penguinAnimator.ResetTrigger("Standup");
-            penguinAnimator.ResetTrigger("Liedown");
+            penguinAnimator.ResetTrigger("JumpUp");
+            penguinAnimator.ResetTrigger("StandUp");
+            penguinAnimator.ResetTrigger("LieDown");
         }
 
-        void OnJumpAnimationEventImpulse()
+        void OnJumpUpAnimationEventImpulse()
         {
             // clear jump trigger to avoid triggering a jump after landing,
             // in the case that jump is pressed twice in a row
@@ -163,30 +163,30 @@ namespace PenguinQuest.Controllers
             float angleFromGround = jumpAngle * Mathf.Deg2Rad;
             netImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
         }
-        void OnLiedownAnimationEventStart()
+        void OnLieDownAnimationEventStart()
         {
             posture = Posture.BENTOVER;
         }
-        void OnLiedownAnimationEventMid()
+        void OnLieDownAnimationEventMid()
         {
             frontFootCollider.enabled = false;
-            backFootCollider.enabled  = false;
+            backFootCollider .enabled = false;
         }
-        void OnLiedownAnimationEventEnd()
+        void OnLieDownAnimationEventEnd()
         {
             posture = Posture.ONBELLY;
             frontFlipperUpperCollider.enabled = false;
             frontFlipperLowerCollider.enabled = false;
         }
-        void OnStandupAnimationEventStart()
+        void OnStandUpAnimationEventStart()
         {
             posture = Posture.BENTOVER;
             frontFlipperUpperCollider.enabled = true;
             frontFlipperLowerCollider.enabled = true;
-            frontFootCollider.enabled = true;
-            backFootCollider.enabled  = true;
+            frontFootCollider        .enabled = true;
+            backFootCollider         .enabled = true;
         }
-        void OnStandupAnimationEventEnd()
+        void OnStandUpAnimationEventEnd()
         {
             posture = Posture.UPRIGHT;
         }
@@ -311,15 +311,15 @@ namespace PenguinQuest.Controllers
 
             if (input.LieDownHeldThisFrame && groundChecker.WasDetected && posture == Posture.UPRIGHT)
             {
-                penguinAnimator.SetTrigger("Liedown");
+                penguinAnimator.SetTrigger("LieDown");
             }
             else if (input.StandUpHeldThisFrame && groundChecker.WasDetected && posture == Posture.ONBELLY)
             {
-                penguinAnimator.SetTrigger("Standup");
+                penguinAnimator.SetTrigger("StandUp");
             }
             else if (input.JumpUpHeldThisFrame && groundChecker.WasDetected && posture == Posture.UPRIGHT)
             {
-                penguinAnimator.SetTrigger("Jump");
+                penguinAnimator.SetTrigger("JumpUp");
             }
 
             if (input.FireHeldThisFrame)

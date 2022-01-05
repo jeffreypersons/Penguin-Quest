@@ -72,11 +72,11 @@ namespace PenguinQuest.Data
 
             // todo: make these trigger GameEvents instead of polling every frame
             MoveHorizontalHeldThisFrame = xInput != 0;
-            JumpUpHeldThisFrame         = jumpUpAction        .triggered;
-            StandUpHeldThisFrame        = standUpAction       .triggered;
-            LieDownHeldThisFrame        = lieDownAction       .triggered;
-            UseHeldThisFrame            = useAction           .triggered;
-            FireHeldThisFrame           = fireAction          .triggered;
+            JumpUpHeldThisFrame         = jumpUpAction .triggered;
+            StandUpHeldThisFrame        = standUpAction.triggered;
+            LieDownHeldThisFrame        = lieDownAction.triggered;
+            UseHeldThisFrame            = useAction    .triggered;
+            FireHeldThisFrame           = fireAction   .triggered;
         }
     }
 }
