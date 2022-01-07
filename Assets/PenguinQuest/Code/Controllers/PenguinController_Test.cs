@@ -6,19 +6,14 @@ using PenguinQuest.Utils;
 
 namespace PenguinQuest.Controllers
 {
+    [RequireComponent(typeof(GameplayInputReciever))]
+
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(GroundChecker))]
-    [RequireComponent(typeof(GameplayInputReciever))]
+    [RequireComponent(typeof(JumpHandler))]
     public class PenguinController_Test : MonoBehaviour
     {
-        private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
-        private const float JUMP_STRENGTH_MIN     =  25000.00f;
-        private const float JUMP_STRENGTH_MAX     = 250000.00f;
-        private const float JUMP_ANGLE_DEFAULT    =     45.00f;
-        private const float JUMP_ANGLE_MIN        =      0.00f;
-        private const float JUMP_ANGLE_MAX        =     90.00f;
-
         private const float LOCOMOTION_BLEND_STEP_DEFAULT = 0.10f;
         private const float LOCOMOTION_BLEND_STEP_MIN     = 0.01f;
         private const float LOCOMOTION_BLEND_STEP_MAX     = 1.00f;
@@ -46,16 +41,6 @@ namespace PenguinQuest.Controllers
 
         private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
         private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
-
-
-        [Header("Jump Settings")]
-        [Tooltip("Strength of jump force in newtons")]
-        [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
-        [SerializeField] private float jumpStrength = JUMP_STRENGTH_DEFAULT;
-
-        [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward facing direction)")]
-        [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)] [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
-
 
         [Header("Animation Settings")]
         [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
@@ -150,19 +135,10 @@ namespace PenguinQuest.Controllers
         }
         private void ClearVerticalMovementTriggers()
         {
-            penguinAnimator.ResetTrigger("JumpUp");
             penguinAnimator.ResetTrigger("StandUp");
             penguinAnimator.ResetTrigger("LieDown");
         }
 
-        void OnJumpUpAnimationEventImpulse()
-        {
-            // clear jump trigger to avoid triggering a jump after landing,
-            // in the case that jump is pressed twice in a row
-            ClearVerticalMovementTriggers();
-            float angleFromGround = jumpAngle * Mathf.Deg2Rad;
-            netImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
-        }
         void OnLieDownAnimationEventStart()
         {
             posture = Posture.BENTOVER;
