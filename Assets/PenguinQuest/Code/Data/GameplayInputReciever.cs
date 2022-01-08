@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using PenguinQuest.Generated;
 
@@ -16,34 +15,6 @@ namespace PenguinQuest.Data
     [AddComponentMenu("GameplayInputReciever")]
     public class GameplayInputReciever : MonoBehaviour
     {
-                // todo: completely remove the below in favor of event triggers
-        private float xInput;
-        public int  HorizontalAxis              { get; set; }
-        public bool MoveHorizontalHeldThisFrame { get; set; }
-        public bool JumpUpHeldThisFrame         { get; set; }
-        public bool StandUpHeldThisFrame        { get; set; }
-        public bool LieDownHeldThisFrame        { get; set; }
-        
-        public bool FireHeldThisFrame           { get; set; }
-        public bool UseHeldThisFrame            { get; set; }
-        
-
-        void Update()
-        {
-            // todo: ensure floats are getting mapped to ints correctly for axis...
-            xInput = MoveHorizontal.ReadValue<float>();
-            HorizontalAxis = (int)xInput;
-            
-            // todo: completely remove the below per-frame-polling in favor of event triggers
-            MoveHorizontalHeldThisFrame = xInput != 0;
-            JumpUpHeldThisFrame         = JumpUp .triggered;
-            StandUpHeldThisFrame        = StandUp.triggered;
-            LieDownHeldThisFrame        = LieDown.triggered;
-            UseHeldThisFrame            = Use    .triggered;
-            FireHeldThisFrame           = Fire   .triggered;
-        }
-
-
         private PlayerControls generatedPlayerControls;
 
         private InputAction MoveHorizontal => generatedPlayerControls.Gameplay.MoveHorizontal;
@@ -81,10 +52,10 @@ namespace PenguinQuest.Data
             Use           .performed -= OnUse;
             Fire          .performed -= OnFire;
         }
-        
+
         private void OnMoveHorizontalStarted(InputAction.CallbackContext context)
         {
-            int direction = context.action.ReadValue<float>() < 0 ? -1 : 1;
+            int direction = context.action.ReadValue<float>() < 0.00f ? -1 : 1;
             GameEventCenter.startHorizontalMoveCommand.Trigger(direction);
         }
         private void OnMoveHorizontalStopped(InputAction.CallbackContext _)

@@ -6,7 +6,8 @@ using PenguinQuest.Data;
 namespace PenguinQuest.Controllers
 {
     [RequireComponent(typeof(Animator))]
-    public class JumpHandler : MonoBehaviour
+    [RequireComponent(typeof(Rigidbody2D))]
+    public class JumpUpHandler : MonoBehaviour
     {
         private const float JUMP_STRENGTH_DEFAULT = 50000.00f;
         private const float JUMP_STRENGTH_MIN     = 25000.00f;
@@ -32,21 +33,19 @@ namespace PenguinQuest.Controllers
         {
             penguinAnimator  = gameObject.GetComponent<Animator>();
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-            netImpulseForce = Vector2.zero;
+            netImpulseForce  = Vector2.zero;
         }
 
-        // things we want to do AFTER the animator updates positions
         void LateUpdate()
         {
-            if (netImpulseForce == Vector2.zero)
+            if (netImpulseForce != Vector2.zero)
             {
-                return;
+                penguinRigidBody.constraints = RigidbodyConstraints2D.None;
+                penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
+                netImpulseForce = Vector2.zero;
             }
-
-            penguinRigidBody.constraints = RigidbodyConstraints2D.None;
-            penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
-            netImpulseForce = Vector2.zero;
         }
+
 
         void OnEnable()
         {
