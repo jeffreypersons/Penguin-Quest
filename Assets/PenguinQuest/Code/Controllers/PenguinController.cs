@@ -1,28 +1,20 @@
 ﻿using System;
 using UnityEngine;
 using PenguinQuest.Data;
-using PenguinQuest.Utils;
 
 
 namespace PenguinQuest.Controllers
 {
+    [RequireComponent(typeof(JumpUpHandler))]
+    [RequireComponent(typeof(StandUpHandler))]
+    [RequireComponent(typeof(LieDownHandler))]
+
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(GroundChecker))]
-    [RequireComponent(typeof(GameplayInputReciever))]
+
     public class PenguinController : MonoBehaviour
     {
-        private const float JUMP_STRENGTH_DEFAULT =  50000.00f;
-        private const float JUMP_STRENGTH_MIN     =  25000.00f;
-        private const float JUMP_STRENGTH_MAX     = 250000.00f;
-        private const float JUMP_ANGLE_DEFAULT    =     45.00f;
-        private const float JUMP_ANGLE_MIN        =      0.00f;
-        private const float JUMP_ANGLE_MAX        =     90.00f;
-
-        private const float LOCOMOTION_BLEND_STEP_DEFAULT = 0.10f;
-        private const float LOCOMOTION_BLEND_STEP_MIN     = 0.01f;
-        private const float LOCOMOTION_BLEND_STEP_MAX     = 1.00f;
-
         private const float VELOCITY_THRESHOLD_DEFAULT         =    0.01f;
         private const float VELOCITY_THRESHOLD_MIN             =    0.01f;
         private const float VELOCITY_THRESHOLD_MAX             =   10.00f;
@@ -43,26 +35,6 @@ namespace PenguinQuest.Controllers
         private const float MASS_CENTER_COORD_DEFAULT =     0.00f;
         private const float MASS_CENTER_COORD_MIN     =  -500.00f;
         private const float MASS_CENTER_COORD_MAX     =   500.00f;
-
-        private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
-        private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
-
-
-        [Header("Jump Settings")]
-        [Tooltip("Strength of jump force in newtons")]
-        [Range(JUMP_STRENGTH_MIN, JUMP_STRENGTH_MAX)]
-        [SerializeField] private float jumpStrength = JUMP_STRENGTH_DEFAULT;
-
-        [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward facing direction)")]
-        [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)] [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
-
-
-        [Header("Animation Settings")]
-        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
-                 "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
-        [Range(LOCOMOTION_BLEND_STEP_MIN, LOCOMOTION_BLEND_STEP_MAX)]
-        [SerializeField] private float locomotionBlendSpeed = LOCOMOTION_BLEND_STEP_DEFAULT;
-
 
         [Header("Movement Sensitivities")]
         [Tooltip("Sensitivity to small velocities (ie .10 units will be interpreted as zero [useful for jitter reduction])")]
@@ -105,21 +77,15 @@ namespace PenguinQuest.Controllers
         [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
         [SerializeField] private CapsuleCollider2D frontFootCollider         = default;
         [SerializeField] private CapsuleCollider2D backFootCollider          = default;
-
-
-        private Vector2               initialSpawnPosition;
-        private GroundChecker         groundChecker;
-        private Rigidbody2D           penguinRigidBody;
-        private Animator              penguinAnimator;
-        private GameplayInputReciever input;
-
-        private Facing facing;
-        private Posture posture;
-        private enum Facing  { LEFT, RIGHT }
         private enum Posture { UPRIGHT, ONBELLY, BENTOVER }
 
-        private Vector2 netImpulseForce;
-        private float xMotionIntensity;
+        private Vector2       initialSpawnPosition;
+        private GroundChecker groundChecker;
+        private Rigidbody2D   penguinRigidBody;
+        private Animator      penguinAnimator;
+
+        private Posture posture;
+
 
         private void LockAllAxes()
         {
@@ -144,65 +110,7 @@ namespace PenguinQuest.Controllers
         private void UpdateAnimatorParameters()
         {
             // ideally we would use the enums directly, but enum is not a supported parameter type for animator
-            penguinAnimator.SetBool ("IsGrounded", groundChecker.WasDetected);
-            penguinAnimator.SetBool ("IsUpright",  posture == Posture.UPRIGHT);
-            penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
-        }
-        private void ClearVerticalMovementTriggers()
-        {
-            penguinAnimator.ResetTrigger("JumpUp");
-            penguinAnimator.ResetTrigger("StandUp");
-            penguinAnimator.ResetTrigger("LieDown");
-        }
-
-        void OnJumpUpAnimationEventImpulse()
-        {
-            // clear jump trigger to avoid triggering a jump after landing,
-            // in the case that jump is pressed twice in a row
-            ClearVerticalMovementTriggers();
-            float angleFromGround = jumpAngle * Mathf.Deg2Rad;
-            netImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
-        }
-        void OnLieDownAnimationEventStart()
-        {
-            posture = Posture.BENTOVER;
-        }
-        void OnLieDownAnimationEventMid()
-        {
-            frontFootCollider.enabled = false;
-            backFootCollider .enabled = false;
-        }
-        void OnLieDownAnimationEventEnd()
-        {
-            posture = Posture.ONBELLY;
-            frontFlipperUpperCollider.enabled = false;
-            frontFlipperLowerCollider.enabled = false;
-        }
-        void OnStandUpAnimationEventStart()
-        {
-            posture = Posture.BENTOVER;
-            frontFlipperUpperCollider.enabled = true;
-            frontFlipperLowerCollider.enabled = true;
-            frontFootCollider        .enabled = true;
-            backFootCollider         .enabled = true;
-        }
-        void OnStandUpAnimationEventEnd()
-        {
-            posture = Posture.UPRIGHT;
-        }
-        void OnFireAnimationEvent()
-        {
-
-        }
-        void OnUseAnimationEvent()
-        {
-
-        }
-
-        public override string ToString()
-        {
-            return $"Penguin with a {Enum.GetName(typeof(Posture), posture)} posture and " +
-                   $"facing towards the {Enum.GetName(typeof(Facing), facing)}";
+            penguinAnimator.SetBool("IsGrounded", groundChecker.WasDetected);
         }
 
         public void Reset()
@@ -211,7 +119,6 @@ namespace PenguinQuest.Controllers
             enableAutomaticAxisLockingWhenIdle = true;
 
             groundChecker.Reset();
-            netImpulseForce = Vector2.zero;
             penguinRigidBody.velocity = Vector2.zero;
             penguinRigidBody.position = initialSpawnPosition;
             penguinRigidBody.isKinematic  = false;
@@ -219,12 +126,11 @@ namespace PenguinQuest.Controllers
             penguinRigidBody.mass         = mass;
             penguinRigidBody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
 
-            xMotionIntensity = 0.00f;
             penguinAnimator.applyRootMotion = true;
             penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
-            ClearVerticalMovementTriggers();
 
-            TurnToFace(Facing.RIGHT);
+            penguinRigidBody.transform.localEulerAngles = Vector3.zero;
+
             UpdateAnimatorParameters();
 
             // align penguin with surface normal in a single update
@@ -239,12 +145,11 @@ namespace PenguinQuest.Controllers
             penguinAnimator  = gameObject.GetComponent<Animator>();
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
             groundChecker    = gameObject.GetComponent<GroundChecker>();
-            input            = gameObject.GetComponent<GameplayInputReciever>();
 
             initialSpawnPosition = penguinRigidBody.position;
             Reset();
         }
-
+        
         #if UNITY_EDITOR
         void OnValidate()
         {
@@ -274,38 +179,6 @@ namespace PenguinQuest.Controllers
         void Update()
         {
             groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: torsoCollider.bounds.extents.y);
-            if (!input.MoveHorizontalHeldThisFrame)
-            {
-                xMotionIntensity = Mathf.Clamp01(xMotionIntensity - (locomotionBlendSpeed));
-            }
-            else
-            {
-                xMotionIntensity = Mathf.Clamp01(xMotionIntensity + (Mathf.Abs(input.HorizontalAxis) * locomotionBlendSpeed));
-                TurnToFace(input.HorizontalAxis < 0 ? Facing.LEFT : Facing.RIGHT);
-            }
-
-            if (input.LieDownHeldThisFrame && groundChecker.WasDetected && posture == Posture.UPRIGHT)
-            {
-                penguinAnimator.SetTrigger("LieDown");
-            }
-            else if (input.StandUpHeldThisFrame && groundChecker.WasDetected && posture == Posture.ONBELLY)
-            {
-                penguinAnimator.SetTrigger("StandUp");
-            }
-            else if (input.JumpUpHeldThisFrame && groundChecker.WasDetected && posture == Posture.UPRIGHT)
-            {
-                penguinAnimator.SetTrigger("JumpUp");
-            }
-
-            if (input.FireHeldThisFrame)
-            {
-                penguinAnimator.SetTrigger("Fire");
-            }
-            if (input.UseHeldThisFrame)
-            {
-                penguinAnimator.SetTrigger("Use");
-            }
-
             UpdateAnimatorParameters();
         }
 
@@ -326,8 +199,7 @@ namespace PenguinQuest.Controllers
             }
 
             // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-            if (!MathUtils.AreScalarsEqual(input.HorizontalAxis, 0.00f)         ||
-                Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold ||
+            if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold ||
                 Mathf.Abs(penguinRigidBody.velocity.x) > velocityThreshold      ||
                 Mathf.Abs(penguinRigidBody.velocity.y) > velocityThreshold)
             {
@@ -337,39 +209,6 @@ namespace PenguinQuest.Controllers
             else if (enableAutomaticAxisLockingWhenIdle)
             {
                 LockAllAxes();
-            }
-        }
-
-        // things we want to do AFTER the animator updates positions
-        void LateUpdate()
-        {
-            if (netImpulseForce != Vector2.zero)
-            {
-                UnlockAllAxes();
-                penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
-                netImpulseForce = Vector2.zero;
-            }
-        }
-
-        private void TurnToFace(Facing facing)
-        {
-            if (this.facing == facing)
-            {
-                return;
-            }
-
-            this.facing = facing;
-            switch (this.facing)
-            {
-                case Facing.LEFT:
-                    transform.localRotation = ROTATION_FACING_LEFT;
-                    break;
-                case Facing.RIGHT:
-                    transform.localRotation = ROTATION_FACING_RIGHT;
-                    break;
-                default:
-                    Debug.LogError($"Given value `{facing}` is not a valid Facing");
-                    break;
             }
         }
 

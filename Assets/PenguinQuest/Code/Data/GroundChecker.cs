@@ -29,9 +29,9 @@ namespace PenguinQuest.Data
             public Vector2 normal  { get; private set; }
 
             // (unsigned) degrees slope of the line tangent to point of contact
-            public float slope                      { get; private set; }
-            public Vector2 referencePoint           { get; private set; }
-            public float distanceFromReferencePoint { get; private set; }
+            public float   slope                      { get; private set; }
+            public Vector2 referencePoint             { get; private set; }
+            public float   distanceFromReferencePoint { get; private set; }
 
             /*
             Compute angle between given vec and surface normal within the 2d plane.
@@ -94,7 +94,7 @@ namespace PenguinQuest.Data
         private float extraLineHeight;
         private Contact _result;
         public Contact Result   { get => WasDetected? _result : default; }
-        public bool WasDetected { get; private set; }
+        public bool    WasDetected { get; private set; }
         public Vector2 SurfaceNormalOfLastContact { get; private set; }
         public float MaxDistanceFromGround { get => toleratedHeightFromGround; }
 

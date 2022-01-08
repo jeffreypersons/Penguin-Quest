@@ -15,68 +15,72 @@ namespace PenguinQuest.Data
     [AddComponentMenu("GameplayInputReciever")]
     public class GameplayInputReciever : MonoBehaviour
     {
-        private float       xInput;
-        private InputAction moveHorizontalAction;
-        private InputAction jumpUpAction;
-        private InputAction standUpAction;
-        private InputAction lieDownAction;
-        private InputAction useAction;
-        private InputAction fireAction;
-
         private PlayerControls generatedPlayerControls;
 
-        // todo: completely remove the below in favor of event triggers
-        public int  HorizontalAxis              { get; set; }
-        public bool MoveHorizontalHeldThisFrame { get; set; }
-        public bool JumpUpHeldThisFrame         { get; set; }
-        public bool StandUpHeldThisFrame        { get; set; }
-        public bool LieDownHeldThisFrame        { get; set; }
-        
-        public bool FireHeldThisFrame           { get; set; }
-        public bool UseHeldThisFrame            { get; set; }
-        
-        private void Init()
+        private InputAction MoveHorizontal => generatedPlayerControls.Gameplay.MoveHorizontal;
+        private InputAction JumpUp         => generatedPlayerControls.Gameplay.JumpUp;
+        private InputAction StandUp        => generatedPlayerControls.Gameplay.StandUp;
+        private InputAction LieDown        => generatedPlayerControls.Gameplay.LieDown;
+        private InputAction Use            => generatedPlayerControls.Gameplay.Fire;
+        private InputAction Fire           => generatedPlayerControls.Gameplay.Use;
+
+        void Awake()
         {
             generatedPlayerControls = new PlayerControls();
-
-            // todo: bind these actions to GameEvents
-            HorizontalAxis       = 0;
-            moveHorizontalAction = generatedPlayerControls.Gameplay.MoveHorizontal;
-            jumpUpAction         = generatedPlayerControls.Gameplay.JumpUp;
-            standUpAction        = generatedPlayerControls.Gameplay.StandUp;
-            lieDownAction        = generatedPlayerControls.Gameplay.LieDown;
-            fireAction           = generatedPlayerControls.Gameplay.Fire;
-            useAction            = generatedPlayerControls.Gameplay.Use;
         }
 
         void OnEnable()
         {
             generatedPlayerControls.Gameplay.Enable();
+            MoveHorizontal.started   += OnMoveHorizontalStarted;
+            MoveHorizontal.canceled  += OnMoveHorizontalStopped;
+            JumpUp        .performed += OnJumpUp;
+            StandUp       .performed += OnStandUp;
+            LieDown       .performed += OnLieDown;
+            Use           .performed += OnUse;
+            Fire          .performed += OnFire;
         }
 
         void OnDisable()
         {
             generatedPlayerControls.Gameplay.Disable();
+            MoveHorizontal.started   -= OnMoveHorizontalStarted;
+            MoveHorizontal.canceled  -= OnMoveHorizontalStopped;
+            JumpUp        .performed -= OnJumpUp;
+            StandUp       .performed -= OnStandUp;
+            LieDown       .performed -= OnLieDown;
+            Use           .performed -= OnUse;
+            Fire          .performed -= OnFire;
         }
 
-        void Awake()
+        private void OnMoveHorizontalStarted(InputAction.CallbackContext context)
         {
-            Init();
+            int direction = context.action.ReadValue<float>() < 0.00f ? -1 : 1;
+            GameEventCenter.startHorizontalMoveCommand.Trigger(direction);
         }
-
-        void Update()
+        private void OnMoveHorizontalStopped(InputAction.CallbackContext _)
         {
-            // todo: ensure floats are getting mapped to ints correctly for axis...
-            xInput = moveHorizontalAction.ReadValue<float>();
-            HorizontalAxis = (int)xInput;
-
-            // todo: make these trigger GameEvents instead of polling every frame
-            MoveHorizontalHeldThisFrame = xInput != 0;
-            JumpUpHeldThisFrame         = jumpUpAction .triggered;
-            StandUpHeldThisFrame        = standUpAction.triggered;
-            LieDownHeldThisFrame        = lieDownAction.triggered;
-            UseHeldThisFrame            = useAction    .triggered;
-            FireHeldThisFrame           = fireAction   .triggered;
+            GameEventCenter.stopHorizontalMoveCommand.Trigger("Received input to stop horizontal movement");
+        }
+        private void OnJumpUp(InputAction.CallbackContext _)
+        {
+            GameEventCenter.jumpCommand.Trigger("Received jump up input");
+        }
+        private void OnStandUp(InputAction.CallbackContext _)
+        {
+            GameEventCenter.standupCommand.Trigger("Received stand up input");
+        }
+        private void OnLieDown(InputAction.CallbackContext _)
+        {
+            GameEventCenter.lieDownCommand.Trigger("Received lie down input");
+        }
+        private void OnUse(InputAction.CallbackContext _)
+        {
+            GameEventCenter.useCommand.Trigger("Received use input");
+        }
+        private void OnFire(InputAction.CallbackContext _)
+        {
+            GameEventCenter.fireCommand.Trigger("Received fire input");
         }
     }
 }
