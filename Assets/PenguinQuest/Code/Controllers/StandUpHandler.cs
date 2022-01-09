@@ -5,21 +5,16 @@ using PenguinQuest.Data;
 namespace PenguinQuest.Controllers
 {
     [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(PenguinSkeleton))]
     public class StandUpHandler : MonoBehaviour
     {
-        [Header("Collider References")]
-        [SerializeField] private CapsuleCollider2D headCollider              = default;
-        [SerializeField] private CapsuleCollider2D torsoCollider             = default;
-        [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
-        [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
-        [SerializeField] private CapsuleCollider2D frontFootCollider         = default;
-        [SerializeField] private CapsuleCollider2D backFootCollider          = default;
-
-        private Animator penguinAnimator;
+        private Animator        penguinAnimator;
+        private PenguinSkeleton penguinSkeleton;
 
         void Awake()
         {
             penguinAnimator = gameObject.GetComponent<Animator>();
+            penguinSkeleton = gameObject.GetComponent<PenguinSkeleton>();
         }
 
         void OnEnable()
@@ -38,10 +33,7 @@ namespace PenguinQuest.Controllers
         }
         void OnStandUpAnimationEventStart()
         {
-            frontFlipperUpperCollider.enabled = true;
-            frontFlipperLowerCollider.enabled = true;
-            frontFootCollider        .enabled = true;
-            backFootCollider         .enabled = true;
+            penguinSkeleton.ColliderConstraints = PenguinColliderConstraints.None;
         }
         void OnStandUpAnimationEventEnd()
         {
