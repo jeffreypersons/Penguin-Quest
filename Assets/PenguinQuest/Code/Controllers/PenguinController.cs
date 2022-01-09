@@ -5,10 +5,12 @@ using PenguinQuest.Data;
 
 namespace PenguinQuest.Controllers
 {
+
     [RequireComponent(typeof(JumpUpHandler))]
     [RequireComponent(typeof(StandUpHandler))]
     [RequireComponent(typeof(LieDownHandler))]
 
+    [RequireComponent(typeof(PenguinSkeleton))]
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(GroundChecker))]
@@ -70,19 +72,14 @@ namespace PenguinQuest.Controllers
         [Range(MASS_CENTER_COORD_MIN, MASS_CENTER_COORD_MAX)]
         [SerializeField] private float centerOfMassY = MASS_CENTER_COORD_DEFAULT;
 
-        [Header("Collider References")]
-        [SerializeField] private CapsuleCollider2D headCollider              = default;
-        [SerializeField] private CapsuleCollider2D torsoCollider             = default;
-        [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
-        [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
-        [SerializeField] private CapsuleCollider2D frontFootCollider         = default;
-        [SerializeField] private CapsuleCollider2D backFootCollider          = default;
         private enum Posture { UPRIGHT, ONBELLY, BENTOVER }
 
         private Vector2       initialSpawnPosition;
         private GroundChecker groundChecker;
-        private Rigidbody2D   penguinRigidBody;
-        private Animator      penguinAnimator;
+
+        private PenguinSkeleton penguinSkeleton;
+        private Rigidbody2D     penguinRigidBody;
+        private Animator        penguinAnimator;
 
         private Posture posture;
 
@@ -135,13 +132,17 @@ namespace PenguinQuest.Controllers
 
             // align penguin with surface normal in a single update
             posture = Posture.UPRIGHT;
-            groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: torsoCollider.bounds.extents.y);
+            groundChecker.CheckForGround(
+                fromPoint: ComputeReferencePoint(),
+                extraLineHeight: penguinSkeleton.ColliderTorso.bounds.extents.y
+            );
             Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
             AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
             groundChecker.Reset();
         }
         void Awake()
         {
+            penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
             penguinAnimator  = gameObject.GetComponent<Animator>();
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
             groundChecker    = gameObject.GetComponent<GroundChecker>();
@@ -178,7 +179,10 @@ namespace PenguinQuest.Controllers
 
         void Update()
         {
-            groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(), extraLineHeight: torsoCollider.bounds.extents.y);
+            groundChecker.CheckForGround(
+                fromPoint:       ComputeReferencePoint(),
+                extraLineHeight: penguinSkeleton.ColliderTorso.bounds.extents.y
+            );
             UpdateAnimatorParameters();
         }
 
