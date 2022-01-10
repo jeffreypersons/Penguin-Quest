@@ -7,10 +7,10 @@ namespace PenguinQuest.Controllers
     public enum PenguinColliderConstraints
     {
         None            = 0,
-        DisableHead     = 1 << 2,
-        DisableTorso    = 1 << 3,
-        DisableFlippers = 1 << 4,
-        DisableFeet     = 1 << 5,
+        DisableHead     = 1 << 1,
+        DisableTorso    = 1 << 2,
+        DisableFlippers = 1 << 3,
+        DisableFeet     = 1 << 4,
         DisableAll      = ~0,
     }
 
@@ -57,18 +57,22 @@ namespace PenguinQuest.Controllers
                 {
                     _constraints = PenguinColliderConstraints.DisableAll;
                 }
-                UpdateColliderEnabilityAccordingToConstraints(_constraints);
+                UpdateColliderEnabilityAccordingToConstraints();
             }
         }
-        
-        private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
+
+        private bool IsFlagSet(PenguinColliderConstraints flag)
         {
-            ColliderHead             .enabled = !constraints.HasFlag(PenguinColliderConstraints.DisableHead);
-            ColliderTorso            .enabled = !constraints.HasFlag(PenguinColliderConstraints.DisableTorso);
-            ColliderFrontFlipperUpper.enabled = !constraints.HasFlag(PenguinColliderConstraints.DisableFlippers);
-            ColliderFrontFlipperLower.enabled = !constraints.HasFlag(PenguinColliderConstraints.DisableFlippers);
-            ColliderFrontFoot        .enabled = !constraints.HasFlag(PenguinColliderConstraints.DisableFeet);
-            ColliderBackFoot         .enabled = !constraints.HasFlag(PenguinColliderConstraints.DisableFeet);
+            return (_constraints & flag) == flag;
+        }
+        private void UpdateColliderEnabilityAccordingToConstraints()
+        {
+            ColliderHead             .enabled = !IsFlagSet(PenguinColliderConstraints.DisableHead);
+            ColliderTorso            .enabled = !IsFlagSet(PenguinColliderConstraints.DisableTorso);
+            ColliderFrontFlipperUpper.enabled = !IsFlagSet(PenguinColliderConstraints.DisableFlippers);
+            ColliderFrontFlipperLower.enabled = !IsFlagSet(PenguinColliderConstraints.DisableFlippers);
+            ColliderFrontFoot        .enabled = !IsFlagSet(PenguinColliderConstraints.DisableFeet);
+            ColliderBackFoot         .enabled = !IsFlagSet(PenguinColliderConstraints.DisableFeet);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
