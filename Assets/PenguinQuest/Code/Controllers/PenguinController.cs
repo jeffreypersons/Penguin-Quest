@@ -1,20 +1,17 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Data;
 
 
 namespace PenguinQuest.Controllers
 {
-
     [RequireComponent(typeof(JumpUpHandler))]
     [RequireComponent(typeof(StandUpHandler))]
     [RequireComponent(typeof(LieDownHandler))]
+    [RequireComponent(typeof(GroundHandler))]
 
     [RequireComponent(typeof(PenguinSkeleton))]
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(GroundChecker))]
-
     public class PenguinController : MonoBehaviour
     {
         private const float VELOCITY_THRESHOLD_DEFAULT         =    0.01f;
@@ -74,48 +71,14 @@ namespace PenguinQuest.Controllers
 
         private enum Posture { UPRIGHT, ONBELLY, BENTOVER }
 
-        private Vector2       initialSpawnPosition;
-        private GroundChecker groundChecker;
-
-        private PenguinSkeleton penguinSkeleton;
-        private Rigidbody2D     penguinRigidBody;
-        private Animator        penguinAnimator;
-
-        private Posture posture;
-
-
-        private void LockAllAxes()
-        {
-            if (penguinRigidBody.constraints != RigidbodyConstraints2D.FreezeAll)
-            {
-                penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
-            }
-        }
-        private void UnlockAllAxes()
-        {
-            if (penguinRigidBody.constraints != RigidbodyConstraints2D.None)
-            {
-                penguinRigidBody.constraints = RigidbodyConstraints2D.None;
-            }
-        }
-        private void ClampSpeed()
-        {
-            penguinRigidBody.velocity = Vector3.ClampMagnitude(penguinRigidBody.velocity, maxSpeed);
-        }
-
-        // update all animator parameters (except for triggers, as those should be set directly)
-        private void UpdateAnimatorParameters()
-        {
-            // ideally we would use the enums directly, but enum is not a supported parameter type for animator
-            penguinAnimator.SetBool("IsGrounded", groundChecker.WasDetected);
-        }
+        private Vector2     initialSpawnPosition;
+        private Rigidbody2D penguinRigidBody;
+        private Animator    penguinAnimator;
 
         public void Reset()
         {
-            UnlockAllAxes();
             enableAutomaticAxisLockingWhenIdle = true;
 
-            groundChecker.Reset();
             penguinRigidBody.velocity = Vector2.zero;
             penguinRigidBody.position = initialSpawnPosition;
             penguinRigidBody.isKinematic  = false;
@@ -127,25 +90,12 @@ namespace PenguinQuest.Controllers
             penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
 
             penguinRigidBody.transform.localEulerAngles = Vector3.zero;
-
-            UpdateAnimatorParameters();
-
-            // align penguin with surface normal in a single update
-            posture = Posture.UPRIGHT;
-            groundChecker.CheckForGround(
-                fromPoint: ComputeReferencePoint(),
-                extraLineHeight: penguinSkeleton.ColliderTorso.bounds.extents.y
-            );
-            Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
-            AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
-            groundChecker.Reset();
         }
+
         void Awake()
         {
-            penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
             penguinAnimator  = gameObject.GetComponent<Animator>();
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-            groundChecker    = gameObject.GetComponent<GroundChecker>();
 
             initialSpawnPosition = penguinRigidBody.position;
             Reset();
@@ -170,77 +120,5 @@ namespace PenguinQuest.Controllers
             }
         }
         #endif
-
-        private Vector2 ComputeReferencePoint()
-        {
-            Vector2 root = penguinAnimator.rootPosition;
-            return posture == Posture.UPRIGHT ? root + new Vector2(0, groundChecker.MaxDistanceFromGround) : root;
-        }
-
-        void Update()
-        {
-            groundChecker.CheckForGround(
-                fromPoint:       ComputeReferencePoint(),
-                extraLineHeight: penguinSkeleton.ColliderTorso.bounds.extents.y
-            );
-            UpdateAnimatorParameters();
-        }
-
-        void FixedUpdate()
-        {
-            if (!groundChecker.WasDetected || posture == Posture.BENTOVER)
-            {
-                UnlockAllAxes();
-                ClampSpeed();
-                return;
-            }
-
-            float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(transform.up);
-            if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
-            {
-                AlignPenguinWithUpAxis(groundChecker.Result.normal);
-                return;
-            }
-
-            // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
-            if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold ||
-                Mathf.Abs(penguinRigidBody.velocity.x) > velocityThreshold      ||
-                Mathf.Abs(penguinRigidBody.velocity.y) > velocityThreshold)
-            {
-                UnlockAllAxes();
-                ClampSpeed();
-            }
-            else if (enableAutomaticAxisLockingWhenIdle)
-            {
-                LockAllAxes();
-            }
-        }
-
-        private void AlignPenguinWithUpAxis(Vector3 targetUpAxis, bool forceInstantUpdate=false)
-        {
-            // we use the old forward direction of the penguin crossed with the axis we wish to align to, to get a perpendicular
-            // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
-            // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
-            // that's parallel with the slope that our given up is normal to.
-            Vector3 left = Vector3.Cross(transform.forward, targetUpAxis);
-            Vector3 newForward = Vector3.Cross(targetUpAxis, left);
-
-            Quaternion targetRotation = Quaternion.LookRotation(newForward, targetUpAxis);
-            if (forceInstantUpdate)
-            {
-                penguinRigidBody.MoveRotation(targetRotation);
-            }
-            else
-            {
-                penguinRigidBody.MoveRotation(
-                    Quaternion.Lerp(transform.rotation, targetRotation, surfaceAlignmentRotationalStrength));
-            }
-        }
-
-        void OnDrawGizmos()
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(transform.position + (transform.rotation * new Vector2(centerOfMassX, centerOfMassY)), 0.50f);
-        }
     }
 }

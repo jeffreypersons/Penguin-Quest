@@ -32,78 +32,52 @@ namespace PenguinQuest.Controllers
         private GroundChecker   groundChecker;
         private PenguinSkeleton penguinSkeleton;
 
-        public void Reset()
+        private void Reset()
         {
-            groundChecker.Reset();
-
-            // align penguin with surface normal in a single update
-            groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(),
-                extraLineHeight: penguinSkeleton.ColliderTorso.bounds.extents.y);
-            Vector2 targetUpAxis = groundChecker.WasDetected ? groundChecker.SurfaceNormalOfLastContact : Vector2.up;
-            AlignPenguinWithUpAxis(targetUpAxis, forceInstantUpdate: true);
-
-            groundChecker.Reset();
+            Vector2 targetUpAxis = groundChecker.IsGrounded ? groundChecker.SurfaceNormal : Vector2.up;
+            penguinRigidBody.MoveRotation(ComputeOrientationForGivenUpAxis(targetUpAxis));
         }
+
         void Awake()
         {
             penguinAnimator  = gameObject.GetComponent<Animator>();
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
             groundChecker    = gameObject.GetComponent<GroundChecker>();
             penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
-
             Reset();
         }
 
 
         void Update()
         {
-            penguinAnimator.SetBool("IsGrounded", groundChecker.WasDetected);
+            penguinAnimator.SetBool("IsGrounded", groundChecker.IsGrounded);
         }
 
         void FixedUpdate()
         {
-            groundChecker.CheckForGround(fromPoint: ComputeReferencePoint(),
-                extraLineHeight: penguinSkeleton.ColliderTorso.bounds.extents.y);
-            if (groundChecker.Result == default)
+            if (!groundChecker.IsGrounded)
             {
                 return;
             }
 
-            float degreesUnaligned = groundChecker.Result.DegreesFromSurfaceNormal(transform.up);
+            // todo: add actual calculate here...
+            float degreesUnaligned = 0.0f;
             if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
             {
-                AlignPenguinWithUpAxis(groundChecker.Result.normal);
-                return;
+                Quaternion current = transform.rotation;
+                Quaternion target  = ComputeOrientationForGivenUpAxis(groundChecker.SurfaceNormal);
+                penguinRigidBody.MoveRotation(Quaternion.Lerp(current, target, surfaceAlignmentRotationalStrength));
             }
         }
 
-        private Vector2 ComputeReferencePoint()
+        private Quaternion ComputeOrientationForGivenUpAxis(Vector3 targetUpAxis)
         {
-            Vector2 root = penguinAnimator.rootPosition;
-            return root + new Vector2(0, groundChecker.MaxDistanceFromGround);
+            Vector3 currentForwardAxis = transform.forward;
+            Vector3 targetLeftAxis     = Vector3.Cross(currentForwardAxis, targetUpAxis);
+            Vector3 targetForwardAxis  = Vector3.Cross(targetUpAxis,       targetLeftAxis);
+            return Quaternion.LookRotation(targetForwardAxis, targetUpAxis);
         }
-
-        private void AlignPenguinWithUpAxis(Vector3 targetUpAxis, bool forceInstantUpdate = false)
-        {
-            // we use the old forward direction of the penguin crossed with the axis we wish to align to, to get a perpendicular
-            // vector pointing in or out of the screen (note unity uses the left hand system), with magnitude proportional to steepness.
-            // then using our desired `up-axis` crossed with our `left` vector, we get a new forward direction of the penguin
-            // that's parallel with the slope that our given up is normal to.
-            Vector3 left = Vector3.Cross(transform.forward, targetUpAxis);
-            Vector3 newForward = Vector3.Cross(targetUpAxis, left);
-
-            Quaternion targetRotation = Quaternion.LookRotation(newForward, targetUpAxis);
-            if (forceInstantUpdate)
-            {
-                penguinRigidBody.MoveRotation(targetRotation);
-            }
-            else
-            {
-                penguinRigidBody.MoveRotation(
-                    Quaternion.Lerp(transform.rotation, targetRotation, surfaceAlignmentRotationalStrength));
-            }
-        }
-
+        
         void OnDrawGizmos()
         {
             if (!penguinAnimator)

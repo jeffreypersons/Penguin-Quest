@@ -5057,14 +5057,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c7ff032402c77c4e963e4b105b29d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 256
-  toleratedHeightFromGround: 7.5
-  displayVisualAids: 1
-  rayColorTop: {r: 0, g: 1, b: 1, a: 1}
-  rayColorLower: {r: 0, g: 0, b: 1, a: 1}
-  rayColorBottom: {r: 1, g: 0, b: 1, a: 1}
+  ContactFilter:
+    useTriggers: 0
+    useLayerMask: 1
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 256
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
 --- !u!114 &1429373700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5087,7 +5093,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 1429373695}
   m_BodyType: 0
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 250
   m_LinearDrag: 0.05
@@ -5195,13 +5201,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85d65616f85963544a31440ebe3f55bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _constraints: 0
   headCollider: {fileID: 1904906742}
   torsoCollider: {fileID: 560952285}
   frontFlipperUpperCollider: {fileID: 1297167880}
   frontFlipperLowerCollider: {fileID: 1960767493}
   frontFootCollider: {fileID: 207128432}
   backFootCollider: {fileID: 1325789281}
-  _constraints: 0
 --- !u!1001 &1522957906
 PrefabInstance:
   m_ObjectHideFlags: 0
