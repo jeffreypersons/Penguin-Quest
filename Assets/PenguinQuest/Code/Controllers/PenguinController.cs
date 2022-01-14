@@ -77,6 +77,7 @@ namespace PenguinQuest.Controllers
 
         public void Reset()
         {
+            /*
             enableAutomaticAxisLockingWhenIdle = true;
 
             penguinRigidBody.velocity = Vector2.zero;
@@ -90,6 +91,7 @@ namespace PenguinQuest.Controllers
             penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
 
             penguinRigidBody.transform.localEulerAngles = Vector3.zero;
+            */
         }
 
         void Awake()

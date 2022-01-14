@@ -19,7 +19,7 @@ namespace PenguinQuest.Controllers
     public class PenguinSkeleton : MonoBehaviour
     {
         [Header("Collider Constraints")]
-        [SerializeField] private PenguinColliderConstraints _constraints = PenguinColliderConstraints.None;
+        [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.None;
 
         [Header("Collider References")]
         [SerializeField] private CapsuleCollider2D headCollider              = default;
@@ -35,52 +35,41 @@ namespace PenguinQuest.Controllers
         public Collider2D ColliderFrontFlipperLower => frontFlipperLowerCollider;
         public Collider2D ColliderFrontFoot         => frontFootCollider;
         public Collider2D ColliderBackFoot          => backFootCollider;
-
-
+        
         public PenguinColliderConstraints ColliderConstraints
         {
             get
             {
-                // the colliders may have been enabled/disabled individually elsewhere, so synchronize the mask
-                _constraints = GetConstraintsAccordingToDisabledColliders();
-                return _constraints;
+                // synchronize the mask to reflect any external changes made to collider enability,
+                // for example, if the upper/lower flipper colliders were disabled, then we set the DisableFlippers flag
+                colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+                return colliderConstraints;
             }
             set
             {
-                // ignore all other flags if none is selected, and if none is not selected,
-                // then the 'use all' flag overrides everything else
-                _constraints = value;
-                if (HasAnyFlags(PenguinColliderConstraints.None))
+                if (colliderConstraints != value)
                 {
-                    _constraints = PenguinColliderConstraints.None;
+                    Debug.Log($"PenguinSkeleton: ColliderConstraints.set: " +
+                              $"Changing constraints from {colliderConstraints} to {value}");
                 }
-                else if (HasAnyFlags(PenguinColliderConstraints.DisableAll))
-                {
-                    _constraints = PenguinColliderConstraints.DisableAll;
-                }
+                colliderConstraints = value;
                 UpdateColliderEnabilityAccordingToConstraints();
             }
         }
-
         
+        void Start()
+        {
+            // initialize using inspector values on start - instead of OnAwake since our class is a (always active) component
+            Debug.Log($"PenguinSkeleton: Start: Collider constraints initialized to {colliderConstraints}");
+            ColliderConstraints = colliderConstraints;
+        }
+
         #if UNITY_EDITOR
         void OnValidate()
         {
-            ColliderConstraints = _constraints;
-            Debug.Log($"PenguinSkeleton: Updated constraints to {ColliderConstraints}");
+            ColliderConstraints = colliderConstraints;
         }
         #endif
-
-        // do the constraints contain all given flags?
-        private bool HasAllFlags(PenguinColliderConstraints flags)
-        {
-            return (_constraints & flags) == flags;
-        }
-        // do the constraints contain any (at least one of the) given flags?
-        private bool HasAnyFlags(PenguinColliderConstraints flags)
-        {
-            return (_constraints & flags) != 0;
-        }
 
         private void UpdateColliderEnabilityAccordingToConstraints()
         {
@@ -94,7 +83,7 @@ namespace PenguinQuest.Controllers
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
         {
-            // note that if the field corresponds to more than one collider, all must be disabled
+            // note that for any flag to be set, _all_ corresponding colliders must be disabled
             PenguinColliderConstraints constraints = PenguinColliderConstraints.None;
             if (!headCollider.enabled)
             {
@@ -113,6 +102,12 @@ namespace PenguinQuest.Controllers
                 constraints |= PenguinColliderConstraints.DisableFeet;
             }
             return constraints;
+        }
+
+        // do the constraints contain all given flags?
+        private bool HasAllFlags(PenguinColliderConstraints flags)
+        {
+            return (colliderConstraints & flags) == flags;
         }
     }
 }
