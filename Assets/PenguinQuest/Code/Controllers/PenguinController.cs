@@ -15,22 +15,26 @@ namespace PenguinQuest.Controllers
     [RequireComponent(typeof(Rigidbody2D))]
     public class PenguinController : MonoBehaviour
     {
-        private enum Posture { UPRIGHT, ONBELLY, BENTOVER }
-
         private Vector2 initialSpawnPosition;
         private Rigidbody2D penguinRigidBody;
+        private Animator    penguinAnimator;
+
 
         public void Reset()
         {
             penguinRigidBody.velocity = Vector2.zero;
             penguinRigidBody.position = initialSpawnPosition;
             penguinRigidBody.transform.localEulerAngles = Vector3.zero;
+
+            penguinRigidBody.isKinematic = false;
+            penguinAnimator.applyRootMotion = true;
+            penguinAnimator.updateMode = AnimatorUpdateMode.Normal;
         }
 
         void Awake()
         {
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-
+            penguinAnimator  = gameObject.GetComponent<Animator>();
             initialSpawnPosition = penguinRigidBody.position;
             Reset();
         }

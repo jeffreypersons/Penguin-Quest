@@ -4994,8 +4994,9 @@ GameObject:
   - component: {fileID: 1429373702}
   - component: {fileID: 1429373697}
   - component: {fileID: 1429373700}
-  - component: {fileID: 1429373710}
+  - component: {fileID: 1429373717}
   - component: {fileID: 1429373699}
+  - component: {fileID: 1429373716}
   - component: {fileID: 1429373703}
   - component: {fileID: 1429373712}
   - component: {fileID: 1429373715}
@@ -5054,23 +5055,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1429373695}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c7ff032402c77c4e963e4b105b29d85, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b408bf0c71f1ae4db78d967ceb13c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ContactFilter:
-    useTriggers: 0
-    useLayerMask: 1
-    useDepth: 0
-    useOutsideDepth: 0
-    useNormalAngle: 0
-    useOutsideNormalAngle: 0
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 256
-    minDepth: 0
-    maxDepth: 0
-    minNormalAngle: 0
-    maxNormalAngle: 0
+  mass: 250
+  centerOfMassX: 0
+  centerOfMassY: 0
 --- !u!114 &1429373700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5128,25 +5118,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03575db054bb040478b656105bc59aa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1429373710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1429373695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85d65616f85963544a31440ebe3f55bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  colliderConstraints: 0
-  headCollider: {fileID: 1904906742}
-  torsoCollider: {fileID: 560952285}
-  frontFlipperUpperCollider: {fileID: 1297167880}
-  frontFlipperLowerCollider: {fileID: 1960767493}
-  frontFootCollider: {fileID: 207128432}
-  backFootCollider: {fileID: 1325789281}
 --- !u!114 &1429373712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5200,6 +5171,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   locomotionBlendStep: 0.1
+--- !u!114 &1429373716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429373695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb89727eb0ba244a8ec1dc724330eaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ContactFilter:
+    useTriggers: 0
+    useLayerMask: 0
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
+--- !u!114 &1429373717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429373695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 974fcbedae8c64440ac6c86bedf343bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colliderConstraints: 0
+  headCollider: {fileID: 1904906742}
+  torsoCollider: {fileID: 560952285}
+  frontFlipperUpperCollider: {fileID: 1297167880}
+  frontFlipperLowerCollider: {fileID: 1960767493}
+  frontFootCollider: {fileID: 207128432}
+  backFootCollider: {fileID: 1325789281}
 --- !u!1001 &1522957906
 PrefabInstance:
   m_ObjectHideFlags: 0

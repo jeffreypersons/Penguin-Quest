@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Data;
+using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
 namespace PenguinQuest.Controllers.Handlers

@@ -52,6 +52,7 @@ namespace PenguinQuest.Controllers.Handlers
             // note that for animation events the registration is done implicitly
             GameEventCenter.jumpCommand.AddListener(OnJumpInput);
         }
+
         void OnDisable()
         {
             GameEventCenter.jumpCommand.RemoveListener(OnJumpInput);
@@ -61,6 +62,7 @@ namespace PenguinQuest.Controllers.Handlers
         {
             penguinAnimator.SetTrigger("JumpUp");
         }
+
         void OnJumpUpAnimationEventImpulse()
         {
             // clear jump trigger to avoid triggering a jump after landing,

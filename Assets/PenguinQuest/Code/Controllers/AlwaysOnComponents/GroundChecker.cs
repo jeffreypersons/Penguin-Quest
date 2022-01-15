@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PenguinQuest.Controllers
+namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
     /* 
     Provides functionality for checking if 'ground' is directly below given point.
