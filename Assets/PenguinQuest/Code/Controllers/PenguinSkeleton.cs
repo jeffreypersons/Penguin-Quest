@@ -14,8 +14,9 @@ namespace PenguinQuest.Controllers
         DisableAll      = ~0,
     }
 
+    [ExecuteAlways]
     [System.Serializable]
-    [AddComponentMenu("Penguin Skeleton")]
+    [AddComponentMenu("PenguinSkeleton")]
     public class PenguinSkeleton : MonoBehaviour
     {
         [Header("Collider Constraints")]
@@ -60,7 +61,6 @@ namespace PenguinQuest.Controllers
         void Start()
         {
             // initialize using inspector values on start - instead of OnAwake since our class is a (always active) component
-            Debug.Log($"PenguinSkeleton: Start: Collider constraints initialized to {colliderConstraints}");
             ColliderConstraints = colliderConstraints;
         }
 

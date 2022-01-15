@@ -4,10 +4,11 @@ using PenguinQuest.Controllers.Handlers;
 
 namespace PenguinQuest.Controllers
 {
+    [RequireComponent(typeof(GroundHandler))]
+    [RequireComponent(typeof(HorizontalMoveHandler))]
     [RequireComponent(typeof(JumpUpHandler))]
     [RequireComponent(typeof(StandUpHandler))]
     [RequireComponent(typeof(LieDownHandler))]
-    [RequireComponent(typeof(GroundHandler))]
 
     [RequireComponent(typeof(PenguinSkeleton))]
     [RequireComponent(typeof(Animator))]
