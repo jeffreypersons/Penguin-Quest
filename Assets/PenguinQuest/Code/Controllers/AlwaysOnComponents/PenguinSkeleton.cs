@@ -6,12 +6,13 @@ namespace PenguinQuest.Controllers
     [System.Flags]
     public enum PenguinColliderConstraints
     {
-        None            = 0,
-        DisableHead     = 1 << 1,
-        DisableTorso    = 1 << 2,
-        DisableFlippers = 1 << 3,
-        DisableFeet     = 1 << 4,
-        DisableAll      = ~0,
+        None               = 0,
+        DisableHead        = 1 << 1,
+        DisableTorso       = 1 << 2,
+        DisableFlippers    = 1 << 3,
+        DisableFeet        = 1 << 4,
+        DisableBoundingBox = 1 << 5,
+        DisableAll         = ~0,
     }
 
     [ExecuteAlways]
@@ -19,66 +20,92 @@ namespace PenguinQuest.Controllers
     [AddComponentMenu("PenguinSkeleton")]
     public class PenguinSkeleton : MonoBehaviour
     {
-        [Header("Collider Constraints")]
+        [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.None;
 
         [Header("Collider References")]
+        [SerializeField] private BoxCollider2D     boundingBox               = default;
         [SerializeField] private CapsuleCollider2D headCollider              = default;
         [SerializeField] private CapsuleCollider2D torsoCollider             = default;
         [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
         [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
         [SerializeField] private CapsuleCollider2D frontFootCollider         = default;
         [SerializeField] private CapsuleCollider2D backFootCollider          = default;
-        
+
+        public Collider2D ColliderBoundingBox       => boundingBox;
         public Collider2D ColliderHead              => headCollider;
         public Collider2D ColliderTorso             => torsoCollider;
         public Collider2D ColliderFrontFlipperUpper => frontFlipperUpperCollider;
         public Collider2D ColliderFrontFlipperLower => frontFlipperLowerCollider;
         public Collider2D ColliderFrontFoot         => frontFootCollider;
         public Collider2D ColliderBackFoot          => backFootCollider;
-        
+
         public PenguinColliderConstraints ColliderConstraints
         {
             get
             {
                 // synchronize the mask to reflect any external changes made to collider enability,
                 // for example, if the upper/lower flipper colliders were disabled, then we set the DisableFlippers flag
-                colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+                UpdateColliderConstraints();
                 return colliderConstraints;
             }
             set
             {
-                if (colliderConstraints != value)
-                {
-                    Debug.Log($"PenguinSkeleton: ColliderConstraints.set: " +
-                              $"Changing constraints from {colliderConstraints} to {value}");
-                }
+                // override whatever constraints and collider enability was before with our new constraints
                 colliderConstraints = value;
-                UpdateColliderEnabilityAccordingToConstraints();
+                UpdateColliderConstraints();
             }
         }
         
-        void Start()
+        private PenguinColliderConstraints? _previousConstraints = null;
+
+        void Update()
         {
-            // initialize using inspector values on start - instead of OnAwake since our class is a (always active) component
-            ColliderConstraints = colliderConstraints;
+            UpdateColliderConstraints();
+        }
+        
+        private void UpdateColliderConstraints()
+        {
+            PenguinColliderConstraints inspectorConstraints = colliderConstraints;
+            PenguinColliderConstraints actualConstraints    = GetConstraintsAccordingToDisabledColliders();
+
+            // if first time entering since a recompile, then force to whatever set in the inspector's constraints field
+            if (_previousConstraints == null)
+            {
+                colliderConstraints = inspectorConstraints;
+            }
+            // otherwise if our inspector field changed we want it to override whatever our constraints are
+            else if (inspectorConstraints != _previousConstraints)
+            {
+                colliderConstraints = inspectorConstraints;
+            }
+            // otherwise our inspector field is unchanged, so reflect any external changes made to collider enability
+            else if (actualConstraints != _previousConstraints)
+            {
+                colliderConstraints = actualConstraints;
+            }
+            else
+            {
+                return;
+            }
+
+            UpdateColliderEnabilityAccordingToConstraints(colliderConstraints);
+            colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+            Debug.Log($"PenguinSkeleton: SetColliderConstraints: " +
+                      $"Overriding constraints from {_previousConstraints} to {colliderConstraints}");
+
+            _previousConstraints = colliderConstraints;
         }
 
-        #if UNITY_EDITOR
-        void OnValidate()
+        private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
         {
-            ColliderConstraints = colliderConstraints;
-        }
-        #endif
-
-        private void UpdateColliderEnabilityAccordingToConstraints()
-        {
-            ColliderHead             .enabled = !HasAllFlags(PenguinColliderConstraints.DisableHead);
-            ColliderTorso            .enabled = !HasAllFlags(PenguinColliderConstraints.DisableTorso);
-            ColliderFrontFlipperUpper.enabled = !HasAllFlags(PenguinColliderConstraints.DisableFlippers);
-            ColliderFrontFlipperLower.enabled = !HasAllFlags(PenguinColliderConstraints.DisableFlippers);
-            ColliderFrontFoot        .enabled = !HasAllFlags(PenguinColliderConstraints.DisableFeet);
-            ColliderBackFoot         .enabled = !HasAllFlags(PenguinColliderConstraints.DisableFeet);
+            ColliderHead             .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableHead);
+            ColliderTorso            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableTorso);
+            ColliderFrontFlipperUpper.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
+            ColliderFrontFlipperLower.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
+            ColliderFrontFoot        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
+            ColliderBackFoot         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
+            ColliderBoundingBox      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
@@ -101,13 +128,17 @@ namespace PenguinQuest.Controllers
             {
                 constraints |= PenguinColliderConstraints.DisableFeet;
             }
+            if (!boundingBox.enabled)
+            {
+                constraints |= PenguinColliderConstraints.DisableBoundingBox;
+            }
             return constraints;
         }
 
         // do the constraints contain all given flags?
-        private bool HasAllFlags(PenguinColliderConstraints flags)
+        private static bool HasAllFlags(PenguinColliderConstraints constraints, PenguinColliderConstraints flags)
         {
-            return (colliderConstraints & flags) == flags;
+            return (constraints & flags) == flags;
         }
     }
 }
