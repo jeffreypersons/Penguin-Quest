@@ -21,7 +21,7 @@ namespace PenguinQuest.Controllers
     public class PenguinSkeleton : MonoBehaviour
     {
         [Header("Body Part Collider Constraints")]
-        [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.None;
+        [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
 
         [Header("Collider References")]
         [SerializeField] private BoxCollider2D     boundingBox               = default;
@@ -84,6 +84,7 @@ namespace PenguinQuest.Controllers
             {
                 colliderConstraints = actualConstraints;
             }
+            // if nothing has unchanged then there is no need to update, so terminate early
             else
             {
                 return;
@@ -91,8 +92,10 @@ namespace PenguinQuest.Controllers
 
             UpdateColliderEnabilityAccordingToConstraints(colliderConstraints);
             colliderConstraints = GetConstraintsAccordingToDisabledColliders();
-            Debug.Log($"PenguinSkeleton: SetColliderConstraints: " +
-                      $"Overriding constraints from {_previousConstraints} to {colliderConstraints}");
+
+            Debug.Log($"PenguinSkeleton: SetColliderConstraints: Overriding constraints " +
+                      $"from {(_previousConstraints == null? "<uninitialized>" :_previousConstraints)} " +
+                      $"to {colliderConstraints}");
 
             _previousConstraints = colliderConstraints;
         }
