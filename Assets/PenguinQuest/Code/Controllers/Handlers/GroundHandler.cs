@@ -60,8 +60,8 @@ namespace PenguinQuest.Controllers.Handlers
                 return;
             }
 
-            // todo: add actual calculate here...
-            float degreesUnaligned = 0.0f;
+            // todo: add actual calculation here...
+            float degreesUnaligned = Vector2.SignedAngle(groundChecker.SurfaceNormal, transform.up);
             if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
             {
                 Quaternion current = transform.rotation;

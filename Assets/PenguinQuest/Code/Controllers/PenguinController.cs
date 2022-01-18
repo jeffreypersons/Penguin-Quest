@@ -20,32 +20,6 @@ namespace PenguinQuest.Controllers
         private Animator        penguinAnimator  = default;
         private PenguinSkeleton penguinSkeleton  = default;
 
-        #if UNITY_EDITOR
-        [Header("Test Settings")]
-        [Tooltip("Use the a placeholder sprite instead of the actual penguin?")]
-        [SerializeField] private bool usePlaceholderSprite = false;
-
-        void OnValidate()
-        {
-            FetchComponentsIfNotAlready();
-            if (usePlaceholderSprite)
-            {
-                penguinSkeleton.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
-                this.enabled = true;
-                transform.GetComponent<PenguinController>().enabled = false;
-                Debug.Log("OnValidate - Using this script over other - enabled PenguinController_Old and disabled PenguinController");
-            }
-            else
-            {
-                penguinSkeleton.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
-                this.enabled = false;
-                transform.GetComponent<PenguinController>().enabled = true;
-                Debug.Log("OnValidate - Using other script over this - enabled PenguinController and disabled PenguinController_Old");
-            }
-        }
-        #endif
-
-
         void Awake()
         {
             FetchComponentsIfNotAlready();
@@ -58,8 +32,8 @@ namespace PenguinQuest.Controllers
             if (penguinRigidBody == default || penguinAnimator == default || penguinSkeleton == default)
             {
                 penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-                penguinAnimator = gameObject.GetComponent<Animator>();
-                penguinSkeleton = gameObject.GetComponent<PenguinSkeleton>();
+                penguinAnimator  = gameObject.GetComponent<Animator>();
+                penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
             }
         }
         
