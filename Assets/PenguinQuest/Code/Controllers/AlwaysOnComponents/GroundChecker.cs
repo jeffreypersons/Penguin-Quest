@@ -15,15 +15,16 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     {
         [Header("Ground Settings")]
         [SerializeField] private LayerMask groundMask = default;
-        [SerializeField] [Range( -1.0f,  1.0f)] private float offsetToCheckFrom           = 0.30f;
-        [SerializeField] [Range( 0.05f, 10.0f)] private float toleratedDistanceFromGround = 0.30f;
+        [SerializeField] [Range(-10.00f, 10.00f)] private float offsetToCheckFrom           = 0.30f;
+        [SerializeField] [Range(  0.05f, 10.00f)] private float toleratedDistanceFromGround = 0.30f;
 
         private BoxCollider2D boundingBox;
 
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
 
-        private LineCaster.Result _lastResult = default;
+        private LineCaster.Line _lastLine = default;
+        private LineCaster.Hit  _lastHit  = default;
         private LineCaster _caster = default;
         private LineCaster Caster
         {
@@ -63,17 +64,18 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public void CheckForGround()
         {
             Vector2 downDirection = (-1f * transform.up).normalized;
-
-            if (Caster.CastFromCollider(boundingBox, downDirection, toleratedDistanceFromGround, out LineCaster.Result result))
+            if (Caster.CastFromCollider(boundingBox, downDirection, toleratedDistanceFromGround, out LineCaster.Line lineResult, out LineCaster.Hit lineHit))
             {
-                IsGrounded = true;
-                _lastResult = result;
-                SurfaceNormal = result.normal;
+                IsGrounded    = true;
+                _lastLine     = lineResult;
+                _lastHit      = lineHit;
+                SurfaceNormal = lineHit.normal;
             }
             else
             {
-                IsGrounded = false;
-                _lastResult = result;
+                IsGrounded    = false;
+                _lastLine     = lineResult;
+                _lastHit      = default;
                 SurfaceNormal = Vector2.up;
             }
         }
@@ -89,10 +91,11 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
                 }
                 CheckForGround();
             }
-            GizmosUtils.DrawLine(from: _lastResult.origin, to: _lastResult.point, color: Color.red);
+
+            GizmosUtils.DrawLine(from: _lastLine.start, to: _lastLine.end, color: Color.red);
             if (IsGrounded)
             {
-                GizmosUtils.DrawLine(from: _lastResult.origin, to: _lastResult.point, color: Color.green);
+                GizmosUtils.DrawLine(from: _lastLine.start, to: _lastHit.point, color: Color.green);
             }
         }
         #endif
@@ -104,61 +107,81 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     */
     public class LineCaster
     {
-        public struct Result
+        public struct Line
         {
-            public Vector2 origin;
-            public Vector2 point;
-            public Vector2 normal;
-            public float distance;
+            public readonly Vector2 start;
+            public readonly Vector2 end;
+            public Line(Vector2 start, Vector2 end)
+            {
+                this.start = start;
+                this.end = end;
+            }
         }
-        
+        public struct Hit
+        {
+            public readonly Vector2    point;
+            public readonly Vector2    normal;
+            public readonly float      distance;
+            public readonly Collider2D collider;
+
+            public Hit(Vector2 point, Vector2 normal, float distance, Collider2D collider)
+            {
+                this.point    = point;
+                this.normal   = normal;
+                this.distance = distance;
+                this.collider = collider;
+            }
+        }
+
         public float     DistanceOffset { get; set; } = 0f;
         public LayerMask TargetLayers   { get; set; } = ~0;
 
         public LineCaster() { }
         
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
-        public bool CastFromPoint(Vector2 point, Vector2 direction, float distance, out Result result)
+        public bool CastFromPoint(Vector2 point, Vector2 direction, float distance, out Line castedLine, out Hit hit)
         {
-            return CastBetween(
-                from:   point,
-                to:     point + (distance * direction),
-                result: out result);
+            return CastLine(
+                from:       point,
+                to:         point + (distance * direction),
+                castedLine: out castedLine,
+                hit:        out hit);
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public bool CastFromCollider(Collider2D collider, Vector2 direction, float distance, out Result result)
+        public bool CastFromCollider(Collider2D collider, Vector2 direction, float distance, out Line castedLine, out Hit hit)
         {
             Vector2 point = FindPositionOnColliderEdgeInGivenDirection(collider, direction);
-            return CastBetween(
-                from:   point,
-                to:     point + (distance * direction),
-                result: out result);
+            return CastLine(
+                from:       point,
+                to:         point + (distance * direction),
+                castedLine: out castedLine,
+                hit:        out hit);
+        }
+        
+        /* Shoot out a line between given points, seeing if a TargetLayer is hit. */
+        public bool CastBetween(Vector2 from, Vector2 to, out Line castedLine, out Hit hit)
+        {
+            return CastLine(from, to, out castedLine, out hit);
         }
 
-        /* Shoot out a line between given points, seeing if a TargetLayer is hit. */
-        public bool CastBetween(Vector2 from, Vector2 to, out Result result)
+        private bool CastLine(Vector2 from, Vector2 to, out Line castedLine, out Hit hit)
         {
             Vector2 offset = DistanceOffset * (to - from).normalized;
             Vector2 start  = from + offset;
             Vector2 end    = to   + offset;
-            float distance = (end - start).magnitude;
 
-            RaycastHit2D hitInfo = Physics2D.Linecast(start, end, TargetLayers);
-            if (hitInfo)
+            RaycastHit2D rayHit = Physics2D.Linecast(start, end, TargetLayers);
+            if (rayHit)
             {
-                result = new Result()
-                {
-                    origin = start, point = hitInfo.centroid, normal = hitInfo.normal, distance = hitInfo.distance
-                };
+                castedLine = new Line(start, end);
+                hit        = new Hit(rayHit.point, rayHit.normal, rayHit.distance, rayHit.collider);
                 return true;
             }
             else
             {
-                result = new Result()
-                {
-                    origin = start, point = end, normal = Vector2.up, distance = distance
-                };
+                castedLine = new Line(start, end);
+                hit        = default;
                 return false;
             }
         }

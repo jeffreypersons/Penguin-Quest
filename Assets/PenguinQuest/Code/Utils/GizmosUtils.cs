@@ -29,7 +29,7 @@ namespace PenguinQuest.Utils
         }
 
         /* Draw line between given world positions. */
-        public static void DrawLine(Vector2 from, Vector2 to, Color? color = null)
+        public static void DrawLine(Vector2 from, Vector2 to, Color? color = null, float lineWidth=0.30f)
         {
             Color previousColor = Gizmos.color;
 
