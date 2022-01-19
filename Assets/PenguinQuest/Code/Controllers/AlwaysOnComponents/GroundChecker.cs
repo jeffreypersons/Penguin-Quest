@@ -64,7 +64,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public void CheckForGround()
         {
             Vector2 downDirection = (-1f * transform.up).normalized;
-            if (Caster.CastFromCollider(boundingBox, downDirection, toleratedDistanceFromGround, out LineCaster.Line lineResult, out LineCaster.Hit lineHit))
+            if (Caster.CastFromCollider(boundingBox, downDirection, toleratedDistanceFromGround,
+                                        out LineCaster.Line lineResult, out LineCaster.Hit lineHit))
             {
                 IsGrounded    = true;
                 _lastLine     = lineResult;
@@ -114,7 +115,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             public Line(Vector2 start, Vector2 end)
             {
                 this.start = start;
-                this.end = end;
+                this.end   = end;
             }
         }
         public struct Hit

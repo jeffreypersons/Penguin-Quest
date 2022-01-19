@@ -5192,8 +5192,8 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
-  offsetToCheckFrom: 0.69
-  toleratedDistanceFromGround: 10
+  offsetToCheckFrom: -1
+  toleratedDistanceFromGround: 5
 --- !u!114 &1429373717
 MonoBehaviour:
   m_ObjectHideFlags: 0
