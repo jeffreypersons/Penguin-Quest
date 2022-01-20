@@ -21,7 +21,9 @@ namespace PenguinQuest.Controllers.UI
 
         void Awake()
         {
+            // todo: make this script more interdependent
             lastRecordedPlayerInfo = new PlayerStatsInfo(PlayerStatsInfo.MIN_LIVES_GIVEN);
+            levelLabel.text        = lastRecordedPlayerInfo.LevelName;
         }
         void OnEnable()
         {

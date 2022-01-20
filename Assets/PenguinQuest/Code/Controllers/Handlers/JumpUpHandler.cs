@@ -3,7 +3,7 @@ using UnityEngine;
 using PenguinQuest.Data;
 
 
-namespace PenguinQuest.Controllers
+namespace PenguinQuest.Controllers.Handlers
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Rigidbody2D))]
@@ -52,6 +52,7 @@ namespace PenguinQuest.Controllers
             // note that for animation events the registration is done implicitly
             GameEventCenter.jumpCommand.AddListener(OnJumpInput);
         }
+
         void OnDisable()
         {
             GameEventCenter.jumpCommand.RemoveListener(OnJumpInput);
@@ -61,6 +62,7 @@ namespace PenguinQuest.Controllers
         {
             penguinAnimator.SetTrigger("JumpUp");
         }
+
         void OnJumpUpAnimationEventImpulse()
         {
             // clear jump trigger to avoid triggering a jump after landing,

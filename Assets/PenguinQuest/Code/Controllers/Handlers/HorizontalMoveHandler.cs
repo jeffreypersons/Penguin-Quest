@@ -69,7 +69,7 @@ namespace PenguinQuest.Controllers
 
         void OnStartHorizontalMoveInput(int direction)
         {
-            penguinRigidBody.constraints = RigidbodyConstraints2D.None;
+            //penguinRigidBody.constraints = RigidbodyConstraints2D.None;
             TurnToFace((Facing)(direction));
             isHorizontalInputActive = true;
         }

@@ -15,11 +15,12 @@ namespace PenguinQuest.Controllers
     {
         private PlayerStatsInfo playerInfo;
 
-        // todo: replace with MoveController interfaces, and use like `MoveController.Reset()`
+        // todo: use spawner
         [SerializeField] private GameObject playerPenguin = default;
 
         void Awake()
         {
+            playerPenguin.SetActive(true);
             GameEventCenter.startNewGame.AddAutoUnsubscribeListener(StartNewGame);
         }
 
@@ -37,7 +38,6 @@ namespace PenguinQuest.Controllers
         private void StartNewGame(GameSettingsInfo gameSettings)
         {
             playerInfo = new PlayerStatsInfo(gameSettings.NumberOfLives);
-            //enemy.foreach().GetComponent<AiController>().SetDifficultyLevel(gameSettings.DifficultyLevel);
             GameEventCenter.scoreChange.Trigger(playerInfo);
         }
         private void RestartGame(string status)
@@ -75,7 +75,7 @@ namespace PenguinQuest.Controllers
 
         private void ResetMovingObjects()
         {
-
+            // no op placeholder
         }
     }
 }

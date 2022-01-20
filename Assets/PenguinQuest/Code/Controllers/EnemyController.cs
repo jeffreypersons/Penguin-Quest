@@ -24,6 +24,7 @@ namespace PenguinQuest.Controllers
         {
             enemyBody.position = initialPosition;
         }
+
         public void SetDifficultyLevel(float ratio)
         {
             if (MathUtils.IsWithinRange(ratio, 0, 1))
@@ -43,6 +44,7 @@ namespace PenguinQuest.Controllers
             enemyCollider   = gameObject.transform.GetComponent<BoxCollider2D>();
             initialPosition = enemyBody.position;
         }
+
         void Start()
         {
             if (wasDifficultySet)

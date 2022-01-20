@@ -2,7 +2,7 @@
 using PenguinQuest.Data;
 
 
-namespace PenguinQuest.Controllers
+namespace PenguinQuest.Controllers.Handlers
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(PenguinSkeleton))]
