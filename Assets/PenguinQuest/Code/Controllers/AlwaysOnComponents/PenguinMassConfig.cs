@@ -30,7 +30,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         [Range(MASS_CENTER_COORD_MIN, MASS_CENTER_COORD_MAX)]
         [SerializeField] private float centerOfMassY = MASS_CENTER_COORD_DEFAULT;
 
-        private Animator penguinAnimator;
+        private Animator    penguinAnimator;
         private Rigidbody2D penguinRigidBody;
 
         public void Reset()
@@ -62,6 +62,20 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             {
                 penguinRigidBody.mass = mass;
             }
+        }
+
+        void OnDrawGizmos()
+        {
+            if (!penguinAnimator)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.black;
+            Gizmos.DrawSphere(penguinAnimator.rootPosition, 1.00f);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(transform.TransformPoint(penguinRigidBody.centerOfMass), 0.50f);
         }
         #endif
     }
