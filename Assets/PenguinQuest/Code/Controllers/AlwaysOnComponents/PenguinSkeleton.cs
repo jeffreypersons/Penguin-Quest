@@ -93,10 +93,11 @@ namespace PenguinQuest.Controllers
             UpdateColliderEnabilityAccordingToConstraints(colliderConstraints);
             colliderConstraints = GetConstraintsAccordingToDisabledColliders();
 
-            Debug.Log($"PenguinSkeleton: SetColliderConstraints: Overriding constraints " +
-                      $"from {(_previousConstraints == null? "<uninitialized>" :_previousConstraints)} " +
-                      $"to {colliderConstraints}");
-
+            if (_previousConstraints != null)
+            {
+                Debug.Log($"PenguinSkeleton: SetColliderConstraints: Overriding constraints " +
+                          $"from {_previousConstraints} to {colliderConstraints}");
+            }
             _previousConstraints = colliderConstraints;
         }
 
