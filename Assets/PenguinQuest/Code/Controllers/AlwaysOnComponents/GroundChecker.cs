@@ -103,6 +103,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     }
 
 
+    // todo: apply axis locking in the other script, and then expand this by adding more linecasts along the collider edges
     /*
     Provides a streamlined interface for casting lines from specific points or colliders.
     */

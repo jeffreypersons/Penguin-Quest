@@ -5091,7 +5091,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
-  m_Mass: 250
+  m_Mass: 500
   m_LinearDrag: 0.05
   m_AngularDrag: 0.05
   m_GravityScale: 2
@@ -5136,8 +5136,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba06e4e983cbe944687dd3516a15755e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableAutomaticAxisLockingWhenIdle: 1
+  linearVelocityThreshold: 0.01
+  angularVelocityThreshold: 0.01
+  automaticallyAlignToSurfaceNormal: 1
+  surfaceAlignmentRotationalStrength: 1
   degreesFromSurfaceNormalThreshold: 0.01
-  surfaceAlignmentRotationalStrength: 0.1
 --- !u!114 &1429373713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5162,8 +5166,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84d3f27435ee1c947b7469a39224e53b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpStrength: 50000
-  jumpAngle: 45
+  jumpStrength: 75000
+  jumpAngle: 60
 --- !u!114 &1429373715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5193,7 +5197,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   offsetToCheckFrom: -1
-  toleratedDistanceFromGround: 5
+  toleratedDistanceFromGround: 8
 --- !u!114 &1429373717
 MonoBehaviour:
   m_ObjectHideFlags: 0

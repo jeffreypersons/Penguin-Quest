@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using PenguinQuest.Controllers.AlwaysOnComponents;
+using PenguinQuest.Utils;
 
 
 namespace PenguinQuest.Controllers.Handlers
@@ -12,20 +13,23 @@ namespace PenguinQuest.Controllers.Handlers
     [RequireComponent(typeof(PenguinSkeleton))]
     public class GroundHandler : MonoBehaviour
     {
-        private const float ANGLE_THRESHOLD_DEFAULT            =  0.01f;
-        private const float ANGLE_THRESHOLD_MIN                =  0.01f;
-        private const float ANGLE_THRESHOLD_MAX                = 10.00f;
-        private const float SURFACE_ALIGNMENT_STRENGTH_DEFAULT =  0.10f;
-        private const float SURFACE_ALIGNMENT_STRENGTH_MIN     =  0.00f;
-        private const float SURFACE_ALIGNMENT_STRENGTH_MAX     =  1.00f;
+        [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
+        [Tooltip("Should we automatically lock movement axes when velocities are within thresholds?")]
+        [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = true;
 
-        [Tooltip("Sensitivity to differences in alignment (ie .10 degree differences ignored [useful for jitter reduction])")]
-        [Range(ANGLE_THRESHOLD_MIN, ANGLE_THRESHOLD_MAX)]
-        [SerializeField] private float degreesFromSurfaceNormalThreshold = ANGLE_THRESHOLD_DEFAULT;
+        [Range(1.00f, 20.00f)] [SerializeField] private float linearVelocityThreshold  = 5.00f;
+        [Range(1.00f, 20.00f)] [SerializeField] private float angularVelocityThreshold = 5.00f;
+        
+        [Header("Movement Sensitives (Tolerances for Jitter Reduction")]
+        [Tooltip("Should we automatically rotate the penguin to align with the surface normal?")]
+        [SerializeField] private bool automaticallyAlignToSurfaceNormal = true;
 
         [Tooltip("Rigidity of alignment with surface normal (ie 0 for max softness, 1 for no kinematic softness)")]
-        [Range(SURFACE_ALIGNMENT_STRENGTH_MIN, SURFACE_ALIGNMENT_STRENGTH_MAX)]
-        [SerializeField] private float surfaceAlignmentRotationalStrength = SURFACE_ALIGNMENT_STRENGTH_DEFAULT;
+        [Range(0.00f, 1.00f)] [SerializeField] private float surfaceAlignmentRotationalStrength = 0.10f;
+
+        [Tooltip("At what degrees between up axis and surface normal is considered to be misaligned?")]
+        [Range(1.00f, 20.00f)] [SerializeField] private float degreesFromSurfaceNormalThreshold = 0.01f;
+
 
         private Animator        penguinAnimator;
         private Rigidbody2D     penguinRigidBody;
@@ -53,20 +57,35 @@ namespace PenguinQuest.Controllers.Handlers
             penguinAnimator.SetBool("IsGrounded", groundChecker.IsGrounded);
         }
 
+
+        // todo: move any non grounded logic to midair handler script
         void FixedUpdate()
         {
             if (!groundChecker.IsGrounded)
             {
+                UnlockAllAxes();
                 return;
             }
 
-            // todo: add actual calculation here...
-            float degreesUnaligned = Vector2.SignedAngle(groundChecker.SurfaceNormal, transform.up);
-            if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
+            Vector2 surfaceNormal = groundChecker.SurfaceNormal;
+            float degreesUnaligned = Vector2.SignedAngle(surfaceNormal, transform.up);
+            if (automaticallyAlignToSurfaceNormal && Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
             {
+                UnlockAllAxes();
                 Quaternion current = transform.rotation;
-                Quaternion target  = ComputeOrientationForGivenUpAxis(groundChecker.SurfaceNormal);
+                Quaternion target  = ComputeOrientationForGivenUpAxis(surfaceNormal);
                 penguinRigidBody.MoveRotation(Quaternion.Lerp(current, target, surfaceAlignmentRotationalStrength));
+            }
+            // if standing or lying on the ground idle and not already constrained freeze all axes to prevent jitter
+            else if (Mathf.Abs(penguinRigidBody.velocity.x)      > linearVelocityThreshold  ||
+                     Mathf.Abs(penguinRigidBody.velocity.y)      > linearVelocityThreshold  ||
+                     Mathf.Abs(penguinRigidBody.angularVelocity) > angularVelocityThreshold)
+            {
+                UnlockAllAxes();
+            }
+            else if (enableAutomaticAxisLockingWhenIdle)
+            {
+                LockAllAxes();
             }
         }
 
@@ -77,19 +96,20 @@ namespace PenguinQuest.Controllers.Handlers
             Vector3 targetForwardAxis  = Vector3.Cross(targetUpAxis,       targetLeftAxis);
             return Quaternion.LookRotation(targetForwardAxis, targetUpAxis);
         }
-        
-        void OnDrawGizmos()
+
+        private void LockAllAxes()
         {
-            if (!penguinAnimator)
+            if (penguinRigidBody.constraints != RigidbodyConstraints2D.FreezeAll)
             {
-                return;
+                penguinRigidBody.constraints = RigidbodyConstraints2D.FreezeAll;
             }
-
-            Gizmos.color = Color.black;
-            Gizmos.DrawSphere(penguinAnimator.rootPosition, 1.00f);
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(transform.TransformPoint(penguinRigidBody.centerOfMass), 0.50f);
+        }
+        private void UnlockAllAxes()
+        {
+            if (penguinRigidBody.constraints != RigidbodyConstraints2D.None)
+            {
+                penguinRigidBody.constraints = RigidbodyConstraints2D.None;
+            }
         }
     }
 }
