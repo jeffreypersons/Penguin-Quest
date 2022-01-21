@@ -29,8 +29,8 @@ namespace PenguinQuest.Controllers
     */
     [ExecuteAlways]
     [System.Serializable]
-    [AddComponentMenu("PenguinBody")]
-    public class PenguinBody : MonoBehaviour
+    [AddComponentMenu("PenguinSkeleton")]
+    public class PenguinSkeleton : MonoBehaviour
     {
         [Header("Mass Settings")]
         [Tooltip("Constant (fixed) total mass for rigidbody")]
@@ -118,6 +118,7 @@ namespace PenguinQuest.Controllers
             GizmosUtils.DrawSphere(CenterOfMass,         0.50f, Color.red);
         }
         #endif
+
 
         private void UpdateColliderConstraints()
         {

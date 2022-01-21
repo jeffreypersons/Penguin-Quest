@@ -10,7 +10,7 @@ namespace PenguinQuest.Controllers.Handlers
     [RequireComponent(typeof(Rigidbody2D))]
 
     [RequireComponent(typeof(GroundChecker))]
-    [RequireComponent(typeof(PenguinBody))]
+    [RequireComponent(typeof(PenguinSkeleton))]
     public class GroundHandler : MonoBehaviour
     {
         [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
@@ -34,7 +34,7 @@ namespace PenguinQuest.Controllers.Handlers
         private Animator        penguinAnimator;
         private Rigidbody2D     penguinRigidBody;
         private GroundChecker   groundChecker;
-        private PenguinBody penguinSkeleton;
+        private PenguinSkeleton penguinSkeleton;
 
         private void Reset()
         {
@@ -47,7 +47,7 @@ namespace PenguinQuest.Controllers.Handlers
             penguinAnimator  = gameObject.GetComponent<Animator>();
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
             groundChecker    = gameObject.GetComponent<GroundChecker>();
-            penguinSkeleton  = gameObject.GetComponent<PenguinBody>();
+            penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
             Reset();
         }
 
