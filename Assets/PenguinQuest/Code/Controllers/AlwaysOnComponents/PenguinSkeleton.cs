@@ -1,4 +1,5 @@
 using UnityEngine;
+using PenguinQuest.Utils;
 
 
 namespace PenguinQuest.Controllers
@@ -15,16 +16,43 @@ namespace PenguinQuest.Controllers
         DisableAll         = ~0,
     }
 
+
+    /*
+    Overall skeletal and physical structure of the penguin.
+
+    Serves as the collection of the components that make up a penguin in our game,
+    including rigidbody, animator, and colliders, with centralized support for changing mass,
+    disabling/enabling colliders, etc.
+
+    The purpose in all this is to centralize component and child object access, so that other
+    scripts don't have to worry about caching
+    */
     [ExecuteAlways]
     [System.Serializable]
     [AddComponentMenu("PenguinSkeleton")]
     public class PenguinSkeleton : MonoBehaviour
     {
+        [Header("Mass Settings")]
+        [Tooltip("Constant (fixed) total mass for rigidbody")]
+        [Range(50, 5000)] [SerializeField] private float mass = 500;
+
+        [Tooltip("Center of mass x component relative to skeletal root (ie smaller x means more prone to fall backwards)")]
+        [Range(-500.00f, 500.00f)] [SerializeField] private float centerOfMassX = 0.00f;
+
+        [Tooltip("Center of mass y component relative to skeletal root (ie smaller y means more resistant to falling over)")]
+        [Range(-500.00f, 500.00f)] [SerializeField] private float centerOfMassY = 0.00f;
+
+
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
 
+        
+        [Header("Component References")]
+        [SerializeField] private Animator    penguinAnimator;
+        [SerializeField] private Rigidbody2D penguinRigidbody;
+
         [Header("Collider References")]
-        [SerializeField] private BoxCollider2D     boundingBox               = default;
+        [SerializeField] private BoxCollider2D     boundingBoxCollider       = default;
         [SerializeField] private CapsuleCollider2D headCollider              = default;
         [SerializeField] private CapsuleCollider2D torsoCollider             = default;
         [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
@@ -32,7 +60,13 @@ namespace PenguinQuest.Controllers
         [SerializeField] private CapsuleCollider2D frontFootCollider         = default;
         [SerializeField] private CapsuleCollider2D backFootCollider          = default;
 
-        public Collider2D ColliderBoundingBox       => boundingBox;
+
+        public Animator    Animator             => penguinAnimator;
+        public Rigidbody2D Rigidbody            => penguinRigidbody;
+        public Vector2     SkeletalRootPosition => penguinAnimator.rootPosition;
+        public Vector2     CenterOfMass         => penguinRigidbody.worldCenterOfMass;
+
+        public Collider2D ColliderBoundingBox       => boundingBoxCollider;
         public Collider2D ColliderHead              => headCollider;
         public Collider2D ColliderTorso             => torsoCollider;
         public Collider2D ColliderFrontFlipperUpper => frontFlipperUpperCollider;
@@ -64,6 +98,28 @@ namespace PenguinQuest.Controllers
             UpdateColliderConstraints();
         }
         
+        #if UNITY_EDITOR
+        void OnValidate()
+        {
+            if (!Mathf.Approximately(centerOfMassX, Rigidbody.centerOfMass.x) ||
+                !Mathf.Approximately(centerOfMassY, Rigidbody.centerOfMass.y))
+            {
+                penguinRigidbody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
+            }
+            if (!Rigidbody.useAutoMass && !Mathf.Approximately(mass, penguinRigidbody.mass))
+            {
+                penguinRigidbody.mass = mass;
+            }
+        }
+
+        void OnDrawGizmos()
+        {
+            GizmosUtils.DrawSphere(SkeletalRootPosition, 1.00f, Color.white);
+            GizmosUtils.DrawSphere(CenterOfMass,         0.50f, Color.red);
+        }
+        #endif
+
+
         private void UpdateColliderConstraints()
         {
             PenguinColliderConstraints inspectorConstraints = colliderConstraints;
@@ -103,13 +159,13 @@ namespace PenguinQuest.Controllers
 
         private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
         {
-            ColliderHead             .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableHead);
-            ColliderTorso            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableTorso);
-            ColliderFrontFlipperUpper.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
-            ColliderFrontFlipperLower.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
-            ColliderFrontFoot        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            ColliderBackFoot         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            ColliderBoundingBox      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
+            headCollider             .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableHead);
+            torsoCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableTorso);
+            frontFlipperUpperCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
+            frontFlipperLowerCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
+            frontFootCollider        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
+            backFootCollider         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
+            boundingBoxCollider      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
@@ -132,7 +188,7 @@ namespace PenguinQuest.Controllers
             {
                 constraints |= PenguinColliderConstraints.DisableFeet;
             }
-            if (!boundingBox.enabled)
+            if (!boundingBoxCollider.enabled)
             {
                 constraints |= PenguinColliderConstraints.DisableBoundingBox;
             }

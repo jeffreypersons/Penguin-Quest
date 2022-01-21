@@ -29,6 +29,7 @@ namespace PenguinQuest.Data
             generatedPlayerControls = new PlayerControls();
         }
 
+
         void OnEnable()
         {
             generatedPlayerControls.Gameplay.Enable();
@@ -58,26 +59,32 @@ namespace PenguinQuest.Data
             int direction = context.action.ReadValue<float>() < 0.00f ? -1 : 1;
             GameEventCenter.startHorizontalMoveCommand.Trigger(direction);
         }
+
         private void OnMoveHorizontalStopped(InputAction.CallbackContext _)
         {
             GameEventCenter.stopHorizontalMoveCommand.Trigger("Received input to stop horizontal movement");
         }
+
         private void OnJumpUp(InputAction.CallbackContext _)
         {
             GameEventCenter.jumpCommand.Trigger("Received jump up input");
         }
+
         private void OnStandUp(InputAction.CallbackContext _)
         {
             GameEventCenter.standupCommand.Trigger("Received stand up input");
         }
+
         private void OnLieDown(InputAction.CallbackContext _)
         {
             GameEventCenter.lieDownCommand.Trigger("Received lie down input");
         }
+
         private void OnUse(InputAction.CallbackContext _)
         {
             GameEventCenter.useCommand.Trigger("Received use input");
         }
+
         private void OnFire(InputAction.CallbackContext _)
         {
             GameEventCenter.fireCommand.Trigger("Received fire input");

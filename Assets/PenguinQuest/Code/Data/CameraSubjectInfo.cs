@@ -48,6 +48,7 @@ namespace PenguinQuest.Data
             }
         }
 
+
         private void UpdatePosition()
         {
             Vector2 newCenter = HasCollider ? collider.bounds.center : subject.position;
@@ -61,6 +62,7 @@ namespace PenguinQuest.Data
                 HasPositionChangedSinceLastUpdate = false;
             }
         }
+
         private void UpdateSize()
         {
             Vector2 newSize = HasCollider ? collider.bounds.size : Vector3.zero;

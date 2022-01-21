@@ -26,23 +26,27 @@ namespace PenguinQuest.Controllers.Handlers
         {
             GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInput);
         }
+
         
         void OnLieDownInput(string _)
         {
             penguinAnimator.SetTrigger("LieDown");
         }
+
         void OnLieDownAnimationEventStart()
         {
             penguinAnimator.SetBool("IsUpright", false);
         }
+
         void OnLieDownAnimationEventMid()
         {
-            penguinSkeleton.ColliderConstraints =
+            penguinSkeleton.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet;
         }
+
         void OnLieDownAnimationEventEnd()
         {
-            penguinSkeleton.ColliderConstraints =
+            penguinSkeleton.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet |
                 PenguinColliderConstraints.DisableFlippers;
         }
