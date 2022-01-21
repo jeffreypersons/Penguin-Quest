@@ -10,7 +10,7 @@ namespace PenguinQuest.Controllers
     [RequireComponent(typeof(StandUpHandler))]
     [RequireComponent(typeof(LieDownHandler))]
 
-    [RequireComponent(typeof(PenguinSkeleton))]
+    [RequireComponent(typeof(PenguinBody))]
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Rigidbody2D))]
     public class PenguinController : MonoBehaviour
@@ -18,7 +18,7 @@ namespace PenguinQuest.Controllers
         private Vector2 initialSpawnPosition;
         private Rigidbody2D     penguinRigidBody = default;
         private Animator        penguinAnimator  = default;
-        private PenguinSkeleton penguinSkeleton  = default;
+        private PenguinBody penguinSkeleton  = default;
 
         void Awake()
         {
@@ -33,7 +33,7 @@ namespace PenguinQuest.Controllers
             {
                 penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
                 penguinAnimator  = gameObject.GetComponent<Animator>();
-                penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
+                penguinSkeleton  = gameObject.GetComponent<PenguinBody>();
             }
         }
         

@@ -20,8 +20,8 @@ namespace PenguinQuest.Utils
             // since handles are only available in editor, this becomes a no op when running elsewhere
             #if UNITY_EDITOR
             Color previousColor = Handles.color;
-
             Handles.color = color.GetValueOrDefault(DEFAULT_COLOR);
+
             Handles.Label(position, text);
 
             Handles.color = previousColor;
@@ -29,12 +29,22 @@ namespace PenguinQuest.Utils
         }
 
         /* Draw line between given world positions. */
-        public static void DrawLine(Vector2 from, Vector2 to, Color? color = null, float lineWidth=0.30f)
+        public static void DrawLine(Vector2 from, Vector2 to, Color? color = null)
         {
             Color previousColor = Gizmos.color;
-
             Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+
             Gizmos.DrawLine(from, to);
+
+            Gizmos.color = previousColor;
+        }
+
+        public static void DrawSphere(Vector2 origin, float radius, Color? color = null)
+        {
+            Color previousColor = Gizmos.color;
+            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+
+            Gizmos.DrawSphere(origin, radius);
 
             Gizmos.color = previousColor;
         }
@@ -48,6 +58,7 @@ namespace PenguinQuest.Utils
             float arrowHeadLengthRatio = DEFAULT_ARROWHEAD_LENGTH_RATIO)
         {
             Color previousColor = Gizmos.color;
+            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
 
             Vector2 vector    = to - from;
             Vector2 dir       = vector.normalized;
@@ -56,7 +67,6 @@ namespace PenguinQuest.Utils
             Vector2 arrowHeadBottom      = from + ((length - arrowLength) * dir);
             Vector2 arrowHeadBaseExtents = MathUtils.PerpendicularCounterClockwise(dir) * arrowLength * 0.50f;
 
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
             Gizmos.DrawLine(from, to);
             Gizmos.DrawLine(arrowHeadBottom + arrowHeadBaseExtents, to);
             Gizmos.DrawLine(arrowHeadBottom - arrowHeadBaseExtents, to);

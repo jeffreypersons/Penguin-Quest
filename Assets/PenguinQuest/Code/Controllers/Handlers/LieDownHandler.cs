@@ -5,16 +5,16 @@ using PenguinQuest.Data;
 namespace PenguinQuest.Controllers.Handlers
 {
     [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(PenguinSkeleton))]
+    [RequireComponent(typeof(PenguinBody))]
     public class LieDownHandler : MonoBehaviour
     {
         private Animator        penguinAnimator;
-        private PenguinSkeleton penguinSkeleton;
+        private PenguinBody penguinSkeleton;
 
         void Awake()
         {
             penguinAnimator = gameObject.GetComponent<Animator>();
-            penguinSkeleton = gameObject.GetComponent<PenguinSkeleton>();
+            penguinSkeleton = gameObject.GetComponent<PenguinBody>();
         }
 
         void OnEnable()
