@@ -27,14 +27,17 @@ namespace PenguinQuest.Controllers.Handlers
             GameEventCenter.standupCommand.RemoveListener(OnStandUpInput);
         }
         
+
         void OnStandUpInput(string _)
         {
             penguinAnimator.SetTrigger("StandUp");
         }
+
         void OnStandUpAnimationEventStart()
         {
             penguinSkeleton.ColliderConstraints = PenguinColliderConstraints.None;
         }
+
         void OnStandUpAnimationEventEnd()
         {
             penguinAnimator.SetBool("IsUpright", true);

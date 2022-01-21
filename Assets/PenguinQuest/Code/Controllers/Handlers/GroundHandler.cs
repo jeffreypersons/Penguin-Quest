@@ -89,6 +89,7 @@ namespace PenguinQuest.Controllers.Handlers
             }
         }
 
+
         private Quaternion ComputeOrientationForGivenUpAxis(Vector3 targetUpAxis)
         {
             Vector3 currentForwardAxis = transform.forward;
