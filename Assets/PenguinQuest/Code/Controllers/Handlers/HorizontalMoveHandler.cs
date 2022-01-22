@@ -55,6 +55,8 @@ namespace PenguinQuest.Controllers
 
             penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
         }
+
+
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
@@ -69,7 +71,6 @@ namespace PenguinQuest.Controllers
 
         void OnStartHorizontalMoveInput(int direction)
         {
-            //penguinRigidBody.constraints = RigidbodyConstraints2D.None;
             TurnToFace((Facing)(direction));
             isHorizontalInputActive = true;
         }
