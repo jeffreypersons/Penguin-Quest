@@ -260,7 +260,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4753795910216235723}
   - component: {fileID: 4753795910216235720}
-  - component: {fileID: 8213494999131461005}
   - component: {fileID: 4753795910216235721}
   - component: {fileID: 4753795910216235734}
   - component: {fileID: 4753795910216235735}
@@ -316,22 +315,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!70 &8213494999131461005
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.3983436, y: 14.60247}
-  m_Size: {x: 13.17636, y: 28.28143}
-  m_Direction: 0
 --- !u!61 &4753795910216235721
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -420,7 +403,7 @@ MonoBehaviour:
   colliderConstraints: 0
   penguinAnimator: {fileID: 4753795910216235734}
   penguinRigidbody: {fileID: 4753795910216235720}
-  outerCollider: {fileID: 4753795910216235721}
+  boundingBoxCollider: {fileID: 0}
   headCollider: {fileID: 4753795911533567600}
   torsoCollider: {fileID: 4753795910448514483}
   frontFlipperUpperCollider: {fileID: 4753795910921302243}
