@@ -92,7 +92,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543372937319591300}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7f74ce3d66de2d4e876ac4c6a19bcb2, type: 3}
   m_Name: 
@@ -101,8 +101,10 @@ MonoBehaviour:
   xOffset: 20
   yOffset: 15
   zOffset: -10
-  keepSubjectInView: 1
   isActivelyRunning: 1
+  keepSubjectInView: 1
   maxMoveSpeed: 1000
+  distanceFromTargetPositionThreshold: 0.2
   orthographicSize: 200
   maxZoomSpeed: 10
+  differenceFromTargetOrthoSizeThreshold: 0.2

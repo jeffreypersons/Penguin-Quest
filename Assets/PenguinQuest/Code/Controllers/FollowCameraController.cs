@@ -23,49 +23,46 @@ namespace PenguinQuest.Controllers
     [ExecuteAlways]
     [RequireComponent(typeof(Camera))]
     public class FollowCameraController : MonoBehaviour
-    {
-        public enum FollowMode { MoveWithSubject, MoveAfterLeavingView };
-
-        private const float TARGET_DISTANCE_TOLERANCE = 0.20f;
-        private const float ORTHO_SIZE_DEFAULT =     50.00f;
-        private const float ORTHO_SIZE_MIN     =     15.00f;
-        private const float ORTHO_SIZE_MAX     =    500.00f;
-        private const float OFFSET_DEFAULT     =      0.00f;
-        private const float OFFSET_MIN         =  -1000.00f;
-        private const float OFFSET_MAX         =   1000.00f;
-        private const float ZOOM_SPEED_DEFAULT =     10.00f;
-        private const float ZOOM_SPEED_MIN     =      0.01f;
-        private const float ZOOM_SPEED_MAX     =     50.00f;
-        private const float MOVE_SPEED_DEFAULT =   1000.00f;
-        private const float MOVE_SPEED_MIN     =     10.00f;
-        private const float MOVE_SPEED_MAX     = 100000.00f;
-
+    {        
         [Header("Subject to Follow")]
         [Tooltip("Transform of (any) subject for camera to follow (does not have to be 'visible')")]
         [SerializeField] private Transform subject;
 
+        
         [Header("Follow Position Relative to Subject")]
         [Tooltip("x offset from subject (subject is on left of camera if positive, right if negative)")]
-        [Range(OFFSET_MIN, OFFSET_MAX)] [SerializeField] private float xOffset = OFFSET_DEFAULT;
+        [Range(-1000.00f, 1000.00f)] [SerializeField] private float xOffset = 0.00f;
+
         [Tooltip("y offset from subject (subject is bellow camera if positive, above if negative)")]
-        [Range(OFFSET_MIN, OFFSET_MAX)] [SerializeField] private float yOffset = OFFSET_DEFAULT;
+        [Range(-1000.00f, 1000.00f)] [SerializeField] private float yOffset = 0.00f;
+
         [Tooltip("z offset from subject (subject is 'into' screen camera if positive, 'out' of screen if negative)")]
-        [Range(OFFSET_MIN, OFFSET_MAX)] [SerializeField] private float zOffset = OFFSET_DEFAULT;
+        [Range(-1000.00f, 1000.00f)] [SerializeField] private float zOffset = 0.00f;
+        
 
         [Header("Follow Behavior")]
-        [Tooltip("Clamp offsets to prevent subject's collider from leaving camera viewport")]
-        [SerializeField] private bool keepSubjectInView = true;
         [Tooltip("Toggle for actively following")]
         [SerializeField] private bool isActivelyRunning = true;
 
-        [Tooltip("Adjust move speed (how fast the camera follows the subject)")]
-        [Range(MOVE_SPEED_MIN, MOVE_SPEED_MAX)] [SerializeField] private float maxMoveSpeed = MOVE_SPEED_DEFAULT;
+        [Tooltip("Should we clamp offsets to prevent subject's collider from leaving camera viewport")]
+        [SerializeField] private bool keepSubjectInView = true;
+        
+        [Tooltip("How fast can the camera follow the subject?")]
+        [Range(10.00f, 10000.00f)] [SerializeField] private float maxMoveSpeed = 1000.00f;
 
-        [Header("Zoom Behavior")]
+        [Tooltip("How far can the subject be from the camera before we update our position?")]
+        [Range(0.01f, 100.00f)] [SerializeField] private float distanceFromTargetPositionThreshold = 0.20f;
+
+
+        [Header("Zoom Settings")]
         [Tooltip("Adjust orthographic size (how 'zoomed in' the camera is, by changing the viewport's half height)")]
-        [Range(ORTHO_SIZE_MIN, ORTHO_SIZE_MAX)] [SerializeField] private float orthographicSize = ORTHO_SIZE_DEFAULT;
-        [Tooltip("Adjust zoom speed (how fast the camera FOV is adjusted)")]
-        [Range(ZOOM_SPEED_MIN, ZOOM_SPEED_MAX)] [SerializeField] private float maxZoomSpeed = ZOOM_SPEED_DEFAULT;
+        [Range(15.00f, 500.0f)] [SerializeField] private float orthographicSize = 50.00f;
+
+        [Tooltip("How fast can the camera's field of view be adjusted?")]
+        [Range(0.10f, 50.00f)] [SerializeField] private float maxZoomSpeed = 10.00f;
+
+        [Tooltip("How sensitive to adjustments in zoom are we?")]
+        [Range(0.01f, 100.00f)] [SerializeField] private float differenceFromTargetOrthoSizeThreshold = 0.20f;
 
 
         private Camera             cam;
@@ -75,11 +72,6 @@ namespace PenguinQuest.Controllers
         private float   zoomVelocity;
         private Vector2 moveVelocity;
 
-        private bool IsFullyInitialized =>
-            cam          != null &&
-            viewportInfo != null &&
-            subject      != null &&
-            subjectInfo  != null;
 
         private Vector3 SubjectPosition
         {
@@ -106,6 +98,12 @@ namespace PenguinQuest.Controllers
                 }
             }
         }
+        private bool IsFullyInitialized =>
+            cam          != null &&
+            viewportInfo != null &&
+            subject      != null &&
+            subjectInfo  != null;
+
 
         private void Init()
         {
@@ -123,50 +121,48 @@ namespace PenguinQuest.Controllers
     
         void Awake()
         {
-            // warn just once on update if subject is null, to avoid logging the error each frame
-            if (!subject)
-            {
-                Debug.LogError($"No subject assigned to follow, `{GetType().Name}` - no object assigned");
-            }
             ForcedUpdate();
         }
-
-        #if UNITY_EDITOR
-        void OnValidate()
-        {
-            ForcedUpdate();
-        }
-        #endif
 
         void LateUpdate()
         {
             #if UNITY_EDITOR
-            if (!Application.IsPlaying(this))
+            if (!Application.IsPlaying(this) && subject)
             {
                 ForcedUpdate();
                 return;
             }
             #endif
 
-            if (isActivelyRunning)
+            if (isActivelyRunning && subject)
             {
                 SmoothedUpdate();
             }
         }
+        
 
         private void ForcedUpdate()
         {
+            // warn just once on update if subject is null, to avoid logging the error each frame
+            if (!subject)
+            {
+                Debug.LogError($"FollowCameraController : No subject assigned to follow");
+                return;
+            }
+
             // force reinitialization if anything became null,
             // since sometimes the references are modified after script recompilation in editor
             if (!IsFullyInitialized)
             {
                 Init();
             }
+
             viewportInfo.Update();
             subjectInfo.Update();
             cam.orthographicSize   = orthographicSize;
             cam.transform.position = SubjectPosition + OffsetFromSubject;
         }
+
         private void SmoothedUpdate()
         {
             viewportInfo.Update();
@@ -175,18 +171,21 @@ namespace PenguinQuest.Controllers
             MoveCameraTowards(SubjectPosition + OffsetFromSubject);
         }
 
+
         private void AdjustZoomTowards(float targetOrthoSize)
         {
             float current = cam.orthographicSize;
-            if (!MathUtils.IsWithinTolerance(current, targetOrthoSize, TARGET_DISTANCE_TOLERANCE))
+            if (!MathUtils.IsWithinTolerance(current, targetOrthoSize, differenceFromTargetOrthoSizeThreshold))
             {
-                cam.orthographicSize = Mathf.SmoothDamp(current, targetOrthoSize, ref zoomVelocity, Time.deltaTime, maxZoomSpeed);
+                cam.orthographicSize = Mathf.SmoothDamp(current, targetOrthoSize, ref zoomVelocity,
+                    Time.deltaTime, maxZoomSpeed);
             }
         }
+
         private void MoveCameraTowards(Vector3 target)
         {
             Vector3 current = cam.transform.position;
-            if (!MathUtils.IsWithinTolerance(current, target, TARGET_DISTANCE_TOLERANCE))
+            if (!MathUtils.IsWithinTolerance(current, target, distanceFromTargetPositionThreshold))
             {
                 Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
                 cam.transform.position = new Vector3(position.x, position.y, target.z);

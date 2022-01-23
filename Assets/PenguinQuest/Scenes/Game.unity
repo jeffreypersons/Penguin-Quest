@@ -445,12 +445,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4753795910354526009}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &138831346 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4753795910216235723, guid: 6d76bc27df941db4d96760c2af2147ca,
-    type: 3}
-  m_PrefabInstance: {fileID: 4753795910354526009}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &753530209 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7574834951393275854, guid: 4fa0445a7556ddc4ca0b26fd1ecbc204,
@@ -1925,12 +1919,12 @@ PrefabInstance:
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 18.80497
+      value: 13.40497
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 58.807407
+      value: 46.70741
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
         type: 3}
@@ -1977,10 +1971,5 @@ PrefabInstance:
       propertyPath: m_Name
       value: FollowCam
       objectReference: {fileID: 0}
-    - target: {fileID: 6670867744661504147, guid: 0d871c89d4c3229449c3ffe9396b216f,
-        type: 3}
-      propertyPath: subject
-      value: 
-      objectReference: {fileID: 138831346}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}

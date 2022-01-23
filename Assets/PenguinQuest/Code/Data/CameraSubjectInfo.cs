@@ -21,15 +21,20 @@ namespace PenguinQuest.Data
         public Vector2 Min     { get; private set; }
         public Vector2 Max     { get; private set; }
 
-        public bool HasCollider                       { get => collider;  }
         public bool HasSizeChangedSinceLastUpdate     { get; private set; }
         public bool HasPositionChangedSinceLastUpdate { get; private set; }
+        public bool HasCollider { get => collider != null && collider.enabled; }
 
-
+        
         public CameraSubjectInfo(Transform subject)
         {
+            if (subject == null)
+            {
+                Debug.LogError($"CameraSubjectInfo : Received null subject");
+            }
+
             this.subject  = subject;
-            this.collider = subject.GetComponent<Collider2D>();
+            this.collider = ExtractColliderFromTransform(subject);
 
             Update();
             HasPositionChangedSinceLastUpdate = false;
@@ -76,6 +81,11 @@ namespace PenguinQuest.Data
             {
                 HasSizeChangedSinceLastUpdate = false;
             }
+        }
+
+        private static Collider2D ExtractColliderFromTransform(Transform transform)
+        {
+            return transform.TryGetComponent(out Collider2D collider) ? collider : null;
         }
     }
 }
