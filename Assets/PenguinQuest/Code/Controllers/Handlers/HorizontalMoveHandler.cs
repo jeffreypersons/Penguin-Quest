@@ -33,7 +33,7 @@ namespace PenguinQuest.Controllers
 
         void Awake()
         {
-            penguinAnimator  = gameObject.GetComponent<Animator>();
+            penguinAnimator = gameObject.GetComponent<Animator>();
             penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
             xMotionIntensity = 0.00f;
             if (Mathf.Abs(transform.localEulerAngles.y) <= 90.0f)
@@ -69,10 +69,10 @@ namespace PenguinQuest.Controllers
 
         void OnStartHorizontalMoveInput(int direction)
         {
-            //penguinRigidBody.constraints = RigidbodyConstraints2D.None;
             TurnToFace((Facing)(direction));
             isHorizontalInputActive = true;
         }
+
         void OnStopHorizontalMoveInput(string _)
         {
             isHorizontalInputActive = false;

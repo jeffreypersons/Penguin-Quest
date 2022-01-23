@@ -10,15 +10,13 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     [ExecuteAlways]
     [System.Serializable]
     [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(BoxCollider2D))]
     public class GroundChecker : MonoBehaviour
     {
         [Header("Ground Settings")]
+        [SerializeField] private Collider2D colliderToCastFrom;
         [SerializeField] private LayerMask groundMask = default;
-        [SerializeField] [Range(-10.00f, 10.00f)] private float offsetToCheckFrom           = 0.30f;
-        [SerializeField] [Range(  0.05f, 10.00f)] private float toleratedDistanceFromGround = 0.30f;
-
-        private BoxCollider2D boundingBox;
+        [SerializeField] [Range(-10.00f, 25.00f)] private float offsetToCheckFrom           = 0.30f;
+        [SerializeField] [Range(  0.25f, 25.00f)] private float toleratedDistanceFromGround = 0.30f;
 
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
@@ -40,12 +38,6 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             }
         }
 
-        void Awake()
-        {
-            boundingBox = transform.GetComponent<BoxCollider2D>();
-            boundingBox.enabled = true;
-        }
-
         void Start()
         {
             CheckForGround();
@@ -64,7 +56,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public void CheckForGround()
         {
             Vector2 downDirection = (-1f * transform.up).normalized;
-            if (Caster.CastFromCollider(boundingBox, downDirection, toleratedDistanceFromGround,
+            if (Caster.CastFromCollider(colliderToCastFrom, downDirection, toleratedDistanceFromGround,
                                         out LineCaster.Line lineResult, out LineCaster.Hit lineHit))
             {
                 IsGrounded    = true;
@@ -84,12 +76,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
-            if (!Application.IsPlaying(this))
+            if (!Application.IsPlaying(this) || !enabled)
             {
-                if (boundingBox == default)
-                {
-                    boundingBox = transform.GetComponent<BoxCollider2D>();
-                }
                 CheckForGround();
             }
 
