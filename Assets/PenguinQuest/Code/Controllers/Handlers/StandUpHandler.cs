@@ -1,24 +1,20 @@
 ﻿using UnityEngine;
 using PenguinQuest.Data;
-using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
 namespace PenguinQuest.Controllers.Handlers
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(PenguinSkeleton))]
-    [RequireComponent(typeof(GroundChecker))]
     public class StandUpHandler : MonoBehaviour
     {
         private Animator        penguinAnimator;
         private PenguinSkeleton penguinSkeleton;
-        private GroundChecker   groundChecker;
 
         void Awake()
         {
             penguinAnimator = gameObject.GetComponent<Animator>();
             penguinSkeleton = gameObject.GetComponent<PenguinSkeleton>();
-            groundChecker   = gameObject.GetComponent<GroundChecker>();
         }
 
         void OnEnable()
@@ -39,13 +35,11 @@ namespace PenguinQuest.Controllers.Handlers
 
         void OnStandUpAnimationEventStart()
         {
-            groundChecker.enabled = false;
             penguinSkeleton.ColliderConstraints = PenguinColliderConstraints.None;
         }
 
         void OnStandUpAnimationEventEnd()
         {
-            groundChecker.enabled = true;
             penguinAnimator.SetBool("IsUpright", true);
         }
     }

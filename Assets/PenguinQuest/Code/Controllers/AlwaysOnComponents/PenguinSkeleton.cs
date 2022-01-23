@@ -7,13 +7,13 @@ namespace PenguinQuest.Controllers
     [System.Flags]
     public enum PenguinColliderConstraints
     {
-        None            = 0,
-        DisableHead     = 1 << 1,
-        DisableTorso    = 1 << 2,
-        DisableFlippers = 1 << 3,
-        DisableFeet     = 1 << 4,
-        DisableOuter    = 1 << 5,
-        DisableAll      = ~0,
+        None               = 0,
+        DisableHead        = 1 << 1,
+        DisableTorso       = 1 << 2,
+        DisableFlippers    = 1 << 3,
+        DisableFeet        = 1 << 4,
+        DisableBoundingBox = 1 << 5,
+        DisableAll         = ~0,
     }
 
 
@@ -44,14 +44,15 @@ namespace PenguinQuest.Controllers
 
 
         [Header("Body Part Collider Constraints")]
-        [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.None;
+        [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
+
         
         [Header("Component References")]
         [SerializeField] private Animator    penguinAnimator;
         [SerializeField] private Rigidbody2D penguinRigidbody;
 
         [Header("Collider References")]
-        [SerializeField] private CapsuleCollider2D outerCollider             = default;
+        [SerializeField] private BoxCollider2D     boundingBoxCollider       = default;
         [SerializeField] private CapsuleCollider2D headCollider              = default;
         [SerializeField] private CapsuleCollider2D torsoCollider             = default;
         [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
@@ -65,7 +66,7 @@ namespace PenguinQuest.Controllers
         public Vector2     SkeletalRootPosition => penguinAnimator.rootPosition;
         public Vector2     CenterOfMass         => penguinRigidbody.worldCenterOfMass;
 
-        public Collider2D ColliderOuter             => outerCollider;
+        public Collider2D ColliderBoundingBox       => boundingBoxCollider;
         public Collider2D ColliderHead              => headCollider;
         public Collider2D ColliderTorso             => torsoCollider;
         public Collider2D ColliderFrontFlipperUpper => frontFlipperUpperCollider;
@@ -164,7 +165,7 @@ namespace PenguinQuest.Controllers
             frontFlipperLowerCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
             frontFootCollider        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
             backFootCollider         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            outerCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableOuter);
+            boundingBoxCollider      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
@@ -187,9 +188,9 @@ namespace PenguinQuest.Controllers
             {
                 constraints |= PenguinColliderConstraints.DisableFeet;
             }
-            if (!outerCollider.enabled)
+            if (!boundingBoxCollider.enabled)
             {
-                constraints |= PenguinColliderConstraints.DisableOuter;
+                constraints |= PenguinColliderConstraints.DisableBoundingBox;
             }
             return constraints;
         }
