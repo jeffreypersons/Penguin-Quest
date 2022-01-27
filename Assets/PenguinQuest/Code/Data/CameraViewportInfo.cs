@@ -30,6 +30,11 @@ namespace PenguinQuest.Data
 
         public CameraViewportInfo(Camera cam)
         {
+            if (cam == null)
+            {
+                Debug.LogError($"CameraViewportInfo : Received null camera");
+            }
+
             this.cam = cam;
             Update();
             HasPositionChangedSinceLastUpdate = false;

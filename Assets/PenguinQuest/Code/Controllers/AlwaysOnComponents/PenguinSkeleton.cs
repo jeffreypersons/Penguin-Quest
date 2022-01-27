@@ -91,7 +91,10 @@ namespace PenguinQuest.Controllers
             }
         }
         
-        private PenguinColliderConstraints? _previousConstraints = null;
+        void Start()
+        {
+            colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+        }
 
         void Update()
         {
@@ -101,12 +104,16 @@ namespace PenguinQuest.Controllers
         #if UNITY_EDITOR
         void OnValidate()
         {
+            if (Rigidbody.useAutoMass)
+            {
+                return;
+            }
             if (!Mathf.Approximately(centerOfMassX, Rigidbody.centerOfMass.x) ||
                 !Mathf.Approximately(centerOfMassY, Rigidbody.centerOfMass.y))
             {
                 penguinRigidbody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
             }
-            if (!Rigidbody.useAutoMass && !Mathf.Approximately(mass, penguinRigidbody.mass))
+            if (!Mathf.Approximately(mass, penguinRigidbody.mass))
             {
                 penguinRigidbody.mass = mass;
             }
@@ -115,10 +122,11 @@ namespace PenguinQuest.Controllers
         void OnDrawGizmos()
         {
             GizmosUtils.DrawSphere(SkeletalRootPosition, 1.00f, Color.white);
-            GizmosUtils.DrawSphere(CenterOfMass,         0.50f, Color.red);
+            GizmosUtils.DrawSphere(CenterOfMass,         2.00f, Color.red);
         }
         #endif
-
+        
+        private PenguinColliderConstraints? _previousConstraints = null;
 
         private void UpdateColliderConstraints()
         {

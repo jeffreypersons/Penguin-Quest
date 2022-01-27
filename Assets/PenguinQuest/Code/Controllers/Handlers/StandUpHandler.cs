@@ -36,11 +36,21 @@ namespace PenguinQuest.Controllers.Handlers
         void OnStandUpAnimationEventStart()
         {
             penguinSkeleton.ColliderConstraints = PenguinColliderConstraints.None;
+
+            // enable the feet again, allowing the penguin to 'fall' down to alignment
+            penguinSkeleton.ColliderConstraints &=
+                ~PenguinColliderConstraints.DisableFeet;
         }
 
         void OnStandUpAnimationEventEnd()
         {
+            // todo: this stuff needs to go in the state machine
             penguinAnimator.SetBool("IsUpright", true);
+            transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = false;
+
+            // enable the bounding box again, allowing the penguin to 'fall' down to alignment
+            penguinSkeleton.ColliderConstraints &=
+                ~PenguinColliderConstraints.DisableBoundingBox;
         }
     }
 }
