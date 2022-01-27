@@ -91,7 +91,10 @@ namespace PenguinQuest.Controllers
             }
         }
         
-        private PenguinColliderConstraints? _previousConstraints = null;
+        void Start()
+        {
+            colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+        }
 
         void Update()
         {
@@ -122,7 +125,8 @@ namespace PenguinQuest.Controllers
             GizmosUtils.DrawSphere(CenterOfMass,         2.00f, Color.red);
         }
         #endif
-
+        
+        private PenguinColliderConstraints? _previousConstraints = null;
 
         private void UpdateColliderConstraints()
         {

@@ -36,6 +36,9 @@ namespace PenguinQuest.Controllers.Handlers
         void OnLieDownAnimationEventStart()
         {
             penguinAnimator.SetBool("IsUpright", false);
+            penguinSkeleton.ColliderConstraints |=
+                PenguinColliderConstraints.DisableBoundingBox |
+                PenguinColliderConstraints.DisableFeet;
         }
 
         void OnLieDownAnimationEventMid()
@@ -46,6 +49,8 @@ namespace PenguinQuest.Controllers.Handlers
 
         void OnLieDownAnimationEventEnd()
         {
+            // todo: this stuff needs to go in the state machine
+            transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = true;
             penguinSkeleton.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet |
                 PenguinColliderConstraints.DisableFlippers;

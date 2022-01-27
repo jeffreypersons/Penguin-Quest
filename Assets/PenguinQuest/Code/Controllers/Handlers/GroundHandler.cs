@@ -53,6 +53,13 @@ namespace PenguinQuest.Controllers.Handlers
             Reset();
         }
 
+        // temporary public interface methods
+        public bool MaintainPerpendicularityToSurface
+        {
+            get => maintainPerpendicularityToSurface;
+            set => maintainPerpendicularityToSurface = value;
+        }
+
 
         void Update()
         {
@@ -87,7 +94,7 @@ namespace PenguinQuest.Controllers.Handlers
                 Mathf.Abs(penguinRigidbody.velocity.y)      <= linearVelocityThreshold &&
                 Mathf.Abs(penguinRigidbody.angularVelocity) <= angularVelocityThreshold)
             {
-                penguinRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+                //penguinRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
             }
         }
 

@@ -22,6 +22,10 @@ namespace PenguinQuest.Controllers
 
         void Awake()
         {
+            // todo: this should be in state machine for upright and we should start in a blank state and then
+            //       entered rather than assuming we start upright here...
+            transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = false;
+
             FetchComponentsIfNotAlready();
             initialSpawnPosition = penguinRigidBody.position;
             ResetPositioning();
