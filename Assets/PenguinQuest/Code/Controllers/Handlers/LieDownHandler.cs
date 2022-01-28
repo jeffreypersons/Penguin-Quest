@@ -10,21 +10,29 @@ namespace PenguinQuest.Controllers.Handlers
     {
         private Animator        penguinAnimator;
         private PenguinSkeleton penguinSkeleton;
+        private PenguinAnimationEventReciever animationComponent;
 
         void Awake()
         {
-            penguinAnimator = gameObject.GetComponent<Animator>();
-            penguinSkeleton = gameObject.GetComponent<PenguinSkeleton>();
+            animationComponent = gameObject.GetComponentInChildren<PenguinAnimationEventReciever>();
+            penguinAnimator    = gameObject.GetComponent<Animator>();
+            penguinSkeleton    = gameObject.GetComponent<PenguinSkeleton>();
         }
-
+        
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.lieDownCommand.AddListener(OnLieDownInput);
+            animationComponent.OnLiedownStart += OnLieDownAnimationEventStart;
+            animationComponent.OnLiedownMid   += OnLieDownAnimationEventMid;
+            animationComponent.OnLiedownEnd   += OnLieDownAnimationEventEnd;
         }
         void OnDisable()
         {
             GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInput);
+            animationComponent.OnLiedownStart -= OnLieDownAnimationEventStart;
+            animationComponent.OnLiedownMid   -= OnLieDownAnimationEventMid;
+            animationComponent.OnLiedownEnd   -= OnLieDownAnimationEventEnd;
         }
 
         

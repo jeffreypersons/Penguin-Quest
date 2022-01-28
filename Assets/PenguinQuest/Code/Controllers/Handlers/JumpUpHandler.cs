@@ -24,16 +24,18 @@ namespace PenguinQuest.Controllers.Handlers
         [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward facing direction)")]
         [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)] [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
 
+        private Animator penguinAnimator;
         private Rigidbody2D penguinRigidBody;
-        private Animator    penguinAnimator;
+        private PenguinAnimationEventReciever animationComponent;
 
         private Vector2 netImpulseForce;
 
         void Awake()
         {
-            penguinAnimator  = gameObject.GetComponent<Animator>();
-            penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-            netImpulseForce  = Vector2.zero;
+            penguinAnimator    = gameObject.GetComponent<Animator>();
+            animationComponent = gameObject.GetComponentInChildren<PenguinAnimationEventReciever>();
+            penguinRigidBody   = gameObject.GetComponent<Rigidbody2D>();
+            netImpulseForce    = Vector2.zero;
         }
 
         void LateUpdate()
@@ -51,6 +53,7 @@ namespace PenguinQuest.Controllers.Handlers
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.jumpCommand.AddListener(OnJumpInput);
+            animationComponent.OnJumpImpulse += OnJumpUpAnimationEventImpulse;
         }
 
         void OnDisable()
