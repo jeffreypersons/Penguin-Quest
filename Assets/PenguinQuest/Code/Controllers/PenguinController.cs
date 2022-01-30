@@ -10,42 +10,32 @@ namespace PenguinQuest.Controllers
     [RequireComponent(typeof(StandUpHandler))]
     [RequireComponent(typeof(LieDownHandler))]
 
-    [RequireComponent(typeof(PenguinSkeleton))]
-    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(PenguinEntity))]
     [RequireComponent(typeof(Rigidbody2D))]
     public class PenguinController : MonoBehaviour
     {
+        private PenguinEntity penguinEntity;
+
         private Vector2 initialSpawnPosition;
-        private Rigidbody2D     penguinRigidBody = default;
-        private Animator        penguinAnimator  = default;
-        private PenguinSkeleton penguinSkeleton  = default;
+
 
         void Awake()
         {
+            penguinEntity = gameObject.GetComponent<PenguinEntity>();
+
             // todo: this should be in state machine for upright and we should start in a blank state and then
             //       entered rather than assuming we start upright here...
             transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = false;
 
-            FetchComponentsIfNotAlready();
-            initialSpawnPosition = penguinRigidBody.position;
+            initialSpawnPosition = penguinEntity.Rigidbody.position;
             ResetPositioning();
         }
 
-        public void FetchComponentsIfNotAlready()
-        {
-            if (penguinRigidBody == default || penguinAnimator == default || penguinSkeleton == default)
-            {
-                penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-                penguinAnimator  = gameObject.GetComponent<Animator>();
-                penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
-            }
-        }
-        
         public void ResetPositioning()
         {
-            penguinRigidBody.velocity = Vector2.zero;
-            penguinRigidBody.position = initialSpawnPosition;
-            penguinRigidBody.transform.localEulerAngles = Vector3.zero;
+            penguinEntity.Rigidbody.velocity = Vector2.zero;
+            penguinEntity.Rigidbody.position = initialSpawnPosition;
+            penguinEntity.Rigidbody.transform.localEulerAngles = Vector3.zero;
         }
     }
 }

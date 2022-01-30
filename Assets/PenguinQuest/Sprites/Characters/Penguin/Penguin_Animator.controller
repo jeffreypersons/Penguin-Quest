@@ -694,7 +694,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 1
     m_Controller: {fileID: 9100000}
-  - m_Name: JumpUp
+  - m_Name: LieDown
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -706,7 +706,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: LieDown
+  - m_Name: JumpUp
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -886,7 +886,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Onbelly Landing
+  m_Name: OnBelly Landing
   m_Speed: 3
   m_CycleOffset: 0
   m_Transitions:
@@ -981,7 +981,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Onbelly Midair
+  m_Name: OnBelly Midair
   m_Speed: 5
   m_CycleOffset: 0
   m_Transitions:
@@ -1033,7 +1033,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Onbelly Standup
+  m_Name: OnBelly Standup
   m_Speed: 5
   m_CycleOffset: 0
   m_Transitions:
@@ -1107,7 +1107,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Onbelly Locomotion
+  m_Name: OnBelly Locomotion
   m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:

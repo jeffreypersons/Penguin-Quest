@@ -4,58 +4,53 @@ using PenguinQuest.Data;
 
 namespace PenguinQuest.Controllers.Handlers
 {
-    [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(PenguinSkeleton))]
+    [RequireComponent(typeof(PenguinEntity))]
     public class StandUpHandler : MonoBehaviour
     {
-        private Animator        penguinAnimator;
-        private PenguinSkeleton penguinSkeleton;
-        private PenguinAnimationEventReciever animationComponent;
+        private PenguinEntity penguinEntity;
 
         void Awake()
         {
-            animationComponent = gameObject.GetComponentInChildren<PenguinAnimationEventReciever>();
-            penguinAnimator    = gameObject.GetComponent<Animator>();
-            penguinSkeleton    = gameObject.GetComponent<PenguinSkeleton>();
+            penguinEntity = gameObject.GetComponent<PenguinEntity>();
         }
 
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.standupCommand.AddListener(OnStandUpInput);
-            animationComponent.OnStandupStart += OnStandUpAnimationEventStart;
-            animationComponent.OnStandupEnd   += OnStandUpAnimationEventEnd;
+            penguinEntity.Animation.OnStandUpStart += OnStandUpAnimationEventStart;
+            penguinEntity.Animation.OnStandUpEnd   += OnStandUpAnimationEventEnd;
         }
         void OnDisable()
         {
             GameEventCenter.standupCommand.RemoveListener(OnStandUpInput);
-            animationComponent.OnStandupStart -= OnStandUpAnimationEventStart;
-            animationComponent.OnStandupEnd   -= OnStandUpAnimationEventEnd;
+            penguinEntity.Animation.OnStandUpStart -= OnStandUpAnimationEventStart;
+            penguinEntity.Animation.OnStandUpEnd   -= OnStandUpAnimationEventEnd;
         }
         
 
         void OnStandUpInput(string _)
         {
-            penguinAnimator.SetTrigger("StandUp");
+            penguinEntity.Animation.TriggerParamStandUpParameter();
         }
 
         void OnStandUpAnimationEventStart()
         {
-            penguinSkeleton.ColliderConstraints = PenguinColliderConstraints.None;
+            penguinEntity.ColliderConstraints = PenguinColliderConstraints.None;
 
             // enable the feet again, allowing the penguin to 'fall' down to alignment
-            penguinSkeleton.ColliderConstraints &=
+            penguinEntity.ColliderConstraints &=
                 ~PenguinColliderConstraints.DisableFeet;
         }
 
         void OnStandUpAnimationEventEnd()
         {
             // todo: this stuff needs to go in the state machine
-            penguinAnimator.SetBool("IsUpright", true);
+            penguinEntity.Animation.SetParamIsUpright(true);
             transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = false;
 
             // enable the bounding box again, allowing the penguin to 'fall' down to alignment
-            penguinSkeleton.ColliderConstraints &=
+            penguinEntity.ColliderConstraints &=
                 ~PenguinColliderConstraints.DisableBoundingBox;
         }
     }

@@ -1,16 +1,12 @@
 ﻿using System;
 using UnityEngine;
 using PenguinQuest.Controllers.AlwaysOnComponents;
-using PenguinQuest.Utils;
 
 
 namespace PenguinQuest.Controllers.Handlers
 {
-    [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(PenguinEntity))]
     [RequireComponent(typeof(GroundChecker))]
-    [RequireComponent(typeof(PenguinSkeleton))]
     public class GroundHandler : MonoBehaviour
     {
         [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
@@ -32,24 +28,20 @@ namespace PenguinQuest.Controllers.Handlers
         [Range(1.00f, 20.00f)] [SerializeField] private float degreesFromSurfaceNormalThreshold = 0.01f;
 
 
-        private Animator        penguinAnimator;
-        private Rigidbody2D     penguinRigidbody;
-        private Collider2D      penguinCollider;
-        private GroundChecker   groundChecker;
-        private PenguinSkeleton penguinSkeleton;
+        private PenguinEntity penguinEntity;
+        private GroundChecker groundChecker;
 
         private void Reset()
         {
-            penguinRigidbody.MoveRotation(ComputeOrientationForGivenUpAxis(penguinRigidbody, Vector2.up));
+            penguinEntity.Rigidbody.MoveRotation(ComputeOrientationForGivenUpAxis(penguinEntity.Rigidbody, Vector2.up));
         }
 
         void Awake()
         {
-            penguinAnimator  = gameObject.GetComponent<Animator>();
-            penguinRigidbody = gameObject.GetComponent<Rigidbody2D>();
-            penguinCollider  = gameObject.GetComponent<Collider2D>();
-            groundChecker    = gameObject.GetComponent<GroundChecker>();
-            penguinSkeleton  = gameObject.GetComponent<PenguinSkeleton>();
+            // todo: replace ground checker with a 2d character controller that reports surroundings,
+            //       and will be a property of penguinEntity
+            groundChecker = gameObject.GetComponent<GroundChecker>();
+            penguinEntity = gameObject.GetComponent<PenguinEntity>();
             Reset();
         }
 
@@ -63,7 +55,7 @@ namespace PenguinQuest.Controllers.Handlers
 
         void Update()
         {
-            penguinAnimator.SetBool("IsGrounded", groundChecker.IsGrounded);
+            penguinEntity.Animation.SetParamIsGrounded(groundChecker.IsGrounded);
         }
 
 
@@ -75,7 +67,7 @@ namespace PenguinQuest.Controllers.Handlers
                 return;
             }
 
-            penguinRigidbody.constraints = RigidbodyConstraints2D.None;
+            penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
             if (maintainPerpendicularityToSurface)
             {
                 // keep our penguin perpendicular to the surface at all times if option enabled
@@ -85,14 +77,14 @@ namespace PenguinQuest.Controllers.Handlers
             {
                 // keep our penguin upright at all times if main perpendicularity option is not enabled
                 AlignPenguinWithGivenUpAxis(Vector2.up);
-                penguinRigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
+                penguinEntity.Rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
             }
 
             // if movement is within thresholds, freeze all axes to prevent jitter
             if (enableAutomaticAxisLockingWhenIdle &&
-                Mathf.Abs(penguinRigidbody.velocity.x)      <= linearVelocityThreshold &&
-                Mathf.Abs(penguinRigidbody.velocity.y)      <= linearVelocityThreshold &&
-                Mathf.Abs(penguinRigidbody.angularVelocity) <= angularVelocityThreshold)
+                Mathf.Abs(penguinEntity.Rigidbody.velocity.x)      <= linearVelocityThreshold &&
+                Mathf.Abs(penguinEntity.Rigidbody.velocity.y)      <= linearVelocityThreshold &&
+                Mathf.Abs(penguinEntity.Rigidbody.angularVelocity) <= angularVelocityThreshold)
             {
                 //penguinRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
             }
@@ -104,8 +96,8 @@ namespace PenguinQuest.Controllers.Handlers
             if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
             {
                 Quaternion current = transform.rotation;
-                Quaternion target  = ComputeOrientationForGivenUpAxis(penguinRigidbody, targetUpAxis);
-                penguinRigidbody.MoveRotation(Quaternion.Lerp(current, target, surfaceAlignmentRotationalStrength));
+                Quaternion target  = ComputeOrientationForGivenUpAxis(penguinEntity.Rigidbody, targetUpAxis);
+                penguinEntity.Rigidbody.MoveRotation(Quaternion.Lerp(current, target, surfaceAlignmentRotationalStrength));
             }
         }
 

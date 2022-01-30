@@ -4,54 +4,49 @@ using PenguinQuest.Data;
 
 namespace PenguinQuest.Controllers.Handlers
 {
-    [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(PenguinSkeleton))]
+    [RequireComponent(typeof(PenguinEntity))]
     public class LieDownHandler : MonoBehaviour
     {
-        private Animator        penguinAnimator;
-        private PenguinSkeleton penguinSkeleton;
-        private PenguinAnimationEventReciever animationComponent;
+        private PenguinEntity penguinEntity;
 
         void Awake()
         {
-            animationComponent = gameObject.GetComponentInChildren<PenguinAnimationEventReciever>();
-            penguinAnimator    = gameObject.GetComponent<Animator>();
-            penguinSkeleton    = gameObject.GetComponent<PenguinSkeleton>();
+            penguinEntity = gameObject.GetComponent<PenguinEntity>();
         }
         
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.lieDownCommand.AddListener(OnLieDownInput);
-            animationComponent.OnLiedownStart += OnLieDownAnimationEventStart;
-            animationComponent.OnLiedownMid   += OnLieDownAnimationEventMid;
-            animationComponent.OnLiedownEnd   += OnLieDownAnimationEventEnd;
+            penguinEntity.Animation.OnLieDownStart += OnLieDownAnimationEventStart;
+            penguinEntity.Animation.OnLieDownMid   += OnLieDownAnimationEventMid;
+            penguinEntity.Animation.OnLieDownEnd   += OnLieDownAnimationEventEnd;
         }
         void OnDisable()
         {
             GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInput);
-            animationComponent.OnLiedownStart -= OnLieDownAnimationEventStart;
-            animationComponent.OnLiedownMid   -= OnLieDownAnimationEventMid;
-            animationComponent.OnLiedownEnd   -= OnLieDownAnimationEventEnd;
+            penguinEntity.Animation.OnLieDownStart -= OnLieDownAnimationEventStart;
+            penguinEntity.Animation.OnLieDownMid   -= OnLieDownAnimationEventMid;
+            penguinEntity.Animation.OnLieDownEnd   -= OnLieDownAnimationEventEnd;
         }
 
         
         void OnLieDownInput(string _)
         {
-            penguinAnimator.SetTrigger("LieDown");
+            penguinEntity.Animation.TriggerParamLieDownParameter();
         }
 
         void OnLieDownAnimationEventStart()
         {
-            penguinAnimator.SetBool("IsUpright", false);
-            penguinSkeleton.ColliderConstraints |=
+            penguinEntity.Animation.SetParamIsUpright(false);
+            penguinEntity.ColliderConstraints |=
                 PenguinColliderConstraints.DisableBoundingBox |
                 PenguinColliderConstraints.DisableFeet;
         }
 
         void OnLieDownAnimationEventMid()
         {
-            penguinSkeleton.ColliderConstraints |=
+            penguinEntity.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet;
         }
 
@@ -59,7 +54,7 @@ namespace PenguinQuest.Controllers.Handlers
         {
             // todo: this stuff needs to go in the state machine
             transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = true;
-            penguinSkeleton.ColliderConstraints |=
+            penguinEntity.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet |
                 PenguinColliderConstraints.DisableFlippers;
         }
