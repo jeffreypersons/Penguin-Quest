@@ -67,17 +67,17 @@ namespace PenguinQuest.Controllers
         
 
 
-        private void OnJumpUpAnimationEventImpulse()  => ForwardAsEvent(OnJumpUpAnimationEventImpulse,  OnJumpImpulse);
+        private void OnJumpUpAnimationEventImpulse()  => ForwardAsEvent(OnJumpUpAnimationEventImpulse, OnJumpImpulse);
 
-        private void OnLieDownAnimationEventStart() => ForwardAsEvent(OnLieDownAnimationEventStart, OnLieDownStart);
-        private void OnLieDownAnimationEventMid()   => ForwardAsEvent(OnLieDownAnimationEventMid,   OnLieDownMid);
-        private void OnLiedownAnimationEventEnd()   => ForwardAsEvent(OnLiedownAnimationEventEnd,   OnLieDownEnd);
+        private void OnLieDownAnimationEventStart()   => ForwardAsEvent(OnLieDownAnimationEventStart,  OnLieDownStart);
+        private void OnLieDownAnimationEventMid()     => ForwardAsEvent(OnLieDownAnimationEventMid,    OnLieDownMid);
+        private void OnLieDownAnimationEventEnd()     => ForwardAsEvent(OnLieDownAnimationEventEnd,    OnLieDownEnd);
 
-        private void OnStandUpAnimationEventStart() => ForwardAsEvent(OnStandUpAnimationEventStart, OnStandUpStart);
-        private void OnStandUpAnimationEventEnd()   => ForwardAsEvent(OnStandUpAnimationEventEnd,   OnStandUpEnd);
+        private void OnStandUpAnimationEventStart()   => ForwardAsEvent(OnStandUpAnimationEventStart,  OnStandUpStart);
+        private void OnStandUpAnimationEventEnd()     => ForwardAsEvent(OnStandUpAnimationEventEnd,    OnStandUpEnd);
 
-        private void OnFireAnimationEvent()         => ForwardAsEvent(OnFireAnimationEvent,         OnFire);
-        private void OnUseAnimationEvent()          => ForwardAsEvent(OnUseAnimationEvent,          OnUse);
+        private void OnFireAnimationEvent()           => ForwardAsEvent(OnFireAnimationEvent,          OnFire);
+        private void OnUseAnimationEvent()            => ForwardAsEvent(OnUseAnimationEvent,           OnUse);
 
 
         private void ForwardAsEvent(Action animatorEvent, Action customEvent)
