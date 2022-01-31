@@ -15,7 +15,7 @@ namespace PenguinQuest.Controllers
     configured in the animation clips.
     */
     [ExecuteAlways]
-    [System.Serializable]
+    [Serializable]
     [RequireComponent(typeof(Animator))]
     public class PenguinAnimation : MonoBehaviour
     {
