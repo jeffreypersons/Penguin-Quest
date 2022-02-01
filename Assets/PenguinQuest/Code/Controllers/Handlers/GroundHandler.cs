@@ -82,20 +82,20 @@ namespace PenguinQuest.Controllers.Handlers
 
             // if movement is within thresholds, freeze all axes to prevent jitter
             if (enableAutomaticAxisLockingWhenIdle &&
-                Mathf.Abs(penguinEntity.Rigidbody.velocity.x)      <= linearVelocityThreshold &&
-                Mathf.Abs(penguinEntity.Rigidbody.velocity.y)      <= linearVelocityThreshold &&
-                Mathf.Abs(penguinEntity.Rigidbody.angularVelocity) <= angularVelocityThreshold)
+                Mathf.Abs(penguinEntity.Rigidbody.velocity.x)      < linearVelocityThreshold &&
+                Mathf.Abs(penguinEntity.Rigidbody.velocity.y)      < linearVelocityThreshold &&
+                Mathf.Abs(penguinEntity.Rigidbody.angularVelocity) < angularVelocityThreshold)
             {
                 // todo: this will have to be covered in the state machine instead since we need
                 //       to account for when there is no input...
-                //penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
             }
         }
 
         private void AlignPenguinWithGivenUpAxis(Vector2 targetUpAxis)
         {
             float degreesUnaligned = Vector2.SignedAngle(targetUpAxis, transform.up);
-            if (Mathf.Abs(degreesUnaligned) > degreesFromSurfaceNormalThreshold)
+            if (Mathf.Abs(degreesUnaligned) >= degreesFromSurfaceNormalThreshold)
             {
                 Quaternion current = transform.rotation;
                 Quaternion target  = ComputeOrientationForGivenUpAxis(penguinEntity.Rigidbody, targetUpAxis);
