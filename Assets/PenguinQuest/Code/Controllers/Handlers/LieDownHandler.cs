@@ -1,19 +1,23 @@
 ﻿using UnityEngine;
 using PenguinQuest.Data;
+using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
 namespace PenguinQuest.Controllers.Handlers
 {
     [RequireComponent(typeof(PenguinEntity))]
+    [RequireComponent(typeof(CharacterController2D))]
     public class LieDownHandler : MonoBehaviour
     {
-        private PenguinEntity penguinEntity;
+        private PenguinEntity         penguinEntity;
+        private CharacterController2D characterController;
 
         void Awake()
         {
-            penguinEntity = gameObject.GetComponent<PenguinEntity>();
+            penguinEntity       = transform.GetComponent<PenguinEntity>();
+            characterController = transform.GetComponent<CharacterController2D>();
         }
-        
+
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
@@ -53,7 +57,7 @@ namespace PenguinQuest.Controllers.Handlers
         void OnLieDownAnimationEventEnd()
         {
             // todo: this stuff needs to go in the state machine
-            transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = true;
+            characterController.MaintainPerpendicularityToSurface = true;
             penguinEntity.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet |
                 PenguinColliderConstraints.DisableFlippers;

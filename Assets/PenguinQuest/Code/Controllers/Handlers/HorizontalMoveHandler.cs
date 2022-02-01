@@ -57,6 +57,7 @@ namespace PenguinQuest.Controllers
             // in this case, comparing floats is okay since we assume that values are _only_ adjusted via clamp01
             if (xMotionIntensity != 0.00f)
             {
+                // todo: move rigidbody force/movement calls to character controller 2d
                 //MoveHorizontal(penguinRigidbody, xMotionIntensity * maxInputSpeed, Time.deltaTime);
             }
 
@@ -89,6 +90,7 @@ namespace PenguinQuest.Controllers
 
         private void TurnToFace(Facing facing)
         {
+            // todo: move rigidbody force/movement calls to character controller 2d
             if (this.facing == facing)
             {
                 return;

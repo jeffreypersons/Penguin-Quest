@@ -265,9 +265,8 @@ GameObject:
   - component: {fileID: 1728887597599890734}
   - component: {fileID: 4753795910216235735}
   - component: {fileID: 4753795910216235732}
-  - component: {fileID: 4753795910216235730}
   - component: {fileID: 4753795910216235733}
-  - component: {fileID: 4753795910216235731}
+  - component: {fileID: 4489379026178228054}
   - component: {fileID: 4753795910216235728}
   - component: {fileID: 4753795910216235729}
   - component: {fileID: 4753795910216235742}
@@ -354,7 +353,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 0013560670859bb45b4295787e742d97, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 1
+  m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -413,18 +412,6 @@ MonoBehaviour:
   frontFlipperLowerCollider: {fileID: 4753795911143785397}
   frontFootCollider: {fileID: 4753795910722719825}
   backFootCollider: {fileID: 4753795910764276095}
---- !u!114 &4753795910216235730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47ecfa2bad6a73c409012eced7381d03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4753795910216235733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443,7 +430,7 @@ MonoBehaviour:
     m_Bits: 256
   offsetToCheckFrom: -1
   toleratedDistanceFromGround: 8
---- !u!114 &4753795910216235731
+--- !u!114 &4489379026178228054
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -452,15 +439,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 4753795910216235740}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba06e4e983cbe944687dd3516a15755e, type: 3}
+  m_Script: {fileID: 11500000, guid: 01e9c817aeb9b3c449ab72edec42564a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   enableAutomaticAxisLockingWhenIdle: 1
-  linearVelocityThreshold: 2
-  angularVelocityThreshold: 2
-  maintainPerpendicularityToSurface: 1
-  surfaceAlignmentRotationalStrength: 1
+  linearVelocityThreshold: 0.05
+  angularVelocityThreshold: 0.05
+  maintainPerpendicularityToSurface: 0
+  surfaceAlignmentRotationalStrength: 0.1
   degreesFromSurfaceNormalThreshold: 2
+  maxGroundAngle: 45
 --- !u!114 &4753795910216235728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,7 +461,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5fb6dd4466bbb94da2bbaaa6a8bd4eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  locomotionBlendStep: 0.1
+  locomotionBlendStep: 0.25
   maxInputSpeed: 10
 --- !u!114 &4753795910216235729
 MonoBehaviour:

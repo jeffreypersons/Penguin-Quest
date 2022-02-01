@@ -1,22 +1,21 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
-namespace PenguinQuest.Controllers.Handlers
+namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
     [RequireComponent(typeof(PenguinEntity))]
     [RequireComponent(typeof(GroundChecker))]
-    public class GroundHandler : MonoBehaviour
+    public class CharacterController2D : MonoBehaviour
     {
         [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
         [Tooltip("Should we automatically lock movement axes when velocities are within thresholds?")]
         [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = true;
 
-        [Range(1.00f, 20.00f)] [SerializeField] private float linearVelocityThreshold  = 5.00f;
-        [Range(1.00f, 20.00f)] [SerializeField] private float angularVelocityThreshold = 5.00f;
+        [Range(0.01f, 20.00f)] [SerializeField] private float linearVelocityThreshold  = 5.00f;
+        [Range(0.01f, 20.00f)] [SerializeField] private float angularVelocityThreshold = 5.00f;
         
-        [Header("Movement Sensitives (Tolerances for Jitter Reduction")]
+        [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
         [Tooltip("Should we automatically rotate the penguin to align with the surface normal," +
                  "or if false, just not rotate at all?")]
         [SerializeField] private bool maintainPerpendicularityToSurface = true;
@@ -25,8 +24,10 @@ namespace PenguinQuest.Controllers.Handlers
         [Range(0.00f, 1.00f)] [SerializeField] private float surfaceAlignmentRotationalStrength = 0.10f;
 
         [Tooltip("At what degrees between up axis and surface normal is considered to be misaligned?")]
-        [Range(1.00f, 20.00f)] [SerializeField] private float degreesFromSurfaceNormalThreshold = 0.01f;
+        [Range(0.01f, 20.00f)] [SerializeField] private float degreesFromSurfaceNormalThreshold = 0.01f;
 
+        [Tooltip("At what slope angle do we allow the penguin to walk up to?")]
+        [Range(0.00f, 70.00f)] [SerializeField] private float maxGroundAngle = 45.00f;
 
         private PenguinEntity penguinEntity;
         private GroundChecker groundChecker;
@@ -42,6 +43,9 @@ namespace PenguinQuest.Controllers.Handlers
             //       and will be a property of penguinEntity
             groundChecker = gameObject.GetComponent<GroundChecker>();
             penguinEntity = gameObject.GetComponent<PenguinEntity>();
+
+            // todo: handle gravity for our custom slope handling
+            //penguinEntity.Rigidbody.gravityScale = 0;
             Reset();
         }
 

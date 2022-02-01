@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using PenguinQuest.Data;
+using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
 namespace PenguinQuest.Controllers.Handlers
@@ -8,6 +9,8 @@ namespace PenguinQuest.Controllers.Handlers
     [RequireComponent(typeof(PenguinEntity))]
     public class JumpUpHandler : MonoBehaviour
     {
+        private PenguinEntity penguinEntity;
+
         private const float JUMP_STRENGTH_DEFAULT = 50000.00f;
         private const float JUMP_STRENGTH_MIN     = 25000.00f;
         private const float JUMP_STRENGTH_MAX     = 250000.00f;
@@ -23,12 +26,12 @@ namespace PenguinQuest.Controllers.Handlers
         [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward facing direction)")]
         [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)] [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
 
-        private PenguinEntity penguinEntity;
-        private Vector2 netImpulseForce;
 
+        private Vector2 netImpulseForce;
+        
         void Awake()
-        {
-            penguinEntity = gameObject.GetComponent<PenguinEntity>();
+        {            
+            penguinEntity   = transform.GetComponent<PenguinEntity>();
             netImpulseForce = Vector2.zero;
         }
 
@@ -63,6 +66,7 @@ namespace PenguinQuest.Controllers.Handlers
 
         void OnJumpUpAnimationEventImpulse()
         {
+            // todo: move rigidbody force/movement calls to character controller 2d
             // clear jump trigger to avoid triggering a jump after landing,
             // in the case that jump is pressed twice in a row
             penguinEntity.Animation.ResetAllTriggers();

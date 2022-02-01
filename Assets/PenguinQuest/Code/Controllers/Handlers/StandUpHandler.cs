@@ -1,17 +1,21 @@
 ﻿using UnityEngine;
 using PenguinQuest.Data;
+using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
 namespace PenguinQuest.Controllers.Handlers
 {
     [RequireComponent(typeof(PenguinEntity))]
+    [RequireComponent(typeof(CharacterController2D))]
     public class StandUpHandler : MonoBehaviour
     {
-        private PenguinEntity penguinEntity;
+        private PenguinEntity         penguinEntity;
+        private CharacterController2D characterController;
 
         void Awake()
         {
-            penguinEntity = gameObject.GetComponent<PenguinEntity>();
+            penguinEntity       = transform.GetComponent<PenguinEntity>();
+            characterController = transform.GetComponent<CharacterController2D>();
         }
 
         void OnEnable()
@@ -47,7 +51,7 @@ namespace PenguinQuest.Controllers.Handlers
         {
             // todo: this stuff needs to go in the state machine
             penguinEntity.Animation.SetParamIsUpright(true);
-            transform.GetComponent<GroundHandler>().MaintainPerpendicularityToSurface = false;
+            characterController.MaintainPerpendicularityToSurface = false;
 
             // enable the bounding box again, allowing the penguin to 'fall' down to alignment
             penguinEntity.ColliderConstraints &=
