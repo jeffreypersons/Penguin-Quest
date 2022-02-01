@@ -15,19 +15,21 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         [Range(0.01f, 20.00f)] [SerializeField] private float linearVelocityThreshold  = 5.00f;
         [Range(0.01f, 20.00f)] [SerializeField] private float angularVelocityThreshold = 5.00f;
         
+        // todo: find a good way of having data for sliding and for upright that can be passed in here,
+        //       and those values can be adjusted, perhaps in their own scriptable objects?
         [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
         [Tooltip("Should we automatically rotate the penguin to align with the surface normal," +
                  "or if false, just not rotate at all?")]
         [SerializeField] private bool maintainPerpendicularityToSurface = true;
 
         [Tooltip("Rigidity of alignment with surface normal (ie 0 for max softness, 1 for no kinematic softness)")]
-        [Range(0.00f, 1.00f)] [SerializeField] private float surfaceAlignmentRotationalStrength = 0.10f;
+        [Range(0.00f,  1.00f)] [SerializeField] private float surfaceAlignmentRotationalStrength = 0.10f;
 
         [Tooltip("At what degrees between up axis and surface normal is considered to be misaligned?")]
         [Range(0.01f, 20.00f)] [SerializeField] private float degreesFromSurfaceNormalThreshold = 0.01f;
 
         [Tooltip("At what slope angle do we allow the penguin to walk up to?")]
-        [Range(0.00f, 70.00f)] [SerializeField] private float maxGroundAngle = 45.00f;
+        [Range(0.01f, 70.00f)] [SerializeField] private float maxGroundAngle = 45.00f;
 
         private PenguinEntity penguinEntity;
         private GroundChecker groundChecker;
@@ -67,7 +69,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             if (!groundChecker.IsGrounded)
             {
-                // todo: move any of this non grounded logic to a new midair handler script
+                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
                 return;
             }
 

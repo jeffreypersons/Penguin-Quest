@@ -67,7 +67,7 @@ namespace PenguinQuest.Controllers
         public Vector2          CenterOfMass         => penguinRigidbody.worldCenterOfMass;
 
 
-        public Collider2D ColliderBoundingBox       => boundingBoxCollider;
+        public BoxCollider2D ColliderBoundingBox    => boundingBoxCollider;
         public Collider2D ColliderHead              => headCollider;
         public Collider2D ColliderTorso             => torsoCollider;
         public Collider2D ColliderFrontFlipperUpper => frontFlipperUpperCollider;

@@ -56,6 +56,9 @@ namespace PenguinQuest.Controllers.Handlers
             // enable the bounding box again, allowing the penguin to 'fall' down to alignment
             penguinEntity.ColliderConstraints &=
                 ~PenguinColliderConstraints.DisableBoundingBox;
+
+            // todo: find a good way of having data for sliding and for upright that can be passed in here,
+            //       and those values can be adjusted, perhaps in their own scriptable objects?
         }
     }
 }

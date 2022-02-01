@@ -61,6 +61,15 @@ namespace PenguinQuest.Controllers.Handlers
             penguinEntity.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet |
                 PenguinColliderConstraints.DisableFlippers;
+
+
+            // todo: find a good way of having data for sliding and for upright that can be passed in here,
+            //       and those values can be adjusted, perhaps in their own scriptable objects?
+            //
+            // todo: configure bounding box for onbelly mode, and enable the collider back here,
+            //       after disabling in animation start, and then update in the following way...
+            //       penguinEntity.ColliderBoundingBox.bounds such that offset(x=0, y=5), size(x=25, y=10), edge-radius(1.25)
+            //
         }
     }
 }

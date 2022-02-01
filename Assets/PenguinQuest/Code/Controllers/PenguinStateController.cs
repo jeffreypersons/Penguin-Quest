@@ -49,7 +49,7 @@ namespace PenguinQuest.Controllers
 
             // todo: this should be in state machine for upright and we should start in a blank state and then
             //       entered rather than assuming we start upright here...
-            transform.GetComponent<CharacterController2D>().MaintainPerpendicularityToSurface = false;
+            characterController.MaintainPerpendicularityToSurface = false;
 
             initialSpawnPosition = penguinEntity.Rigidbody.position;
             ResetPositioning();
