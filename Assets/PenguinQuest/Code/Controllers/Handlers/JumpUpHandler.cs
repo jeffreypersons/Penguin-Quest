@@ -1,14 +1,16 @@
 ﻿using System;
 using UnityEngine;
 using PenguinQuest.Data;
+using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
 namespace PenguinQuest.Controllers.Handlers
 {
-    [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(PenguinEntity))]
     public class JumpUpHandler : MonoBehaviour
     {
+        private PenguinEntity penguinEntity;
+
         private const float JUMP_STRENGTH_DEFAULT = 50000.00f;
         private const float JUMP_STRENGTH_MIN     = 25000.00f;
         private const float JUMP_STRENGTH_MAX     = 250000.00f;
@@ -24,24 +26,21 @@ namespace PenguinQuest.Controllers.Handlers
         [Tooltip("Angle to jump (in degrees counterclockwise to the penguin's forward facing direction)")]
         [Range(JUMP_ANGLE_MIN, JUMP_ANGLE_MAX)] [SerializeField] private float jumpAngle = JUMP_ANGLE_DEFAULT;
 
-        private Rigidbody2D penguinRigidBody;
-        private Animator    penguinAnimator;
 
         private Vector2 netImpulseForce;
-
+        
         void Awake()
-        {
-            penguinAnimator  = gameObject.GetComponent<Animator>();
-            penguinRigidBody = gameObject.GetComponent<Rigidbody2D>();
-            netImpulseForce  = Vector2.zero;
+        {            
+            penguinEntity   = transform.GetComponent<PenguinEntity>();
+            netImpulseForce = Vector2.zero;
         }
 
         void LateUpdate()
         {
             if (netImpulseForce != Vector2.zero)
             {
-                penguinRigidBody.constraints = RigidbodyConstraints2D.None;
-                penguinRigidBody.AddForce(netImpulseForce, ForceMode2D.Impulse);
+                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
+                penguinEntity.Rigidbody.AddForce(netImpulseForce, ForceMode2D.Impulse);
                 netImpulseForce = Vector2.zero;
             }
         }
@@ -51,23 +50,26 @@ namespace PenguinQuest.Controllers.Handlers
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.jumpCommand.AddListener(OnJumpInput);
+            penguinEntity.Animation.OnJumpImpulse += OnJumpUpAnimationEventImpulse;
         }
 
         void OnDisable()
         {
             GameEventCenter.jumpCommand.RemoveListener(OnJumpInput);
+            penguinEntity.Animation.OnJumpImpulse -= OnJumpUpAnimationEventImpulse;
         }
 
         void OnJumpInput(string _)
         {
-            penguinAnimator.SetTrigger("JumpUp");
+            penguinEntity.Animation.TriggerParamJumpUpParameter();
         }
 
         void OnJumpUpAnimationEventImpulse()
         {
+            // todo: move rigidbody force/movement calls to character controller 2d
             // clear jump trigger to avoid triggering a jump after landing,
             // in the case that jump is pressed twice in a row
-            penguinAnimator.ResetTrigger("JumpUp");
+            penguinEntity.Animation.ResetAllTriggers();
             float angleFromGround = jumpAngle * Mathf.Deg2Rad;
             netImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
         }

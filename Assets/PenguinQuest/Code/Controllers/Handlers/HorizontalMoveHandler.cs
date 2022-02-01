@@ -6,8 +6,7 @@ using PenguinQuest.Data;
 // todo: use distances, max speed, and transition percent per step for easier inspector usage..
 namespace PenguinQuest.Controllers
 {
-    [RequireComponent(typeof(Animator))]
-    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(PenguinEntity))]
     public class HorizontalMoveHandler : MonoBehaviour
     {
         private enum Facing { Left = -1, Right = 1}
@@ -24,19 +23,18 @@ namespace PenguinQuest.Controllers
         [Range(0.50f, 100.00f)] [SerializeField] private float maxInputSpeed = 10.0f;
 
 
-        private Rigidbody2D penguinRigidbody;
-        private Animator    penguinAnimator;
-        
+        private PenguinEntity penguinEntity;
+
         private bool   isHorizontalInputActive;
         private float  xMotionIntensity;
         private Facing facing;
         
         void Awake()
         {
-            penguinAnimator  = gameObject.GetComponent<Animator>();
-            penguinRigidbody = gameObject.GetComponent<Rigidbody2D>();
+            penguinEntity = gameObject.GetComponent<PenguinEntity>();
+
             xMotionIntensity = 0.00f;
-            facing           = GetFacing(penguinRigidbody);
+            facing           = GetFacing(penguinEntity.Rigidbody);
         }
         
         void Update()
@@ -59,9 +57,11 @@ namespace PenguinQuest.Controllers
             // in this case, comparing floats is okay since we assume that values are _only_ adjusted via clamp01
             if (xMotionIntensity != 0.00f)
             {
+                // todo: move rigidbody force/movement calls to character controller 2d
                 //MoveHorizontal(penguinRigidbody, xMotionIntensity * maxInputSpeed, Time.deltaTime);
             }
-            penguinAnimator.SetFloat("XMotionIntensity", xMotionIntensity);
+
+            penguinEntity.Animation.SetParamXMotionIntensity(xMotionIntensity);
         }
 
         void OnEnable()
@@ -90,6 +90,7 @@ namespace PenguinQuest.Controllers
 
         private void TurnToFace(Facing facing)
         {
+            // todo: move rigidbody force/movement calls to character controller 2d
             if (this.facing == facing)
             {
                 return;
