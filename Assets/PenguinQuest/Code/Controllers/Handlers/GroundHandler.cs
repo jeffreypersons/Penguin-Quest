@@ -86,7 +86,9 @@ namespace PenguinQuest.Controllers.Handlers
                 Mathf.Abs(penguinEntity.Rigidbody.velocity.y)      <= linearVelocityThreshold &&
                 Mathf.Abs(penguinEntity.Rigidbody.angularVelocity) <= angularVelocityThreshold)
             {
-                //penguinRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+                // todo: this will have to be covered in the state machine instead since we need
+                //       to account for when there is no input...
+                //penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
             }
         }
 
