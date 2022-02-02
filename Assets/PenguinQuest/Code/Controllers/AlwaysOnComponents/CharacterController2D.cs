@@ -5,13 +5,13 @@ using PenguinQuest.Data;
 namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
     [RequireComponent(typeof(PenguinEntity))]
-    [RequireComponent(typeof(GroundChecker))]
+    [RequireComponent(typeof(CollisionChecker))]
     public class CharacterController2D : MonoBehaviour
     {
         public CharacterController2DSettings Settings { get; set; }
 
         private PenguinEntity penguinEntity;
-        private GroundChecker groundChecker;
+        private CollisionChecker groundChecker;
 
         private void Reset()
         {
@@ -22,7 +22,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             // todo: replace ground checker with a 2d character controller that reports surroundings,
             //       and will be a property of penguinEntity
-            groundChecker = gameObject.GetComponent<GroundChecker>();
+            groundChecker = gameObject.GetComponent<CollisionChecker>();
             penguinEntity = gameObject.GetComponent<PenguinEntity>();
             Reset();
         }
