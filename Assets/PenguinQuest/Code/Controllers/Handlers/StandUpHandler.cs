@@ -12,6 +12,9 @@ namespace PenguinQuest.Controllers.Handlers
         private PenguinEntity         penguinEntity;
         private CharacterController2D characterController;
 
+        // todo: move to state machine for upright state
+        [SerializeField] private CharacterController2DSettings uprightStateCharacterSettings;
+
         void Awake()
         {
             penguinEntity       = transform.GetComponent<PenguinEntity>();
@@ -51,7 +54,7 @@ namespace PenguinQuest.Controllers.Handlers
         {
             // todo: this stuff needs to go in the state machine
             penguinEntity.Animation.SetParamIsUpright(true);
-            characterController.MaintainPerpendicularityToSurface = false;
+            characterController.Settings = uprightStateCharacterSettings;
 
             // enable the bounding box again, allowing the penguin to 'fall' down to alignment
             penguinEntity.ColliderConstraints &=

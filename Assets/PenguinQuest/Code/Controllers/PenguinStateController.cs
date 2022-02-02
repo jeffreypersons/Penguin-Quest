@@ -11,10 +11,13 @@ namespace PenguinQuest.Controllers
     public class PenguinStateController : MonoBehaviour
     {
         private PenguinEntity         penguinEntity;
-        private CharacterController2D characterController;
+        private CharacterController2D characterController2D;
 
         private PenguinUprightState upright;
         private PenguinOnBellyState onBelly;
+
+        // todo: have this taken care of in the initial state that we enter
+        [SerializeField] private CharacterController2DSettings initialStateCharacterSettings;
 
         private GameplayInputReciever input;
         
@@ -45,11 +48,12 @@ namespace PenguinQuest.Controllers
             onBelly = new PenguinOnBellyState("OnBelly_State");
             CurrentState = upright;
 
-            penguinEntity = gameObject.GetComponent<PenguinEntity>();
+            penguinEntity         = gameObject.GetComponent<PenguinEntity>();
+            characterController2D = gameObject.GetComponent<CharacterController2D>();
 
             // todo: this should be in state machine for upright and we should start in a blank state and then
             //       entered rather than assuming we start upright here...
-            characterController.MaintainPerpendicularityToSurface = false;
+            characterController2D.Settings = initialStateCharacterSettings;
 
             initialSpawnPosition = penguinEntity.Rigidbody.position;
             ResetPositioning();
@@ -68,8 +72,10 @@ namespace PenguinQuest.Controllers
 
         }
 
+
         void Update()
         {
+            /***** disable state changes until state subclasses are properly implemented
             CurrentState.Update();
 
             if (CanEnterUprightState)
@@ -80,6 +86,7 @@ namespace PenguinQuest.Controllers
             {
                 TransitionToState(onBelly);
             }
+            */
         }
 
         void FixedUpdate()

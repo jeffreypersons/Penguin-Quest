@@ -9,8 +9,11 @@ namespace PenguinQuest.Controllers.Handlers
     [RequireComponent(typeof(CharacterController2D))]
     public class LieDownHandler : MonoBehaviour
     {
-        private PenguinEntity         penguinEntity;
+        private PenguinEntity penguinEntity;
         private CharacterController2D characterController;
+
+        // todo: move to state machine for lie down state
+        [SerializeField] private CharacterController2DSettings lieDownStateCharacterSettings;
 
         void Awake()
         {
@@ -57,7 +60,7 @@ namespace PenguinQuest.Controllers.Handlers
         void OnLieDownAnimationEventEnd()
         {
             // todo: this stuff needs to go in the state machine
-            characterController.MaintainPerpendicularityToSurface = true;
+            characterController.Settings = lieDownStateCharacterSettings;
             penguinEntity.ColliderConstraints |=
                 PenguinColliderConstraints.DisableFeet |
                 PenguinColliderConstraints.DisableFlippers;

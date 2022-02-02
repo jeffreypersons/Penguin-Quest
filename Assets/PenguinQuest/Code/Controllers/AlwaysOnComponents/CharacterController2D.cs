@@ -1,5 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using PenguinQuest.Data;
 
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
@@ -8,28 +8,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     [RequireComponent(typeof(GroundChecker))]
     public class CharacterController2D : MonoBehaviour
     {
-        [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
-        [Tooltip("Should we automatically lock movement axes when velocities are within thresholds?")]
-        [SerializeField] private bool enableAutomaticAxisLockingWhenIdle = true;
-
-        [Range(0.01f, 20.00f)] [SerializeField] private float linearVelocityThreshold  = 5.00f;
-        [Range(0.01f, 20.00f)] [SerializeField] private float angularVelocityThreshold = 5.00f;
-        
-        // todo: find a good way of having data for sliding and for upright that can be passed in here,
-        //       and those values can be adjusted, perhaps in their own scriptable objects?
-        [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
-        [Tooltip("Should we automatically rotate the penguin to align with the surface normal," +
-                 "or if false, just not rotate at all?")]
-        [SerializeField] private bool maintainPerpendicularityToSurface = true;
-
-        [Tooltip("Rigidity of alignment with surface normal (ie 0 for max softness, 1 for no kinematic softness)")]
-        [Range(0.00f,  1.00f)] [SerializeField] private float surfaceAlignmentRotationalStrength = 0.10f;
-
-        [Tooltip("At what degrees between up axis and surface normal is considered to be misaligned?")]
-        [Range(0.01f, 20.00f)] [SerializeField] private float degreesFromSurfaceNormalThreshold = 0.01f;
-
-        [Tooltip("At what slope angle do we allow the penguin to walk up to?")]
-        [Range(0.01f, 70.00f)] [SerializeField] private float maxGroundAngle = 45.00f;
+        public CharacterController2DSettings Settings { get; set; }
 
         private PenguinEntity penguinEntity;
         private GroundChecker groundChecker;
@@ -45,19 +24,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             //       and will be a property of penguinEntity
             groundChecker = gameObject.GetComponent<GroundChecker>();
             penguinEntity = gameObject.GetComponent<PenguinEntity>();
-
-            // todo: handle gravity for our custom slope handling
-            //penguinEntity.Rigidbody.gravityScale = 0;
             Reset();
         }
-
-        // temporary public interface methods
-        public bool MaintainPerpendicularityToSurface
-        {
-            get => maintainPerpendicularityToSurface;
-            set => maintainPerpendicularityToSurface = value;
-        }
-
 
         void Update()
         {
@@ -74,7 +42,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             }
 
             penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
-            if (maintainPerpendicularityToSurface)
+            if (Settings.MaintainPerpendicularityToSurface)
             {
                 // keep our penguin perpendicular to the surface at all times if option enabled
                 AlignPenguinWithGivenUpAxis(groundChecker.SurfaceNormal);
@@ -87,10 +55,10 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             }
 
             // if movement is within thresholds, freeze all axes to prevent jitter
-            if (enableAutomaticAxisLockingWhenIdle &&
-                Mathf.Abs(penguinEntity.Rigidbody.velocity.x)      < linearVelocityThreshold &&
-                Mathf.Abs(penguinEntity.Rigidbody.velocity.y)      < linearVelocityThreshold &&
-                Mathf.Abs(penguinEntity.Rigidbody.angularVelocity) < angularVelocityThreshold)
+            if (Settings.EnableAutomaticAxisLockingForSmallVelocities &&
+                Mathf.Abs(penguinEntity.Rigidbody.velocity.x)      < Settings.LinearVelocityThreshold &&
+                Mathf.Abs(penguinEntity.Rigidbody.velocity.y)      < Settings.LinearVelocityThreshold &&
+                Mathf.Abs(penguinEntity.Rigidbody.angularVelocity) < Settings.AngularVelocityThreshold)
             {
                 // todo: this will have to be covered in the state machine instead since we need
                 //       to account for when there is no input...
@@ -101,11 +69,11 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         private void AlignPenguinWithGivenUpAxis(Vector2 targetUpAxis)
         {
             float degreesUnaligned = Vector2.SignedAngle(targetUpAxis, transform.up);
-            if (Mathf.Abs(degreesUnaligned) >= degreesFromSurfaceNormalThreshold)
+            if (Mathf.Abs(degreesUnaligned) >= Settings.DegreesFromSurfaceNormalThreshold)
             {
                 Quaternion current = transform.rotation;
                 Quaternion target  = ComputeOrientationForGivenUpAxis(penguinEntity.Rigidbody, targetUpAxis);
-                penguinEntity.Rigidbody.MoveRotation(Quaternion.Lerp(current, target, surfaceAlignmentRotationalStrength));
+                penguinEntity.Rigidbody.MoveRotation(Quaternion.Lerp(current, target, Settings.SurfaceAlignmentRotationalStrength));
             }
         }
 

@@ -265,11 +265,12 @@ GameObject:
   - component: {fileID: 1728887597599890734}
   - component: {fileID: 4753795910216235735}
   - component: {fileID: 4753795910216235732}
+  - component: {fileID: 9188869225720279910}
   - component: {fileID: 4753795910216235733}
   - component: {fileID: 4489379026178228054}
   - component: {fileID: 4753795910216235728}
-  - component: {fileID: 4753795910216235729}
   - component: {fileID: 4753795910216235742}
+  - component: {fileID: 4753795910216235729}
   - component: {fileID: 4753795910216235743}
   m_Layer: 9
   m_Name: Player
@@ -412,6 +413,20 @@ MonoBehaviour:
   frontFlipperLowerCollider: {fileID: 4753795911143785397}
   frontFootCollider: {fileID: 4753795910722719825}
   backFootCollider: {fileID: 4753795910764276095}
+--- !u!114 &9188869225720279910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753795910216235740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925dc2bee64be8b4d81ac2070045959e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialStateCharacterSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+    type: 2}
 --- !u!114 &4753795910216235733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,13 +457,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01e9c817aeb9b3c449ab72edec42564a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutomaticAxisLockingWhenIdle: 1
-  linearVelocityThreshold: 0.05
-  angularVelocityThreshold: 0.05
-  maintainPerpendicularityToSurface: 0
-  surfaceAlignmentRotationalStrength: 0.1
-  degreesFromSurfaceNormalThreshold: 2
-  maxGroundAngle: 45
 --- !u!114 &4753795910216235728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,18 +471,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   locomotionBlendStep: 0.25
   maxInputSpeed: 10
---- !u!114 &4753795910216235729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03575db054bb040478b656105bc59aa5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4753795910216235742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -489,6 +485,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpStrength: 75000
   jumpAngle: 60
+--- !u!114 &4753795910216235729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753795910216235740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03575db054bb040478b656105bc59aa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uprightStateCharacterSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+    type: 2}
 --- !u!114 &4753795910216235743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -501,6 +511,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac7d272be483dc4bbba5f907894fce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lieDownStateCharacterSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+    type: 2}
 --- !u!1 &4753795910222470411
 GameObject:
   m_ObjectHideFlags: 0
