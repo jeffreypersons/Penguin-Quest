@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace PenguinQuest.Utils
@@ -176,6 +177,39 @@ namespace PenguinQuest.Utils
         public static bool IsOverlappingRange(float startA, float endA, float startB, float endB)
         {
             return startA <= endB && startB <= endA;
+        }
+        
+
+        /*
+        Fills given result list with points interpolated between given start and end positions.
+
+        Given endpoints and number of points n, we divide the line into n + 1 segments and compute
+        the point between each segment. Note that this includes endpoints.
+        
+        For example, given 3 points (0, 0) and (10, 10), we cut the line into 4 pieces
+        as percents along the line: [0.00, 0.25], [0.25, 0.50], [0.50, 0.75], [0.75, 1.00],
+        which gives us the 3 points in between of (2.5, 2.5), (5, 5), (7.5, 7.5),
+        plus their endpoints.
+        */
+        public static List<Vector2> InterpolatePoints(Vector2 from, Vector2 to, int numPointsInBetween)
+        {
+            int   numPoints   = numPointsInBetween + 2;
+            int   numSegments = numPointsInBetween + 1;
+            float stepSize    = 1f / numSegments;
+
+            float currentStep = 0f;
+            List<Vector2> result = new List<Vector2>(numPoints);
+            for (int i = 0; i < numPoints; i++)
+            {
+                result[i] = Vector2.Lerp(from, to, currentStep);
+                currentStep += stepSize;
+            }
+            return result;
+        }
+
+        public static Vector2 MidPoint(Vector2 from, Vector2 to)
+        {
+            return Vector2.Lerp(from, to, 0.5f);
         }
     }
 }
