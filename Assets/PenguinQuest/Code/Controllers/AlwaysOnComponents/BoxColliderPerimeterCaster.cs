@@ -24,27 +24,86 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         private List<Vector2> topSideCastOrigins;
         private List<Vector2> bottomSideCastOrigins;
 
-        public BoxColliderPerimeterCaster(BoxCollider2D bounds)
+        public List<Result> allResults;
+        public List<Result> leftResults;
+        public List<Result> rightResults;
+        public List<Result> topResults;
+        public List<Result> bottomResults;
+
+        public BoxColliderPerimeterCaster(BoxCollider2D box)
         {
-            Box = bounds;
+            Box = box;
             lineCaster = new LineCaster()
             {
                 DistanceOffset = CastOffset,
                 TargetLayers   = TargetLayers
             };
+
+            allResults    = new List<Result>();
+            leftResults   = new List<Result>();
+            rightResults  = new List<Result>();
+            topResults    = new List<Result>();
+            bottomResults = new List<Result>();
             ComputeLocalOrigins();
         }
         
+        public struct Result
+        {
+            public readonly LineCaster.Line  line;
+            public readonly LineCaster.Hit?  hit;
+            public Result(LineCaster.Line line, LineCaster.Hit? hit)
+            {
+                this.line = line;
+                this.hit  = hit;
+            }
+        }
+
         public void Cast()
         {
             Vector2 rightDir = Box.transform.forward.normalized;
             Vector2 upDir    = Box.transform.up.normalized;
             Vector2 leftDir  = -1f * rightDir;
-            Vector2 downDir =  -1f * upDir;
+            Vector2 downDir  = -1f * upDir;
 
+            allResults.Clear();
+
+            leftResults.Clear();
             foreach (Vector2 origin in leftSideCastOrigins)
             {
-                lineCaster.CastFromPoint(origin, leftDir, MaxDistance, out LineCaster.Line line, out LineCaster.Hit hit);
+                bool isHit = lineCaster.CastFromPoint(Box.transform.TransformPoint(origin),
+                    leftDir, 100f, out LineCaster.Line line, out LineCaster.Hit hit);
+                allResults.Add(new Result(line, isHit? hit : null));
+                leftResults.Add(allResults[allResults.Count - 1]);
+
+                Debug.DrawLine(line.start, line.end, color: Color.red, 2.0f);
+                if (isHit) Debug.DrawLine(line.start, hit.point, color: Color.red, 2.0f);
+            }
+
+            rightResults.Clear();
+            foreach (Vector2 origin in rightSideCastOrigins)
+            {
+                bool isHit = lineCaster.CastFromPoint(Box.transform.TransformPoint(origin),
+                    rightDir, MaxDistance, out LineCaster.Line line, out LineCaster.Hit hit);
+                allResults.Add(new Result(line, isHit ? hit : null));
+                rightResults.Add(allResults[allResults.Count - 1]);
+            }
+
+            topResults.Clear();
+            foreach (Vector2 origin in topSideCastOrigins)
+            {
+                bool isHit = lineCaster.CastFromPoint(Box.transform.TransformPoint(origin),
+                    upDir, MaxDistance, out LineCaster.Line line, out LineCaster.Hit hit);
+                allResults.Add(new Result(line, isHit ? hit : null));
+                topResults.Add(allResults[allResults.Count - 1]);
+            }
+
+            bottomResults.Clear();
+            foreach (Vector2 origin in bottomSideCastOrigins)
+            {
+                bool isHit = lineCaster.CastFromPoint(Box.transform.TransformPoint(origin),
+                    downDir, MaxDistance, out LineCaster.Line line, out LineCaster.Hit hit);
+                allResults.Add(new Result(line, isHit ? hit : null));
+                bottomResults.Add(allResults[allResults.Count - 1]);
             }
         }
 
