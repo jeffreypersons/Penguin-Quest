@@ -201,7 +201,7 @@ namespace PenguinQuest.Utils
             List<Vector2> result = new List<Vector2>(numPoints);
             for (int i = 0; i < numPoints; i++)
             {
-                result[i] = Vector2.Lerp(from, to, currentStep);
+                result.Add(Vector2.Lerp(from, to, currentStep));
                 currentStep += stepSize;
             }
             return result;
