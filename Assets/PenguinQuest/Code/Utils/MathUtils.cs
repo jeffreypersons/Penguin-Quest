@@ -207,6 +207,17 @@ namespace PenguinQuest.Utils
             return result;
         }
 
+        /*
+        How many times does delta fit into length?
+        */
+        public static int ComputeDivisions(float length, float delta)
+        {
+            float clampedDelta = Mathf.Clamp01(delta);
+            return Mathf.Approximately(clampedDelta, 0f)?
+                0 :
+                Mathf.RoundToInt(length / clampedDelta);
+        }
+
         public static Vector2 MidPoint(Vector2 from, Vector2 to)
         {
             return Vector2.Lerp(from, to, 0.5f);

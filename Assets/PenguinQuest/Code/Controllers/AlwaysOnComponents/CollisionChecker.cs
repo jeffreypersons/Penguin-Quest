@@ -31,11 +31,10 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
                 {
                     _perimeterCaster = new BoxColliderPerimeterCaster(colliderToCastFrom);
                 }
-                _perimeterCaster.ChecksPerHorizontalSide = 3;
-                _perimeterCaster.ChecksPerVerticalSide   = 3;
-                _perimeterCaster.CastOffset              = offsetToCheckFrom;
-                _perimeterCaster.TargetLayers            = groundMask;
-                _perimeterCaster.MaxDistance             = toleratedDistanceFromGround;
+                _perimeterCaster.RaySpacing   = 0.25f;
+                _perimeterCaster.CastOffset   = offsetToCheckFrom;
+                _perimeterCaster.TargetLayers = groundMask;
+                _perimeterCaster.MaxDistance  = toleratedDistanceFromGround;
                 return _perimeterCaster;
             }
         }
