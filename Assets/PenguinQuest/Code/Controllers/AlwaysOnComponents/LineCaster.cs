@@ -93,11 +93,5 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             collider.bounds.IntersectRay(new Ray(center, direction), out float distanceFromCenterToEdge);
             return center - (distanceFromCenterToEdge * direction);
         }
-
-        private static bool IsInLayerMask(GameObject gameObject, LayerMask mask)
-        {
-            LayerMask maskForGameObject = 1 << gameObject.layer;
-            return (mask & maskForGameObject) != 0;
-        }
     }
 }

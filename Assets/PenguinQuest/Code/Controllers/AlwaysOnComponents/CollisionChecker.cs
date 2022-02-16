@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using PenguinQuest.Utils;
+using PenguinQuest.Data;
 
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
@@ -12,6 +13,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     [RequireComponent(typeof(Rigidbody2D))]
     public class CollisionChecker : MonoBehaviour
     {
+        // todo: look into integrating with box perimeter caster? Or at least putting things in different places
         [Header("Ground Settings")]
         [SerializeField] private BoxCollider2D colliderToCastFrom;
         [SerializeField] private LayerMask groundMask;
@@ -21,20 +23,18 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
 
-
         [SerializeField] private BoxColliderPerimeterCaster _perimeterCaster = default;
+        
+        [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
         private BoxColliderPerimeterCaster PerimeterCaster
         {
             get
             {
                 if (_perimeterCaster == default)
                 {
-                    _perimeterCaster = new BoxColliderPerimeterCaster(colliderToCastFrom);
+                    _perimeterCaster = new BoxColliderPerimeterCaster(colliderToCastFrom, perimeterCasterSettings);
                 }
-                _perimeterCaster.RaySpacing   = 0.25f;
-                _perimeterCaster.CastOffset   = offsetToCheckFrom;
-                _perimeterCaster.TargetLayers = groundMask;
-                _perimeterCaster.MaxDistance  = toleratedDistanceFromGround;
+                _perimeterCaster.Settings = perimeterCasterSettings;
                 return _perimeterCaster;
             }
         }
@@ -58,10 +58,10 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             PerimeterCaster.Cast();
 
-            if (PerimeterCaster.bottomResults[1].hit.HasValue)
+            if (PerimeterCaster.BottomResults[1].hit.HasValue)
             {
                 IsGrounded    = true;
-                SurfaceNormal = PerimeterCaster.bottomResults[1].hit.Value.normal;
+                SurfaceNormal = PerimeterCaster.BottomResults[1].hit.Value.normal;
             }
             else
             {
@@ -78,7 +78,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
                 CheckForGround();
             }
 
-            foreach (BoxColliderPerimeterCaster.Result result in PerimeterCaster.allResults)
+            foreach (BoxColliderPerimeterCaster.Result result in PerimeterCaster.AllResults)
             {
                 GizmosUtils.DrawLine(from: result.line.start, to: result.line.end, color: Color.red);
                 if (result.hit != null)

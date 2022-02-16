@@ -10,6 +10,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     {
         public CharacterController2DSettings Settings { get; set; }
 
+        // todo: get rid of penguin entity and use dependency injection or something as this should be more generic
         private PenguinEntity penguinEntity;
         private CollisionChecker groundChecker;
 

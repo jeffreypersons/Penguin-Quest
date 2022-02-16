@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using PenguinQuest.Utils;
+using PenguinQuest.Data;
 
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
@@ -17,7 +18,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             public Result(LineCaster.Line line, LineCaster.Hit? hit)
             {
                 this.line = line;
-                this.hit = hit;
+                this.hit  = hit;
             }
         }
 
@@ -59,81 +60,76 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             }
         }
 
-        // todo: clean this stuff up!
-        public Collider2D Box          { get; set; } = default;
-        public float      CastOffset   { get; set; } = 0f;
-        public float      MaxDistance  { get; set; } = Mathf.Infinity;
-        public float      RaySpacing   { get; set; } = 0.25f;
-        public LayerMask  TargetLayers { get; set; } = ~0;
+
+        private int bottomStartIndex;
+        private int topStartIndex;
+        private int leftStartIndex;
+        private int rightStartIndex;
+        private LineCaster lineCaster;
+        private Result[] results;
+
+        public Collider2D        Box      { get; set; }
+        public RayCasterSettings Settings { get; set; }
 
         public int NumRaysPerHorizontalSide { get; private set; }
         public int NumRaysPerVerticalSide   { get; private set; }
-        public int TotalNumRays { get; private set; }
+        public int TotalNumRays             { get; private set; }
 
-        private LineCaster lineCaster;
-        
-        // todo: look into a single array with span for left/right/top/bottom
-        public Result[] allResults;
-        public Result[] leftResults;
-        public Result[] rightResults;
-        public Result[] topResults;
-        public Result[] bottomResults;
+        public ReadOnlySpan<Result> AllResults    => results.AsSpan(0,                TotalNumRays);
+        public ReadOnlySpan<Result> BottomResults => results.AsSpan(bottomStartIndex, NumRaysPerHorizontalSide);
+        public ReadOnlySpan<Result> TopResults    => results.AsSpan(topStartIndex,    NumRaysPerHorizontalSide);
+        public ReadOnlySpan<Result> LeftResults   => results.AsSpan(leftStartIndex,   NumRaysPerVerticalSide);
+        public ReadOnlySpan<Result> RightResults  => results.AsSpan(rightStartIndex,  NumRaysPerVerticalSide);
 
-        public BoxColliderPerimeterCaster(BoxCollider2D box)
+        public BoxColliderPerimeterCaster(BoxCollider2D box, RayCasterSettings settings)
         {
             Box = box;
-            Update();
+            Settings = settings;
+            Init();
         }
-
+        
         // todo: add caching so we don't reallocate every single time!
-        private void Update()
+        private void Init()
         {
+            // todo: consider integrating entirely into here without using linecaster objects
             lineCaster = new LineCaster()
             {
-                DistanceOffset = CastOffset,
-                TargetLayers   = TargetLayers
+                DistanceOffset = Settings.Offset,
+                TargetLayers   = Settings.TargetLayers
             };
-
-            BoxInfo boxInfo = new BoxInfo(Box, CastOffset);
-            NumRaysPerHorizontalSide = MathUtils.ComputeDivisions(boxInfo.Size.x, RaySpacing);
-            NumRaysPerVerticalSide   = MathUtils.ComputeDivisions(boxInfo.Size.y, RaySpacing);
+            
+            BoxInfo boxInfo = new BoxInfo(Box, Settings.Offset);
+            NumRaysPerHorizontalSide = MathUtils.ComputeDivisions(boxInfo.Size.x, Settings.RaySpacing);
+            NumRaysPerVerticalSide   = MathUtils.ComputeDivisions(boxInfo.Size.y, Settings.RaySpacing);
             TotalNumRays = 2 * (NumRaysPerHorizontalSide + NumRaysPerVerticalSide);
-
-            allResults    = new Result[TotalNumRays];
-            leftResults   = new Result[NumRaysPerVerticalSide];
-            rightResults  = new Result[NumRaysPerVerticalSide];
-            topResults    = new Result[NumRaysPerHorizontalSide];
-            bottomResults = new Result[NumRaysPerHorizontalSide];
+            
+            results = new Result[TotalNumRays];
+            bottomStartIndex = 0;
+            topStartIndex    = bottomStartIndex + NumRaysPerVerticalSide;
+            leftStartIndex   = topStartIndex    + NumRaysPerHorizontalSide;
+            rightStartIndex  = leftStartIndex   + NumRaysPerHorizontalSide;
         }
-
+        
         public void Cast()
         {
-            Update();
-            BoxInfo boxInfo = new BoxInfo(Box, CastOffset);
-
-            int rayIndex = 0;
-            
+            BoxInfo boxInfo = new BoxInfo(Box, Settings.Offset);            
             for (int i = 0; i < NumRaysPerHorizontalSide; i++)
             {
-                bottomResults[i]       = CastLine(boxInfo.Center, boxInfo.DownDir);
-                topResults[i]          = CastLine(boxInfo.Center, boxInfo.UpDir);
-                allResults[rayIndex++] = bottomResults[i];
-                allResults[rayIndex++] = topResults[i];
+                results[bottomStartIndex + i] = CastLine(boxInfo.Center, boxInfo.DownDir);
+                results[topStartIndex    + i] = CastLine(boxInfo.Center, boxInfo.UpDir);
             }
             for (int i = 0; i < NumRaysPerVerticalSide; i++)
             {
-                leftResults[i]         = CastLine(boxInfo.Center, boxInfo.LeftDir);
-                rightResults[i]        = CastLine(boxInfo.Center, boxInfo.RightDir);
-                allResults[rayIndex++] = leftResults[i];
-                allResults[rayIndex++] = rightResults[i];
+                results[leftStartIndex  + i] = CastLine(boxInfo.Center, boxInfo.LeftDir);
+                results[rightStartIndex + i] = CastLine(boxInfo.Center, boxInfo.RightDir);
             }
         }
 
         private Result CastLine(Vector2 origin, Vector2 direction)
         {
-            bool isHit = lineCaster.CastFromPoint(origin, direction, MaxDistance,
+            bool isHit = lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance,
                 out LineCaster.Line line,
-                out LineCaster.Hit hit);
+                out LineCaster.Hit  hit);
             return new Result(line, isHit ? hit : null);
         }
     }
