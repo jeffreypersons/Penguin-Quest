@@ -7,21 +7,10 @@ using PenguinQuest.Data;
 namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
     /*
-    Provides a streamlined interface for casting lines from specific points or colliders.
+    Provides a streamlined interface for casting lines from along each side of an AAB.
     */
-    public class BoxColliderPerimeterCaster
+    public class BoundedRayCaster
     {
-        public struct Result
-        {
-            public readonly LineCaster.Line line;
-            public readonly LineCaster.Hit? hit;
-            public Result(LineCaster.Line line, LineCaster.Hit? hit)
-            {
-                this.line = line;
-                this.hit  = hit;
-            }
-        }
-
         // todo: generalize this and apply the same idea to what we use with cameras and extract it out to the data dir
         // todo: use local coords instead
         private struct BoxInfo
@@ -66,7 +55,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         private int leftStartIndex;
         private int rightStartIndex;
         private LineCaster lineCaster;
-        private Result[] results;
+        private CastResult[] results;
 
         public Collider2D        Box      { get; set; }
         public RayCasterSettings Settings { get; set; }
@@ -75,13 +64,13 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public int NumRaysPerVerticalSide   { get; private set; }
         public int TotalNumRays             { get; private set; }
 
-        public ReadOnlySpan<Result> AllResults    => results.AsSpan(0,                TotalNumRays);
-        public ReadOnlySpan<Result> BottomResults => results.AsSpan(bottomStartIndex, NumRaysPerHorizontalSide);
-        public ReadOnlySpan<Result> TopResults    => results.AsSpan(topStartIndex,    NumRaysPerHorizontalSide);
-        public ReadOnlySpan<Result> LeftResults   => results.AsSpan(leftStartIndex,   NumRaysPerVerticalSide);
-        public ReadOnlySpan<Result> RightResults  => results.AsSpan(rightStartIndex,  NumRaysPerVerticalSide);
+        public ReadOnlySpan<CastResult> AllResults    => results.AsSpan(0,                TotalNumRays);
+        public ReadOnlySpan<CastResult> BottomResults => results.AsSpan(bottomStartIndex, NumRaysPerHorizontalSide);
+        public ReadOnlySpan<CastResult> TopResults    => results.AsSpan(topStartIndex,    NumRaysPerHorizontalSide);
+        public ReadOnlySpan<CastResult> LeftResults   => results.AsSpan(leftStartIndex,   NumRaysPerVerticalSide);
+        public ReadOnlySpan<CastResult> RightResults  => results.AsSpan(rightStartIndex,  NumRaysPerVerticalSide);
 
-        public BoxColliderPerimeterCaster(BoxCollider2D box, RayCasterSettings settings)
+        public BoundedRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
             Box = box;
             Settings = settings;
@@ -103,34 +92,33 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             NumRaysPerVerticalSide   = MathUtils.ComputeDivisions(boxInfo.Size.y, Settings.RaySpacing);
             TotalNumRays = 2 * (NumRaysPerHorizontalSide + NumRaysPerVerticalSide);
             
-            results = new Result[TotalNumRays];
+            results = new CastResult[TotalNumRays];
             bottomStartIndex = 0;
             topStartIndex    = bottomStartIndex + NumRaysPerVerticalSide;
             leftStartIndex   = topStartIndex    + NumRaysPerHorizontalSide;
             rightStartIndex  = leftStartIndex   + NumRaysPerHorizontalSide;
         }
         
-        public void Cast()
+        public void CastAll()
         {
-            BoxInfo boxInfo = new BoxInfo(Box, Settings.Offset);            
+            BoxInfo boxInfo = new BoxInfo(Box, Settings.Offset);
+            lineCaster.DistanceOffset = Settings.Offset;
+            lineCaster.TargetLayers   = Settings.TargetLayers;
             for (int i = 0; i < NumRaysPerHorizontalSide; i++)
             {
-                results[bottomStartIndex + i] = CastLine(boxInfo.Center, boxInfo.DownDir);
-                results[topStartIndex    + i] = CastLine(boxInfo.Center, boxInfo.UpDir);
+                Cast(rayIndex: bottomStartIndex + i, origin: boxInfo.Center, direction: boxInfo.DownDir);
+                Cast(rayIndex: topStartIndex    + i, origin: boxInfo.Center, direction: boxInfo.UpDir);
             }
             for (int i = 0; i < NumRaysPerVerticalSide; i++)
             {
-                results[leftStartIndex  + i] = CastLine(boxInfo.Center, boxInfo.LeftDir);
-                results[rightStartIndex + i] = CastLine(boxInfo.Center, boxInfo.RightDir);
+                Cast(rayIndex: leftStartIndex  + i, origin: boxInfo.Center, direction: boxInfo.LeftDir);
+                Cast(rayIndex: rightStartIndex + i, origin: boxInfo.Center, direction: boxInfo.RightDir);
             }
         }
-
-        private Result CastLine(Vector2 origin, Vector2 direction)
+        
+        private void Cast(int rayIndex, Vector2 origin, Vector2 direction)
         {
-            bool isHit = lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance,
-                out LineCaster.Line line,
-                out LineCaster.Hit  hit);
-            return new Result(line, isHit ? hit : null);
+            results[rayIndex] = lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance);
         }
     }
 }

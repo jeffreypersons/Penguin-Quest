@@ -23,16 +23,16 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
 
-        [SerializeField] private BoxColliderPerimeterCaster _perimeterCaster = default;
+        [SerializeField] private BoundedRayCaster _perimeterCaster = default;
         
         [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
-        private BoxColliderPerimeterCaster PerimeterCaster
+        private BoundedRayCaster PerimeterCaster
         {
             get
             {
                 if (_perimeterCaster == default)
                 {
-                    _perimeterCaster = new BoxColliderPerimeterCaster(colliderToCastFrom, perimeterCasterSettings);
+                    _perimeterCaster = new BoundedRayCaster(colliderToCastFrom, perimeterCasterSettings);
                 }
                 _perimeterCaster.Settings = perimeterCasterSettings;
                 return _perimeterCaster;
@@ -56,7 +56,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         */
         public void CheckForGround()
         {
-            PerimeterCaster.Cast();
+            PerimeterCaster.CastAll();
 
             if (PerimeterCaster.BottomResults[1].hit.HasValue)
             {
@@ -69,7 +69,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
                 SurfaceNormal = Vector2.up;
             }
         }
-
+        
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
@@ -78,12 +78,12 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
                 CheckForGround();
             }
 
-            foreach (BoxColliderPerimeterCaster.Result result in PerimeterCaster.AllResults)
+            foreach (CastResult result in PerimeterCaster.AllResults)
             {
-                GizmosUtils.DrawLine(from: result.line.start, to: result.line.end, color: Color.red);
+                GizmosUtils.DrawLine(from: result.origin, to: result.terminal, color: Color.red);
                 if (result.hit != null)
                 {
-                    GizmosUtils.DrawLine(from: result.line.start, to: result.hit.Value.point, color: Color.green);
+                    GizmosUtils.DrawLine(from: result.origin, to: result.hit.Value.point, color: Color.green);
                 }
             }
         }
