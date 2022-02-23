@@ -1,124 +1,198 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Utils;
 using PenguinQuest.Data;
+using PenguinQuest.Utils;
 
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
     /*
+    Box with axes extending from center to right and top sides respectively.
+
+    Note that this takes world position and rotation into account but not scale,
+    as given size directly dictates the length of the axes.
+    */
+    public class OrientedBounds
+    {
+        public Vector2 Center      { get; private set; }
+        public Vector2 Size        { get; private set; }
+        public float   Orientation { get; private set; }
+
+        public Vector2 LeftBottom  { get; private set; }
+        public Vector2 LeftTop     { get; private set; }
+        public Vector2 RightBottom { get; private set; }
+        public Vector2 RightTop    { get; private set; }
+            
+        public Vector2 LeftDir     { get; private set; }
+        public Vector2 RightDir    { get; private set; }
+        public Vector2 DownDir     { get; private set; }
+        public Vector2 UpDir       { get; private set; }
+
+        public OrientedBounds()
+        {
+            Set(Vector2.zero, Vector2.zero, Vector2.right, Vector2.up);
+        }
+        public OrientedBounds(Vector2 center, Vector2 size, Vector2 right, Vector2 up)
+        {
+            Set(center, size, right, up);
+        }
+        
+        public void Update(Vector2 center, Vector2 size, Vector2 right, Vector2 up)
+        {
+            bool hasMoved   = !MathUtils.AreComponentsEqual(center, Center);
+            bool hasResized = !MathUtils.AreComponentsEqual(size, Size);
+            bool hasRotated = !MathUtils.AreDirectionsEqual_Fast(right, RightDir) || !MathUtils.AreDirectionsEqual_Fast(up, UpDir);
+
+            if (hasMoved && !hasResized && !hasRotated)
+            {
+                MoveTo(center);
+            }
+            else if (hasMoved || hasResized || hasRotated)
+            {
+                Set(center, size, right, up);
+            }
+        }
+
+        private void Set(Vector2 center, Vector2 size, Vector2 right, Vector2 up)
+        {
+            Vector2 upAxis       = up.normalized;
+            Vector2 rightAxis    = right.normalized;
+            Vector2 halfDiagonal = (0.50f * size.x * rightAxis) + (0.50f * size.y * upAxis);
+            Vector2 min          = center + halfDiagonal;
+            Vector2 max          = center - halfDiagonal;
+
+            Center = center;
+            Size        = max - min;
+            LeftBottom  = new Vector2(min.x, min.y);
+            LeftTop     = new Vector2(min.x, max.y);
+            RightBottom = new Vector2(max.x, min.y);
+            RightTop    = new Vector2(max.x, max.y);
+            UpDir       = upAxis;
+            RightDir    = rightAxis;
+            DownDir     = -1f * upAxis;
+            LeftDir     = -1f * rightAxis;
+        }
+
+        private void MoveTo(Vector2 center)
+        {
+            Vector2 displacement = center - Center;
+            Center      += displacement;
+            LeftBottom  += displacement;
+            LeftTop     += displacement;
+            RightBottom += displacement;
+            RightTop    += displacement;
+        }
+    }
+    
+    /*
     Provides a streamlined interface for casting lines from along each side of an AAB.
     */
     public class BoundedRayCaster
     {
-        // todo: generalize this and apply the same idea to what we use with cameras and extract it out to the data dir
-        // todo: use local coords instead
-        private struct BoxInfo
-        {
-            public readonly Vector2 Center;
-            public readonly Vector2 Size;
-
-            public readonly Vector2 LeftBottom;
-            public readonly Vector2 LeftTop;
-            public readonly Vector2 RightBottom;
-            public readonly Vector2 RightTop;
-
-            public readonly Vector2 LeftDir;
-            public readonly Vector2 RightDir;
-            public readonly Vector2 DownDir;
-            public readonly Vector2 UpDir;
-
-            public BoxInfo(Collider2D box, float boundsOffset)
-            {
-                Bounds bounds = box.bounds;
-                bounds.Expand(boundsOffset);
-                Vector2 mid = box.transform.position;
-                Vector2 min = box.transform.TransformPoint(box.bounds.min);
-                Vector2 max = box.transform.TransformPoint(box.bounds.max);
-
-                Center      = mid;
-                Size        = max - min;
-                LeftBottom  = new Vector2(min.x, min.y);
-                LeftTop     = new Vector2(min.x, max.y);
-                RightBottom = new Vector2(max.x, min.y);
-                RightTop    = new Vector2(max.x, max.y);
-                UpDir       = box.transform.up.normalized;
-                RightDir    = box.transform.forward.normalized;
-                DownDir     = -1f * UpDir;
-                LeftDir     = -1f * RightDir;
-            }
-        }
-
-
         private int bottomStartIndex;
         private int topStartIndex;
         private int leftStartIndex;
         private int rightStartIndex;
-        private LineCaster lineCaster;
-        private CastResult[] results;
+        private CastResult[] results = null;
 
-        public Collider2D        Box      { get; set; }
+        private BoxCollider2D  box;
+        private OrientedBounds originBounds;
+        private LineCaster     lineCaster;
+
         public RayCasterSettings Settings { get; set; }
+        public Vector2 CenterOfBounds => originBounds.Center;
+        public Vector2 SizeOfBounds   => originBounds.Size;
 
-        public int NumRaysPerHorizontalSide { get; private set; }
-        public int NumRaysPerVerticalSide   { get; private set; }
-        public int TotalNumRays             { get; private set; }
+        public float   RaySpacingVerticalSide   { get; private set; }
+        public float   RaySpacingHorizontalSide { get; private set; }
+        public int     NumRaysPerHorizontalSide { get; private set; }
+        public int     NumRaysPerVerticalSide   { get; private set; }
+        public int     TotalNumRays             { get; private set; }
 
         public ReadOnlySpan<CastResult> AllResults    => results.AsSpan(0,                TotalNumRays);
         public ReadOnlySpan<CastResult> BottomResults => results.AsSpan(bottomStartIndex, NumRaysPerHorizontalSide);
         public ReadOnlySpan<CastResult> TopResults    => results.AsSpan(topStartIndex,    NumRaysPerHorizontalSide);
         public ReadOnlySpan<CastResult> LeftResults   => results.AsSpan(leftStartIndex,   NumRaysPerVerticalSide);
         public ReadOnlySpan<CastResult> RightResults  => results.AsSpan(rightStartIndex,  NumRaysPerVerticalSide);
-
+      
         public BoundedRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
-            Box = box;
-            Settings = settings;
-            Init();
+            this.box          = box;
+            this.Settings     = settings;
+            this.lineCaster   = new LineCaster(settings);
+            this.originBounds = new OrientedBounds();
+            UpdateOrientedBounds(box.bounds, box.transform, settings.Offset);
+            ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, originBounds.Size);
         }
         
-        // todo: add caching so we don't reallocate every single time!
-        private void Init()
+        /* Cast outwards from each side of the bounding box. */
+        public void CastAll()
         {
-            // todo: consider integrating entirely into here without using linecaster objects
-            lineCaster = new LineCaster()
+            UpdateOrientedBounds(box.bounds, box.transform, Settings.Offset);
+            ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, originBounds.Size);
+
+            Vector2 horizontalStep = RaySpacingHorizontalSide * originBounds.RightDir;
+            for (int i = 0; i < NumRaysPerHorizontalSide; i++)
             {
-                DistanceOffset = Settings.Offset,
-                TargetLayers   = Settings.TargetLayers
-            };
-            
-            BoxInfo boxInfo = new BoxInfo(Box, Settings.Offset);
-            NumRaysPerHorizontalSide = MathUtils.ComputeDivisions(boxInfo.Size.x, Settings.RaySpacing);
-            NumRaysPerVerticalSide   = MathUtils.ComputeDivisions(boxInfo.Size.y, Settings.RaySpacing);
-            TotalNumRays = 2 * (NumRaysPerHorizontalSide + NumRaysPerVerticalSide);
-            
-            results = new CastResult[TotalNumRays];
+                Vector2 offsetFromLeftSide = (i * horizontalStep);
+                results[bottomStartIndex + i] = Cast(originBounds.LeftBottom + offsetFromLeftSide, originBounds.DownDir);
+                results[topStartIndex    + i] = Cast(originBounds.LeftTop    + offsetFromLeftSide, originBounds.UpDir);
+            }
+
+            Vector2 verticalStep = RaySpacingVerticalSide * originBounds.UpDir;
+            for (int i = 0; i < NumRaysPerHorizontalSide; i++)
+            {
+                Vector2 offsetFromBottomSide = (i * verticalStep);
+                results[leftStartIndex  + i] = Cast(originBounds.LeftBottom  + offsetFromBottomSide, originBounds.LeftDir);
+                results[rightStartIndex + i] = Cast(originBounds.RightBottom + offsetFromBottomSide, originBounds.RightDir);
+            }
+        }
+
+        private CastResult Cast(Vector2 origin, Vector2 direction)
+        {
+            return lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance);
+        }
+
+        private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)
+        {
+            Bounds expandedBounds = box.bounds;
+            expandedBounds.Expand(boundsOffset);
+
+            if (originBounds == null)
+            {
+                originBounds = new OrientedBounds(bounds.center, bounds.size, transform.forward, transform.up);
+            }
+            else
+            {
+                originBounds.Update(bounds.center, bounds.size, transform.forward, transform.up);
+            }
+        }
+
+        private void ComputeRaySpacingAndCounts(float distanceBetweenRays, Vector2 size)
+        {
+            int numRaysPerHorizontalSide = Mathf.RoundToInt(size.x / distanceBetweenRays);
+            int numRaysPerVerticalSide   = Mathf.RoundToInt(size.y / distanceBetweenRays);
+            if (NumRaysPerHorizontalSide != numRaysPerHorizontalSide ||
+                NumRaysPerVerticalSide   != numRaysPerVerticalSide)
+            {
+                NumRaysPerHorizontalSide = numRaysPerHorizontalSide;
+                NumRaysPerVerticalSide   = numRaysPerVerticalSide;
+                TotalNumRays = 2 * (NumRaysPerHorizontalSide + NumRaysPerVerticalSide);
+            }
+
+
+            RaySpacingHorizontalSide = size.y / (NumRaysPerHorizontalSide - 1);
+            RaySpacingVerticalSide   = size.x / (NumRaysPerVerticalSide   - 1);
+
             bottomStartIndex = 0;
             topStartIndex    = bottomStartIndex + NumRaysPerVerticalSide;
             leftStartIndex   = topStartIndex    + NumRaysPerHorizontalSide;
             rightStartIndex  = leftStartIndex   + NumRaysPerHorizontalSide;
-        }
-        
-        public void CastAll()
-        {
-            BoxInfo boxInfo = new BoxInfo(Box, Settings.Offset);
-            lineCaster.DistanceOffset = Settings.Offset;
-            lineCaster.TargetLayers   = Settings.TargetLayers;
-            for (int i = 0; i < NumRaysPerHorizontalSide; i++)
+
+            if (results == null || results.Length != TotalNumRays)
             {
-                Cast(rayIndex: bottomStartIndex + i, origin: boxInfo.Center, direction: boxInfo.DownDir);
-                Cast(rayIndex: topStartIndex    + i, origin: boxInfo.Center, direction: boxInfo.UpDir);
+                results = new CastResult[TotalNumRays];
             }
-            for (int i = 0; i < NumRaysPerVerticalSide; i++)
-            {
-                Cast(rayIndex: leftStartIndex  + i, origin: boxInfo.Center, direction: boxInfo.LeftDir);
-                Cast(rayIndex: rightStartIndex + i, origin: boxInfo.Center, direction: boxInfo.RightDir);
-            }
-        }
-        
-        private void Cast(int rayIndex, Vector2 origin, Vector2 direction)
-        {
-            results[rayIndex] = lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance);
         }
     }
 }
