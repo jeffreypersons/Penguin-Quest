@@ -38,11 +38,13 @@ namespace PenguinQuest.Data
     */
     public class LineCaster
     {
-        public float     DistanceOffset { get; set; } = 0f;
-        public LayerMask TargetLayers   { get; set; } = ~0;
+        public RayCasterSettings Settings { get; set; }
+                
+        public LineCaster(RayCasterSettings settings)
+        {
+            Settings = settings;
+        }
 
-        public LineCaster() { }
-        
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
         public CastResult CastFromPoint(Vector2 point, Vector2 direction, float distance)
         {
@@ -64,12 +66,15 @@ namespace PenguinQuest.Data
 
         private CastResult CastLine(Vector2 from, Vector2 to)
         {
-            Vector2 offset = DistanceOffset * (to - from).normalized;
+            float offsetAmount = Settings.Offset;
+            LayerMask layerMask = Settings.TargetLayers;
+
+            Vector2 offset = offsetAmount * (to - from).normalized;
             Vector2 start  = from + offset;
             Vector2 end    = to   + offset;
-
+            
             CastHit? hit = null;
-            RaycastHit2D rayHit = Physics2D.Linecast(start, end, TargetLayers);
+            RaycastHit2D rayHit = Physics2D.Linecast(start, end, layerMask);
             if (rayHit)
             {
                 hit = new CastHit(rayHit.point, rayHit.normal, rayHit.distance, rayHit.collider);
