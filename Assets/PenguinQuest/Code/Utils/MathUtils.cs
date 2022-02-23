@@ -50,46 +50,31 @@ namespace PenguinQuest.Utils
         {
             return new Vector2(-vector.y, vector.x);
         }
-
-
+        
+        public static Vector2 RotateVector(Vector2 vector, float degrees)
+        {
+            float radians  = degrees * Mathf.Deg2Rad;
+            float cosTheta = Mathf.Cos(radians);
+            float sinTheta = Mathf.Sin(radians);
+            return new Vector2(
+                x: (cosTheta * vector.x) - (sinTheta * vector.y),
+                y: (sinTheta * vector.x) + (cosTheta * vector.y));
+        }
+        
         /*
         Compute point rotated degrees clockwise about given local origin.
 
         Determines point relative to origin, rotates, and translates back to get our newly rotated position.
         */
-        public static Vector2 RotateClockwise(Vector2 point, float degrees, Vector2? origin = null)
+        public static Vector2 RotatePointAroundPivot(Vector2 point, Vector2 pivot, float degrees)
         {
-            Vector2 pivot = origin.GetValueOrDefault(Vector2.zero);
             Vector2 pointLocalToPivot = point - pivot;
             float radians = degrees * Mathf.Deg2Rad;
             float cosTheta = Mathf.Cos(radians);
             float sinTheta = Mathf.Sin(radians);
-            return new Vector2( (pointLocalToPivot.x * cosTheta) + (pointLocalToPivot.y * sinTheta) + pivot.x,
-                               -(pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
-        }
-
-        /*
-        Compute point rotated degrees counter-clockwise about given local origin.
-     
-        Determines point relative to origin, rotates, and translates back to get our newly rotated position).
-        */
-        public static Vector2 RotateCounterClockwise(Vector2 point, float degrees, Vector2? origin = null)
-        {
-            Vector2 pivot = origin.GetValueOrDefault(Vector2.zero);
-            Vector2 pointLocalToPivot = point - pivot;
-            float radians  = degrees * Mathf.Deg2Rad;
-            float cosTheta = Mathf.Cos(radians);
-            float sinTheta = Mathf.Sin(radians);
-            return new Vector2((pointLocalToPivot.x * cosTheta) - (pointLocalToPivot.y * sinTheta) + pivot.x,
-                               (pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
-        }
-        public static Vector2 RotateClockwise3D(Vector3 vector, float degrees)
-        {
-            return Quaternion.AngleAxis(-degrees, vector) * vector;
-        }
-        public static Vector2 RotateCounterClockwise3D(Vector3 vector, float degrees)
-        {
-            return Quaternion.AngleAxis(degrees, vector) * vector;
+            return new Vector2(
+                x: pivot.x + (pointLocalToPivot.x * cosTheta) + (pointLocalToPivot.y * sinTheta),
+                y: pivot.y - (pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta));
         }
 
         public static bool AreScalarsEqual(float a, float b)
@@ -135,7 +120,11 @@ namespace PenguinQuest.Utils
             return AreComponentsEqual(directionA, directionB);
         }
 
-    
+        public static bool AreDirectionsEqual_Fast(Vector2 a, Vector2 b)
+        {
+            return Vector2.Dot(a, b) == 1f;
+        }
+
         /* Assuming given value is between 0, 100, convert to a ratio between 0.00 and 1.00. */
         public static float PercentToRatio(float percent)
         {
