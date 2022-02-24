@@ -67,7 +67,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             Vector2 max          = center - halfDiagonal;
 
             Center      = center;
-            Size        = max - min;
+            Size        = size;
             LeftBottom  = new Vector2(min.x, min.y);
             LeftTop     = new Vector2(min.x, max.y);
             RightBottom = new Vector2(max.x, min.y);
@@ -99,7 +99,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         private int topStartIndex;
         private int leftStartIndex;
         private int rightStartIndex;
-        private CastResult[] results = null;
+        private CastResult[] results;
 
         private BoxCollider2D  box;
         private OrientedBounds originBounds;
@@ -118,8 +118,9 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public override string ToString()
         {
             return $"{base.ToString()}:" +
-                   $"{originBounds}" +
-                   $"{Settings}" +
+                   $"{originBounds}, " +
+                   $"{Settings}, " +
+                   $"DistanceBetweenRays:{Settings.DistanceBetweenRays}, " +
                    $"Horizontal{{spacing:{RaySpacingHorizontalSide},numRays:{NumRaysPerHorizontalSide}}}, " +
                    $"Vertical{{spacing:{RaySpacingVerticalSide},numRays:{NumRaysPerVerticalSide}}}";
         }
@@ -136,6 +137,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             this.Settings     = settings;
             this.lineCaster   = new LineCaster(settings);
             this.originBounds = new OrientedBounds();
+            this.results      = Array.Empty<CastResult>();
             UpdateOrientedBounds(box.bounds, box.transform, settings.Offset);
             ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, originBounds.Size);
         }
@@ -170,21 +172,14 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)
         {
-            Bounds expandedBounds = box.bounds;
+            Bounds expandedBounds = bounds;
             expandedBounds.Expand(boundsOffset);
-
-            if (originBounds == null)
-            {
-                originBounds = new OrientedBounds(bounds.center, bounds.size, transform.forward, transform.up);
-            }
-            else
-            {
-                originBounds.Update(bounds.center, bounds.size, transform.forward, transform.up);
-            }
+            originBounds.Update(expandedBounds.center, expandedBounds.size, transform.right, transform.up);
         }
 
         private void ComputeRaySpacingAndCounts(float distanceBetweenRays, Vector2 size)
         {
+            Debug.Log(this);
             int numRaysPerHorizontalSide = Mathf.RoundToInt(size.x / distanceBetweenRays);
             int numRaysPerVerticalSide   = Mathf.RoundToInt(size.y / distanceBetweenRays);
             if (NumRaysPerHorizontalSide != numRaysPerHorizontalSide ||
@@ -204,7 +199,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             leftStartIndex   = topStartIndex    + NumRaysPerHorizontalSide;
             rightStartIndex  = leftStartIndex   + NumRaysPerHorizontalSide;
 
-            if (results == null || results.Length != TotalNumRays)
+            if (results.Length != TotalNumRays)
             {
                 results = new CastResult[TotalNumRays];
             }
