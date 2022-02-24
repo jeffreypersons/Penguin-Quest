@@ -19,8 +19,8 @@ namespace PenguinQuest.Controllers
                  "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
         [Range(0.01f, 1.00f)] [SerializeField] private float locomotionBlendStep = 0.10f;
 
-        [Header("Physics Settings")]
-        [Range(0.50f, 100.00f)] [SerializeField] private float maxInputSpeed = 10.0f;
+        //[Header("Physics Settings")]
+        //[Range(0.50f, 100.00f)] [SerializeField] private float maxInputSpeed = 10.0f;
 
 
         private PenguinEntity penguinEntity;

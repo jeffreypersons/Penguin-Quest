@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace PenguinQuest.Utils
@@ -49,46 +50,31 @@ namespace PenguinQuest.Utils
         {
             return new Vector2(-vector.y, vector.x);
         }
-
-
+        
+        public static Vector2 RotateVector(Vector2 vector, float degrees)
+        {
+            float radians  = degrees * Mathf.Deg2Rad;
+            float cosTheta = Mathf.Cos(radians);
+            float sinTheta = Mathf.Sin(radians);
+            return new Vector2(
+                x: (cosTheta * vector.x) - (sinTheta * vector.y),
+                y: (sinTheta * vector.x) + (cosTheta * vector.y));
+        }
+        
         /*
         Compute point rotated degrees clockwise about given local origin.
 
         Determines point relative to origin, rotates, and translates back to get our newly rotated position.
         */
-        public static Vector2 RotateClockwise(Vector2 point, float degrees, Vector2? origin = null)
+        public static Vector2 RotatePointAroundPivot(Vector2 point, Vector2 pivot, float degrees)
         {
-            Vector2 pivot = origin.GetValueOrDefault(Vector2.zero);
             Vector2 pointLocalToPivot = point - pivot;
             float radians = degrees * Mathf.Deg2Rad;
             float cosTheta = Mathf.Cos(radians);
             float sinTheta = Mathf.Sin(radians);
-            return new Vector2( (pointLocalToPivot.x * cosTheta) + (pointLocalToPivot.y * sinTheta) + pivot.x,
-                               -(pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
-        }
-
-        /*
-        Compute point rotated degrees counter-clockwise about given local origin.
-     
-        Determines point relative to origin, rotates, and translates back to get our newly rotated position).
-        */
-        public static Vector2 RotateCounterClockwise(Vector2 point, float degrees, Vector2? origin = null)
-        {
-            Vector2 pivot = origin.GetValueOrDefault(Vector2.zero);
-            Vector2 pointLocalToPivot = point - pivot;
-            float radians  = degrees * Mathf.Deg2Rad;
-            float cosTheta = Mathf.Cos(radians);
-            float sinTheta = Mathf.Sin(radians);
-            return new Vector2((pointLocalToPivot.x * cosTheta) - (pointLocalToPivot.y * sinTheta) + pivot.x,
-                               (pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta) + pivot.y);
-        }
-        public static Vector2 RotateClockwise3D(Vector3 vector, float degrees)
-        {
-            return Quaternion.AngleAxis(-degrees, vector) * vector;
-        }
-        public static Vector2 RotateCounterClockwise3D(Vector3 vector, float degrees)
-        {
-            return Quaternion.AngleAxis(degrees, vector) * vector;
+            return new Vector2(
+                x: pivot.x + (pointLocalToPivot.x * cosTheta) + (pointLocalToPivot.y * sinTheta),
+                y: pivot.y - (pointLocalToPivot.x * sinTheta) + (pointLocalToPivot.y * cosTheta));
         }
 
         public static bool AreScalarsEqual(float a, float b)
@@ -134,7 +120,11 @@ namespace PenguinQuest.Utils
             return AreComponentsEqual(directionA, directionB);
         }
 
-    
+        public static bool AreDirectionsEqual_Fast(Vector2 a, Vector2 b)
+        {
+            return Vector2.Dot(a, b) == 1f;
+        }
+
         /* Assuming given value is between 0, 100, convert to a ratio between 0.00 and 1.00. */
         public static float PercentToRatio(float percent)
         {
@@ -176,6 +166,50 @@ namespace PenguinQuest.Utils
         public static bool IsOverlappingRange(float startA, float endA, float startB, float endB)
         {
             return startA <= endB && startB <= endA;
+        }
+        
+
+        /*
+        Fills given result list with points interpolated between given start and end positions.
+
+        Given endpoints and number of points n, we divide the line into n + 1 segments and compute
+        the point between each segment. Note that this includes endpoints.
+        
+        For example, given 3 points (0, 0) and (10, 10), we cut the line into 4 pieces
+        as percents along the line: [0.00, 0.25], [0.25, 0.50], [0.50, 0.75], [0.75, 1.00],
+        which gives us the 3 points in between of (2.5, 2.5), (5, 5), (7.5, 7.5),
+        plus their endpoints.
+        */
+        public static List<Vector2> InterpolatePoints(Vector2 from, Vector2 to, int numPointsInBetween)
+        {
+            int   numPoints   = numPointsInBetween + 2;
+            int   numSegments = numPointsInBetween + 1;
+            float stepSize    = 1f / numSegments;
+
+            float currentStep = 0f;
+            List<Vector2> result = new List<Vector2>(numPoints);
+            for (int i = 0; i < numPoints; i++)
+            {
+                result.Add(Vector2.Lerp(from, to, currentStep));
+                currentStep += stepSize;
+            }
+            return result;
+        }
+
+        /*
+        How many times does delta fit into length?
+        */
+        public static int ComputeDivisions(float length, float delta)
+        {
+            float clampedDelta = Mathf.Clamp01(delta);
+            return Mathf.Approximately(clampedDelta, 0f)?
+                0 :
+                Mathf.RoundToInt(length / clampedDelta);
+        }
+
+        public static Vector2 MidPoint(Vector2 from, Vector2 to)
+        {
+            return Vector2.Lerp(from, to, 0.5f);
         }
     }
 }
