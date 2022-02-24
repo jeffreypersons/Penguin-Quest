@@ -5,7 +5,7 @@ namespace PenguinQuest.Data
 {
     [CreateAssetMenu(
         fileName = "CharacterControllerSettings",
-        menuName = "ScriptableObjects/CharacterControllerSettings",
+        menuName = "ScriptableObjects/CharacterController2DSettings",
         order    = 1)]
     public class CharacterController2DSettings : ScriptableObject
     {
@@ -19,6 +19,7 @@ namespace PenguinQuest.Data
         public bool  EnableAutomaticAxisLockingForSmallVelocities => enableAutomaticAxisLockingForSmallVelocities;
         public float LinearVelocityThreshold                      => linearVelocityThreshold;
         public float AngularVelocityThreshold                     => angularVelocityThreshold;
+        
 
 
         [Header("Surface Handling Ranges")]

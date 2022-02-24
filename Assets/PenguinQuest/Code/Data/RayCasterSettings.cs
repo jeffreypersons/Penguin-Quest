@@ -9,6 +9,13 @@ namespace PenguinQuest.Data
         order    = 1)]
     public class RayCasterSettings : ScriptableObject
     {
+        public float     Offset              => rayCastOffset;
+        public float     MaxDistance         => maxRayDistance;
+        public LayerMask TargetLayers        => targetLayers;
+        public float     DistanceBetweenRays => distanceBetweenRays;
+
+
+
         [Header("Cast Settings")]
 
         [Tooltip("How much distance between each ray (if relevant)?")]
@@ -22,10 +29,5 @@ namespace PenguinQuest.Data
 
         [Tooltip("What layers do we take into consider when testing for a ray hit?")]
         [SerializeField] private LayerMask targetLayers = ~0;
-
-        public float     Offset              => rayCastOffset;
-        public float     MaxDistance         => maxRayDistance;
-        public LayerMask TargetLayers        => targetLayers;
-        public float     DistanceBetweenRays => distanceBetweenRays;
     }
 }

@@ -7,10 +7,9 @@ using PenguinQuest.Utils;
 namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
     /*
-    Box with axes extending from center to right and top sides respectively.
+    Box aligned with axes extending from center to right and top sides respectively.
 
-    Note that this takes world position and rotation into account but not scale,
-    as given size directly dictates the length of the axes.
+    In other words, given axes for x and y.
     */
     public class OrientedBounds
     {
@@ -28,6 +27,11 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public Vector2 DownDir     { get; private set; }
         public Vector2 UpDir       { get; private set; }
 
+        public override string ToString()
+        {
+            return $"{base.ToString()}(Center:{Center}, Width:{Size.x}, Height:{Size.y}, Rotation:{Orientation})";
+        }
+
         public OrientedBounds()
         {
             Set(Vector2.zero, Vector2.zero, Vector2.right, Vector2.up);
@@ -40,8 +44,9 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public void Update(Vector2 center, Vector2 size, Vector2 right, Vector2 up)
         {
             bool hasMoved   = !MathUtils.AreComponentsEqual(center, Center);
-            bool hasResized = !MathUtils.AreComponentsEqual(size, Size);
-            bool hasRotated = !MathUtils.AreDirectionsEqual_Fast(right, RightDir) || !MathUtils.AreDirectionsEqual_Fast(up, UpDir);
+            bool hasResized = !MathUtils.AreComponentsEqual(size,   Size);
+            bool hasRotated = !MathUtils.AreDirectionsEqual_Fast(right, RightDir) ||
+                              !MathUtils.AreDirectionsEqual_Fast(up,    UpDir);
 
             if (hasMoved && !hasResized && !hasRotated)
             {
@@ -61,7 +66,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             Vector2 min          = center + halfDiagonal;
             Vector2 max          = center - halfDiagonal;
 
-            Center = center;
+            Center      = center;
             Size        = max - min;
             LeftBottom  = new Vector2(min.x, min.y);
             LeftTop     = new Vector2(min.x, max.y);
@@ -71,6 +76,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             RightDir    = rightAxis;
             DownDir     = -1f * upAxis;
             LeftDir     = -1f * rightAxis;
+            Orientation = MathUtils.AngleFromYAxis(UpDir);
         }
 
         private void MoveTo(Vector2 center)
@@ -103,11 +109,20 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public Vector2 CenterOfBounds => originBounds.Center;
         public Vector2 SizeOfBounds   => originBounds.Size;
 
-        public float   RaySpacingVerticalSide   { get; private set; }
         public float   RaySpacingHorizontalSide { get; private set; }
+        public float   RaySpacingVerticalSide   { get; private set; }
         public int     NumRaysPerHorizontalSide { get; private set; }
         public int     NumRaysPerVerticalSide   { get; private set; }
         public int     TotalNumRays             { get; private set; }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}:" +
+                   $"{originBounds}" +
+                   $"{Settings}" +
+                   $"Horizontal{{spacing:{RaySpacingHorizontalSide},numRays:{NumRaysPerHorizontalSide}}}, " +
+                   $"Vertical{{spacing:{RaySpacingVerticalSide},numRays:{NumRaysPerVerticalSide}}}";
+        }
 
         public ReadOnlySpan<CastResult> AllResults    => results.AsSpan(0,                TotalNumRays);
         public ReadOnlySpan<CastResult> BottomResults => results.AsSpan(bottomStartIndex, NumRaysPerHorizontalSide);
