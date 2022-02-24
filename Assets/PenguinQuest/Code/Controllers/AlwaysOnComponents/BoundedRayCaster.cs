@@ -29,7 +29,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         public override string ToString()
         {
-            return $"{base.ToString()}(Center:{Center}, Width:{Size.x}, Height:{Size.y}, Rotation:{Orientation})";
+            return $"Center:{Center},Size:{Size},Rotation:{Orientation}";
         }
 
         public OrientedBounds()
@@ -117,12 +117,18 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         public override string ToString()
         {
-            return $"{base.ToString()}:" +
-                   $"{originBounds}, " +
-                   $"{Settings}, " +
-                   $"DistanceBetweenRays:{Settings.DistanceBetweenRays}, " +
-                   $"Horizontal{{spacing:{RaySpacingHorizontalSide},numRays:{NumRaysPerHorizontalSide}}}, " +
-                   $"Vertical{{spacing:{RaySpacingVerticalSide},numRays:{NumRaysPerVerticalSide}}}";
+            return $"{GetType().Name}:" +
+                $"RayCasts{{" +
+                    $"totalCount:{TotalNumRays}," +
+                    $"settings:{Settings.name}}}, " +
+                $"RaysPerHorizontalSide{{" +
+                    $"spacing:{RaySpacingHorizontalSide}," +
+                    $"count:{NumRaysPerHorizontalSide}}}, " +
+                $"RaysPerVerticalSide{{" +
+                    $"spacing:{RaySpacingVerticalSide}," +
+                    $"count:{NumRaysPerVerticalSide}}}, " +
+                $"OrientedBounds{{" +
+                    $"{originBounds}}}";
         }
 
         public ReadOnlySpan<CastResult> AllResults    => results.AsSpan(0,                TotalNumRays);
@@ -140,8 +146,9 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             this.results      = Array.Empty<CastResult>();
             UpdateOrientedBounds(box.bounds, box.transform, settings.Offset);
             ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, originBounds.Size);
+            Debug.Log(this);
         }
-        
+
         /* Cast outwards from each side of the bounding box. */
         public void CastAll()
         {
@@ -179,7 +186,6 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         private void ComputeRaySpacingAndCounts(float distanceBetweenRays, Vector2 size)
         {
-            Debug.Log(this);
             int numRaysPerHorizontalSide = Mathf.RoundToInt(size.x / distanceBetweenRays);
             int numRaysPerVerticalSide   = Mathf.RoundToInt(size.y / distanceBetweenRays);
             if (NumRaysPerHorizontalSide != numRaysPerHorizontalSide ||
