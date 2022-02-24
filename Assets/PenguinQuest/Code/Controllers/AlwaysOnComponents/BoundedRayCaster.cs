@@ -63,8 +63,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             Vector2 upAxis       = up.normalized;
             Vector2 rightAxis    = right.normalized;
             Vector2 halfDiagonal = (0.50f * size.x * rightAxis) + (0.50f * size.y * upAxis);
-            Vector2 min          = center + halfDiagonal;
-            Vector2 max          = center - halfDiagonal;
+            Vector2 min          = center - halfDiagonal;
+            Vector2 max          = center + halfDiagonal;
 
             Center      = center;
             Size        = size;
@@ -164,7 +164,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             }
 
             Vector2 verticalStep = RaySpacingVerticalSide * originBounds.UpDir;
-            for (int i = 0; i < NumRaysPerHorizontalSide; i++)
+            for (int i = 0; i < NumRaysPerVerticalSide; i++)
             {
                 Vector2 offsetFromBottomSide = (i * verticalStep);
                 results[leftStartIndex  + i] = Cast(originBounds.LeftBottom  + offsetFromBottomSide, originBounds.LeftDir);
@@ -197,13 +197,14 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             }
 
 
-            RaySpacingHorizontalSide = size.y / (NumRaysPerHorizontalSide - 1);
-            RaySpacingVerticalSide   = size.x / (NumRaysPerVerticalSide   - 1);
+            RaySpacingHorizontalSide = size.x / (NumRaysPerHorizontalSide - 1);
+            RaySpacingVerticalSide   = size.y / (NumRaysPerVerticalSide   - 1);
 
+            // todo: look into if it's possible to just use spans set with start/end directly
             bottomStartIndex = 0;
-            topStartIndex    = bottomStartIndex + NumRaysPerVerticalSide;
+            topStartIndex    = bottomStartIndex + NumRaysPerHorizontalSide;
             leftStartIndex   = topStartIndex    + NumRaysPerHorizontalSide;
-            rightStartIndex  = leftStartIndex   + NumRaysPerHorizontalSide;
+            rightStartIndex  = leftStartIndex   + NumRaysPerVerticalSide;
 
             if (results.Length != TotalNumRays)
             {
