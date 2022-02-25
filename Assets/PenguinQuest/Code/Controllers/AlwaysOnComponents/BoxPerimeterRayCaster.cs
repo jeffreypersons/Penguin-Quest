@@ -93,7 +93,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     /*
     Provides a streamlined interface for casting lines from along each side of an AAB.
     */
-    public class BoundedRayCaster
+    public class BoxPerimeterRayCaster
     {
         private int bottomStartIndex;
         private int topStartIndex;
@@ -137,7 +137,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public ReadOnlySpan<CastResult> LeftResults   => results.AsSpan(leftStartIndex,   NumRaysPerVerticalSide);
         public ReadOnlySpan<CastResult> RightResults  => results.AsSpan(rightStartIndex,  NumRaysPerVerticalSide);
       
-        public BoundedRayCaster(BoxCollider2D box, RayCasterSettings settings)
+        public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
             this.box          = box;
             this.Settings     = settings;

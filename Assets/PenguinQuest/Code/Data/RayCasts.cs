@@ -39,7 +39,7 @@ namespace PenguinQuest.Data
     public class LineCaster
     {
         public RayCasterSettings Settings { get; set; }
-                
+
         public LineCaster(RayCasterSettings settings)
         {
             Settings = settings;
