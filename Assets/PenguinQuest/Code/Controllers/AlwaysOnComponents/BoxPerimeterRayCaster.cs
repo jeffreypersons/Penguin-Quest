@@ -6,7 +6,6 @@ using PenguinQuest.Utils;
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
-
     public class BoxPerimeterRayCaster
     {
         private int _bottomStartIndex;
@@ -18,7 +17,10 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         private BoxCollider2D  _box;
         private OrientedBounds _originBounds;
         private LineCaster     _lineCaster;
-        
+
+        private const int minNumRays = 0;
+        private const int maxNumRays = 10000;
+
         public RayCasterSettings Settings { get; set; }
         public Vector2 CenterOfBounds => _originBounds.Center;
         public Vector2 SizeOfBounds   => _originBounds.Size;
@@ -93,7 +95,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)
         {
             Bounds expandedBounds = bounds;
-            expandedBounds.Expand(boundsOffset);
+            expandedBounds.Expand(2 * boundsOffset);
             _originBounds.Update(expandedBounds.center, expandedBounds.size, transform.right, transform.up);
         }
 
@@ -104,8 +106,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             if (NumRaysPerHorizontalSide != numRaysPerHorizontalSide ||
                 NumRaysPerVerticalSide   != numRaysPerVerticalSide)
             {
-                NumRaysPerHorizontalSide = numRaysPerHorizontalSide;
-                NumRaysPerVerticalSide   = numRaysPerVerticalSide;
+                NumRaysPerHorizontalSide = Mathf.Clamp(numRaysPerHorizontalSide, minNumRays, maxNumRays);
+                NumRaysPerVerticalSide   = Mathf.Clamp(numRaysPerVerticalSide,   minNumRays, maxNumRays);
                 TotalNumRays = 2 * (NumRaysPerHorizontalSide + NumRaysPerVerticalSide);
             }
 
