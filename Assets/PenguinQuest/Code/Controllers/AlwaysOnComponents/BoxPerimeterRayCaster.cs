@@ -9,19 +9,19 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
     public class BoxPerimeterRayCaster
     {
-        private int bottomStartIndex;
-        private int topStartIndex;
-        private int leftStartIndex;
-        private int rightStartIndex;
-        private CastResult[] results;
-
-        private BoxCollider2D  box;
-        private OrientedBounds originBounds;
-        private LineCaster     lineCaster;
-
+        private int _bottomStartIndex;
+        private int _topStartIndex;
+        private int _leftStartIndex;
+        private int _rightStartIndex;
+        private CastResult[] _results;
+        
+        private BoxCollider2D  _box;
+        private OrientedBounds _originBounds;
+        private LineCaster     _lineCaster;
+        
         public RayCasterSettings Settings { get; set; }
-        public Vector2 CenterOfBounds => originBounds.Center;
-        public Vector2 SizeOfBounds   => originBounds.Size;
+        public Vector2 CenterOfBounds => _originBounds.Center;
+        public Vector2 SizeOfBounds   => _originBounds.Size;
 
         public float   RaySpacingHorizontalSide { get; private set; }
         public float   RaySpacingVerticalSide   { get; private set; }
@@ -42,60 +42,59 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
                     $"spacing:{RaySpacingVerticalSide}," +
                     $"count:{NumRaysPerVerticalSide}}}, " +
                 $"OrientedBounds{{" +
-                    $"{originBounds}}}";
+                    $"{_originBounds}}}";
         }
 
-        public ReadOnlySpan<CastResult> AllResults    => results.AsSpan(0,                TotalNumRays);
-        public ReadOnlySpan<CastResult> BottomResults => results.AsSpan(bottomStartIndex, NumRaysPerHorizontalSide);
-        public ReadOnlySpan<CastResult> TopResults    => results.AsSpan(topStartIndex,    NumRaysPerHorizontalSide);
-        public ReadOnlySpan<CastResult> LeftResults   => results.AsSpan(leftStartIndex,   NumRaysPerVerticalSide);
-        public ReadOnlySpan<CastResult> RightResults  => results.AsSpan(rightStartIndex,  NumRaysPerVerticalSide);
+        public ReadOnlySpan<CastResult> AllResults    => _results.AsSpan(0,                 TotalNumRays);
+        public ReadOnlySpan<CastResult> BottomResults => _results.AsSpan(_bottomStartIndex, NumRaysPerHorizontalSide);
+        public ReadOnlySpan<CastResult> TopResults    => _results.AsSpan(_topStartIndex,    NumRaysPerHorizontalSide);
+        public ReadOnlySpan<CastResult> LeftResults   => _results.AsSpan(_leftStartIndex,   NumRaysPerVerticalSide);
+        public ReadOnlySpan<CastResult> RightResults  => _results.AsSpan(_rightStartIndex,  NumRaysPerVerticalSide);
       
         public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
-            this.box          = box;
+            this._box          = box;
             this.Settings     = settings;
-            this.lineCaster   = new LineCaster(settings);
-            this.originBounds = new OrientedBounds();
-            this.results      = Array.Empty<CastResult>();
+            this._lineCaster   = new LineCaster(settings);
+            this._originBounds = new OrientedBounds();
+            this._results      = Array.Empty<CastResult>();
             UpdateOrientedBounds(box.bounds, box.transform, settings.Offset);
-            ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, originBounds.Size);
+            ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, _originBounds.Size);
             Debug.Log(this);
         }
 
-        /* Cast outwards from each side of the bounding box. */
         public void CastAll()
         {
-            UpdateOrientedBounds(box.bounds, box.transform, Settings.Offset);
-            ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, originBounds.Size);
+            UpdateOrientedBounds(_box.bounds, _box.transform, Settings.Offset);
+            ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, _originBounds.Size);
 
-            Vector2 horizontalStep = RaySpacingHorizontalSide * originBounds.RightDir;
+            Vector2 horizontalStep = RaySpacingHorizontalSide * _originBounds.RightDir;
             for (int i = 0; i < NumRaysPerHorizontalSide; i++)
             {
                 Vector2 offsetFromLeftSide = (i * horizontalStep);
-                results[bottomStartIndex + i] = Cast(originBounds.LeftBottom + offsetFromLeftSide, originBounds.DownDir);
-                results[topStartIndex    + i] = Cast(originBounds.LeftTop    + offsetFromLeftSide, originBounds.UpDir);
+                _results[_bottomStartIndex + i] = Cast(_originBounds.LeftBottom + offsetFromLeftSide, _originBounds.DownDir);
+                _results[_topStartIndex    + i] = Cast(_originBounds.LeftTop    + offsetFromLeftSide, _originBounds.UpDir);
             }
 
-            Vector2 verticalStep = RaySpacingVerticalSide * originBounds.UpDir;
+            Vector2 verticalStep = RaySpacingVerticalSide * _originBounds.UpDir;
             for (int i = 0; i < NumRaysPerVerticalSide; i++)
             {
                 Vector2 offsetFromBottomSide = (i * verticalStep);
-                results[leftStartIndex  + i] = Cast(originBounds.LeftBottom  + offsetFromBottomSide, originBounds.LeftDir);
-                results[rightStartIndex + i] = Cast(originBounds.RightBottom + offsetFromBottomSide, originBounds.RightDir);
+                _results[_leftStartIndex  + i] = Cast(_originBounds.LeftBottom  + offsetFromBottomSide, _originBounds.LeftDir);
+                _results[_rightStartIndex + i] = Cast(_originBounds.RightBottom + offsetFromBottomSide, _originBounds.RightDir);
             }
         }
 
         private CastResult Cast(Vector2 origin, Vector2 direction)
         {
-            return lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance);
+            return _lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance);
         }
 
         private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)
         {
             Bounds expandedBounds = bounds;
             expandedBounds.Expand(boundsOffset);
-            originBounds.Update(expandedBounds.center, expandedBounds.size, transform.right, transform.up);
+            _originBounds.Update(expandedBounds.center, expandedBounds.size, transform.right, transform.up);
         }
 
         private void ComputeRaySpacingAndCounts(float distanceBetweenRays, Vector2 size)
@@ -114,15 +113,14 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             RaySpacingHorizontalSide = size.x / (NumRaysPerHorizontalSide - 1);
             RaySpacingVerticalSide   = size.y / (NumRaysPerVerticalSide   - 1);
 
-            // todo: look into if it's possible to just use spans set with start/end directly
-            bottomStartIndex = 0;
-            topStartIndex    = bottomStartIndex + NumRaysPerHorizontalSide;
-            leftStartIndex   = topStartIndex    + NumRaysPerHorizontalSide;
-            rightStartIndex  = leftStartIndex   + NumRaysPerVerticalSide;
+            _bottomStartIndex = 0;
+            _topStartIndex    = _bottomStartIndex + NumRaysPerHorizontalSide;
+            _leftStartIndex   = _topStartIndex    + NumRaysPerHorizontalSide;
+            _rightStartIndex  = _leftStartIndex   + NumRaysPerVerticalSide;
 
-            if (results.Length != TotalNumRays)
+            if (_results.Length != TotalNumRays)
             {
-                results = new CastResult[TotalNumRays];
+                _results = new CastResult[TotalNumRays];
             }
         }
     }
