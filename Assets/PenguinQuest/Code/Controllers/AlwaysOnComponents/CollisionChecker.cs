@@ -23,16 +23,16 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
 
-        [SerializeField] private BoundedRayCaster _perimeterCaster = default;
+        [SerializeField] private BoxPerimeterRayCaster _perimeterCaster = default;
         
         [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
-        private BoundedRayCaster PerimeterCaster
+        private BoxPerimeterRayCaster PerimeterCaster
         {
             get
             {
                 if (_perimeterCaster == default)
                 {
-                    _perimeterCaster = new BoundedRayCaster(colliderToCastFrom, perimeterCasterSettings);
+                    _perimeterCaster = new BoxPerimeterRayCaster(colliderToCastFrom, perimeterCasterSettings);
                 }
                 _perimeterCaster.Settings = perimeterCasterSettings;
                 return _perimeterCaster;
