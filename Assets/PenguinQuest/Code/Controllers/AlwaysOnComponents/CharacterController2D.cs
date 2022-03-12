@@ -11,7 +11,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public CharacterController2DSettings Settings { get; set; }
 
         // todo: get rid of penguin entity and use dependency injection or something as this should be more generic
-        private PenguinEntity penguinEntity;
+        private PenguinEntity    penguinEntity;
         private CollisionChecker groundChecker;
 
         private void Reset()
@@ -38,7 +38,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             if (!groundChecker.IsGrounded)
             {
-                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
+                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+                AlignPenguinWithGivenUpAxis(Vector2.up);
                 return;
             }
 

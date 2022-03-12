@@ -32,59 +32,50 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         public OrientedBounds()
         {
-            Set(Vector2.zero, Vector2.zero, Vector2.right, Vector2.up);
+            Set(Vector2.zero, Vector2.zero);
         }
-        public OrientedBounds(Vector2 center, Vector2 size, Vector2 right, Vector2 up)
+        public OrientedBounds(Vector2 min, Vector2 max)
         {
-            Set(center, size, right, up);
+            Set(min, max);
         }
         
-        public void Update(Vector2 center, Vector2 size, Vector2 right, Vector2 up)
+        public void Update(Vector2 min, Vector2 max)
         {
-            bool hasMoved   = !MathUtils.AreComponentsEqual(center, Center);
-            bool hasResized = !MathUtils.AreComponentsEqual(size,   Size);
-            bool hasRotated = !MathUtils.AreDirectionsEqual_Fast(right, RightDir) ||
-                              !MathUtils.AreDirectionsEqual_Fast(up,    UpDir);
-
-            if (hasMoved && !hasResized && !hasRotated)
+            if (!MathUtils.AreComponentsEqual(min, LeftBottom) ||
+                !MathUtils.AreComponentsEqual(max, RightTop))
             {
-                MoveTo(center);
-            }
-            else if (hasMoved || hasResized || hasRotated)
-            {
-                Set(center, size, right, up);
+                Set(min, max);
             }
         }
 
-        private void Set(Vector2 center, Vector2 size, Vector2 right, Vector2 up)
+        private void Set(Vector2 min, Vector2 max)
         {
-            Vector2 upAxis       = up.normalized;
-            Vector2 rightAxis    = right.normalized;
-            Vector2 halfDiagonal = (0.50f * size.x * rightAxis) + (0.50f * size.y * upAxis);
-            Vector2 min          = center - halfDiagonal;
-            Vector2 max          = center + halfDiagonal;
-
-            Center      = center;
-            Size        = size;
             LeftBottom  = new Vector2(min.x, min.y);
             LeftTop     = new Vector2(min.x, max.y);
             RightBottom = new Vector2(max.x, min.y);
             RightTop    = new Vector2(max.x, max.y);
-            UpDir       = upAxis;
-            RightDir    = rightAxis;
+
+            Vector2 centerPoint       = Vector2.Lerp(LeftBottom,  RightTop, 0.50f);
+            Vector2 rightSideMidPoint = Vector2.Lerp(RightBottom, RightTop, 0.50f);
+            Vector2 topSideMidPoint   = Vector2.Lerp(LeftTop,     RightTop, 0.50f);
+            Vector2 rightAxis         = rightSideMidPoint - centerPoint;
+            Vector2 upAxis            = topSideMidPoint   - centerPoint;
+
+            Center      = centerPoint;
+            Size        = new Vector2(2.0f * rightAxis.magnitude, 2.0f * upAxis.magnitude);
+            UpDir       = upAxis.normalized;
+            RightDir    = rightAxis.normalized;
             DownDir     = -1f * upAxis;
             LeftDir     = -1f * rightAxis;
             Orientation = MathUtils.AngleFromYAxis(UpDir);
-        }
 
-        private void MoveTo(Vector2 center)
-        {
-            Vector2 displacement = center - Center;
-            Center      += displacement;
-            LeftBottom  += displacement;
-            LeftTop     += displacement;
-            RightBottom += displacement;
-            RightTop    += displacement;
+            
+            Debug.DrawLine(centerPoint, LeftBottom,  Color.blue, 0.10f);
+            Debug.DrawLine(centerPoint, LeftTop,     Color.blue, 0.10f);
+            Debug.DrawLine(centerPoint, RightBottom, Color.blue, 0.10f);
+            Debug.DrawLine(centerPoint, RightTop,    Color.blue, 0.10f);
+            Debug.DrawLine(centerPoint, centerPoint + rightAxis, Color.magenta, 0.10f);
+            Debug.DrawLine(centerPoint, centerPoint + upAxis,    Color.magenta, 0.10f);
         }
     }
 }

@@ -6,11 +6,11 @@ using PenguinQuest.Data;
 namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
     /*
-    Provides functionality for checking if 'ground' is directly below given point.
+    Provides functionality querying the surrounding of a bounding box.
+
+    For example, is there something X distance in front of me?
+    What about the front half of the box's bottom side?
     */
-    [ExecuteAlways]
-    [System.Serializable]
-    [RequireComponent(typeof(Rigidbody2D))]
     public class CollisionChecker : MonoBehaviour
     {
         // todo: look into integrating with box perimeter caster? Or at least putting things in different places
@@ -19,28 +19,15 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         [SerializeField] private LayerMask groundMask;
         [SerializeField] [Range(-10.00f, 25.00f)] private float offsetToCheckFrom           = 0.30f;
         [SerializeField] [Range(  0.25f, 25.00f)] private float toleratedDistanceFromGround = 0.30f;
-        
+        [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
+
+        private BoxPerimeterRayCaster _perimeterCaster;
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
 
-        [SerializeField] private BoxPerimeterRayCaster _perimeterCaster = default;
-        
-        [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
-        private BoxPerimeterRayCaster PerimeterCaster
-        {
-            get
-            {
-                if (_perimeterCaster == default)
-                {
-                    _perimeterCaster = new BoxPerimeterRayCaster(colliderToCastFrom, perimeterCasterSettings);
-                }
-                _perimeterCaster.Settings = perimeterCasterSettings;
-                return _perimeterCaster;
-            }
-        }
-
         void Start()
         {
+            _perimeterCaster = new BoxPerimeterRayCaster(colliderToCastFrom, perimeterCasterSettings);
             CheckForGround();
         }
 
@@ -49,19 +36,14 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             CheckForGround();
         }
 
-        /*
-        Check for ground below the our source object.
-    
-        Some extra line height is used as padding to ensure it starts just above our targeted layer if given.
-        */
         public void CheckForGround()
         {
-            PerimeterCaster.CastAll();
-
-            if (PerimeterCaster.BottomResults[1].hit.HasValue)
+            _perimeterCaster.CastAll();
+            
+            if (_perimeterCaster.BottomResults[1].hit.HasValue)
             {
                 IsGrounded    = true;
-                SurfaceNormal = PerimeterCaster.BottomResults[1].hit.Value.normal;
+                SurfaceNormal = _perimeterCaster.BottomResults[1].hit.Value.normal;
             }
             else
             {
@@ -75,10 +57,10 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             if (!Application.IsPlaying(this) || !enabled)
             {
-                CheckForGround();
+                return;
             }
 
-            foreach (CastResult result in PerimeterCaster.AllResults)
+            foreach (CastResult result in _perimeterCaster.AllResults)
             {
                 GizmosUtils.DrawLine(from: result.origin, to: result.terminal, color: Color.red);
                 if (result.hit != null)

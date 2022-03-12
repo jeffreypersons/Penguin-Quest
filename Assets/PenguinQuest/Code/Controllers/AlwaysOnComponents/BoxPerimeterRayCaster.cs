@@ -56,10 +56,11 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
             this._box          = box;
-            this.Settings     = settings;
+            this.Settings      = settings;
             this._lineCaster   = new LineCaster(settings);
             this._originBounds = new OrientedBounds();
             this._results      = Array.Empty<CastResult>();
+
             UpdateOrientedBounds(box.bounds, box.transform, settings.Offset);
             ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, _originBounds.Size);
             Debug.Log(this);
@@ -95,8 +96,11 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)
         {
             Bounds expandedBounds = bounds;
-            expandedBounds.Expand(2 * boundsOffset);
-            _originBounds.Update(expandedBounds.center, expandedBounds.size, transform.right, transform.up);
+            expandedBounds.Expand(boundsOffset);
+
+            Vector2 min = transform.TransformPoint(bounds.min);
+            Vector2 max = transform.TransformPoint(bounds.max);
+            _originBounds.Update(min, max);
         }
 
         private void ComputeRaySpacingAndCounts(float distanceBetweenRays, Vector2 size)
@@ -110,7 +114,6 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
                 NumRaysPerVerticalSide   = Mathf.Clamp(numRaysPerVerticalSide,   minNumRays, maxNumRays);
                 TotalNumRays = 2 * (NumRaysPerHorizontalSide + NumRaysPerVerticalSide);
             }
-
 
             RaySpacingHorizontalSide = size.x / (NumRaysPerHorizontalSide - 1);
             RaySpacingVerticalSide   = size.y / (NumRaysPerVerticalSide   - 1);
