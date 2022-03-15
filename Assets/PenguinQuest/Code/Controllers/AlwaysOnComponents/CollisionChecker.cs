@@ -17,13 +17,14 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         [Header("Ground Settings")]
         [SerializeField] private BoxCollider2D colliderToCastFrom;
         [SerializeField] private LayerMask groundMask;
-        [SerializeField] [Range(  0.25f, 25.00f)] private float toleratedDistanceFromGround = 0.30f;
+        [SerializeField] [Range(0.25f, 25.00f)] private float toleratedDistanceFromGround = 0.30f;
         [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
 
         private BoxPerimeterRayCaster _perimeterCaster;
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
 
+        // TODO: build out above/below/front/back that uses the BoxPerimeterRayCaster for querying those areas
         void Start()
         {
             _perimeterCaster = new BoxPerimeterRayCaster(colliderToCastFrom, perimeterCasterSettings);

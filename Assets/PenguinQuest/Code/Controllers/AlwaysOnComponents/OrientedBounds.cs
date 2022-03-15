@@ -8,6 +8,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     Box aligned with axes extending from center to right and top sides respectively.
 
     In other words, given axes for x and y.
+    
+    Note that for simplicity, there is no 'scale' or facing taken into account.
     */
     public class OrientedBounds
     {
@@ -65,17 +67,9 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             Size        = new Vector2(2.0f * rightAxis.magnitude, 2.0f * upAxis.magnitude);
             UpDir       = upAxis.normalized;
             RightDir    = rightAxis.normalized;
-            DownDir     = -1f * upAxis;
-            LeftDir     = -1f * rightAxis;
+            DownDir     = -1f * UpDir;
+            LeftDir     = -1f * RightDir;
             Orientation = MathUtils.AngleFromYAxis(UpDir);
-
-            
-            Debug.DrawLine(centerPoint, LeftBottom,  Color.blue, 0.10f);
-            Debug.DrawLine(centerPoint, LeftTop,     Color.blue, 0.10f);
-            Debug.DrawLine(centerPoint, RightBottom, Color.blue, 0.10f);
-            Debug.DrawLine(centerPoint, RightTop,    Color.blue, 0.10f);
-            Debug.DrawLine(centerPoint, centerPoint + rightAxis, Color.magenta, 0.10f);
-            Debug.DrawLine(centerPoint, centerPoint + upAxis,    Color.magenta, 0.10f);
         }
     }
 }
