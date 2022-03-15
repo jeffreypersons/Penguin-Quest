@@ -17,7 +17,6 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         [Header("Ground Settings")]
         [SerializeField] private BoxCollider2D colliderToCastFrom;
         [SerializeField] private LayerMask groundMask;
-        [SerializeField] [Range(-10.00f, 25.00f)] private float offsetToCheckFrom           = 0.30f;
         [SerializeField] [Range(  0.25f, 25.00f)] private float toleratedDistanceFromGround = 0.30f;
         [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
 
@@ -39,8 +38,9 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public void CheckForGround()
         {
             _perimeterCaster.CastAll();
-            
-            if (_perimeterCaster.BottomResults[1].hit.HasValue)
+
+            CastHit? hit = _perimeterCaster.BottomResults[1].hit;
+            if (hit.HasValue && hit.Value.distance <= toleratedDistanceFromGround)
             {
                 IsGrounded    = true;
                 SurfaceNormal = _perimeterCaster.BottomResults[1].hit.Value.normal;
