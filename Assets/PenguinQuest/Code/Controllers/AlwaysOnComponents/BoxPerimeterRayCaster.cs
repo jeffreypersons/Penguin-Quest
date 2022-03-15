@@ -97,9 +97,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             Bounds expandedBounds = bounds;
             expandedBounds.Expand(boundsOffset);
-
-            Vector2 min = transform.TransformPoint(bounds.min);
-            Vector2 max = transform.TransformPoint(bounds.max);
+            Vector2 min = MathUtils.RotatePointAroundPivot(bounds.min, bounds.center, transform.localEulerAngles.z);
+            Vector2 max = MathUtils.RotatePointAroundPivot(bounds.max, bounds.center, transform.localEulerAngles.z);
             _originBounds.Update(min, max);
         }
 
