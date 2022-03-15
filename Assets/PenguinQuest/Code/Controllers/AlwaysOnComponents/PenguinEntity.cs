@@ -25,7 +25,10 @@ namespace PenguinQuest.Controllers
     disabling/enabling colliders, etc.
 
     The purpose in all this is to centralize component and child object access, so that other
-    scripts don't have to worry about caching
+    scripts don't have to worry about caching.
+
+    Note that this always is running, so that gizmos and editor scripts can reference any of its properties
+    without worry about when things are valid and active.
     */
     [ExecuteAlways]
     [System.Serializable]
@@ -48,32 +51,32 @@ namespace PenguinQuest.Controllers
 
         
         [Header("Component References")]
-        [SerializeField] private PenguinAnimation  penguinAnimation;
-        [SerializeField] private Rigidbody2D       penguinRigidbody;
+        [SerializeField] private PenguinAnimation  _penguinAnimation;
+        [SerializeField] private Rigidbody2D       _penguinRigidbody;
 
         [Header("Collider References")]
-        [SerializeField] private BoxCollider2D     boundingBoxCollider       = default;
-        [SerializeField] private CapsuleCollider2D headCollider              = default;
-        [SerializeField] private CapsuleCollider2D torsoCollider             = default;
-        [SerializeField] private CapsuleCollider2D frontFlipperUpperCollider = default;
-        [SerializeField] private CapsuleCollider2D frontFlipperLowerCollider = default;
-        [SerializeField] private CapsuleCollider2D frontFootCollider         = default;
-        [SerializeField] private CapsuleCollider2D backFootCollider          = default;
+        [SerializeField] private BoxCollider2D     _boundingBoxCollider       = default;
+        [SerializeField] private CapsuleCollider2D _headCollider              = default;
+        [SerializeField] private CapsuleCollider2D _torsoCollider             = default;
+        [SerializeField] private CapsuleCollider2D _frontFlipperUpperCollider = default;
+        [SerializeField] private CapsuleCollider2D _frontFlipperLowerCollider = default;
+        [SerializeField] private CapsuleCollider2D _frontFootCollider         = default;
+        [SerializeField] private CapsuleCollider2D _backFootCollider          = default;
 
 
-        public PenguinAnimation Animation            => penguinAnimation;
-        public Rigidbody2D      Rigidbody            => penguinRigidbody;
-        public Vector2          SkeletalRootPosition => penguinAnimation.SkeletalRootPosition;
-        public Vector2          CenterOfMass         => penguinRigidbody.worldCenterOfMass;
+        public PenguinAnimation Animation            => _penguinAnimation;
+        public Rigidbody2D      Rigidbody            => _penguinRigidbody;
+        public Vector2          SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
+        public Vector2          CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
 
 
-        public BoxCollider2D ColliderBoundingBox    => boundingBoxCollider;
-        public Collider2D ColliderHead              => headCollider;
-        public Collider2D ColliderTorso             => torsoCollider;
-        public Collider2D ColliderFrontFlipperUpper => frontFlipperUpperCollider;
-        public Collider2D ColliderFrontFlipperLower => frontFlipperLowerCollider;
-        public Collider2D ColliderFrontFoot         => frontFootCollider;
-        public Collider2D ColliderBackFoot          => backFootCollider;
+        public BoxCollider2D ColliderBoundingBox    => _boundingBoxCollider;
+        public Collider2D ColliderHead              => _headCollider;
+        public Collider2D ColliderTorso             => _torsoCollider;
+        public Collider2D ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
+        public Collider2D ColliderFrontFlipperLower => _frontFlipperLowerCollider;
+        public Collider2D ColliderFrontFoot         => _frontFootCollider;
+        public Collider2D ColliderBackFoot          => _backFootCollider;
 
         public PenguinColliderConstraints ColliderConstraints
         {
@@ -112,11 +115,11 @@ namespace PenguinQuest.Controllers
             if (!Mathf.Approximately(centerOfMassX, Rigidbody.centerOfMass.x) ||
                 !Mathf.Approximately(centerOfMassY, Rigidbody.centerOfMass.y))
             {
-                penguinRigidbody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
+                _penguinRigidbody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
             }
-            if (!Mathf.Approximately(mass, penguinRigidbody.mass))
+            if (!Mathf.Approximately(mass, _penguinRigidbody.mass))
             {
-                penguinRigidbody.mass = mass;
+                _penguinRigidbody.mass = mass;
             }
         }
 
@@ -168,36 +171,36 @@ namespace PenguinQuest.Controllers
 
         private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
         {
-            headCollider             .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableHead);
-            torsoCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableTorso);
-            frontFlipperUpperCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
-            frontFlipperLowerCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
-            frontFootCollider        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            backFootCollider         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            boundingBoxCollider      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
+            _headCollider             .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableHead);
+            _torsoCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableTorso);
+            _frontFlipperUpperCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
+            _frontFlipperLowerCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
+            _frontFootCollider        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
+            _backFootCollider         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
+            _boundingBoxCollider      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
         {
             // note that for any flag to be set, _all_ corresponding colliders must be disabled
             PenguinColliderConstraints constraints = PenguinColliderConstraints.None;
-            if (!headCollider.enabled)
+            if (!_headCollider.enabled)
             {
                 constraints |= PenguinColliderConstraints.DisableHead;
             }
-            if (!torsoCollider.enabled)
+            if (!_torsoCollider.enabled)
             {
                 constraints |= PenguinColliderConstraints.DisableTorso;
             }
-            if (!frontFlipperUpperCollider.enabled && !frontFlipperLowerCollider.enabled)
+            if (!_frontFlipperUpperCollider.enabled && !_frontFlipperLowerCollider.enabled)
             {
                 constraints |= PenguinColliderConstraints.DisableFlippers;
             }
-            if (!frontFootCollider.enabled && !backFootCollider.enabled)
+            if (!_frontFootCollider.enabled && !_backFootCollider.enabled)
             {
                 constraints |= PenguinColliderConstraints.DisableFeet;
             }
-            if (!boundingBoxCollider.enabled)
+            if (!_boundingBoxCollider.enabled)
             {
                 constraints |= PenguinColliderConstraints.DisableBoundingBox;
             }
