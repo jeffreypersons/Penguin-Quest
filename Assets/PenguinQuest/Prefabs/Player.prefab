@@ -404,15 +404,15 @@ MonoBehaviour:
   centerOfMassX: -3
   centerOfMassY: -15
   colliderConstraints: 0
-  penguinAnimation: {fileID: 1728887597599890734}
-  penguinRigidbody: {fileID: 4753795910216235720}
-  boundingBoxCollider: {fileID: 4753795910216235721}
-  headCollider: {fileID: 4753795911533567600}
-  torsoCollider: {fileID: 4753795910448514483}
-  frontFlipperUpperCollider: {fileID: 4753795910921302243}
-  frontFlipperLowerCollider: {fileID: 4753795911143785397}
-  frontFootCollider: {fileID: 4753795910722719825}
-  backFootCollider: {fileID: 4753795910764276095}
+  _penguinAnimation: {fileID: 1728887597599890734}
+  _penguinRigidbody: {fileID: 4753795910216235720}
+  _boundingBoxCollider: {fileID: 4753795910216235721}
+  _headCollider: {fileID: 4753795911533567600}
+  _torsoCollider: {fileID: 4753795910448514483}
+  _frontFlipperUpperCollider: {fileID: 4753795910921302243}
+  _frontFlipperLowerCollider: {fileID: 4753795911143785397}
+  _frontFootCollider: {fileID: 4753795910722719825}
+  _backFootCollider: {fileID: 4753795910764276095}
 --- !u!114 &9188869225720279910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,6 +445,8 @@ MonoBehaviour:
     m_Bits: 256
   offsetToCheckFrom: -1
   toleratedDistanceFromGround: 8
+  perimeterCasterSettings: {fileID: 11400000, guid: 9fe49ebb17348634aa5ed40ce5525fa1,
+    type: 2}
 --- !u!114 &4489379026178228054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,7 +472,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   locomotionBlendStep: 0.25
-  maxInputSpeed: 10
 --- !u!114 &4753795910216235742
 MonoBehaviour:
   m_ObjectHideFlags: 0

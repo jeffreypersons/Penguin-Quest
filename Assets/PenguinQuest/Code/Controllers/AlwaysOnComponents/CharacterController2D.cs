@@ -38,7 +38,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             if (!groundChecker.IsGrounded)
             {
-                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
+                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+                AlignPenguinWithGivenUpAxis(Vector2.up);
                 return;
             }
 

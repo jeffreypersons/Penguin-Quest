@@ -77,7 +77,7 @@ namespace PenguinQuest.Data
             RaycastHit2D rayHit = Physics2D.Linecast(start, end, layerMask);
             if (rayHit)
             {
-                hit = new CastHit(rayHit.point, rayHit.normal, rayHit.distance, rayHit.collider);
+                hit = new CastHit(rayHit.point, rayHit.normal, rayHit.distance - Mathf.Abs(offsetAmount), rayHit.collider);
             }
 
             return new CastResult(start, end, hit);

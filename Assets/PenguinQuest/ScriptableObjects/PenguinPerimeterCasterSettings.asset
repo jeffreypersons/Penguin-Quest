@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distanceBetweenRays: 0.25
   rayCastOffset: 0.25
-  maxRayDistance: 0.25
+  maxRayDistance: 1
   targetLayers:
     serializedVersion: 2
     m_Bits: 256
