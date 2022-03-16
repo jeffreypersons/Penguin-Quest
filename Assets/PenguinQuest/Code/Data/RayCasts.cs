@@ -46,18 +46,18 @@ namespace PenguinQuest.Data
         }
 
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
-        public CastResult CastFromPoint(Vector2 point, Vector2 direction, float distance)
+        public CastResult CastFromPoint(Vector2 point, Vector2 direction)
         {
-            return CastLine(point, point + (distance * direction));
+            return CastLine(point, point + (Settings.MaxDistance * direction));
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public CastResult CastFromCollider(Collider2D collider, Vector2 direction, float distance)
+        public CastResult CastFromCollider(Collider2D collider, Vector2 direction)
         {
             Vector2 point = FindPositionOnColliderEdgeInGivenDirection(collider, direction);
-            return CastLine(point, point + (distance * direction));
+            return CastLine(point, point + (Settings.MaxDistance * direction));
         }
-        
+
         /* Shoot out a line between given points, seeing if a TargetLayer is hit. */
         public CastResult CastBetween(Vector2 from, Vector2 to)
         {
@@ -74,10 +74,15 @@ namespace PenguinQuest.Data
             Vector2 end    = to   + offset;
             
             CastHit? hit = null;
-            RaycastHit2D rayHit = Physics2D.Linecast(start, end, layerMask);
-            if (rayHit)
+            RaycastHit2D castHit2D = Physics2D.Linecast(start, end, layerMask);
+            if (castHit2D)
             {
-                hit = new CastHit(rayHit.point, rayHit.normal, rayHit.distance - Mathf.Abs(offsetAmount), rayHit.collider);
+                hit = new CastHit(
+                    point:    castHit2D.point,
+                    normal:   castHit2D.normal,
+                    distance: castHit2D.distance - Mathf.Abs(offsetAmount),
+                    collider: castHit2D.collider
+                );
             }
 
             return new CastResult(start, end, hit);
