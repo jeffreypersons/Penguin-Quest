@@ -52,7 +52,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public ReadOnlySpan<CastResult> TopResults    => _results.AsSpan(_topStartIndex,    NumRaysPerHorizontalSide);
         public ReadOnlySpan<CastResult> LeftResults   => _results.AsSpan(_leftStartIndex,   NumRaysPerVerticalSide);
         public ReadOnlySpan<CastResult> RightResults  => _results.AsSpan(_rightStartIndex,  NumRaysPerVerticalSide);
-      
+
         public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
             this._box          = box;
@@ -68,6 +68,11 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         public void CastAll()
         {
+            if (!_box)
+            {
+                return;
+            }
+
             UpdateOrientedBounds(_box.bounds, _box.transform, Settings.Offset);
             ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, _originBounds.Size);
 
@@ -90,7 +95,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         private CastResult Cast(Vector2 origin, Vector2 direction)
         {
-            return _lineCaster.CastFromPoint(origin, direction, Settings.MaxDistance);
+            return _lineCaster.CastFromPoint(origin, direction);
         }
 
         private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)

@@ -33,15 +33,20 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
         void FixedUpdate()
         {
-            CheckForGround();
+            if (colliderToCastFrom)
+            {
+                CheckForGround();
+            }
         }
-
+        
         public void CheckForGround()
         {
             _perimeterCaster.CastAll();
+            CastHit? groundHit = _perimeterCaster.BottomResults.IsEmpty ?
+                null :
+                _perimeterCaster.BottomResults[1].hit;
 
-            CastHit? hit = _perimeterCaster.BottomResults[1].hit;
-            if (hit.HasValue && hit.Value.distance <= toleratedDistanceFromGround)
+            if (groundHit.HasValue && groundHit.Value.distance <= toleratedDistanceFromGround)
             {
                 IsGrounded    = true;
                 SurfaceNormal = _perimeterCaster.BottomResults[1].hit.Value.normal;
