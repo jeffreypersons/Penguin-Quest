@@ -43,11 +43,9 @@ namespace PenguinQuest.Controllers.Handlers
 
         void OnStandUpAnimationEventStart()
         {
-            penguinEntity.ColliderConstraints = PenguinColliderConstraints.None;
-
-            // enable the feet again, allowing the penguin to 'fall' down to alignment
-            penguinEntity.ColliderConstraints &=
-                ~PenguinColliderConstraints.DisableFeet;
+            // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
+            penguinEntity.Animation.SetParamIsGrounded(true);
+            penguinEntity.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         }
 
         void OnStandUpAnimationEventEnd()
@@ -56,9 +54,8 @@ namespace PenguinQuest.Controllers.Handlers
             penguinEntity.Animation.SetParamIsUpright(true);
             characterController.Settings = uprightStateCharacterSettings;
 
-            // enable the bounding box again, allowing the penguin to 'fall' down to alignment
-            penguinEntity.ColliderConstraints &=
-                ~PenguinColliderConstraints.DisableBoundingBox;
+            // enable all colliders as we are now fully upright
+            penguinEntity.ColliderConstraints = PenguinColliderConstraints.None;
 
             // todo: find a good way of having data for sliding and for upright that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?

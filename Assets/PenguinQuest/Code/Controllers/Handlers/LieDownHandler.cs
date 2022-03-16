@@ -46,24 +46,32 @@ namespace PenguinQuest.Controllers.Handlers
         void OnLieDownAnimationEventStart()
         {
             penguinEntity.Animation.SetParamIsUpright(false);
-            penguinEntity.ColliderConstraints |=
+
+            // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
+            penguinEntity.ColliderConstraints =
                 PenguinColliderConstraints.DisableBoundingBox |
                 PenguinColliderConstraints.DisableFeet;
         }
 
         void OnLieDownAnimationEventMid()
         {
-            penguinEntity.ColliderConstraints |=
-                PenguinColliderConstraints.DisableFeet;
+            // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
+            penguinEntity.ColliderConstraints =
+                PenguinColliderConstraints.DisableBoundingBox |
+                PenguinColliderConstraints.DisableFeet        |
+                PenguinColliderConstraints.DisableFlippers;
         }
 
         void OnLieDownAnimationEventEnd()
         {
             // todo: this stuff needs to go in the state machine
             characterController.Settings = lieDownStateCharacterSettings;
-            penguinEntity.ColliderConstraints |=
-                PenguinColliderConstraints.DisableFeet |
-                PenguinColliderConstraints.DisableFlippers;
+
+            // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
+            // but enable everything else including bounding box
+            penguinEntity.ColliderConstraints =
+                 PenguinColliderConstraints.DisableFeet |
+                 PenguinColliderConstraints.DisableFlippers;
 
 
             // todo: find a good way of having data for sliding and for upright that can be passed in here,
