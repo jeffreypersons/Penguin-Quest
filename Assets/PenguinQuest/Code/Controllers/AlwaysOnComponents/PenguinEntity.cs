@@ -94,7 +94,26 @@ namespace PenguinQuest.Controllers
                 UpdateColliderConstraints();
             }
         }
-        
+
+        public void ReadjustBoundingBox(Vector2 offset, Vector2 size, float edgeRadius)
+        {
+            bool wasPreviouslyEnabled  = _boundingBoxCollider.enabled;
+            Vector2 previousOffset     = _boundingBoxCollider.offset;
+            Vector2 previousSize       = _boundingBoxCollider.size;
+            float   previousEdgeRadius = _boundingBoxCollider.edgeRadius;
+
+            _boundingBoxCollider.enabled    = true;
+            _boundingBoxCollider.offset     = offset;
+            _boundingBoxCollider.size       = size;
+            _boundingBoxCollider.edgeRadius = edgeRadius;
+
+            Debug.Log($"ReadjustBoundingBox : Changed bounding box " +
+                      $"from {{offset={previousOffset}, size={previousSize}, edge_radius={previousEdgeRadius}}} " +
+                      $"to {{offset={offset}, size={size}, edge_radius={edgeRadius}}}");
+
+            _boundingBoxCollider.enabled = wasPreviouslyEnabled;
+        }
+
         void Start()
         {
             colliderConstraints = GetConstraintsAccordingToDisabledColliders();
@@ -163,8 +182,7 @@ namespace PenguinQuest.Controllers
 
             if (_previousConstraints != null)
             {
-                Debug.Log($"PenguinSkeleton: SetColliderConstraints: Overriding constraints " +
-                          $"from {_previousConstraints} to {colliderConstraints}");
+                Debug.Log($"Overriding constraints from {{{_previousConstraints}}} to {{{colliderConstraints}}}");
             }
             _previousConstraints = colliderConstraints;
         }

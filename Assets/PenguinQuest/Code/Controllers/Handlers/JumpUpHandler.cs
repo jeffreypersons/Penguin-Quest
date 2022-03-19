@@ -49,22 +49,22 @@ namespace PenguinQuest.Controllers.Handlers
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.jumpCommand.AddListener(OnJumpInput);
-            penguinEntity.Animation.OnJumpImpulse += OnJumpUpAnimationEventImpulse;
+            GameEventCenter.jumpCommand.AddListener(OnJumpInputReceived);
+            penguinEntity.Animation.JumpLiftOff += ApplyJumpImpulse;
         }
 
         void OnDisable()
         {
-            GameEventCenter.jumpCommand.RemoveListener(OnJumpInput);
-            penguinEntity.Animation.OnJumpImpulse -= OnJumpUpAnimationEventImpulse;
+            GameEventCenter.jumpCommand.RemoveListener(OnJumpInputReceived);
+            penguinEntity.Animation.JumpLiftOff -= ApplyJumpImpulse;
         }
 
-        void OnJumpInput(string _)
+        void OnJumpInputReceived(string _)
         {
             penguinEntity.Animation.TriggerParamJumpUpParameter();
         }
 
-        void OnJumpUpAnimationEventImpulse()
+        void ApplyJumpImpulse()
         {
             // todo: move rigidbody force/movement calls to character controller 2d
             // clear jump trigger to avoid triggering a jump after landing,

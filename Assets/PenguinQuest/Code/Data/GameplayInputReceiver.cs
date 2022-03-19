@@ -12,8 +12,8 @@ namespace PenguinQuest.Data
     player input/control settings.
     */
     [System.Serializable]
-    [AddComponentMenu("GameplayInputReciever")]
-    public class GameplayInputReciever : MonoBehaviour
+    [AddComponentMenu("GameplayInputReceiver")]
+    public class GameplayInputReceiver : MonoBehaviour
     {
         private PlayerControls generatedPlayerControls;
 

@@ -24,26 +24,27 @@ namespace PenguinQuest.Controllers.Handlers
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.lieDownCommand.AddListener(OnLieDownInput);
-            penguinEntity.Animation.OnLieDownStart += OnLieDownAnimationEventStart;
-            penguinEntity.Animation.OnLieDownMid   += OnLieDownAnimationEventMid;
-            penguinEntity.Animation.OnLieDownEnd   += OnLieDownAnimationEventEnd;
+            GameEventCenter.lieDownCommand.AddListener(OnLieDownInputReceived);
+            penguinEntity.Animation.LieDownStarted  += OnLieDownStarted;
+            penguinEntity.Animation.LieDownMidpoint += OnLieDownMidpoint;
+            penguinEntity.Animation.LieDownEnded    += OnLieDownFinished;
         }
+
         void OnDisable()
         {
-            GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInput);
-            penguinEntity.Animation.OnLieDownStart -= OnLieDownAnimationEventStart;
-            penguinEntity.Animation.OnLieDownMid   -= OnLieDownAnimationEventMid;
-            penguinEntity.Animation.OnLieDownEnd   -= OnLieDownAnimationEventEnd;
+            GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInputReceived);
+            penguinEntity.Animation.LieDownStarted  -= OnLieDownStarted;
+            penguinEntity.Animation.LieDownMidpoint -= OnLieDownMidpoint;
+            penguinEntity.Animation.LieDownEnded    -= OnLieDownFinished;
         }
 
         
-        void OnLieDownInput(string _)
+        void OnLieDownInputReceived(string _)
         {
             penguinEntity.Animation.TriggerParamLieDownParameter();
         }
 
-        void OnLieDownAnimationEventStart()
+        void OnLieDownStarted()
         {
             penguinEntity.Animation.SetParamIsUpright(false);
 
@@ -53,7 +54,7 @@ namespace PenguinQuest.Controllers.Handlers
                 PenguinColliderConstraints.DisableFeet;
         }
 
-        void OnLieDownAnimationEventMid()
+        void OnLieDownMidpoint()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             penguinEntity.ColliderConstraints =
@@ -62,7 +63,7 @@ namespace PenguinQuest.Controllers.Handlers
                 PenguinColliderConstraints.DisableFlippers;
         }
 
-        void OnLieDownAnimationEventEnd()
+        void OnLieDownFinished()
         {
             // todo: this stuff needs to go in the state machine
             characterController.Settings = lieDownStateCharacterSettings;
@@ -72,7 +73,12 @@ namespace PenguinQuest.Controllers.Handlers
             penguinEntity.ColliderConstraints =
                  PenguinColliderConstraints.DisableFeet |
                  PenguinColliderConstraints.DisableFlippers;
-
+            
+            penguinEntity.ReadjustBoundingBox(
+                offset:     new Vector2(0, 5),
+                size:       new Vector2(25, 10),
+                edgeRadius: 1.25f
+            );
 
             // todo: find a good way of having data for sliding and for upright that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?
