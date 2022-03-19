@@ -58,9 +58,9 @@ namespace PenguinQuest.Controllers.Handlers
             penguinEntity.ColliderConstraints = PenguinColliderConstraints.None;
 
             penguinEntity.ReadjustBoundingBox(
-                offset:     new Vector2(0, 5),
-                size:       new Vector2(25, 10),
-                edgeRadius: 1.25f
+                offset:     new Vector2(-0.3983436f, 14.60247f),
+                size:       new Vector2( 13.17636f,  28.28143f),
+                edgeRadius: 0.68f
             );
 
             // todo: find a good way of having data for sliding and for upright that can be passed in here,
