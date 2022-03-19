@@ -82,11 +82,8 @@ namespace PenguinQuest.Controllers
         {
             if (logEvents)
             {
-                Debug.Log(
-                    $"PenguinAnimationEventReciever: " +
-                    $"[frame:{Time.frameCount - 1}]: " +
-                    $"ForwardAsEvent: " +
-                    $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Method.Name}");
+                Debug.Log($"[Frame:{Time.frameCount - 1}] " +
+                          $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Method.Name}");
             }
             customEvent?.Invoke();
         }

@@ -49,17 +49,17 @@ namespace PenguinQuest.Controllers.Handlers
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.jumpCommand.AddListener(OnJumpInputRecieved);
+            GameEventCenter.jumpCommand.AddListener(OnJumpInputReceived);
             penguinEntity.Animation.JumpLiftOff += ApplyJumpImpulse;
         }
 
         void OnDisable()
         {
-            GameEventCenter.jumpCommand.RemoveListener(OnJumpInputRecieved);
+            GameEventCenter.jumpCommand.RemoveListener(OnJumpInputReceived);
             penguinEntity.Animation.JumpLiftOff -= ApplyJumpImpulse;
         }
 
-        void OnJumpInputRecieved(string _)
+        void OnJumpInputReceived(string _)
         {
             penguinEntity.Animation.TriggerParamJumpUpParameter();
         }

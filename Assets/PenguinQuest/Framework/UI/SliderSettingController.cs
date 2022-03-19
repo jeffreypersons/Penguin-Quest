@@ -70,7 +70,7 @@ namespace PenguinQuest.Controllers.UI
             else
             {
                 Debug.LogError($"Expected min <= default <= max as all floats or all ints, " +
-                               $"recieved {initial}, {min}, {max}` instead");
+                               $"received {initial}, {min}, {max}` instead");
                 return false;
             }
         }

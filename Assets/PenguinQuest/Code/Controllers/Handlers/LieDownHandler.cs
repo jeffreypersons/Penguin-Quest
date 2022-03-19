@@ -24,7 +24,7 @@ namespace PenguinQuest.Controllers.Handlers
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.lieDownCommand.AddListener(OnLieDownInputRecieved);
+            GameEventCenter.lieDownCommand.AddListener(OnLieDownInputReceived);
             penguinEntity.Animation.LieDownStarted  += OnLieDownStarted;
             penguinEntity.Animation.LieDownMidpoint += OnLieDownMidpoint;
             penguinEntity.Animation.LieDownEnded    += OnLieDownFinished;
@@ -32,14 +32,14 @@ namespace PenguinQuest.Controllers.Handlers
 
         void OnDisable()
         {
-            GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInputRecieved);
+            GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInputReceived);
             penguinEntity.Animation.LieDownStarted  -= OnLieDownStarted;
             penguinEntity.Animation.LieDownMidpoint -= OnLieDownMidpoint;
             penguinEntity.Animation.LieDownEnded    -= OnLieDownFinished;
         }
 
         
-        void OnLieDownInputRecieved(string _)
+        void OnLieDownInputReceived(string _)
         {
             penguinEntity.Animation.TriggerParamLieDownParameter();
         }

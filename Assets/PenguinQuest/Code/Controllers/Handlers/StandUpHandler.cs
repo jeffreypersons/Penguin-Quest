@@ -24,19 +24,19 @@ namespace PenguinQuest.Controllers.Handlers
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.standupCommand.AddListener(OnStandUpInputRecieved);
+            GameEventCenter.standupCommand.AddListener(OnStandUpInputReceived);
             penguinEntity.Animation.StandUpStarted += OnStandUpStarted;
             penguinEntity.Animation.StandUpEnded   += OnStandUpFinished;
         }
         void OnDisable()
         {
-            GameEventCenter.standupCommand.RemoveListener(OnStandUpInputRecieved);
+            GameEventCenter.standupCommand.RemoveListener(OnStandUpInputReceived);
             penguinEntity.Animation.StandUpStarted -= OnStandUpStarted;
             penguinEntity.Animation.StandUpEnded   -= OnStandUpFinished;
         }
         
 
-        void OnStandUpInputRecieved(string _)
+        void OnStandUpInputReceived(string _)
         {
             penguinEntity.Animation.TriggerParamStandUpParameter();
         }

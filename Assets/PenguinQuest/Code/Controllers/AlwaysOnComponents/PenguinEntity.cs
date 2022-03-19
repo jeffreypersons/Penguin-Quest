@@ -182,8 +182,7 @@ namespace PenguinQuest.Controllers
 
             if (_previousConstraints != null)
             {
-                Debug.Log($"PenguinSkeleton: SetColliderConstraints: Overriding constraints " +
-                          $"from {_previousConstraints} to {colliderConstraints}");
+                Debug.Log($"Overriding constraints from {{{_previousConstraints}}} to {{{colliderConstraints}}}");
             }
             _previousConstraints = colliderConstraints;
         }
