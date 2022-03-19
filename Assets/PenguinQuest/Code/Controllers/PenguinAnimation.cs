@@ -32,14 +32,14 @@ namespace PenguinQuest.Controllers
         [SerializeField] private readonly string paramFire         = "Fire";
         [SerializeField] private readonly string paramUse          = "Use";
 
-        public event Action OnJumpImpulse  = default;
-        public event Action OnLieDownStart = default;
-        public event Action OnLieDownMid   = default;
-        public event Action OnLieDownEnd   = default;
-        public event Action OnStandUpStart = default;
-        public event Action OnStandUpEnd   = default;
-        public event Action OnFire         = default;
-        public event Action OnUse          = default;
+        public event Action JumpLiftOff     = default;
+        public event Action LieDownStarted  = default;
+        public event Action LieDownMidpoint = default;
+        public event Action LieDownEnded    = default;
+        public event Action StandUpStarted  = default;
+        public event Action StandUpEnded    = default;
+        public event Action Fired           = default;
+        public event Action Used            = default;
 
 
         public void ResetAllTriggers()
@@ -65,19 +65,17 @@ namespace PenguinQuest.Controllers
         public void TriggerParamFireParameter()           => penguinAnimator.SetTrigger(paramFire);
         public void TriggerParamUseParameter()            => penguinAnimator.SetTrigger(paramUse);
         
+        
+        private void OnLieDownAnimationEventStart()   => ForwardAsEvent(OnLieDownAnimationEventStart,  LieDownStarted);
+        private void OnLieDownAnimationEventMid()     => ForwardAsEvent(OnLieDownAnimationEventMid,    LieDownMidpoint);
+        private void OnLieDownAnimationEventEnd()     => ForwardAsEvent(OnLieDownAnimationEventEnd,    LieDownEnded);
+        
+        private void OnStandUpAnimationEventStart()   => ForwardAsEvent(OnStandUpAnimationEventStart,  StandUpStarted);
+        private void OnStandUpAnimationEventEnd()     => ForwardAsEvent(OnStandUpAnimationEventEnd,    StandUpEnded);
 
-
-        private void OnJumpUpAnimationEventImpulse()  => ForwardAsEvent(OnJumpUpAnimationEventImpulse, OnJumpImpulse);
-
-        private void OnLieDownAnimationEventStart()   => ForwardAsEvent(OnLieDownAnimationEventStart,  OnLieDownStart);
-        private void OnLieDownAnimationEventMid()     => ForwardAsEvent(OnLieDownAnimationEventMid,    OnLieDownMid);
-        private void OnLieDownAnimationEventEnd()     => ForwardAsEvent(OnLieDownAnimationEventEnd,    OnLieDownEnd);
-
-        private void OnStandUpAnimationEventStart()   => ForwardAsEvent(OnStandUpAnimationEventStart,  OnStandUpStart);
-        private void OnStandUpAnimationEventEnd()     => ForwardAsEvent(OnStandUpAnimationEventEnd,    OnStandUpEnd);
-
-        private void OnFireAnimationEvent()           => ForwardAsEvent(OnFireAnimationEvent,          OnFire);
-        private void OnUseAnimationEvent()            => ForwardAsEvent(OnUseAnimationEvent,           OnUse);
+        private void OnJumpUpAnimationEventImpulse()  => ForwardAsEvent(OnJumpUpAnimationEventImpulse, JumpLiftOff);
+        private void OnFireAnimationEvent()           => ForwardAsEvent(OnFireAnimationEvent,          Fired);
+        private void OnUseAnimationEvent()            => ForwardAsEvent(OnUseAnimationEvent,           Used);
 
 
         private void ForwardAsEvent(Action animatorEvent, Action customEvent)

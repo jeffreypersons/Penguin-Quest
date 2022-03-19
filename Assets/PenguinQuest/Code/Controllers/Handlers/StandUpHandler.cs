@@ -24,31 +24,31 @@ namespace PenguinQuest.Controllers.Handlers
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.standupCommand.AddListener(OnStandUpInput);
-            penguinEntity.Animation.OnStandUpStart += OnStandUpAnimationEventStart;
-            penguinEntity.Animation.OnStandUpEnd   += OnStandUpAnimationEventEnd;
+            GameEventCenter.standupCommand.AddListener(OnStandUpInputRecieved);
+            penguinEntity.Animation.StandUpStarted += OnStandUpStarted;
+            penguinEntity.Animation.StandUpEnded   += OnStandUpFinished;
         }
         void OnDisable()
         {
-            GameEventCenter.standupCommand.RemoveListener(OnStandUpInput);
-            penguinEntity.Animation.OnStandUpStart -= OnStandUpAnimationEventStart;
-            penguinEntity.Animation.OnStandUpEnd   -= OnStandUpAnimationEventEnd;
+            GameEventCenter.standupCommand.RemoveListener(OnStandUpInputRecieved);
+            penguinEntity.Animation.StandUpStarted -= OnStandUpStarted;
+            penguinEntity.Animation.StandUpEnded   -= OnStandUpFinished;
         }
         
 
-        void OnStandUpInput(string _)
+        void OnStandUpInputRecieved(string _)
         {
             penguinEntity.Animation.TriggerParamStandUpParameter();
         }
 
-        void OnStandUpAnimationEventStart()
+        void OnStandUpStarted()
         {
             // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
             penguinEntity.Animation.SetParamIsGrounded(true);
             penguinEntity.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         }
 
-        void OnStandUpAnimationEventEnd()
+        void OnStandUpFinished()
         {
             // todo: this stuff needs to go in the state machine
             penguinEntity.Animation.SetParamIsUpright(true);
@@ -56,6 +56,12 @@ namespace PenguinQuest.Controllers.Handlers
 
             // enable all colliders as we are now fully upright
             penguinEntity.ColliderConstraints = PenguinColliderConstraints.None;
+
+            penguinEntity.ReadjustBoundingBox(
+                offset:     new Vector2(0, 5),
+                size:       new Vector2(25, 10),
+                edgeRadius: 1.25f
+            );
 
             // todo: find a good way of having data for sliding and for upright that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?
