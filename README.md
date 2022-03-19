@@ -1,7 +1,7 @@
 # Penguin Quest
 A penguin on a quest to eat a bunch of fish and slide, jump, and walk his way to victory!
 
-Can play in-browser at itch.io!: https://jeffreypersons.itch.io/penguin-quest
+Can play in-browser at itch.io!: https://jeffreypersons.itch.io/penguin-quest (EDIT: As of 2022 there is something causing the web player to hang, so avoid for now!)
 
 _Status: still in development_
 
