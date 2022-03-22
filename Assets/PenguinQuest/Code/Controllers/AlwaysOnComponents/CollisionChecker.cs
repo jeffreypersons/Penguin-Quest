@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using PenguinQuest.Utils;
 using PenguinQuest.Data;
+
 
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
@@ -42,20 +44,34 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         public void CheckForGround()
         {
             _perimeterCaster.CastAll();
-            CastHit? groundHit = _perimeterCaster.BottomResults.IsEmpty ?
-                null :
-                _perimeterCaster.BottomResults[1].hit;
-
-            if (groundHit.HasValue && groundHit.Value.distance <= toleratedDistanceFromGround)
+            if (HasHitAtLeastOneWithinDistance(_perimeterCaster.BottomResults, toleratedDistanceFromGround, out CastHit hit))
             {
                 IsGrounded    = true;
-                SurfaceNormal = _perimeterCaster.BottomResults[1].hit.Value.normal;
+                SurfaceNormal = hit.normal;
             }
             else
             {
                 IsGrounded    = false;
                 SurfaceNormal = Vector2.up;
             }
+        }
+
+        private bool HasHitAtLeastOneWithinDistance(ReadOnlySpan<CastResult> results, float distance, out CastHit hit)
+        {            
+            // todo: account for different layers and stuff
+            // todo: try from left to right
+            // todo: figure out a proper way of 'capturing' normal - perhaps a downward sphere cast centroid result?
+            //       ...or maybe just look at how seblag handled it...averages or something?
+            foreach (CastResult result in results)
+            {
+                if (result.hit.HasValue && result.hit.Value.distance <= distance)
+                {
+                    hit = result.hit.Value;
+                    return true;
+                }
+            }
+            hit = default;
+            return false;
         }
         
         #if UNITY_EDITOR
