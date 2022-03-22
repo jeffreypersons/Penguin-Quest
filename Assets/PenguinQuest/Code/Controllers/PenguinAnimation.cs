@@ -19,9 +19,14 @@ namespace PenguinQuest.Controllers
     [RequireComponent(typeof(Animator))]
     public class PenguinAnimation : MonoBehaviour
     {
-        [SerializeField] Animator penguinAnimator;
+        [SerializeField] private Animator penguinAnimator;
         [SerializeField] private bool logEvents = false;
 
+        /*
+        Reminder: These parameters _must_ match the names in mecanim.
+        Unfortunately there is no easy way to generate the parameter names,
+        so just be careful to make sure that they match the parameters listed in the Unity Animator.
+        */
         [SerializeField] private readonly string paramXMotionValue = "XMotionIntensity";
         [SerializeField] private readonly string paramYMotionValue = "YMotionIntensity";
         [SerializeField] private readonly string paramIsGrounded   = "IsGrounded";
@@ -44,6 +49,8 @@ namespace PenguinQuest.Controllers
 
         public void ResetAllTriggers()
         {
+            // note that only triggers need to be reset, as they are timing dependent
+            // unlike float, int, bool, and string parameters
             penguinAnimator.ResetTrigger(paramLie);
             penguinAnimator.ResetTrigger(paramStand);
             penguinAnimator.ResetTrigger(paramJump);
