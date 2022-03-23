@@ -12,6 +12,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
     For example, is there something X distance in front of me?
     What about the front half of the box's bottom side?
+
+    TODO: Account for different layers and different sides being activated/deativated etc?
     */
     public class CollisionChecker : MonoBehaviour
     {
@@ -43,37 +45,35 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         
         public void CheckForGround()
         {
+            // we consider the entity grounded if layer found directly below within distance threshold,
+            // with the surface normal taken if we find ground within perimeter caster's maxRayDistance
             _perimeterCaster.CastAll();
-            if (HasHitAtLeastOneWithinDistance(_perimeterCaster.BottomResults, toleratedDistanceFromGround, out CastHit hit))
-            {
-                IsGrounded    = true;
-                SurfaceNormal = hit.normal;
-            }
-            else
-            {
-                IsGrounded    = false;
-                SurfaceNormal = Vector2.up;
-            }
+            ReadOnlySpan<CastResult> downwardCastResults = _perimeterCaster.BottomResults;
+            IsGrounded = HasHitAtLeastOneWithinDistance(downwardCastResults, toleratedDistanceFromGround);
+            SurfaceNormal = SurfaceNormalOfMiddleHit(downwardCastResults, defaultNormalIfNoHit: Vector2.up);
         }
 
-        private bool HasHitAtLeastOneWithinDistance(ReadOnlySpan<CastResult> results, float distance, out CastHit hit)
-        {            
-            // todo: account for different layers and stuff
-            // todo: try from left to right
-            // todo: figure out a proper way of 'capturing' normal - perhaps a downward sphere cast centroid result?
-            //       ...or maybe just look at how seblag handled it...averages or something?
+
+        private static bool HasHitAtLeastOneWithinDistance(ReadOnlySpan<CastResult> results, float distance)
+        {
             foreach (CastResult result in results)
             {
                 if (result.hit.HasValue && result.hit.Value.distance <= distance)
                 {
-                    hit = result.hit.Value;
                     return true;
                 }
             }
-            hit = default;
             return false;
         }
-        
+
+        private static Vector2 SurfaceNormalOfMiddleHit(ReadOnlySpan<CastResult> results, Vector2 defaultNormalIfNoHit)
+        {
+            int midIndex = (int)(results.Length * 0.50f);
+            return !results.IsEmpty && results[midIndex].hit.HasValue ?
+                results[midIndex].hit.Value.normal :
+                defaultNormalIfNoHit;
+        }
+
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
