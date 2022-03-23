@@ -13,7 +13,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
     For example, is there something X distance in front of me?
     What about the front half of the box's bottom side?
 
-    TODO: Account for different layers and different sides being activated/deativated etc?
+    TODO: Account for different layers and different sides being activated/deactivated etc?
     */
     public class CollisionChecker : MonoBehaviour
     {
