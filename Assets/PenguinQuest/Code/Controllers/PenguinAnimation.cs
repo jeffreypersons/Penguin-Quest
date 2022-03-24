@@ -16,7 +16,6 @@ namespace PenguinQuest.Controllers
     */
     [ExecuteAlways]
     [Serializable]
-    [RequireComponent(typeof(Animator))]
     public class PenguinAnimation : MonoBehaviour
     {
         [SerializeField] private Animator penguinAnimator;

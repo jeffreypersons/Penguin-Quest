@@ -6,7 +6,6 @@ using PenguinQuest.Data;
 // todo: use distances, max speed, and transition percent per step for easier inspector usage..
 namespace PenguinQuest.Controllers
 {
-    [RequireComponent(typeof(PenguinEntity))]
     public class HorizontalMoveHandler : MonoBehaviour
     {
         private enum Facing { Left = -1, Right = 1}
