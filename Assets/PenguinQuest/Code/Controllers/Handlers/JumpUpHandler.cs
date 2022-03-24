@@ -6,7 +6,6 @@ using PenguinQuest.Controllers.AlwaysOnComponents;
 
 namespace PenguinQuest.Controllers.Handlers
 {
-    [RequireComponent(typeof(PenguinEntity))]
     public class JumpUpHandler : MonoBehaviour
     {
         private PenguinEntity penguinEntity;

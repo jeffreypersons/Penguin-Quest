@@ -5,8 +5,6 @@ using PenguinQuest.Controllers.AlwaysOnComponents;
 
 namespace PenguinQuest.Controllers.Handlers
 {
-    [RequireComponent(typeof(PenguinEntity))]
-    [RequireComponent(typeof(CharacterController2D))]
     public class LieDownHandler : MonoBehaviour
     {
         private PenguinEntity penguinEntity;

@@ -4,8 +4,6 @@ using PenguinQuest.Data;
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
 {
-    [RequireComponent(typeof(PenguinEntity))]
-    [RequireComponent(typeof(CollisionChecker))]
     public class CharacterController2D : MonoBehaviour
     {
         public CharacterController2DSettings Settings { get; set; }
