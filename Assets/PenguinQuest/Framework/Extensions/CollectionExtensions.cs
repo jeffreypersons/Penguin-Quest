@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace PenguinQuest.Utils
+namespace PenguinQuest.Extensions
 {
-    public static class CollectionUtils
+    public static class CollectionExtensions
     {
         public static T[] PrependToArray<T>(T value, T[] source)
         {

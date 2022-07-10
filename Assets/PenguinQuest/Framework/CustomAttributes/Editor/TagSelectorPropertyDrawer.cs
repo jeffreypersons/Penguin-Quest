@@ -2,7 +2,7 @@
 using UnityEditor;
 using System;
 using CustomAttributes;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
@@ -29,9 +29,9 @@ public class TagSelectorPropertyDrawer : PropertyDrawer
         public static void Update()
         {
             var newTags = UnityEditorInternal.InternalEditorUtility.tags;
-            if (!CollectionUtils.AreArraySegmentsEqual(newTags, DisplayNames, start1: 0, start2: 1))
+            if (!CollectionExtensions.AreArraySegmentsEqual(newTags, DisplayNames, start1: 0, start2: 1))
             {
-                DisplayNames = CollectionUtils.PrependToArray(EMPTY_TAG_DISPLAY_NAME, newTags);
+                DisplayNames = CollectionExtensions.PrependToArray(EMPTY_TAG_DISPLAY_NAME, newTags);
             }
         }
     }

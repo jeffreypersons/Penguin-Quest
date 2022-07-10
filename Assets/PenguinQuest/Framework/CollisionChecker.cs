@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 using PenguinQuest.Data;
 
 
@@ -84,10 +84,10 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
 
             foreach (CastResult result in _perimeterCaster.AllResults)
             {
-                GizmosUtils.DrawLine(from: result.origin, to: result.terminal, color: Color.red);
+                Extensions.GizmoExtensions.DrawLine(from: result.origin, to: result.terminal, color: Color.red);
                 if (result.hit != null)
                 {
-                    GizmosUtils.DrawLine(from: result.origin, to: result.hit.Value.point, color: Color.green);
+                    Extensions.GizmoExtensions.DrawLine(from: result.origin, to: result.hit.Value.point, color: Color.green);
                 }
             }
         }

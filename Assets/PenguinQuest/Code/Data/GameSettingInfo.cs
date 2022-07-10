@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Data
@@ -24,9 +24,9 @@ namespace PenguinQuest.Data
                 ValidatePercentage(musicVolumePercent))
             {
                 NumberOfLives   = numberOfLives;
-                DifficultyLevel = MathUtils.PercentToRatio(difficultyPercent);
-                SoundVolume     = MathUtils.PercentToRatio(soundVolumePercent);
-                MusicVolume     = MathUtils.PercentToRatio(musicVolumePercent);
+                DifficultyLevel = MathExtensions.PercentToRatio(difficultyPercent);
+                SoundVolume     = MathExtensions.PercentToRatio(soundVolumePercent);
+                MusicVolume     = MathExtensions.PercentToRatio(musicVolumePercent);
             }
         }
 
@@ -43,7 +43,7 @@ namespace PenguinQuest.Data
 
         private bool ValidatePercentage(int value)
         {
-            if (!MathUtils.IsWithinRange(value, 0, 100))
+            if (!MathExtensions.IsWithinRange(value, 0, 100))
             {
                 Debug.LogError($"`{nameof(value)}` must be given as an integer percentage between 0 and 100, received {value} instead");
                 return false;

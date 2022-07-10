@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CustomAttributes;
 using PenguinQuest.Data;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Controllers.UI
@@ -89,24 +89,52 @@ namespace PenguinQuest.Controllers.UI
             }
 
             submenuPanel.SetActive(true);
-            Button startButton = ObjectUtils.GetComponentInChildWithTag<Button>(submenuPanel, startButtonTag, true);
+            Button startButton = GetComponentInChildWithTag<Button>(submenuPanel, startButtonTag, true);
             if (startButton)
             {
-                UiUtils.AddAutoUnsubscribeOnClickListenerToButton(startButton, () =>
+                UiExtensions.AddAutoUnsubscribeOnClickListenerToButton(startButton, () =>
                 {
                     actionOnStartPress();
                 });
             }
-            Button closeButton = ObjectUtils.GetComponentInChildWithTag<Button>(submenuPanel, cancelButtonTag, true);
+            Button closeButton = GetComponentInChildWithTag<Button>(submenuPanel, cancelButtonTag, true);
             if (closeButton)
             {
-                UiUtils.AddAutoUnsubscribeOnClickListenerToButton(closeButton, () =>
+                UiExtensions.AddAutoUnsubscribeOnClickListenerToButton(closeButton, () =>
                 {
                     DeactivePanels();
                     actionOnPanelClose();
                 });
             }
             actionOnPanelOpen();
+        }
+
+
+        /* Return the first found child matching given tag and component type. */
+        private static T GetComponentInChildWithTag<T>(GameObject parent, string tag, bool includeInactive = false)
+        {
+            for (int i = 0; i < parent.transform.childCount; i++)
+            {
+                Transform child = parent.transform.GetChild(i);
+                if (child == null)
+                {
+                    continue;
+                }
+                if (!child.CompareTag(tag))
+                {
+                    continue;
+                }
+                if (!includeInactive && !child.gameObject.activeSelf)
+                {
+                    continue;
+                }
+
+                if (child.TryGetComponent(out T component))
+                {
+                    return component;
+                }
+            }
+            return default;
         }
     }
 }

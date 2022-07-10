@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
@@ -43,8 +43,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         
         public void Update(Vector2 min, Vector2 max)
         {
-            if (!MathUtils.AreComponentsEqual(min, LeftBottom) ||
-                !MathUtils.AreComponentsEqual(max, RightTop))
+            if (!MathExtensions.AreComponentsEqual(min, LeftBottom) ||
+                !MathExtensions.AreComponentsEqual(max, RightTop))
             {
                 Set(min, max);
             }
@@ -69,7 +69,7 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
             RightDir    = rightAxis.normalized;
             DownDir     = -1f * UpDir;
             LeftDir     = -1f * RightDir;
-            Orientation = MathUtils.AngleFromYAxis(UpDir);
+            Orientation = MathExtensions.AngleFromYAxis(UpDir);
         }
     }
 }

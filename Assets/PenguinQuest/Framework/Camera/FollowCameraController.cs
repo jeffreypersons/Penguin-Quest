@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using PenguinQuest.Data;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Controllers
@@ -175,7 +175,7 @@ namespace PenguinQuest.Controllers
         private void AdjustZoomTowards(float targetOrthoSize)
         {
             float current = cam.orthographicSize;
-            if (!MathUtils.IsWithinTolerance(current, targetOrthoSize, differenceFromTargetOrthoSizeThreshold))
+            if (!MathExtensions.IsWithinTolerance(current, targetOrthoSize, differenceFromTargetOrthoSizeThreshold))
             {
                 cam.orthographicSize = Mathf.SmoothDamp(current, targetOrthoSize, ref zoomVelocity,
                     Time.deltaTime, maxZoomSpeed);
@@ -185,7 +185,7 @@ namespace PenguinQuest.Controllers
         private void MoveCameraTowards(Vector3 target)
         {
             Vector3 current = cam.transform.position;
-            if (!MathUtils.IsWithinTolerance(current, target, distanceFromTargetPositionThreshold))
+            if (!MathExtensions.IsWithinTolerance(current, target, distanceFromTargetPositionThreshold))
             {
                 Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
                 cam.transform.position = new Vector3(position.x, position.y, target.z);

@@ -3,12 +3,12 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 
-namespace PenguinQuest.Utils
+namespace PenguinQuest.Extensions
 {
     /*
     Note that these methods use old style for loops so that the found value CAN be modified after return.
     */
-    public static class UiUtils
+    public static class UiExtensions
     {
         /* Register a onetime use callback with given button that automatically unsubscribes itself after first click. */
         public static void AddAutoUnsubscribeOnClickListenerToButton(Button button, System.Action onButtonClicked)
