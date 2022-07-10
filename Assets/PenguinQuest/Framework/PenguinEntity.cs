@@ -1,5 +1,5 @@
 using UnityEngine;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Controllers
@@ -144,8 +144,8 @@ namespace PenguinQuest.Controllers
 
         void OnDrawGizmos()
         {
-            GizmosUtils.DrawSphere(SkeletalRootPosition, 1.00f, Color.white);
-            GizmosUtils.DrawSphere(CenterOfMass,         2.00f, Color.red);
+            Extensions.GizmoExtensions.DrawSphere(SkeletalRootPosition, 1.00f, Color.white);
+            Extensions.GizmoExtensions.DrawSphere(CenterOfMass,         2.00f, Color.red);
         }
         #endif
         

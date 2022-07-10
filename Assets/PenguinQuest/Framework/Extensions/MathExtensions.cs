@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PenguinQuest.Utils
+namespace PenguinQuest.Extensions
 {
     /*
     Convenience methods for math related functionality such as conversions, x-y plane vector computations, etc
@@ -11,7 +11,7 @@ namespace PenguinQuest.Utils
     - Rotational functionality is for the x-y plane _unless_ otherwise stated, so that we can use lightweight trig rather
       than using the less intuitive (especially for 2d), and heavier/more-generalized 3d quaternion methods in unity
     */
-    public static class MathUtils
+    public static class MathExtensions
     {
         /* Compute the unsigned degrees (between [0, 90]) between given vec and x axis. */
         public static float AngleFromXAxis(Vector2 vector)

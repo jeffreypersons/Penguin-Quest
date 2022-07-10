@@ -4,9 +4,9 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 
-namespace PenguinQuest.Utils
+namespace PenguinQuest.Extensions
 {
-    public static class SceneUtils
+    public static class Scenes
     {
         public static bool IsSceneAbleToLoad(string sceneName)
         {

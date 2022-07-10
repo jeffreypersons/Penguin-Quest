@@ -1,5 +1,5 @@
 ﻿using PenguinQuest.Data;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -48,7 +48,7 @@ namespace PenguinQuest.Controllers.UI
 
         void Awake()
         {
-            if (!SceneUtils.IsSceneAbleToLoad(mainMenuSceneName))
+            if (!Scenes.IsSceneAbleToLoad(mainMenuSceneName))
             {
                 Debug.LogError($"Scene cannot be loaded, perhaps `{mainMenuSceneName}` is misspelled?");
             }
@@ -71,21 +71,21 @@ namespace PenguinQuest.Controllers.UI
             resumeButton  .onClick.AddListener(ResumeGame);
             mainMenuButton.onClick.AddListener(MoveToMainMenu);
             restartButton .onClick.AddListener(TriggerRestartGameEvent);
-            quitButton    .onClick.AddListener(SceneUtils.QuitGame);
+            quitButton    .onClick.AddListener(Scenes.QuitGame);
         }
         void OnDisable()
         {
             resumeButton  .onClick.RemoveListener(ResumeGame);
             mainMenuButton.onClick.RemoveListener(MoveToMainMenu);
             restartButton .onClick.RemoveListener(TriggerRestartGameEvent);
-            quitButton    .onClick.RemoveListener(SceneUtils.QuitGame);
+            quitButton    .onClick.RemoveListener(Scenes.QuitGame);
         }
 
         private void OpenAsPauseMenu(PlayerStatsInfo playerInfo)
         {
             title.text = titleOnPause;
             subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-            UiUtils.SetButtonActiveAndEnabled(resumeButton, true);
+            UiExtensions.SetButtonActiveAndEnabled(resumeButton, true);
             ToggleMenuVisibility(true);
         }
 
@@ -93,7 +93,7 @@ namespace PenguinQuest.Controllers.UI
         {
             title.text = titleOnGameOver;
             subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-            UiUtils.SetButtonActiveAndEnabled(resumeButton, false);
+            UiExtensions.SetButtonActiveAndEnabled(resumeButton, false);
             ToggleMenuVisibility(true);
         }
 
@@ -107,7 +107,7 @@ namespace PenguinQuest.Controllers.UI
         {
             Time.timeScale = 1;
             GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
-            SceneUtils.LoadScene(mainMenuSceneName);
+            Scenes.LoadScene(mainMenuSceneName);
         }
 
         private void TriggerRestartGameEvent()

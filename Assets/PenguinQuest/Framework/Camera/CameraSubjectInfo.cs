@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Data
@@ -57,7 +57,7 @@ namespace PenguinQuest.Data
         private void UpdatePosition()
         {
             Vector2 newCenter = HasCollider ? collider.bounds.center : subject.position;
-            if (!MathUtils.AreComponentsEqual(newCenter, Center))
+            if (!MathExtensions.AreComponentsEqual(newCenter, Center))
             {
                 Center = newCenter;
                 HasPositionChangedSinceLastUpdate = true;
@@ -71,7 +71,7 @@ namespace PenguinQuest.Data
         private void UpdateSize()
         {
             Vector2 newSize = HasCollider ? collider.bounds.size : Vector3.zero;
-            if (!MathUtils.AreComponentsEqual(newSize, Size))
+            if (!MathExtensions.AreComponentsEqual(newSize, Size))
             {
                 Size    = newSize;
                 Extents = newSize * 0.50f;

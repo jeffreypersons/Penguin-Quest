@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Data
@@ -62,7 +62,7 @@ namespace PenguinQuest.Data
 
         private static bool ValidateBounds(int value, int min, int max)
         {
-            if (!MathUtils.IsWithinRange(value, min, max))
+            if (!MathExtensions.IsWithinRange(value, min, max))
             {
                 Debug.LogError($"{nameof(value)} must be within range of [{min} and {max}], received {value} instead");
                 return false;

@@ -2,14 +2,14 @@
 using UnityEditor;
 
 
-namespace PenguinQuest.Utils
+namespace PenguinQuest.Extensions
 {
     /*
     Various utilities for drawing and manipulating gizmos.
 
     Includes resetting of color to what it was previously before the call to minimize side effects.
     */
-    public static class GizmosUtils
+    public static class GizmoExtensions
     {
         private const float DEFAULT_ARROWHEAD_LENGTH_RATIO = 0.10f;
         private static readonly Color DEFAULT_COLOR = Color.white;
@@ -31,22 +31,22 @@ namespace PenguinQuest.Utils
         /* Draw line between given world positions. */
         public static void DrawLine(Vector2 from, Vector2 to, Color? color = null)
         {
-            Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Color previousColor = UnityEngine.Gizmos.color;
+            UnityEngine.Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
 
-            Gizmos.DrawLine(from, to);
+            UnityEngine.Gizmos.DrawLine(from, to);
 
-            Gizmos.color = previousColor;
+            UnityEngine.Gizmos.color = previousColor;
         }
 
         public static void DrawSphere(Vector2 origin, float radius, Color? color = null)
         {
-            Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Color previousColor = UnityEngine.Gizmos.color;
+            UnityEngine.Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
 
-            Gizmos.DrawSphere(origin, radius);
+            UnityEngine.Gizmos.DrawSphere(origin, radius);
 
-            Gizmos.color = previousColor;
+            UnityEngine.Gizmos.color = previousColor;
         }
 
         /*
@@ -57,21 +57,21 @@ namespace PenguinQuest.Utils
         public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null,
             float arrowHeadLengthRatio = DEFAULT_ARROWHEAD_LENGTH_RATIO)
         {
-            Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Color previousColor = UnityEngine.Gizmos.color;
+            UnityEngine.Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
 
             Vector2 vector    = to - from;
             Vector2 dir       = vector.normalized;
             float length      = vector.magnitude;
             float arrowLength = arrowHeadLengthRatio * length;
             Vector2 arrowHeadBottom      = from + ((length - arrowLength) * dir);
-            Vector2 arrowHeadBaseExtents = MathUtils.PerpendicularCounterClockwise(dir) * arrowLength * 0.50f;
+            Vector2 arrowHeadBaseExtents = MathExtensions.PerpendicularCounterClockwise(dir) * arrowLength * 0.50f;
 
-            Gizmos.DrawLine(from, to);
-            Gizmos.DrawLine(arrowHeadBottom + arrowHeadBaseExtents, to);
-            Gizmos.DrawLine(arrowHeadBottom - arrowHeadBaseExtents, to);
+            UnityEngine.Gizmos.DrawLine(from, to);
+            UnityEngine.Gizmos.DrawLine(arrowHeadBottom + arrowHeadBaseExtents, to);
+            UnityEngine.Gizmos.DrawLine(arrowHeadBottom - arrowHeadBaseExtents, to);
 
-            Gizmos.color = previousColor;
+            UnityEngine.Gizmos.color = previousColor;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using PenguinQuest.Data;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,7 +25,7 @@ namespace PenguinQuest.Controllers.UI
         
         void Awake()
         {
-            if (!SceneUtils.IsSceneAbleToLoad(sceneName))
+            if (!Scenes.IsSceneAbleToLoad(sceneName))
             {
                 Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
             }
@@ -43,19 +43,19 @@ namespace PenguinQuest.Controllers.UI
             startButton   .onClick.AddListener(mainMenuPanelController.OpenStartPanel);
             settingsButton.onClick.AddListener(mainMenuPanelController.OpenSettingsPanel);
             aboutButton   .onClick.AddListener(mainMenuPanelController.OpenAboutPanel);
-            quitButton    .onClick.AddListener(SceneUtils.QuitGame);
+            quitButton    .onClick.AddListener(Scenes.QuitGame);
         }
         void OnDisable()
         {
             startButton   .onClick.RemoveListener(mainMenuPanelController.OpenStartPanel);
             settingsButton.onClick.RemoveListener(mainMenuPanelController.OpenSettingsPanel);
             aboutButton   .onClick.RemoveListener(mainMenuPanelController.OpenAboutPanel);
-            quitButton    .onClick.RemoveListener(SceneUtils.QuitGame);
+            quitButton    .onClick.RemoveListener(Scenes.QuitGame);
         }
 
         private void LoadGame()
         {
-            SceneUtils.LoadScene(sceneName, () =>
+            Scenes.LoadScene(sceneName, () =>
             {
                 GameEventCenter.startNewGame.Trigger(mainMenuPanelController.GetGameSettings());
             });
@@ -63,7 +63,7 @@ namespace PenguinQuest.Controllers.UI
 
         private void ToggleMainMenuVisibility(bool isVisible)
         {
-            UiUtils.SetLabelVisibility(subtitle, isVisible);
+            UiExtensions.SetLabelVisibility(subtitle, isVisible);
             buttonPanel.SetActive(isVisible);
             #if UNITY_WEBGL
                 UiUtils.SetButtonActiveAndEnabled(quitButton, false);

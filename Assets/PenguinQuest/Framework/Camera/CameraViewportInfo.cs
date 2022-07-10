@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Data
@@ -50,12 +50,12 @@ namespace PenguinQuest.Data
         private void UpdatePosition()
         {
             Vector3 newCenter = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, cam.nearClipPlane));
-            if (!MathUtils.AreScalarsEqual(newCenter.z, NearClipOffset))
+            if (!MathExtensions.AreScalarsEqual(newCenter.z, NearClipOffset))
             {
                 NearClipOffset = newCenter.z;
             }
         
-            if (!MathUtils.AreComponentsEqual(newCenter, Center))
+            if (!MathExtensions.AreComponentsEqual(newCenter, Center))
             {
                 Center = newCenter;
                 HasPositionChangedSinceLastUpdate = true;
@@ -70,7 +70,7 @@ namespace PenguinQuest.Data
             Vector2 newMin = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, cam.nearClipPlane));
             Vector2 newMax = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, cam.nearClipPlane));
         
-            if (!MathUtils.AreComponentsEqual(newMin, Min) || !MathUtils.AreComponentsEqual(newMax, Max))
+            if (!MathExtensions.AreComponentsEqual(newMin, Min) || !MathExtensions.AreComponentsEqual(newMax, Max))
             {
                 Min     = newMin;
                 Max     = newMax;

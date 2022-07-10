@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using PenguinQuest.Data;
-using PenguinQuest.Utils;
+using PenguinQuest.Extensions;
 
 
 namespace PenguinQuest.Controllers.AlwaysOnComponents
@@ -102,8 +102,8 @@ namespace PenguinQuest.Controllers.AlwaysOnComponents
         {
             Bounds expandedBounds = bounds;
             expandedBounds.Expand(boundsOffset);
-            Vector2 min = MathUtils.RotatePointAroundPivot(bounds.min, bounds.center, transform.localEulerAngles.z);
-            Vector2 max = MathUtils.RotatePointAroundPivot(bounds.max, bounds.center, transform.localEulerAngles.z);
+            Vector2 min = MathExtensions.RotatePointAroundPivot(bounds.min, bounds.center, transform.localEulerAngles.z);
+            Vector2 max = MathExtensions.RotatePointAroundPivot(bounds.max, bounds.center, transform.localEulerAngles.z);
             _originBounds.Update(min, max);
         }
 
