@@ -37,18 +37,16 @@ namespace PenguinQuest.Controllers
     {
         [Header("Mass Settings")]
         [Tooltip("Constant (fixed) total mass for rigidbody")]
-        [Range(50, 5000)] [SerializeField] private float mass = 500;
+        [Range(50, 5000)] [SerializeField] private float _mass = 500;
 
         [Tooltip("Center of mass x component relative to skeletal root (ie smaller x means more prone to fall backwards)")]
-        [Range(-500.00f, 500.00f)] [SerializeField] private float centerOfMassX = 0.00f;
+        [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassX = 0.00f;
 
         [Tooltip("Center of mass y component relative to skeletal root (ie smaller y means more resistant to falling over)")]
-        [Range(-500.00f, 500.00f)] [SerializeField] private float centerOfMassY = 0.00f;
-
+        [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassY = 0.00f;
 
         [Header("Body Part Collider Constraints")]
-        [SerializeField] private PenguinColliderConstraints colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
-
+        [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         
         [Header("Component References")]
         [SerializeField] private PenguinAnimation  _penguinAnimation;
@@ -69,14 +67,13 @@ namespace PenguinQuest.Controllers
         public Vector2          SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
         public Vector2          CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
 
-
-        public BoxCollider2D ColliderBoundingBox    => _boundingBoxCollider;
-        public Collider2D ColliderHead              => _headCollider;
-        public Collider2D ColliderTorso             => _torsoCollider;
-        public Collider2D ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
-        public Collider2D ColliderFrontFlipperLower => _frontFlipperLowerCollider;
-        public Collider2D ColliderFrontFoot         => _frontFootCollider;
-        public Collider2D ColliderBackFoot          => _backFootCollider;
+        public BoxCollider2D ColliderBoundingBox       => _boundingBoxCollider;
+        public Collider2D    ColliderHead              => _headCollider;
+        public Collider2D    ColliderTorso             => _torsoCollider;
+        public Collider2D    ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
+        public Collider2D    ColliderFrontFlipperLower => _frontFlipperLowerCollider;
+        public Collider2D    ColliderFrontFoot         => _frontFootCollider;
+        public Collider2D    ColliderBackFoot          => _backFootCollider;
 
         public PenguinColliderConstraints ColliderConstraints
         {
@@ -85,12 +82,12 @@ namespace PenguinQuest.Controllers
                 // synchronize the mask to reflect any external changes made to collider enability,
                 // for example, if the upper/lower flipper colliders were disabled, then we set the DisableFlippers flag
                 UpdateColliderConstraints();
-                return colliderConstraints;
+                return _colliderConstraints;
             }
             set
             {
                 // override whatever constraints and collider enability was before with our new constraints
-                colliderConstraints = value;
+                _colliderConstraints = value;
                 UpdateColliderConstraints();
             }
         }
@@ -116,7 +113,7 @@ namespace PenguinQuest.Controllers
 
         void Start()
         {
-            colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+            _colliderConstraints = GetConstraintsAccordingToDisabledColliders();
         }
 
         void Update()
@@ -127,25 +124,25 @@ namespace PenguinQuest.Controllers
         #if UNITY_EDITOR
         void OnValidate()
         {
-            if (Rigidbody.useAutoMass)
+            if (_penguinRigidbody == null || _penguinRigidbody.useAutoMass)
             {
                 return;
             }
-            if (!Mathf.Approximately(centerOfMassX, Rigidbody.centerOfMass.x) ||
-                !Mathf.Approximately(centerOfMassY, Rigidbody.centerOfMass.y))
+            if (!Mathf.Approximately(_centerOfMassX, _penguinRigidbody.centerOfMass.x) ||
+                !Mathf.Approximately(_centerOfMassY, _penguinRigidbody.centerOfMass.y))
             {
-                _penguinRigidbody.centerOfMass = new Vector2(centerOfMassX, centerOfMassY);
+                _penguinRigidbody.centerOfMass = new Vector2(_centerOfMassX, _centerOfMassY);
             }
-            if (!Mathf.Approximately(mass, _penguinRigidbody.mass))
+            if (!Mathf.Approximately(_mass, _penguinRigidbody.mass))
             {
-                _penguinRigidbody.mass = mass;
+                _penguinRigidbody.mass = _mass;
             }
         }
 
         void OnDrawGizmos()
         {
-            Extensions.GizmoExtensions.DrawSphere(SkeletalRootPosition, 1.00f, Color.white);
-            Extensions.GizmoExtensions.DrawSphere(CenterOfMass,         2.00f, Color.red);
+            Extensions.GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
+            Extensions.GizmoExtensions.DrawSphere(_penguinRigidbody.worldCenterOfMass,    2.00f, Color.red);
         }
         #endif
         
@@ -153,23 +150,23 @@ namespace PenguinQuest.Controllers
 
         private void UpdateColliderConstraints()
         {
-            PenguinColliderConstraints inspectorConstraints = colliderConstraints;
+            PenguinColliderConstraints inspectorConstraints = _colliderConstraints;
             PenguinColliderConstraints actualConstraints    = GetConstraintsAccordingToDisabledColliders();
 
             // if first time entering since a recompile, then force to whatever set in the inspector's constraints field
             if (_previousConstraints == null)
             {
-                colliderConstraints = inspectorConstraints;
+                _colliderConstraints = inspectorConstraints;
             }
             // otherwise if our inspector field changed we want it to override whatever our constraints are
             else if (inspectorConstraints != _previousConstraints)
             {
-                colliderConstraints = inspectorConstraints;
+                _colliderConstraints = inspectorConstraints;
             }
             // otherwise our inspector field is unchanged, so reflect any external changes made to collider enability
             else if (actualConstraints != _previousConstraints)
             {
-                colliderConstraints = actualConstraints;
+                _colliderConstraints = actualConstraints;
             }
             // if nothing has unchanged then there is no need to update, so terminate early
             else
@@ -177,14 +174,14 @@ namespace PenguinQuest.Controllers
                 return;
             }
 
-            UpdateColliderEnabilityAccordingToConstraints(colliderConstraints);
-            colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+            UpdateColliderEnabilityAccordingToConstraints(_colliderConstraints);
+            _colliderConstraints = GetConstraintsAccordingToDisabledColliders();
 
             if (_previousConstraints != null)
             {
-                Debug.Log($"Overriding constraints from {{{_previousConstraints}}} to {{{colliderConstraints}}}");
+                Debug.Log($"Overriding constraints from {{{_previousConstraints}}} to {{{_colliderConstraints}}}");
             }
-            _previousConstraints = colliderConstraints;
+            _previousConstraints = _colliderConstraints;
         }
 
         private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
