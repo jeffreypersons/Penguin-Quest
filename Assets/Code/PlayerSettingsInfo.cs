@@ -4,7 +4,7 @@ using PenguinQuest.Extensions;
 
 namespace PenguinQuest.Data
 {
-    public class GameSettingsInfo
+    public class PlayerSettingsInfo
     {
         public int   NumberOfLives   { get; private set; }
         public float DifficultyLevel { get; private set; }
@@ -16,7 +16,7 @@ namespace PenguinQuest.Data
                    $"SoundVolume is {SoundVolume}%, and MusicVolume is {MusicVolume}%";
         }
 
-        public GameSettingsInfo(int numberOfLives, int difficultyPercent, int soundVolumePercent, int musicVolumePercent)
+        public PlayerSettingsInfo(int numberOfLives, int difficultyPercent, int soundVolumePercent, int musicVolumePercent)
         {
             if (ValidPositiveInteger(numberOfLives)    &&
                 ValidatePercentage(difficultyPercent)  &&

@@ -65,9 +65,9 @@ namespace PenguinQuest.Controllers.UI
             this.actionOnPanelClose = actionOnPanelClose;
         }
         
-        public GameSettingsInfo GetGameSettings()
+        public PlayerSettingsInfo GetGameSettings()
         {
-            return new GameSettingsInfo(
+            return new PlayerSettingsInfo(
                 numberOfLives:      (int)numberOfLivesSetting.SliderValue,
                 difficultyPercent:  (int)difficultySetting.SliderValue,
                 soundVolumePercent: (int)soundVolumeSetting.SliderValue,

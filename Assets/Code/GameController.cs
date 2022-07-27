@@ -13,7 +13,7 @@ namespace PenguinQuest.Controllers
     */
     public class GameController : MonoBehaviour
     {
-        private PlayerStatsInfo playerInfo;
+        private PlayerProgressionInfo playerInfo;
 
         // todo: use spawner
         [SerializeField] private GameObject playerPenguin = default;
@@ -35,15 +35,15 @@ namespace PenguinQuest.Controllers
             GameEventCenter.restartGame.RemoveListener(RestartGame);
         }
 
-        private void StartNewGame(GameSettingsInfo gameSettings)
+        private void StartNewGame(PlayerSettingsInfo gameSettings)
         {
-            playerInfo = new PlayerStatsInfo(gameSettings.NumberOfLives);
+            playerInfo = new PlayerProgressionInfo(gameSettings.NumberOfLives);
             GameEventCenter.scoreChange.Trigger(playerInfo);
         }
         private void RestartGame(string status)
         {
             ResetMovingObjects();
-            playerInfo = new PlayerStatsInfo(playerInfo.Lives);
+            playerInfo = new PlayerProgressionInfo(playerInfo.Lives);
             GameEventCenter.scoreChange.Trigger(playerInfo);
         }
         private void UpdateScore(int points)

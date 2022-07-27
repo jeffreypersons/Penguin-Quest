@@ -4,7 +4,7 @@ using PenguinQuest.Extensions;
 
 namespace PenguinQuest.Data
 {
-    public class PlayerStatsInfo
+    public class PlayerProgressionInfo
     {
         public static int MIN_SCORE = 0;
         public static int MAX_SCORE = 10000;
@@ -25,7 +25,7 @@ namespace PenguinQuest.Data
                    $"lives started at {LivesGiven} and is now {Lives}";
         }
 
-        public PlayerStatsInfo(int livesGiven)
+        public PlayerProgressionInfo(int livesGiven)
         {
             Reset(livesGiven);
         }
