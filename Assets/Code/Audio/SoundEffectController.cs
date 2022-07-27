@@ -51,7 +51,7 @@ namespace PenguinQuest.Controllers
             GameEventCenter.gameOver    .RemoveListener(PlaySoundOnGameOver);
         }
 
-        private void PauseAnyActiveSoundEffects(PlayerStatsInfo _)
+        private void PauseAnyActiveSoundEffects(PlayerProgressionInfo _)
         {
             audioSource.Pause();
         }
@@ -59,12 +59,12 @@ namespace PenguinQuest.Controllers
         {
             audioSource.UnPause();
         }
-        private void SetMasterVolume(GameSettingsInfo gameSettings)
+        private void SetMasterVolume(PlayerSettingsInfo gameSettings)
         {
             audioSource.volume = gameSettings.SoundVolume / 100.0f;
         }
 
-        private void PlaySoundOnPlayerScored(PlayerStatsInfo playerInfo)
+        private void PlaySoundOnPlayerScored(PlayerProgressionInfo playerInfo)
         {
             audioSource.PlayOneShot(playerScored, volumeScalePlayerScored);
         }
@@ -79,7 +79,7 @@ namespace PenguinQuest.Controllers
             audioSource.PlayOneShot(enemyHit, volumeScaleEnemyHit);
         }
 
-        private void PlaySoundOnGameOver(PlayerStatsInfo playerInfo)
+        private void PlaySoundOnGameOver(PlayerProgressionInfo playerInfo)
         {
             bool placeHolderVictoryCondition = false;
             if (placeHolderVictoryCondition)

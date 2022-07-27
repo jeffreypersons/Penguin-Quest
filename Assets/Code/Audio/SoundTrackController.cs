@@ -34,7 +34,7 @@ namespace PenguinQuest.Controllers
             GameEventCenter.gameOver    .RemoveListener(EndTrack);
         }
 
-        private void StartTrack(GameSettingsInfo gameSettings)
+        private void StartTrack(PlayerSettingsInfo gameSettings)
         {
             track.volume = gameSettings.MusicVolume / 100.0f;
             track.Play();
@@ -44,7 +44,7 @@ namespace PenguinQuest.Controllers
             track.Stop();
             track.Play();
         }
-        private void PauseTrack(PlayerStatsInfo _)
+        private void PauseTrack(PlayerProgressionInfo _)
         {
             track.Pause();
         }
@@ -52,7 +52,7 @@ namespace PenguinQuest.Controllers
         {
             track.UnPause();
         }
-        private void EndTrack(PlayerStatsInfo _)
+        private void EndTrack(PlayerProgressionInfo _)
         {
             track.Stop();
         }

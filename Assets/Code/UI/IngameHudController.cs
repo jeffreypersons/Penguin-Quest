@@ -17,12 +17,12 @@ namespace PenguinQuest.Controllers.UI
         [SerializeField] private string scorePrefix = default;
         [SerializeField] private string livesPrefix = default;
 
-        private PlayerStatsInfo lastRecordedPlayerInfo;
+        private PlayerProgressionInfo lastRecordedPlayerInfo;
 
         void Awake()
         {
             // todo: make this script more interdependent
-            lastRecordedPlayerInfo = new PlayerStatsInfo(PlayerStatsInfo.MIN_LIVES_GIVEN);
+            lastRecordedPlayerInfo = new PlayerProgressionInfo(PlayerProgressionInfo.MIN_LIVES_GIVEN);
             levelLabel.text        = lastRecordedPlayerInfo.LevelName;
         }
         void OnEnable()
@@ -36,7 +36,7 @@ namespace PenguinQuest.Controllers.UI
             pauseButton.onClick.RemoveListener(TriggerPauseGameEvent);
         }
 
-        private void UpdateScore(PlayerStatsInfo playerInfo)
+        private void UpdateScore(PlayerProgressionInfo playerInfo)
         {
             lastRecordedPlayerInfo = playerInfo;
             scoreLabel.text = scorePrefix + playerInfo.Score.ToString();

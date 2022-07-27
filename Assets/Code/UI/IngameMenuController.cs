@@ -81,7 +81,7 @@ namespace PenguinQuest.Controllers.UI
             quitButton    .onClick.RemoveListener(Scenes.QuitGame);
         }
 
-        private void OpenAsPauseMenu(PlayerStatsInfo playerInfo)
+        private void OpenAsPauseMenu(PlayerProgressionInfo playerInfo)
         {
             title.text = titleOnPause;
             subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
@@ -89,7 +89,7 @@ namespace PenguinQuest.Controllers.UI
             ToggleMenuVisibility(true);
         }
 
-        private void OpenAsEndGameMenu(PlayerStatsInfo playerInfo)
+        private void OpenAsEndGameMenu(PlayerProgressionInfo playerInfo)
         {
             title.text = titleOnGameOver;
             subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
