@@ -19,7 +19,7 @@ namespace PenguinQuest.Controllers
         // todo: have this taken care of in the initial state that we enter
         [SerializeField] private CharacterController2DSettings initialStateCharacterSettings;
 
-        private GameplayInputReceiver input;
+        private PlayerInputReceiver input;
         
         private Vector2 initialSpawnPosition;
         private FsmState CurrentState { get; set; }
