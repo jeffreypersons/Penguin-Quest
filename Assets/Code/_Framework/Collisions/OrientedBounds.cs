@@ -2,7 +2,7 @@
 using PenguinQuest.Extensions;
 
 
-namespace PenguinQuest.Controllers.AlwaysOnComponents
+namespace PenguinQuest.Framework.Collisions
 {
     /*
     Box aligned with axes extending from center to right and top sides respectively.

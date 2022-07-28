@@ -1,11 +1,8 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Extensions;
-using PenguinQuest.Data;
 
 
-
-namespace PenguinQuest.Controllers.AlwaysOnComponents
+namespace PenguinQuest.Framework.Collisions
 {
     /*
     Provides functionality querying the surrounding of a bounding box.

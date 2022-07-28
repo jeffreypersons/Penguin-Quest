@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PenguinQuest.Controllers
+namespace PenguinQuest.Entities.Penguin.Components
 {
     /*
     Overview

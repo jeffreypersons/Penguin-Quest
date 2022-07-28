@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace PenguinQuest.Data
+namespace PenguinQuest.Framework
 {
     [CreateAssetMenu(
         fileName = "CharacterControllerSettings",

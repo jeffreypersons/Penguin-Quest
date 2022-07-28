@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Data;
-using PenguinQuest.Controllers.Fsm;
+using PenguinQuest.Framework;
 
 
-namespace PenguinQuest.Controllers.Fsm
+namespace PenguinQuest.Entities.Penguin
 {
     public class PenguinOnBellyState : FsmState
     {
