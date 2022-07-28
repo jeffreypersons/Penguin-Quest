@@ -15,7 +15,7 @@ namespace PQ
         private PlayerProgressionInfo playerInfo;
 
         // todo: use spawner
-        [SerializeField] private GameObject playerPenguin = default;
+        [SerializeField] private GameObject playerPenguin;
 
         void Awake()
         {

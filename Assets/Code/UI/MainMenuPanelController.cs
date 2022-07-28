@@ -17,18 +17,18 @@ namespace PQ.UI
     public class MainMenuPanelController : MonoBehaviour
     {
         [Header("Sub-panels")]
-        [SerializeField] private GameObject startPanel    = default;
-        [SerializeField] private GameObject settingsPanel = default;
-        [SerializeField] private GameObject aboutPanel    = default;
+        [SerializeField] private GameObject startPanel;
+        [SerializeField] private GameObject settingsPanel;
+        [SerializeField] private GameObject aboutPanel;
 
         [Header("Setting Controllers")]
-        [SerializeField] private SliderSettingController difficultySetting    = default;
-        [SerializeField] private SliderSettingController numberOfLivesSetting = default;
-        [SerializeField] private SliderSettingController soundVolumeSetting   = default;
-        [SerializeField] private SliderSettingController musicVolumeSetting   = default;
+        [SerializeField] private SliderSettingController difficultySetting;
+        [SerializeField] private SliderSettingController numberOfLivesSetting;
+        [SerializeField] private SliderSettingController soundVolumeSetting;
+        [SerializeField] private SliderSettingController musicVolumeSetting;
 
-        [SerializeField] [TagSelector] private string startButtonTag  = default;
-        [SerializeField] [TagSelector] private string cancelButtonTag = default;
+        [SerializeField] [TagSelector] private string startButtonTag;
+        [SerializeField] [TagSelector] private string cancelButtonTag;
 
         private Action actionOnStartPress;
         private Action actionOnPanelOpen;

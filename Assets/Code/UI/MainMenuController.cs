@@ -7,20 +7,20 @@ namespace PQ.UI
 {
     public class MainMenuController : MonoBehaviour
     {
-        [SerializeField] private TMPro.TextMeshProUGUI subtitle = default;
+        [SerializeField] private TMPro.TextMeshProUGUI subtitle;
         
         [Header("Scene to load on game start")]
-        [SerializeField] private string sceneName = default;
+        [SerializeField] private string sceneName;
         
         [Header("Menu Core Components")]
-        [SerializeField] private GameObject              buttonPanel             = default;
-        [SerializeField] private MainMenuPanelController mainMenuPanelController = default;
+        [SerializeField] private GameObject buttonPanel;
+        [SerializeField] private MainMenuPanelController mainMenuPanelController;
         
         [Header("Menu Buttons")]
-        [SerializeField] private Button startButton    = default;
-        [SerializeField] private Button settingsButton = default;
-        [SerializeField] private Button aboutButton    = default;
-        [SerializeField] private Button quitButton     = default;
+        [SerializeField] private Button startButton;
+        [SerializeField] private Button settingsButton;
+        [SerializeField] private Button aboutButton;
+        [SerializeField] private Button quitButton;
         
         void Awake()
         {
@@ -51,6 +51,7 @@ namespace PQ.UI
             aboutButton   .onClick.RemoveListener(mainMenuPanelController.OpenAboutPanel);
             quitButton    .onClick.RemoveListener(SceneExtensions.QuitGame);
         }
+
 
         private void LoadGame()
         {

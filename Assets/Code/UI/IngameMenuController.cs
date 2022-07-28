@@ -49,7 +49,7 @@ namespace PQ.UI
         {
             ingameMenu.SetActive(false);
             GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
-            GameEventCenter.gameOver.AddListener(OpenAsEndGameMenu);
+            GameEventCenter.gameOver .AddListener(OpenAsEndGameMenu);
 
             #if UNITY_WEBGL
                 UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
@@ -58,23 +58,23 @@ namespace PQ.UI
         void OnDestroy()
         {
             GameEventCenter.pauseGame.RemoveListener(OpenAsPauseMenu);
-            GameEventCenter.gameOver.RemoveListener(OpenAsEndGameMenu);
+            GameEventCenter.gameOver .RemoveListener(OpenAsEndGameMenu);
         }
 
         void OnEnable()
         {
-            resumeButton.onClick.AddListener(ResumeGame);
+            resumeButton  .onClick.AddListener(ResumeGame);
             mainMenuButton.onClick.AddListener(MoveToMainMenu);
-            restartButton.onClick.AddListener(TriggerRestartGameEvent);
-            quitButton.onClick.AddListener(SceneExtensions.QuitGame);
+            restartButton .onClick.AddListener(TriggerRestartGameEvent);
+            quitButton    .onClick.AddListener(SceneExtensions.QuitGame);
         }
 
         void OnDisable()
         {
-            resumeButton.onClick.RemoveListener(ResumeGame);
+            resumeButton  .onClick.RemoveListener(ResumeGame);
             mainMenuButton.onClick.RemoveListener(MoveToMainMenu);
-            restartButton.onClick.RemoveListener(TriggerRestartGameEvent);
-            quitButton.onClick.RemoveListener(SceneExtensions.QuitGame);
+            restartButton .onClick.RemoveListener(TriggerRestartGameEvent);
+            quitButton    .onClick.RemoveListener(SceneExtensions.QuitGame);
         }
 
 

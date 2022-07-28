@@ -40,13 +40,13 @@ namespace PQ.Entities.Penguin
         [SerializeField] private Rigidbody2D       _penguinRigidbody;
 
         [Header("Collider References")]
-        [SerializeField] private BoxCollider2D     _boundingBoxCollider       = default;
-        [SerializeField] private CapsuleCollider2D _headCollider              = default;
-        [SerializeField] private CapsuleCollider2D _torsoCollider             = default;
-        [SerializeField] private CapsuleCollider2D _frontFlipperUpperCollider = default;
-        [SerializeField] private CapsuleCollider2D _frontFlipperLowerCollider = default;
-        [SerializeField] private CapsuleCollider2D _frontFootCollider         = default;
-        [SerializeField] private CapsuleCollider2D _backFootCollider          = default;
+        [SerializeField] private BoxCollider2D     _boundingBoxCollider;
+        [SerializeField] private CapsuleCollider2D _headCollider;
+        [SerializeField] private CapsuleCollider2D _torsoCollider;
+        [SerializeField] private CapsuleCollider2D _frontFlipperUpperCollider;
+        [SerializeField] private CapsuleCollider2D _frontFlipperLowerCollider;
+        [SerializeField] private CapsuleCollider2D _frontFootCollider;
+        [SerializeField] private CapsuleCollider2D _backFootCollider;
 
 
         public PenguinAnimation Animation            => _penguinAnimation;

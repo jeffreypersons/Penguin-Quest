@@ -11,20 +11,20 @@ namespace PQ.UI
     [ExecuteAlways]
     public class SliderSettingController : MonoBehaviour
     {
-        [SerializeField] private string description  = default;
-        [SerializeField] private string numberSuffix = default;
-        [SerializeField] private string initialValue = default;
-        [SerializeField] private string minValue     = default;
-        [SerializeField] private string maxValue     = default;
-
-        [SerializeField] private TMPro.TextMeshProUGUI label = default;
-        [SerializeField] private Slider slider = default;
-
-        public float  SliderValue               { get { return slider.value;        } }
-        public float  MinSliderValue            { get { return slider.minValue;     } }
-        public float  MaxSliderValue            { get { return slider.maxValue;     } }
-        public string Description               { get { return label.text;          } }
-        public bool   IsSliderValueAWholeNumber { get { return slider.wholeNumbers; } }
+        [SerializeField] private string description;
+        [SerializeField] private string numberSuffix;
+        [SerializeField] private string initialValue;
+        [SerializeField] private string minValue;
+        [SerializeField] private string maxValue;
+        
+        [SerializeField] private TMPro.TextMeshProUGUI label;
+        [SerializeField] private Slider slider;
+        
+        public float  SliderValue => slider.value;
+        public float  MinSliderValue => slider.minValue;
+        public float  MaxSliderValue => slider.maxValue;
+        public string Description => label.text;
+        public bool   IsSliderValueAWholeNumber => slider.wholeNumbers;
 
         void Awake()
         {

@@ -27,12 +27,12 @@ namespace PQ.UI
         void OnEnable()
         {
             GameEventCenter.scoreChange.AddListener(UpdateScore);
-            pauseButton.onClick.AddListener(TriggerPauseGameEvent);
+            pauseButton    .onClick    .AddListener(TriggerPauseGameEvent);
         }
         void OnDisable()
         {
             GameEventCenter.scoreChange.RemoveListener(UpdateScore);
-            pauseButton.onClick.RemoveListener(TriggerPauseGameEvent);
+            pauseButton    .onClick    .RemoveListener(TriggerPauseGameEvent);
         }
 
         private void UpdateScore(PlayerProgressionInfo playerInfo)

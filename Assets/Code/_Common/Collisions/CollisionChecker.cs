@@ -19,7 +19,7 @@ namespace PQ.Common.Collisions
         [SerializeField] private BoxCollider2D colliderToCastFrom;
         [SerializeField] private LayerMask groundMask;
         [SerializeField] [Range(0.25f, 25.00f)] private float toleratedDistanceFromGround = 0.30f;
-        [SerializeField] private RayCasterSettings perimeterCasterSettings = default;
+        [SerializeField] private RayCasterSettings perimeterCasterSettings;
 
         private BoxPerimeterRayCaster _perimeterCaster;
         public bool    IsGrounded    { get; private set; } = false;

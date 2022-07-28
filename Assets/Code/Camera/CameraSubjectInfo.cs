@@ -23,7 +23,7 @@ namespace PQ.Camera
 
         public bool HasSizeChangedSinceLastUpdate     { get; private set; }
         public bool HasPositionChangedSinceLastUpdate { get; private set; }
-        public bool HasCollider { get => collider != null && collider.enabled; }
+        public bool HasCollider => collider != null && collider.enabled;
 
         
         public CameraSubjectInfo(Transform subject)

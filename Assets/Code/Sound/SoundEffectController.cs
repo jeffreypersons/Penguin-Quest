@@ -8,16 +8,16 @@ namespace PQ.Sound
         private AudioSource audioSource;
         private static float DEFAULT_MASTER_VOLUME = 0.5f;
 
-        [SerializeField] private float volumeScalePlayerScored = default;
-        [SerializeField] private float volumeScalePlayerHit    = default;
-        [SerializeField] private float volumeScaleEnemyHit     = default;
-        [SerializeField] private float volumeScaleGameOver     = default;
+        [SerializeField] private float volumeScalePlayerScored;
+        [SerializeField] private float volumeScalePlayerHit;
+        [SerializeField] private float volumeScaleEnemyHit;
+        [SerializeField] private float volumeScaleGameOver;
         
-        [SerializeField] private AudioClip playerHit    = default;
-        [SerializeField] private AudioClip playerScored = default;
-        [SerializeField] private AudioClip enemyHit     = default;
-        [SerializeField] private AudioClip playerWin    = default;
-        [SerializeField] private AudioClip playerLose   = default;
+        [SerializeField] private AudioClip playerHit;
+        [SerializeField] private AudioClip playerScored;
+        [SerializeField] private AudioClip enemyHit;
+        [SerializeField] private AudioClip playerWin;
+        [SerializeField] private AudioClip playerLose;
 
         void Awake()
         {
@@ -29,9 +29,9 @@ namespace PQ.Sound
 
         void OnEnable()
         {
-            GameEventCenter.scoreChange.AddListener(PlaySoundOnPlayerScored);
-            GameEventCenter.enemyHit   .AddListener(PlaySoundOnEnemyHit);
-            GameEventCenter.enemyKilled.AddListener(PlaySoundOnEnemyKilled);
+            GameEventCenter.scoreChange .AddListener(PlaySoundOnPlayerScored);
+            GameEventCenter.enemyHit    .AddListener(PlaySoundOnEnemyHit);
+            GameEventCenter.enemyKilled .AddListener(PlaySoundOnEnemyKilled);
 
             GameEventCenter.startNewGame.AddListener(SetMasterVolume);
             GameEventCenter.pauseGame   .AddListener(PauseAnyActiveSoundEffects);
@@ -40,9 +40,9 @@ namespace PQ.Sound
         }
         void OnDisable()
         {
-            GameEventCenter.scoreChange.RemoveListener(PlaySoundOnPlayerScored);
-            GameEventCenter.enemyHit   .RemoveListener(PlaySoundOnEnemyHit);
-            GameEventCenter.enemyKilled.RemoveListener(PlaySoundOnEnemyKilled);
+            GameEventCenter.scoreChange .RemoveListener(PlaySoundOnPlayerScored);
+            GameEventCenter.enemyHit    .RemoveListener(PlaySoundOnEnemyHit);
+            GameEventCenter.enemyKilled .RemoveListener(PlaySoundOnEnemyKilled);
 
             GameEventCenter.startNewGame.RemoveListener(SetMasterVolume);
             GameEventCenter.pauseGame   .RemoveListener(PauseAnyActiveSoundEffects);
