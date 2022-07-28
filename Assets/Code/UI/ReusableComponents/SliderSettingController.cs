@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace PenguinQuest.Controllers.UI
+namespace PQ.UI
 {
     /*
     Dynamic controller for sliders that update text with configured suffixes and number types (ie float/int).

@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace PenguinQuest.Framework
+namespace PQ.Common
 {
     /*
     Lightweight event, as a wrapper over the native c# events, and as an alternative to the much slower UnityEvent.

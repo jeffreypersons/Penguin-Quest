@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace PenguinQuest.Generated
+namespace PQ.Generated
 {
     public partial class @PlayerControls : IInputActionCollection2, IDisposable
     {

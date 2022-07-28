@@ -2,7 +2,7 @@
 using UnityEditor;
 using System;
 using CustomAttributes;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
 [CustomPropertyDrawer(typeof(TagSelectorAttribute))]

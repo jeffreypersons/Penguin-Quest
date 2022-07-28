@@ -1,10 +1,9 @@
-﻿using PenguinQuest.Data;
-using PenguinQuest.Extensions;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Controllers.UI
+namespace PQ.UI
 {
     public class IngameMenuController : MonoBehaviour
     {

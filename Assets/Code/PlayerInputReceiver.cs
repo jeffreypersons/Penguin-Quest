@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using PenguinQuest.Generated;
+using PQ.Generated;
 
 
-namespace PenguinQuest
+namespace PQ
 {
     /*
     Input receiver that maps gameplay control input to the game event system.

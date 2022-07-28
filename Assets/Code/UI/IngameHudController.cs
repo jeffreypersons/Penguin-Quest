@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using PenguinQuest.Data;
 
 
-namespace PenguinQuest.Controllers.UI
+namespace PQ.UI
 {
     public class IngameHudController : MonoBehaviour
     {

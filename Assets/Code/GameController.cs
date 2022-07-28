@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PenguinQuest
+namespace PQ
 {
     /*
     Handles game level logic/event handling.

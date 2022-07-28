@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Data;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Controllers
+namespace PQ.Camera
 {
     /*
     Camera behavior for following a subject.
@@ -21,7 +20,7 @@ namespace PenguinQuest.Controllers
     - the above could possibly be handled in future by changing the orthographic size
     */
     [ExecuteAlways]
-    [RequireComponent(typeof(Camera))]
+    [RequireComponent(typeof(UnityEngine.Camera))]
     public class FollowCameraController : MonoBehaviour
     {        
         [Header("Subject to Follow")]
@@ -65,7 +64,7 @@ namespace PenguinQuest.Controllers
         [Range(0.01f, 100.00f)] [SerializeField] private float differenceFromTargetOrthoSizeThreshold = 0.20f;
 
 
-        private Camera             cam;
+        private UnityEngine.Camera cam;
         private CameraViewportInfo viewportInfo;
         private CameraSubjectInfo  subjectInfo;
 
@@ -107,7 +106,7 @@ namespace PenguinQuest.Controllers
 
         private void Init()
         {
-            cam = gameObject.GetComponent<Camera>();
+            cam = gameObject.GetComponent<UnityEngine.Camera>();
             cam.nearClipPlane = 0.30f;
             cam.rect          = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
             cam.orthographic  = true;

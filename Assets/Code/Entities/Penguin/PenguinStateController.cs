@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Framework;
+using PQ.Common;
 
 
-namespace PenguinQuest.Entities.Penguin
+namespace PQ.Entities.Penguin
 {
     // todo: extract out a generic state controller and put it in FSM as an interface with the abstract state class,
     //       and then use it here, with penguin states and here as a penguin state controller

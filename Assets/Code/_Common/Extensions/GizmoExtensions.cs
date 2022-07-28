@@ -2,7 +2,7 @@
 using UnityEditor;
 
 
-namespace PenguinQuest.Extensions
+namespace PQ.Common.Extensions
 {
     /*
     Various utilities for drawing and manipulating gizmos.

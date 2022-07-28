@@ -1,6 +1,6 @@
 ﻿
 
-namespace PenguinQuest.Framework
+namespace PQ.Common
 {
     /*
     Representation of a state in a finite state machine.

@@ -1,7 +1,7 @@
-﻿using PenguinQuest.Framework;
+﻿using PQ.Common;
 
 
-namespace PenguinQuest
+namespace PQ
 {
     /*
     All game events are held here (as static data, so it can be accessed across scenes).

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PenguinQuest.Framework.Collisions
+namespace PQ.Common.Collisions
 {
     public struct CastHit
     {

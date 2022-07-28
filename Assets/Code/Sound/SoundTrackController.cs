@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using PenguinQuest.Data;
 
 
-namespace PenguinQuest.Controllers
+namespace PQ.Sound
 {
     public class SoundTrackController : MonoBehaviour
     {

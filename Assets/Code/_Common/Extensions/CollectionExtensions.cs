@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace PenguinQuest.Extensions
+namespace PQ.Common.Extensions
 {
     public static class CollectionExtensions
     {
