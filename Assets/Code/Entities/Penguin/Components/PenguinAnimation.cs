@@ -72,16 +72,16 @@ namespace PenguinQuest.Controllers
         public void TriggerParamUseParameter()            => penguinAnimator.SetTrigger(paramUse);
         
         
-        private void OnLieDownAnimationEventStart()   => ForwardAsEvent(OnLieDownAnimationEventStart,  LieDownStarted);
-        private void OnLieDownAnimationEventMid()     => ForwardAsEvent(OnLieDownAnimationEventMid,    LieDownMidpoint);
-        private void OnLieDownAnimationEventEnd()     => ForwardAsEvent(OnLieDownAnimationEventEnd,    LieDownEnded);
+        private void OnLieDownAnimationEventStart()  => ForwardAsEvent(OnLieDownAnimationEventStart,  LieDownStarted);
+        private void OnLieDownAnimationEventMid()    => ForwardAsEvent(OnLieDownAnimationEventMid,    LieDownMidpoint);
+        private void OnLieDownAnimationEventEnd()    => ForwardAsEvent(OnLieDownAnimationEventEnd,    LieDownEnded);
         
-        private void OnStandUpAnimationEventStart()   => ForwardAsEvent(OnStandUpAnimationEventStart,  StandUpStarted);
-        private void OnStandUpAnimationEventEnd()     => ForwardAsEvent(OnStandUpAnimationEventEnd,    StandUpEnded);
+        private void OnStandUpAnimationEventStart()  => ForwardAsEvent(OnStandUpAnimationEventStart,  StandUpStarted);
+        private void OnStandUpAnimationEventEnd()    => ForwardAsEvent(OnStandUpAnimationEventEnd,    StandUpEnded);
 
-        private void OnJumpUpAnimationEventImpulse()  => ForwardAsEvent(OnJumpUpAnimationEventImpulse, JumpLiftOff);
-        private void OnFireAnimationEvent()           => ForwardAsEvent(OnFireAnimationEvent,          Fired);
-        private void OnUseAnimationEvent()            => ForwardAsEvent(OnUseAnimationEvent,           Used);
+        private void OnJumpUpAnimationEventImpulse() => ForwardAsEvent(OnJumpUpAnimationEventImpulse, JumpLiftOff);
+        private void OnFireAnimationEvent()          => ForwardAsEvent(OnFireAnimationEvent,          Fired);
+        private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           Used);
 
 
         private void ForwardAsEvent(Action animatorEvent, Action customEvent)
