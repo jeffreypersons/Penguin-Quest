@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using PenguinQuest.Generated;
 
 
-namespace PenguinQuest.Data
+namespace PenguinQuest
 {
     /*
     Input receiver that maps gameplay control input to the game event system.

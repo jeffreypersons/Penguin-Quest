@@ -2,7 +2,7 @@
 using PenguinQuest.Extensions;
 
 
-namespace PenguinQuest.Data
+namespace PenguinQuest
 {
     public class PlayerProgressionInfo
     {

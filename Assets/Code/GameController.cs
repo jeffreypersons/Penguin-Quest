@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using PenguinQuest.Data;
 
 
-namespace PenguinQuest.Controllers
+namespace PenguinQuest
 {
     /*
     Handles game level logic/event handling.
@@ -35,17 +34,20 @@ namespace PenguinQuest.Controllers
             GameEventCenter.restartGame.RemoveListener(RestartGame);
         }
 
+
         private void StartNewGame(PlayerSettingsInfo gameSettings)
         {
             playerInfo = new PlayerProgressionInfo(gameSettings.NumberOfLives);
             GameEventCenter.scoreChange.Trigger(playerInfo);
         }
+
         private void RestartGame(string status)
         {
             ResetMovingObjects();
             playerInfo = new PlayerProgressionInfo(playerInfo.Lives);
             GameEventCenter.scoreChange.Trigger(playerInfo);
         }
+
         private void UpdateScore(int points)
         {
             if (playerInfo == null)
