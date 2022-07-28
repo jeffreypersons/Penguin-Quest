@@ -1,10 +1,8 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Data;
-using PenguinQuest.Controllers.AlwaysOnComponents;
 
 
-namespace PenguinQuest.Controllers.Handlers
+namespace PenguinQuest.Entities.Penguin.Components
 {
     public class JumpUpHandler : MonoBehaviour
     {

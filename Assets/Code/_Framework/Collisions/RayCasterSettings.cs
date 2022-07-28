@@ -1,10 +1,10 @@
 using UnityEngine;
 
 
-namespace PenguinQuest.Data
+namespace PenguinQuest.Framework.Collisions
 {
     [CreateAssetMenu(
-        fileName = "CharacterControllerSettings",
+        fileName = "RayCasterSettings",
         menuName = "ScriptableObjects/RayCasterSettings",
         order    = 1)]
     public class RayCasterSettings : ScriptableObject

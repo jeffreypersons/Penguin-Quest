@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using PenguinQuest.Data;
+using PenguinQuest.Framework.Collisions;
+using PenguinQuest.Entities.Penguin;
 
 
-namespace PenguinQuest.Controllers.AlwaysOnComponents
+namespace PenguinQuest.Framework
 {
     public class CharacterController2D : MonoBehaviour
     {

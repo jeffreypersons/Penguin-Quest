@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using PenguinQuest.Data;
-using PenguinQuest.Controllers.Fsm;
+﻿
 
-
-namespace PenguinQuest.Controllers.Fsm
+namespace PenguinQuest.Framework
 {
     /*
     Representation of a state in a finite state machine.

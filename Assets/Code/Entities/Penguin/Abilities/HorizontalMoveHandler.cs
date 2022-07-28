@@ -1,10 +1,9 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Data;
 
 
 // todo: use distances, max speed, and transition percent per step for easier inspector usage..
-namespace PenguinQuest.Controllers
+namespace PenguinQuest.Entities.Penguin.Abilities
 {
     public class HorizontalMoveHandler : MonoBehaviour
     {

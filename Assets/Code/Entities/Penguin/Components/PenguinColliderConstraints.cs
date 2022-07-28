@@ -1,8 +1,6 @@
-using UnityEngine;
-using PenguinQuest.Extensions;
 
 
-namespace PenguinQuest.Controllers
+namespace PenguinQuest.Entities.Penguin.Components
 {
     [System.Flags]
     public enum PenguinColliderConstraints

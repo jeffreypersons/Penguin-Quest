@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using PenguinQuest.Data;
-using PenguinQuest.Controllers.AlwaysOnComponents;
+using PenguinQuest.Framework;
+using PenguinQuest.Entities.Penguin.Components;
 
 
-namespace PenguinQuest.Controllers.Handlers
+namespace PenguinQuest.Entities.Penguin.Abilities
 {
     public class StandUpHandler : MonoBehaviour
     {

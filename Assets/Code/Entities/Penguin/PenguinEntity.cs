@@ -1,8 +1,8 @@
 using UnityEngine;
-using PenguinQuest.Extensions;
+using PenguinQuest.Entities.Penguin.Components;
 
 
-namespace PenguinQuest.Controllers
+namespace PenguinQuest.Entities.Penguin
 {
     /*
     Collection of penguin components.
