@@ -8,26 +8,26 @@ namespace PQ.UI
     public class IngameMenuController : MonoBehaviour
     {
         [Header("Scene to Load on Return to Main Menu")]
-        [SerializeField] private string mainMenuSceneName = default;
+        [SerializeField] private string mainMenuSceneName;
 
         [Header("Scene Objects to Hide on Menu Open")]
-        [SerializeField] private GameObject topBanner     = default;
+        [SerializeField] private GameObject topBanner;
 
         [Header("Menu Buttons")]
-        [SerializeField] private GameObject            ingameMenu = default;
-        [SerializeField] private TMPro.TextMeshProUGUI title      = default;
-        [SerializeField] private TMPro.TextMeshProUGUI subtitle   = default;
+        [SerializeField] private GameObject ingameMenu;
+        [SerializeField] private TMPro.TextMeshProUGUI title;
+        [SerializeField] private TMPro.TextMeshProUGUI subtitle;
 
         [Header("Menu Text")]
-        [SerializeField] private string titleOnPause    = default;
-        [SerializeField] private string titleOnGameOver = default;
-        [SerializeField] private string subtitleSuffix  = default;
+        [SerializeField] private string titleOnPause;
+        [SerializeField] private string titleOnGameOver;
+        [SerializeField] private string subtitleSuffix;
 
         [Header("Menu Buttons")]
-        [SerializeField] private Button resumeButton   = default;
-        [SerializeField] private Button mainMenuButton = default;
-        [SerializeField] private Button restartButton  = default;
-        [SerializeField] private Button quitButton     = default;
+        [SerializeField] private Button resumeButton;
+        [SerializeField] private Button mainMenuButton;
+        [SerializeField] private Button restartButton;
+        [SerializeField] private Button quitButton;
 
         private void ToggleMenuVisibility(bool isVisible)
         {
@@ -47,13 +47,9 @@ namespace PQ.UI
 
         void Awake()
         {
-            if (!Scenes.IsSceneAbleToLoad(mainMenuSceneName))
-            {
-                Debug.LogError($"Scene cannot be loaded, perhaps `{mainMenuSceneName}` is misspelled?");
-            }
             ingameMenu.SetActive(false);
             GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
-            GameEventCenter.gameOver .AddListener(OpenAsEndGameMenu);
+            GameEventCenter.gameOver.AddListener(OpenAsEndGameMenu);
 
             #if UNITY_WEBGL
                 UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
@@ -62,23 +58,25 @@ namespace PQ.UI
         void OnDestroy()
         {
             GameEventCenter.pauseGame.RemoveListener(OpenAsPauseMenu);
-            GameEventCenter.gameOver .RemoveListener(OpenAsEndGameMenu);
+            GameEventCenter.gameOver.RemoveListener(OpenAsEndGameMenu);
         }
 
         void OnEnable()
         {
-            resumeButton  .onClick.AddListener(ResumeGame);
+            resumeButton.onClick.AddListener(ResumeGame);
             mainMenuButton.onClick.AddListener(MoveToMainMenu);
-            restartButton .onClick.AddListener(TriggerRestartGameEvent);
-            quitButton    .onClick.AddListener(Scenes.QuitGame);
+            restartButton.onClick.AddListener(TriggerRestartGameEvent);
+            quitButton.onClick.AddListener(SceneExtensions.QuitGame);
         }
+
         void OnDisable()
         {
-            resumeButton  .onClick.RemoveListener(ResumeGame);
+            resumeButton.onClick.RemoveListener(ResumeGame);
             mainMenuButton.onClick.RemoveListener(MoveToMainMenu);
-            restartButton .onClick.RemoveListener(TriggerRestartGameEvent);
-            quitButton    .onClick.RemoveListener(Scenes.QuitGame);
+            restartButton.onClick.RemoveListener(TriggerRestartGameEvent);
+            quitButton.onClick.RemoveListener(SceneExtensions.QuitGame);
         }
+
 
         private void OpenAsPauseMenu(PlayerProgressionInfo playerInfo)
         {
@@ -106,7 +104,7 @@ namespace PQ.UI
         {
             Time.timeScale = 1;
             GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
-            Scenes.LoadScene(mainMenuSceneName);
+            SceneExtensions.LoadScene(mainMenuSceneName);
         }
 
         private void TriggerRestartGameEvent()

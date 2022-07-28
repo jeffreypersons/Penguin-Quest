@@ -24,7 +24,7 @@ namespace PQ.UI
         
         void Awake()
         {
-            if (!Scenes.IsSceneAbleToLoad(sceneName))
+            if (!SceneExtensions.IsSceneAbleToLoad(sceneName))
             {
                 Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
             }
@@ -42,19 +42,19 @@ namespace PQ.UI
             startButton   .onClick.AddListener(mainMenuPanelController.OpenStartPanel);
             settingsButton.onClick.AddListener(mainMenuPanelController.OpenSettingsPanel);
             aboutButton   .onClick.AddListener(mainMenuPanelController.OpenAboutPanel);
-            quitButton    .onClick.AddListener(Scenes.QuitGame);
+            quitButton    .onClick.AddListener(SceneExtensions.QuitGame);
         }
         void OnDisable()
         {
             startButton   .onClick.RemoveListener(mainMenuPanelController.OpenStartPanel);
             settingsButton.onClick.RemoveListener(mainMenuPanelController.OpenSettingsPanel);
             aboutButton   .onClick.RemoveListener(mainMenuPanelController.OpenAboutPanel);
-            quitButton    .onClick.RemoveListener(Scenes.QuitGame);
+            quitButton    .onClick.RemoveListener(SceneExtensions.QuitGame);
         }
 
         private void LoadGame()
         {
-            Scenes.LoadScene(sceneName, () =>
+            SceneExtensions.LoadScene(sceneName, () =>
             {
                 GameEventCenter.startNewGame.Trigger(mainMenuPanelController.GetGameSettings());
             });

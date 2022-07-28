@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace PQ.Common.Extensions
 {
-    public static class Scenes
+    public static class SceneExtensions
     {
         public static bool IsSceneAbleToLoad(string sceneName)
         {
@@ -23,10 +23,23 @@ namespace PQ.Common.Extensions
 
         public static void LoadScene(string sceneName)
         {
+            if (!IsSceneAbleToLoad(sceneName))
+            {
+                Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+                return;
+            }
+
             SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
         }
+
         public static void LoadScene(string sceneName, Action onSceneLoaded)
         {
+            if (!IsSceneAbleToLoad(sceneName))
+            {
+                Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+                return;
+            }
+
             SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
 
             // note null initialization is required to force nonlocal scope of the handler,
