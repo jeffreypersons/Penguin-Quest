@@ -3,36 +3,6 @@
 
 namespace PQ.Common.Collisions
 {
-    public struct CastHit
-    {
-        public readonly Vector2    point;
-        public readonly Vector2    normal;
-        public readonly float      distance;
-        public readonly Collider2D collider;
-
-        public CastHit(Vector2 point, Vector2 normal, float distance, Collider2D collider)
-        {
-            this.point    = point;
-            this.normal   = normal;
-            this.distance = distance;
-            this.collider = collider;
-        }
-    }
-
-    public struct CastResult
-    {
-        public readonly Vector2 origin;
-        public readonly Vector2 terminal;
-
-        public readonly CastHit? hit;
-        public CastResult(Vector2 origin, Vector2 terminal, CastHit? hit)
-        {
-            this.origin   = origin;
-            this.terminal = terminal;
-            this.hit      = hit;
-        }
-    }
-
     /*
     Provides a streamlined interface for casting lines from specific points or colliders.
     */
