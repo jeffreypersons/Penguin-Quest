@@ -1,8 +1,8 @@
 using UnityEngine;
-using PenguinQuest.Entities.Penguin.Components;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Entities.Penguin
+namespace PQ.Entities.Penguin
 {
     /*
     Collection of penguin components.
@@ -128,8 +128,8 @@ namespace PenguinQuest.Entities.Penguin
 
         void OnDrawGizmos()
         {
-            Extensions.GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
-            Extensions.GizmoExtensions.DrawSphere(_penguinRigidbody.worldCenterOfMass,    2.00f, Color.red);
+            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
+            GizmoExtensions.DrawSphere(_penguinRigidbody.worldCenterOfMass,    2.00f, Color.red);
         }
         #endif
         

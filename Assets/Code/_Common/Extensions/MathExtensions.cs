@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PenguinQuest.Extensions
+namespace PQ.Common.Extensions
 {
     /*
     Convenience methods for math related functionality such as conversions, x-y plane vector computations, etc

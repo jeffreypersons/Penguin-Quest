@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Framework.Collisions
+namespace PQ.Common.Collisions
 {
     /*
     Box aligned with axes extending from center to right and top sides respectively.

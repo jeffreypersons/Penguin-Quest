@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Data
+namespace PQ.Camera
 {
     /*
     Positional tracking for given transform, intended for use by rendering/camera/etc scripts.
@@ -10,7 +10,7 @@ namespace PenguinQuest.Data
     Center and size is synced from collider if attached,
     otherwise we use transform.position and assume size to be zero.
     */
-    public class CameraSubjectInfo
+    internal class CameraSubjectInfo
     {
         private readonly Transform  subject;
         private readonly Collider2D collider;

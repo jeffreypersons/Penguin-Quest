@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Framework.Collisions
+namespace PQ.Common.Collisions
 {
     public class BoxPerimeterRayCaster
     {

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Framework;
+using PQ.Common;
 
 
-namespace PenguinQuest.Entities.Penguin
+namespace PQ.Entities.Penguin
 {
     public class PenguinUprightState : FsmState
     {

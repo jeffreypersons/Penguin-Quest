@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest
+namespace PQ
 {
     public class PlayerSettingsInfo
     {

@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 
-namespace PenguinQuest.Extensions
+namespace PQ.Common.Extensions
 {
     public static class Scenes
     {

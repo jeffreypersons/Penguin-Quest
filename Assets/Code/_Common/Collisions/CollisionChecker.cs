@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PenguinQuest.Framework.Collisions
+namespace PQ.Common.Collisions
 {
     /*
     Provides functionality querying the surrounding of a bounding box.

@@ -2,11 +2,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using CustomAttributes;
-using PenguinQuest.Data;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Controllers.UI
+namespace PQ.UI
 {
     /*
     Controller for opening sub panels of the main menu.

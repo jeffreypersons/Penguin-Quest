@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
-using PenguinQuest.Framework;
-using PenguinQuest.Entities.Penguin.Components;
+using PQ.Common;
 
 
-namespace PenguinQuest.Entities.Penguin.Abilities
+namespace PQ.Entities.Penguin
 {
     public class LieDownHandler : MonoBehaviour
     {
-        private PenguinEntity penguinEntity;
+        private PenguinEntity         penguinEntity;
         private CharacterController2D characterController;
 
         // todo: move to state machine for lie down state

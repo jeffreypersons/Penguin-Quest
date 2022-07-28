@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using PenguinQuest.Extensions;
+using PQ.Common.Extensions;
 
 
-namespace PenguinQuest.Data
+namespace PQ.Camera
 {
     /*
     Camera viewport tracking for given camera.
@@ -12,9 +12,9 @@ namespace PenguinQuest.Data
     - assumes a single display and eye
     - all external functionality is in world space coords unless otherwise stated
     */
-    public class CameraViewportInfo
+    internal class CameraViewportInfo
     {
-        private readonly Camera cam;
+        private readonly UnityEngine.Camera cam;
 
         public float   NearClipOffset { get; private set; }
         public Vector2 Center         { get; private set; }
@@ -28,7 +28,7 @@ namespace PenguinQuest.Data
         public bool HasPositionChangedSinceLastUpdate { get; private set; }
 
 
-        public CameraViewportInfo(Camera cam)
+        public CameraViewportInfo(UnityEngine.Camera cam)
         {
             if (cam == null)
             {

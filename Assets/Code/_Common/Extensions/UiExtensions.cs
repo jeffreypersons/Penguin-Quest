@@ -3,7 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 
-namespace PenguinQuest.Extensions
+namespace PQ.Common.Extensions
 {
     /*
     Note that these methods use old style for loops so that the found value CAN be modified after return.

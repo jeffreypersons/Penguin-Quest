@@ -1,6 +1,6 @@
 
 
-namespace PenguinQuest.Entities.Penguin.Components
+namespace PQ.Entities.Penguin
 {
     [System.Flags]
     public enum PenguinColliderConstraints
