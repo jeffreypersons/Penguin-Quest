@@ -56,7 +56,7 @@ namespace PQ.UI
             GameEventCenter.gameOver .AddListener(OpenAsEndGameMenu);
 
             #if UNITY_WEBGL
-            UiUtils.SetButtonActiveAndEnabled(quitButton, false);
+                UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
             #endif
         }
         void OnDestroy()
