@@ -4,7 +4,7 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinUprightState : FsmState
+    public class PenguinUprightState : FsmStateBase
     {
         public PenguinUprightState(string name) : base(name) { }
 

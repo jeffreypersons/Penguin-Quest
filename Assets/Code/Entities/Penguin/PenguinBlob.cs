@@ -19,12 +19,13 @@ namespace PQ.Entities.Penguin
     */
     [ExecuteAlways]
     [System.Serializable]
-    [AddComponentMenu("PenguinEntity")]
-    public class PenguinEntity : MonoBehaviour
+    [AddComponentMenu("penguinBlob")]
+    public class PenguinBlob : MonoBehaviour
     {
         [Header("Mass Settings")]
         [Tooltip("Constant (fixed) total mass for rigidbody")]
         [Range(50, 5000)] [SerializeField] private float _mass = 500;
+
 
         [Tooltip("Center of mass x component relative to skeletal root (ie smaller x means more prone to fall backwards)")]
         [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassX = 0.00f;

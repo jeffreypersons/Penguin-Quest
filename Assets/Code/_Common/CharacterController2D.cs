@@ -10,26 +10,26 @@ namespace PQ.Common
         public CharacterController2DSettings Settings { get; set; }
 
         // todo: get rid of penguin entity and use dependency injection or something as this should be more generic
-        private PenguinEntity penguinEntity;
+        private PenguinBlob penguinBlob;
         private CollisionChecker groundChecker;
 
         private void Reset()
         {
-            penguinEntity.Rigidbody.MoveRotation(ComputeOrientationForGivenUpAxis(penguinEntity.Rigidbody, Vector2.up));
+            penguinBlob.Rigidbody.MoveRotation(ComputeOrientationForGivenUpAxis(penguinBlob.Rigidbody, Vector2.up));
         }
 
         void Awake()
         {
             // todo: replace ground checker with a 2d character controller that reports surroundings,
-            //       and will be a property of penguinEntity
+            //       and will be a property of penguinBlob
             groundChecker = gameObject.GetComponent<CollisionChecker>();
-            penguinEntity = gameObject.GetComponent<PenguinEntity>();
+            penguinBlob = gameObject.GetComponent<PenguinBlob>();
             Reset();
         }
 
         void Update()
         {
-            penguinEntity.Animation.SetParamIsGrounded(groundChecker.IsGrounded);
+            penguinBlob.Animation.SetParamIsGrounded(groundChecker.IsGrounded);
         }
 
 
@@ -37,12 +37,12 @@ namespace PQ.Common
         {
             if (!groundChecker.IsGrounded)
             {
-                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+                penguinBlob.Rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
                 AlignPenguinWithGivenUpAxis(Vector2.up);
                 return;
             }
 
-            penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
+            penguinBlob.Rigidbody.constraints = RigidbodyConstraints2D.None;
             if (Settings.MaintainPerpendicularityToSurface)
             {
                 // keep our penguin perpendicular to the surface at all times if option enabled
@@ -52,18 +52,18 @@ namespace PQ.Common
             {
                 // keep our penguin upright at all times if main perpendicularity option is not enabled
                 AlignPenguinWithGivenUpAxis(Vector2.up);
-                penguinEntity.Rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
+                penguinBlob.Rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
             }
 
             // if movement is within thresholds, freeze all axes to prevent jitter
             if (Settings.EnableAutomaticAxisLockingForSmallVelocities &&
-                Mathf.Abs(penguinEntity.Rigidbody.velocity.x)      < Settings.LinearVelocityThreshold &&
-                Mathf.Abs(penguinEntity.Rigidbody.velocity.y)      < Settings.LinearVelocityThreshold &&
-                Mathf.Abs(penguinEntity.Rigidbody.angularVelocity) < Settings.AngularVelocityThreshold)
+                Mathf.Abs(penguinBlob.Rigidbody.velocity.x)      < Settings.LinearVelocityThreshold &&
+                Mathf.Abs(penguinBlob.Rigidbody.velocity.y)      < Settings.LinearVelocityThreshold &&
+                Mathf.Abs(penguinBlob.Rigidbody.angularVelocity) < Settings.AngularVelocityThreshold)
             {
                 // todo: this will have to be covered in the state machine instead since we need
                 //       to account for when there is no input...
-                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+                penguinBlob.Rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
             }
         }
 
@@ -73,8 +73,8 @@ namespace PQ.Common
             if (Mathf.Abs(degreesUnaligned) >= Settings.DegreesFromSurfaceNormalThreshold)
             {
                 Quaternion current = transform.rotation;
-                Quaternion target  = ComputeOrientationForGivenUpAxis(penguinEntity.Rigidbody, targetUpAxis);
-                penguinEntity.Rigidbody.MoveRotation(Quaternion.Lerp(current, target, Settings.SurfaceAlignmentRotationalStrength));
+                Quaternion target  = ComputeOrientationForGivenUpAxis(penguinBlob.Rigidbody, targetUpAxis);
+                penguinBlob.Rigidbody.MoveRotation(Quaternion.Lerp(current, target, Settings.SurfaceAlignmentRotationalStrength));
             }
         }
 

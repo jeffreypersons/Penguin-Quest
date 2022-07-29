@@ -8,7 +8,7 @@ namespace PQ.Entities.Penguin
     //       and then use it here, with penguin states and here as a penguin state controller
     public class PenguinStateController : MonoBehaviour
     {
-        private PenguinEntity         penguinEntity;
+        private PenguinBlob           penguinBlob;
         private CharacterController2D characterController2D;
 
         private PenguinUprightState upright;
@@ -20,8 +20,8 @@ namespace PQ.Entities.Penguin
         private PlayerInputReceiver input;
         
         private Vector2 initialSpawnPosition;
-        private FsmState CurrentState { get; set; }
-        private bool IsCurrently(FsmState state)
+        private FsmStateBase CurrentState { get; set; }
+        private bool IsCurrently(FsmStateBase state)
         {
             return ReferenceEquals(CurrentState, state);
         }
@@ -30,9 +30,9 @@ namespace PQ.Entities.Penguin
         private bool CanEnterOnbellyState => !IsCurrently(onBelly);
 
 
-        private void TransitionToState(FsmState newState)
+        private void TransitionToState(FsmStateBase newState)
         {
-            FsmState oldState = CurrentState;
+            FsmStateBase oldState = CurrentState;
             Debug.Log($"Transitioning from {oldState} to {newState}");
             oldState.Exit();
             newState.Enter();
@@ -46,23 +46,23 @@ namespace PQ.Entities.Penguin
             onBelly = new PenguinOnBellyState("OnBelly_State");
             CurrentState = upright;
 
-            penguinEntity         = gameObject.GetComponent<PenguinEntity>();
+            penguinBlob         = gameObject.GetComponent<PenguinBlob>();
             characterController2D = gameObject.GetComponent<CharacterController2D>();
 
             // todo: this should be in state machine for upright and we should start in a blank state and then
             //       entered rather than assuming we start upright here...
             characterController2D.Settings = initialStateCharacterSettings;
 
-            initialSpawnPosition = penguinEntity.Rigidbody.position;
+            initialSpawnPosition = penguinBlob.Rigidbody.position;
             ResetPositioning();
         }
 
         // todo: this should really be extracted out into a proper spawning system...
         public void ResetPositioning()
         {
-            penguinEntity.Rigidbody.velocity = Vector2.zero;
-            penguinEntity.Rigidbody.position = initialSpawnPosition;
-            penguinEntity.Rigidbody.transform.localEulerAngles = Vector3.zero;
+            penguinBlob.Rigidbody.velocity = Vector2.zero;
+            penguinBlob.Rigidbody.position = initialSpawnPosition;
+            penguinBlob.Rigidbody.transform.localEulerAngles = Vector3.zero;
         }
 
         void Start()

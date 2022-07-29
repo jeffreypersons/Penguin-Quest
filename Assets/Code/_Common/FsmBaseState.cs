@@ -10,11 +10,11 @@ namespace PQ.Common
     handle when transition is/is-not allowed to occur. Instead, it's up to the state to determine what the
     per-frame behavior is (or isn't) as callbacks are provided for regular, fixed, and late updates.
     */
-    public abstract class FsmState
+    public abstract class FsmStateBase
     {
         public readonly string Name;
 
-        public FsmState(string name)
+        public FsmStateBase(string name)
         {
             Name = name;
         }

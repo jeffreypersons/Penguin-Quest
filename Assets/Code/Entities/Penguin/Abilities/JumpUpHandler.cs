@@ -6,7 +6,7 @@ namespace PQ.Entities.Penguin
 {
     public class JumpUpHandler : MonoBehaviour
     {
-        private PenguinEntity penguinEntity;
+        private PenguinBlob penguinBlob;
 
         private const float JUMP_STRENGTH_DEFAULT = 50000.00f;
         private const float JUMP_STRENGTH_MIN     = 25000.00f;
@@ -28,7 +28,7 @@ namespace PQ.Entities.Penguin
         
         void Awake()
         {            
-            penguinEntity   = transform.GetComponent<PenguinEntity>();
+            penguinBlob     = transform.GetComponent<PenguinBlob>();
             netImpulseForce = Vector2.zero;
         }
 
@@ -36,8 +36,8 @@ namespace PQ.Entities.Penguin
         {
             if (netImpulseForce != Vector2.zero)
             {
-                penguinEntity.Rigidbody.constraints = RigidbodyConstraints2D.None;
-                penguinEntity.Rigidbody.AddForce(netImpulseForce, ForceMode2D.Impulse);
+                penguinBlob.Rigidbody.constraints = RigidbodyConstraints2D.None;
+                penguinBlob.Rigidbody.AddForce(netImpulseForce, ForceMode2D.Impulse);
                 netImpulseForce = Vector2.zero;
             }
         }
@@ -47,18 +47,18 @@ namespace PQ.Entities.Penguin
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.jumpCommand.AddListener(OnJumpInputReceived);
-            penguinEntity.Animation.JumpLiftOff += ApplyJumpImpulse;
+            penguinBlob.Animation.JumpLiftOff += ApplyJumpImpulse;
         }
 
         void OnDisable()
         {
             GameEventCenter.jumpCommand.RemoveListener(OnJumpInputReceived);
-            penguinEntity.Animation.JumpLiftOff -= ApplyJumpImpulse;
+            penguinBlob.Animation.JumpLiftOff -= ApplyJumpImpulse;
         }
 
         void OnJumpInputReceived(string _)
         {
-            penguinEntity.Animation.TriggerParamJumpUpParameter();
+            penguinBlob.Animation.TriggerParamJumpUpParameter();
         }
 
         void ApplyJumpImpulse()
@@ -66,7 +66,7 @@ namespace PQ.Entities.Penguin
             // todo: move rigidbody force/movement calls to character controller 2d
             // clear jump trigger to avoid triggering a jump after landing,
             // in the case that jump is pressed twice in a row
-            penguinEntity.Animation.ResetAllTriggers();
+            penguinBlob.Animation.ResetAllTriggers();
             float angleFromGround = jumpAngle * Mathf.Deg2Rad;
             netImpulseForce += jumpStrength * new Vector2(Mathf.Cos(angleFromGround), Mathf.Sin(angleFromGround));
         }
