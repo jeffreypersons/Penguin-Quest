@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxAscendableSlopeAngle: 45
   maxToleratedDistanceFromGround: 0.3
-  maintainPerpendicularityToSurface: 1
+  maintainPerpendicularityToSurface: 0
   surfaceAlignmentRotationalStrength: 0.1
   degreesFromSurfaceNormalThreshold: 0.01
   enableAutomaticAxisLockingForSmallVelocities: 1
