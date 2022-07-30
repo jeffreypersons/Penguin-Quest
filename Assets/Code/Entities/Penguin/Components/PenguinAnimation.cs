@@ -36,14 +36,14 @@ namespace PQ.Entities.Penguin
         [SerializeField] private readonly string paramFire         = "Fire";
         [SerializeField] private readonly string paramUse          = "Use";
 
-        public event Action JumpLiftOff     = default;
-        public event Action LieDownStarted  = default;
-        public event Action LieDownMidpoint = default;
-        public event Action LieDownEnded    = default;
-        public event Action StandUpStarted  = default;
-        public event Action StandUpEnded    = default;
-        public event Action Fired           = default;
-        public event Action Used            = default;
+        public event Action JumpLiftOff;
+        public event Action LieDownStarted;
+        public event Action LieDownMidpoint;
+        public event Action LieDownEnded;
+        public event Action StandUpStarted;
+        public event Action StandUpEnded;
+        public event Action Fired;
+        public event Action Used;
 
 
         public void ResetAllTriggers()
