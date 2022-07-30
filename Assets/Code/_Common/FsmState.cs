@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 
 namespace PQ.Common
 {
@@ -10,14 +11,13 @@ namespace PQ.Common
     handle when transition is/is-not allowed to occur. Instead, it's up to the state to determine what the
     per-frame behavior is (or isn't) as callbacks are provided for regular, fixed, and late updates.
     */
-    public abstract class FsmStateBase
+    public abstract class FsmState : IEquatable<FsmState>
     {
         public readonly string Name;
+        public override string ToString() => Name;
 
-        public FsmStateBase(string name)
-        {
-            Name = name;
-        }
+        public FsmState(string name) => Name = name;
+        public bool Equals(FsmState other) => other is not null && Name == other.Name;
 
         public abstract void Enter();
         public abstract void Exit();
@@ -25,6 +25,10 @@ namespace PQ.Common
         public abstract void FixedUpdate();
         public abstract void LateUpdate();
 
-        public override string ToString() => Name;
+
+        public override bool Equals(object obj) => Equals(obj as FsmState);
+        public override int GetHashCode() => HashCode.Combine(Name);
+        public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
+        public static bool operator !=(FsmState left, FsmState right) => !Equals(left, right);
     }
 }

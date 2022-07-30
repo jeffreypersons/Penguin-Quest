@@ -19,7 +19,7 @@ namespace PQ.Entities.Penguin
     */
     [ExecuteAlways]
     [System.Serializable]
-    [AddComponentMenu("penguinBlob")]
+    [AddComponentMenu("PenguinBlob")]
     public class PenguinBlob : MonoBehaviour
     {
         [Header("Mass Settings")]
