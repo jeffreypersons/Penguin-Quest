@@ -1597,7 +1597,7 @@ PrefabInstance:
     - target: {fileID: 4753795910216235720, guid: 6d76bc27df941db4d96760c2af2147ca,
         type: 3}
       propertyPath: m_Mass
-      value: 50
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 4753795910216235720, guid: 6d76bc27df941db4d96760c2af2147ca,
         type: 3}
@@ -1659,6 +1659,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4753795910216235729, guid: 6d76bc27df941db4d96760c2af2147ca,
+        type: 3}
+      propertyPath: onFeetStateCharacterSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+        type: 2}
     - target: {fileID: 4753795910216235740, guid: 6d76bc27df941db4d96760c2af2147ca,
         type: 3}
       propertyPath: m_Name
@@ -1673,7 +1679,7 @@ PrefabInstance:
     - target: {fileID: 9188869225720279910, guid: 6d76bc27df941db4d96760c2af2147ca,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
