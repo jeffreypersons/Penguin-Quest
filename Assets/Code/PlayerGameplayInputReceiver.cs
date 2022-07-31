@@ -15,43 +15,51 @@ namespace PQ
     [AddComponentMenu("PlayerGameplayInputReceiver")]
     public class PlayerGameplayInputReceiver : MonoBehaviour
     {
-        private PlayerControls generatedPlayerControls;
+        private PlayerControls _generatedPlayerControls;
 
-        private InputAction MoveHorizontal => generatedPlayerControls.Gameplay.MoveHorizontal;
-        private InputAction JumpUp         => generatedPlayerControls.Gameplay.JumpUp;
-        private InputAction StandUp        => generatedPlayerControls.Gameplay.StandUp;
-        private InputAction LieDown        => generatedPlayerControls.Gameplay.LieDown;
-        private InputAction Use            => generatedPlayerControls.Gameplay.Fire;
-        private InputAction Fire           => generatedPlayerControls.Gameplay.Use;
+        private InputAction _moveHorizontal;
+        private InputAction _jumpUp;
+        private InputAction _standUp;
+        private InputAction _lieDown;
+        private InputAction _use;
+        private InputAction _fire;
 
         void Awake()
         {
-            generatedPlayerControls = new PlayerControls();
+            PlayerControls controls = new PlayerControls();
+
+            _generatedPlayerControls = controls;
+            _moveHorizontal = controls.Gameplay.MoveHorizontal;
+            _jumpUp         = controls.Gameplay.JumpUp;
+            _standUp        = controls.Gameplay.StandUp;
+            _lieDown        = controls.Gameplay.LieDown;
+            _use            = controls.Gameplay.Fire;
+            _fire           = controls.Gameplay.Use;
         }
 
 
         void OnEnable()
         {
-            generatedPlayerControls.Gameplay.Enable();
-            MoveHorizontal.started   += OnMoveHorizontalStarted;
-            MoveHorizontal.canceled  += OnMoveHorizontalStopped;
-            JumpUp        .performed += OnJumpUp;
-            StandUp       .performed += OnStandUp;
-            LieDown       .performed += OnLieDown;
-            Use           .performed += OnUse;
-            Fire          .performed += OnFire;
+            _generatedPlayerControls.Gameplay.Enable();
+            _moveHorizontal.started   += OnMoveHorizontalStarted;
+            _moveHorizontal.canceled  += OnMoveHorizontalStopped;
+            _jumpUp        .performed += OnJumpUp;
+            _standUp       .performed += OnStandUp;
+            _lieDown       .performed += OnLieDown;
+            _use           .performed += OnUse;
+            _fire          .performed += OnFire;
         }
 
         void OnDisable()
         {
-            generatedPlayerControls.Gameplay.Disable();
-            MoveHorizontal.started   -= OnMoveHorizontalStarted;
-            MoveHorizontal.canceled  -= OnMoveHorizontalStopped;
-            JumpUp        .performed -= OnJumpUp;
-            StandUp       .performed -= OnStandUp;
-            LieDown       .performed -= OnLieDown;
-            Use           .performed -= OnUse;
-            Fire          .performed -= OnFire;
+            _generatedPlayerControls.Gameplay.Disable();
+            _moveHorizontal.started   -= OnMoveHorizontalStarted;
+            _moveHorizontal.canceled  -= OnMoveHorizontalStopped;
+            _jumpUp        .performed -= OnJumpUp;
+            _standUp       .performed -= OnStandUp;
+            _lieDown       .performed -= OnLieDown;
+            _use           .performed -= OnUse;
+            _fire          .performed -= OnFire;
         }
 
         private void OnMoveHorizontalStarted(InputAction.CallbackContext context)

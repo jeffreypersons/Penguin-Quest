@@ -13,7 +13,7 @@ namespace PQ.Entities.Penguin
     disabling/enabling colliders, etc.
 
     The purpose in all this is to centralize component and child object access, so that other
-    scripts don't have to worry about caching.
+    scripts don't have to worry about caching, or hooking things up correctly.
 
     Note that this always is running, so that gizmos and editor scripts can reference any of its properties
     without worry about when things are valid and active.
@@ -27,12 +27,12 @@ namespace PQ.Entities.Penguin
         [Tooltip("Constant (fixed) total mass for rigidbody")]
         [Range(50, 5000)] [SerializeField] private float _mass = 500;
 
-
         [Tooltip("Center of mass x component relative to skeletal root (ie smaller x means more prone to fall backwards)")]
         [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassX = 0.00f;
 
         [Tooltip("Center of mass y component relative to skeletal root (ie smaller y means more resistant to falling over)")]
         [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassY = 0.00f;
+
 
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;

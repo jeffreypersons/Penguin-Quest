@@ -23,6 +23,8 @@ namespace PQ.Common
 
         void Awake()
         {
+            Rigidbody        = gameObject.GetComponent<Rigidbody2D>();
+            CollisionChecker = gameObject.GetComponent<CollisionChecker2D>();
             Reset();
         }
 

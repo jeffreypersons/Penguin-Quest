@@ -1,60 +1,54 @@
 ﻿using UnityEngine;
-using PQ.Common;
 
 
 namespace PQ.Entities.Penguin
 {
     public class StandUpHandler : MonoBehaviour
     {
-        private PenguinBlob           penguinBlob;
-        private CharacterController2D characterController;
-
-        // todo: move to state machine for onFeet state
-        [SerializeField] private CharacterController2DSettings onFeetStateCharacterSettings;
+        private PenguinBlob _penguinBlob;
 
         void Awake()
         {
-            penguinBlob       = transform.GetComponent<PenguinBlob>();
-            characterController = transform.GetComponent<CharacterController2D>();
+            _penguinBlob = transform.GetComponent<PenguinBlob>();
         }
 
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.standupCommand.AddListener(OnStandUpInputReceived);
-            penguinBlob.Animation.StandUpStarted += OnStandUpStarted;
-            penguinBlob.Animation.StandUpEnded   += OnStandUpFinished;
+            _penguinBlob.Animation.StandUpStarted += OnStandUpStarted;
+            _penguinBlob.Animation.StandUpEnded   += OnStandUpFinished;
         }
         void OnDisable()
         {
             GameEventCenter.standupCommand.RemoveListener(OnStandUpInputReceived);
-            penguinBlob.Animation.StandUpStarted -= OnStandUpStarted;
-            penguinBlob.Animation.StandUpEnded   -= OnStandUpFinished;
+            _penguinBlob.Animation.StandUpStarted -= OnStandUpStarted;
+            _penguinBlob.Animation.StandUpEnded   -= OnStandUpFinished;
         }
         
 
         void OnStandUpInputReceived(string _)
         {
-            penguinBlob.Animation.TriggerParamStandUpParameter();
+            _penguinBlob.Animation.TriggerParamStandUpParameter();
         }
 
         void OnStandUpStarted()
         {
             // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
-            penguinBlob.Animation.SetParamIsGrounded(true);
-            penguinBlob.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
+            _penguinBlob.Animation.SetParamIsGrounded(true);
+            _penguinBlob.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         }
 
         void OnStandUpFinished()
         {
             // todo: this stuff needs to go in the state machine
-            penguinBlob.Animation.SetParamIsUpright(true);
-            characterController.Settings = onFeetStateCharacterSettings;
+            _penguinBlob.Animation.SetParamIsUpright(true);
+            _penguinBlob.CharacterController.Settings = _penguinBlob.OnFeetSettings;
 
             // enable all colliders as we are now fully onFeet
-            penguinBlob.ColliderConstraints = PenguinColliderConstraints.None;
+            _penguinBlob.ColliderConstraints = PenguinColliderConstraints.None;
 
-            penguinBlob.ReadjustBoundingBox(
+            _penguinBlob.ReadjustBoundingBox(
                 offset:     new Vector2(-0.3983436f, 14.60247f),
                 size:       new Vector2( 13.17636f,  28.28143f),
                 edgeRadius: 0.68f
