@@ -23,6 +23,17 @@ namespace PQ.Entities.Penguin
     [AddComponentMenu("PenguinBlob")]
     public class PenguinBlob : MonoBehaviour
     {
+        [Header("Mass Settings")]
+        [Tooltip("Constant (fixed) total mass for rigidbody")]
+        [Range(50, 5000)] [SerializeField] private float _mass = 500;
+
+
+        [Tooltip("Center of mass x component relative to skeletal root (ie smaller x means more prone to fall backwards)")]
+        [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassX = 0.00f;
+
+        [Tooltip("Center of mass y component relative to skeletal root (ie smaller y means more resistant to falling over)")]
+        [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassY = 0.00f;
+
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
 
@@ -115,13 +126,21 @@ namespace PQ.Entities.Penguin
             {
                 return;
             }
-
-            // any inspector data validation code goes here
+            if (!Mathf.Approximately(_centerOfMassX, _penguinRigidbody.centerOfMass.x) ||
+                !Mathf.Approximately(_centerOfMassY, _penguinRigidbody.centerOfMass.y))
+            {
+                _penguinRigidbody.centerOfMass = new Vector2(_centerOfMassX, _centerOfMassY);
+            }
+            if (!Mathf.Approximately(_mass, _penguinRigidbody.mass))
+            {
+                _penguinRigidbody.mass = _mass;
+            }
         }
 
         void OnDrawGizmos()
         {
-            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 2.00f, Color.white);
+            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
+            GizmoExtensions.DrawSphere(_penguinRigidbody.worldCenterOfMass,    2.00f, Color.red);
         }
         #endif
         
