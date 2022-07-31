@@ -21,7 +21,7 @@ namespace PQ.Common
         // Required method implementation, where transitions are checked and called
         protected abstract void ExecuteAnyTransitions();
         
-        // optional overridable callback for state transitions
+        // Optional overridable callback for state transitions
         protected virtual void OnTransition(FsmState previous, FsmState next) { }
 
         // Is this our current state in the FSM?
