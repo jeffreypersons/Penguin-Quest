@@ -36,7 +36,7 @@ namespace PQ.Entities.Penguin
         }
         private void OnDisable()
         {
-            
+            penguinBlob.CharacterController.OnGroundContactChanged -= OnGroundedPropertyChanged;
         }
 
         // todo: extract out a proper spawning system, or consider moving these to blob

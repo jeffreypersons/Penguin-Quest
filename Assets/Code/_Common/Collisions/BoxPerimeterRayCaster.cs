@@ -54,8 +54,8 @@ namespace PQ.Common.Collisions
 
         public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
-            this._box          = box;
             this.Settings      = settings;
+            this._box          = box;
             this._lineCaster   = new LineCaster(settings);
             this._originBounds = new OrientedBounds();
             this._results      = Array.Empty<CastResult>();
