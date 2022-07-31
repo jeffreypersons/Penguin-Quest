@@ -1,4 +1,5 @@
 using UnityEngine;
+using PQ.Common;
 using PQ.Common.Extensions;
 
 
@@ -26,8 +27,9 @@ namespace PQ.Entities.Penguin
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         
         [Header("Component References")]
-        [SerializeField] private PenguinAnimation  _penguinAnimation;
-        [SerializeField] private Rigidbody2D       _penguinRigidbody;
+        [SerializeField] private CharacterController2D _characterController;
+        [SerializeField] private PenguinAnimation      _penguinAnimation;
+        [SerializeField] private Rigidbody2D           _penguinRigidbody;
 
         [Header("Collider References")]
         [SerializeField] private BoxCollider2D     _boundingBoxCollider;
@@ -39,10 +41,11 @@ namespace PQ.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _backFootCollider;
 
 
-        public PenguinAnimation Animation            => _penguinAnimation;
-        public Rigidbody2D      Rigidbody            => _penguinRigidbody;
-        public Vector2          SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
-        public Vector2          CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
+        public PenguinAnimation      Animation            => _penguinAnimation;
+        public CharacterController2D CharacterController  => _characterController;
+        public Rigidbody2D           Rigidbody            => _penguinRigidbody;
+        public Vector2               SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
+        public Vector2               CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
 
         public BoxCollider2D ColliderBoundingBox       => _boundingBoxCollider;
         public Collider2D    ColliderHead              => _headCollider;

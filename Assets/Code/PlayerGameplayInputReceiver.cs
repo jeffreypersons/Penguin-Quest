@@ -12,8 +12,8 @@ namespace PQ
     player input/control settings.
     */
     [System.Serializable]
-    [AddComponentMenu("PlayerInputReceiver")]
-    public class PlayerInputReceiver : MonoBehaviour
+    [AddComponentMenu("PlayerGameplayInputReceiver")]
+    public class PlayerGameplayInputReceiver : MonoBehaviour
     {
         private PlayerControls generatedPlayerControls;
 

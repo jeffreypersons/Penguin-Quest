@@ -7,7 +7,7 @@ namespace PQ.Entities.Penguin
     public class PenguinStateDriver : FsmStateMachineDriver
     {
         private Vector2 initialSpawnPosition;
-        private PlayerInputReceiver input;
+        private PlayerGameplayInputReceiver input;
         private PenguinBlob penguinBlob;
 
         // todo: replace with a cleaner, more reusable way to do this
