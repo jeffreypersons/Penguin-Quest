@@ -11,22 +11,22 @@ namespace PQ.Entities.Penguin
         private PenguinBlob penguinBlob;
 
         // todo: replace with a cleaner, more reusable way to do this
-        private FsmState upright;
+        private FsmState onFeet;
         private FsmState onBelly;
-        private bool CanEnterUprightState => !IsCurrently(upright);
+        private bool CanEnterOnFeetState  => !IsCurrently(onFeet);
         private bool CanEnterOnbellyState => !IsCurrently(onBelly);
 
         protected override void Initialize(FsmState initialState)
         {
-            upright = new PenguinUprightState("Penguin.State.OnFeet");
-            onBelly = new PenguinOnBellyState("Penguin.State.OnBelly");
+            onFeet = new PenguinStateOnFeet("Penguin.State.OnFeet");
+            onBelly = new PenguinStateOnBelly("Penguin.State.OnBelly");
 
             penguinBlob = gameObject.GetComponent<PenguinBlob>();
             initialSpawnPosition = penguinBlob.Rigidbody.position;
             ResetPositioning();
 
 
-            base.Initialize(upright);
+            base.Initialize(onFeet);
         }
 
         // todo: extract out a proper spawning system, or consider moving these to blob
@@ -42,11 +42,11 @@ namespace PQ.Entities.Penguin
         {
             /*
             Disable state changes until state subclasses are properly implemented
-            if (CanEnterUprightState)
+            if (CanEnterOnFeetState)
             {
-                MoveToState(upright);
+                MoveToState(onFeet);
             }
-            else if (CanEnterOnbellyState)
+            else if (CanEnterOnFeetState)
             {
                 MoveToState(onBelly);
             }

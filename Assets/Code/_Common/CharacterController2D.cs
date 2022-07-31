@@ -50,7 +50,7 @@ namespace PQ.Common
             }
             else
             {
-                // keep our penguin upright at all times if main perpendicularity option is not enabled
+                // keep our penguin onFeet at all times if main perpendicularity option is not enabled
                 AlignPenguinWithGivenUpAxis(Vector2.up);
                 penguinBlob.Rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
             }
