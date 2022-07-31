@@ -6,14 +6,15 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateDriver : FsmStateMachineDriver
     {
-        private Vector2 initialSpawnPosition;
         private PlayerGameplayInputReceiver input;
         private PenguinBlob penguinBlob;
+
+        private Vector2 initialSpawnPosition;
 
         // todo: replace with a cleaner, more reusable way to do this
         private FsmState onFeet;
         private FsmState onBelly;
-        private bool CanEnterOnFeetState  => !IsCurrently(onFeet);
+        private bool CanEnterOnFeetState => !IsCurrently(onFeet);
         private bool CanEnterOnbellyState => !IsCurrently(onBelly);
 
         protected override void Initialize(FsmState initialState)
@@ -27,6 +28,15 @@ namespace PQ.Entities.Penguin
 
 
             base.Initialize(onFeet);
+        }
+
+        private void OnEnable()
+        {
+            penguinBlob.CharacterController.OnGroundContactChanged += OnGroundedPropertyChanged;
+        }
+        private void OnDisable()
+        {
+            
         }
 
         // todo: extract out a proper spawning system, or consider moving these to blob
@@ -56,6 +66,11 @@ namespace PQ.Entities.Penguin
         protected override void OnTransition(FsmState previous, FsmState next)
         {
             Debug.Log($"Transitioning Penguin from {previous} to {next}");
+        }
+
+        protected void OnGroundedPropertyChanged(bool isGrounded)
+        {
+            penguinBlob.Animation.SetParamIsGrounded(isGrounded);
         }
     }
 }
