@@ -1203,6 +1203,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4753795910216235732, guid: 6d76bc27df941db4d96760c2af2147ca,
+        type: 3}
+      propertyPath: _penguinOnFeetSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+        type: 2}
+    - target: {fileID: 4753795910216235732, guid: 6d76bc27df941db4d96760c2af2147ca,
+        type: 3}
+      propertyPath: _penguinOnBellySettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3,
+        type: 2}
     - target: {fileID: 4753795910216235740, guid: 6d76bc27df941db4d96760c2af2147ca,
         type: 3}
       propertyPath: m_Name
