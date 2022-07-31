@@ -6,7 +6,9 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateOnFeet : FsmState
     {
-        public PenguinStateOnFeet(string name) : base(name) { }
+        private PenguinBlob _blob;
+
+        public PenguinStateOnFeet(string name, PenguinBlob blob) : base(name) { _blob = blob; }
 
         public override void Enter()
         {

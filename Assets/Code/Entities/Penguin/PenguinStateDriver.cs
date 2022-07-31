@@ -19,8 +19,8 @@ namespace PQ.Entities.Penguin
 
         protected override void Initialize(FsmState initialState)
         {
-            onFeet = new PenguinStateOnFeet("Penguin.State.OnFeet");
-            onBelly = new PenguinStateOnBelly("Penguin.State.OnBelly");
+            onFeet  = new PenguinStateOnFeet ("Penguin.State.OnFeet",  penguinBlob);
+            onBelly = new PenguinStateOnBelly("Penguin.State.OnBelly", penguinBlob);
 
             penguinBlob = gameObject.GetComponent<PenguinBlob>();
             initialSpawnPosition = penguinBlob.Rigidbody.position;
