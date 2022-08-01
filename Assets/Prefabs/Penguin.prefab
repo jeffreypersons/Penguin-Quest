@@ -407,13 +407,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 925dc2bee64be8b4d81ac2070045959e, type: 3}
+  m_Script: {fileID: 11500000, guid: 79e0413346044954e9a41b7a83eb98de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialStateCharacterSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
-    type: 2}
 --- !u!114 &4753795910216235733
 MonoBehaviour:
   m_ObjectHideFlags: 0

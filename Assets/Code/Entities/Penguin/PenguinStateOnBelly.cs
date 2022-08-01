@@ -6,11 +6,13 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateOnBelly : FsmState
     {
-        public PenguinStateOnBelly(string name) : base(name) { }
+        private PenguinBlob _blob;
+
+        public PenguinStateOnBelly(string name, PenguinBlob blob) : base(name) { _blob = blob; }
 
         public override void Enter()
         {
-
+            //_blob.CharacterController.Settings = _blob.OnBellySettings;
         }
 
         public override void Exit()
