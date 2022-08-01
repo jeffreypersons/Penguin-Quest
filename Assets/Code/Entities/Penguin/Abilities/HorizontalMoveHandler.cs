@@ -20,18 +20,18 @@ namespace PQ.Entities.Penguin
         //[Header("Physics Settings")]
         //[Range(0.50f, 100.00f)] [SerializeField] private float _maxInputSpeed = 10.0f;
 
-        private PenguinEntity _penguinEntity;
+        private PenguinBlob _penguinBlob;
         private bool _isHorizontalInputActive;
         private float _xMotionIntensity;
         private Facing _facing;
 
         void Awake()
         {
-            _penguinEntity = gameObject.GetComponent<PenguinEntity>();
+            _penguinBlob = gameObject.GetComponent<PenguinBlob>();
 
             _isHorizontalInputActive = false;
             _xMotionIntensity = 0.00f;
-            _facing = GetFacing(_penguinEntity.Rigidbody);
+            _facing = GetFacing(_penguinBlob.Rigidbody);
         }
 
         void Update()
@@ -58,7 +58,7 @@ namespace PQ.Entities.Penguin
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
             }
 
-            _penguinEntity.Animation.SetParamXMotionIntensity(_xMotionIntensity);
+            _penguinBlob.Animation.SetParamXMotionIntensity(_xMotionIntensity);
         }
 
         void OnEnable()
