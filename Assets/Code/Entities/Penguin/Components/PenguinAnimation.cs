@@ -18,58 +18,59 @@ namespace PQ.Entities.Penguin
     [Serializable]
     public class PenguinAnimation : MonoBehaviour
     {
-        [SerializeField] private Animator penguinAnimator;
-        [SerializeField] private bool logEvents = false;
+        [SerializeField] private Animator _animator;
+        [SerializeField] private bool _logEvents = false;
 
         /*
         Reminder: These parameters _must_ match the names in mecanim.
         Unfortunately there is no easy way to generate the parameter names,
         so just be careful to make sure that they match the parameters listed in the Unity Animator.
         */
-        [SerializeField] private readonly string paramXMotionValue = "XMotionIntensity";
-        [SerializeField] private readonly string paramYMotionValue = "YMotionIntensity";
-        [SerializeField] private readonly string paramIsGrounded   = "IsGrounded";
-        [SerializeField] private readonly string paramIsUpright    = "IsUpright";
-        [SerializeField] private readonly string paramLie          = "LieDown";
-        [SerializeField] private readonly string paramStand        = "StandUp";
-        [SerializeField] private readonly string paramJump         = "JumpUp";
-        [SerializeField] private readonly string paramFire         = "Fire";
-        [SerializeField] private readonly string paramUse          = "Use";
-
-        public event Action JumpLiftOff     = default;
-        public event Action LieDownStarted  = default;
-        public event Action LieDownMidpoint = default;
-        public event Action LieDownEnded    = default;
-        public event Action StandUpStarted  = default;
-        public event Action StandUpEnded    = default;
-        public event Action Fired           = default;
-        public event Action Used            = default;
+        // todo: look into validation of the param names with the animator
+        private readonly string paramXMotion    = "XMotionIntensity";
+        private readonly string paramYMotion    = "YMotionIntensity";
+        private readonly string paramIsGrounded = "IsGrounded";
+        private readonly string paramIsUpright  = "IsUpright";
+        private readonly string paramLie        = "LieDown";
+        private readonly string paramStand      = "StandUp";
+        private readonly string paramJump       = "JumpUp";
+        private readonly string paramFire       = "Fire";
+        private readonly string paramUse        = "Use";
+        
+        public event Action JumpLiftOff;
+        public event Action LieDownStarted;
+        public event Action LieDownMidpoint;
+        public event Action LieDownEnded;
+        public event Action StandUpStarted;
+        public event Action StandUpEnded;
+        public event Action Fired;
+        public event Action Used;
 
 
         public void ResetAllTriggers()
         {
             // note that only triggers need to be reset, as they are timing dependent
             // unlike float, int, bool, and string parameters
-            penguinAnimator.ResetTrigger(paramLie);
-            penguinAnimator.ResetTrigger(paramStand);
-            penguinAnimator.ResetTrigger(paramJump);
-            penguinAnimator.ResetTrigger(paramFire);
-            penguinAnimator.ResetTrigger(paramUse);
+            _animator.ResetTrigger(paramLie);
+            _animator.ResetTrigger(paramStand);
+            _animator.ResetTrigger(paramJump);
+            _animator.ResetTrigger(paramFire);
+            _animator.ResetTrigger(paramUse);
         }
 
-        public Vector2 SkeletalRootPosition => penguinAnimator.rootPosition;
+        public Vector2 SkeletalRootPosition => _animator.rootPosition;
 
-        public void SetParamXMotionIntensity(float ratio) => penguinAnimator.SetFloat(paramXMotionValue, ratio);
-        public void SetParamYMotionIntensity(float ratio) => penguinAnimator.SetFloat(paramYMotionValue, ratio);
+        public void SetParamXMotionIntensity(float ratio) => _animator.SetFloat(paramXMotion, ratio);
+        public void SetParamYMotionIntensity(float ratio) => _animator.SetFloat(paramYMotion, ratio);
         
-        public void SetParamIsGrounded(bool value)        => penguinAnimator.SetBool(paramIsGrounded, value);
-        public void SetParamIsUpright(bool value)         => penguinAnimator.SetBool(paramIsUpright, value);
+        public void SetParamIsGrounded(bool value)        => _animator.SetBool(paramIsGrounded, value);
+        public void SetParamIsUpright(bool value)         => _animator.SetBool(paramIsUpright, value);
         
-        public void TriggerParamLieDownParameter()        => penguinAnimator.SetTrigger(paramLie);
-        public void TriggerParamStandUpParameter()        => penguinAnimator.SetTrigger(paramStand);
-        public void TriggerParamJumpUpParameter()         => penguinAnimator.SetTrigger(paramJump);
-        public void TriggerParamFireParameter()           => penguinAnimator.SetTrigger(paramFire);
-        public void TriggerParamUseParameter()            => penguinAnimator.SetTrigger(paramUse);
+        public void TriggerParamLieDownParameter()        => _animator.SetTrigger(paramLie);
+        public void TriggerParamStandUpParameter()        => _animator.SetTrigger(paramStand);
+        public void TriggerParamJumpUpParameter()         => _animator.SetTrigger(paramJump);
+        public void TriggerParamFireParameter()           => _animator.SetTrigger(paramFire);
+        public void TriggerParamUseParameter()            => _animator.SetTrigger(paramUse);
         
         
         private void OnLieDownAnimationEventStart()  => ForwardAsEvent(OnLieDownAnimationEventStart,  LieDownStarted);
@@ -86,7 +87,7 @@ namespace PQ.Entities.Penguin
 
         private void ForwardAsEvent(Action animatorEvent, Action customEvent)
         {
-            if (logEvents)
+            if (_logEvents)
             {
                 Debug.Log($"[Frame:{Time.frameCount - 1}] " +
                           $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Method.Name}");
