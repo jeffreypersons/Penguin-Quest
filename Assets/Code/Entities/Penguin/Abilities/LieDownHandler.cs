@@ -9,12 +9,12 @@ namespace PQ.Entities.Penguin
         // todo: move to state machine for lie down state
         [SerializeField] private CharacterController2DSettings _onBellySettings;
 
-        private PenguinBlob _penguinEntity;
+        private PenguinBlob _penguinBlob;
         private CharacterController2D _characterController;
 
         void Awake()
         {
-            _penguinEntity       = transform.GetComponent<PenguinBlob>();
+            _penguinBlob       = transform.GetComponent<PenguinBlob>();
             _characterController = transform.GetComponent<CharacterController2D>();
         }
 
@@ -22,31 +22,31 @@ namespace PQ.Entities.Penguin
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.lieDownCommand.AddListener(OnLieDownInputReceived);
-            _penguinEntity.Animation.LieDownStarted  += OnLieDownStarted;
-            _penguinEntity.Animation.LieDownMidpoint += OnLieDownMidpoint;
-            _penguinEntity.Animation.LieDownEnded    += OnLieDownFinished;
+            _penguinBlob.Animation.LieDownStarted  += OnLieDownStarted;
+            _penguinBlob.Animation.LieDownMidpoint += OnLieDownMidpoint;
+            _penguinBlob.Animation.LieDownEnded    += OnLieDownFinished;
         }
 
         void OnDisable()
         {
             GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInputReceived);
-            _penguinEntity.Animation.LieDownStarted  -= OnLieDownStarted;
-            _penguinEntity.Animation.LieDownMidpoint -= OnLieDownMidpoint;
-            _penguinEntity.Animation.LieDownEnded    -= OnLieDownFinished;
+            _penguinBlob.Animation.LieDownStarted  -= OnLieDownStarted;
+            _penguinBlob.Animation.LieDownMidpoint -= OnLieDownMidpoint;
+            _penguinBlob.Animation.LieDownEnded    -= OnLieDownFinished;
         }
 
         
         void OnLieDownInputReceived(string _)
         {
-            _penguinEntity.Animation.TriggerParamLieDownParameter();
+            _penguinBlob.Animation.TriggerParamLieDownParameter();
         }
 
         void OnLieDownStarted()
         {
-            _penguinEntity.Animation.SetParamIsUpright(false);
+            _penguinBlob.Animation.SetParamIsUpright(false);
 
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            _penguinEntity.ColliderConstraints =
+            _penguinBlob.ColliderConstraints =
                 PenguinColliderConstraints.DisableBoundingBox |
                 PenguinColliderConstraints.DisableFeet;
         }
@@ -54,7 +54,7 @@ namespace PQ.Entities.Penguin
         void OnLieDownMidpoint()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            _penguinEntity.ColliderConstraints =
+            _penguinBlob.ColliderConstraints =
                 PenguinColliderConstraints.DisableBoundingBox |
                 PenguinColliderConstraints.DisableFeet        |
                 PenguinColliderConstraints.DisableFlippers;
@@ -67,11 +67,11 @@ namespace PQ.Entities.Penguin
 
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box
-            _penguinEntity.ColliderConstraints =
+            _penguinBlob.ColliderConstraints =
                  PenguinColliderConstraints.DisableFeet |
                  PenguinColliderConstraints.DisableFlippers;
             
-            _penguinEntity.ReadjustBoundingBox(
+            _penguinBlob.ReadjustBoundingBox(
                 offset:     new Vector2(0, 5),
                 size:       new Vector2(25, 10),
                 edgeRadius: 1.25f
@@ -82,7 +82,7 @@ namespace PQ.Entities.Penguin
             //
             // todo: configure bounding box for onbelly mode, and enable the collider back here,
             //       after disabling in animation start, and then update in the following way...
-            //       penguinEntity.ColliderBoundingBox.bounds such that offset(x=0, y=5), size(x=25, y=10), edge-radius(1.25)
+            //       penguinBlob.ColliderBoundingBox.bounds such that offset(x=0, y=5), size(x=25, y=10), edge-radius(1.25)
             //
         }
     }

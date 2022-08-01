@@ -8,7 +8,7 @@ namespace PQ.Entities.Penguin
     //       and then use it here, with penguin states and here as a penguin state controller
     public class PenguinStateController : MonoBehaviour
     {
-        private PenguinBlob         _penguinEntity;
+        private PenguinBlob _penguinBlob;
         private CharacterController2D _characterController2D;
 
         private PenguinOnFeetState  _onFeet;
@@ -46,23 +46,23 @@ namespace PQ.Entities.Penguin
             _onBelly = new PenguinOnBellyState("OnBelly_State");
             CurrentState = _onFeet;
 
-            _penguinEntity         = gameObject.GetComponent<PenguinBlob>();
+            _penguinBlob         = gameObject.GetComponent<PenguinBlob>();
             _characterController2D = gameObject.GetComponent<CharacterController2D>();
 
             // todo: this should be in state machine for onFeet and we should start in a blank state and then
             //       entered rather than assuming we start onFeet here...
             _characterController2D.Settings = initialStateCharacterSettings;
 
-            initialSpawnPosition = _penguinEntity.Rigidbody.position;
+            initialSpawnPosition = _penguinBlob.Rigidbody.position;
             ResetPositioning();
         }
 
         // todo: this should really be extracted out into a proper spawning system...
         public void ResetPositioning()
         {
-            _penguinEntity.Rigidbody.velocity = Vector2.zero;
-            _penguinEntity.Rigidbody.position = initialSpawnPosition;
-            _penguinEntity.Rigidbody.transform.localEulerAngles = Vector3.zero;
+            _penguinBlob.Rigidbody.velocity = Vector2.zero;
+            _penguinBlob.Rigidbody.position = initialSpawnPosition;
+            _penguinBlob.Rigidbody.transform.localEulerAngles = Vector3.zero;
         }
 
         void Start()
