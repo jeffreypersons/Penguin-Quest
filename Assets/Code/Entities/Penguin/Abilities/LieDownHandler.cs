@@ -77,7 +77,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 1.25f
             );
 
-            // todo: find a good way of having data for sliding and for upright that can be passed in here,
+            // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?
             //
             // todo: configure bounding box for onbelly mode, and enable the collider back here,

@@ -9,8 +9,8 @@ namespace PQ.Entities.Penguin
         private PenguinEntity         penguinEntity;
         private CharacterController2D characterController;
 
-        // todo: move to state machine for upright state
-        [SerializeField] private CharacterController2DSettings uprightStateCharacterSettings;
+        // todo: move to state machine for onFeet state
+        [SerializeField] private CharacterController2DSettings onFeetSettings;
 
         void Awake()
         {
@@ -49,9 +49,9 @@ namespace PQ.Entities.Penguin
         {
             // todo: this stuff needs to go in the state machine
             penguinEntity.Animation.SetParamIsUpright(true);
-            characterController.Settings = uprightStateCharacterSettings;
+            characterController.Settings = onFeetSettings;
 
-            // enable all colliders as we are now fully upright
+            // enable all colliders as we are now fully onFeet
             penguinEntity.ColliderConstraints = PenguinColliderConstraints.None;
 
             penguinEntity.ReadjustBoundingBox(
@@ -60,7 +60,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 0.68f
             );
 
-            // todo: find a good way of having data for sliding and for upright that can be passed in here,
+            // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?
         }
     }

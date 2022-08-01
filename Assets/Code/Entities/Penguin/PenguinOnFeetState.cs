@@ -4,9 +4,9 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinUprightState : FsmState
+    public class PenguinOnFeetState : FsmState
     {
-        public PenguinUprightState(string name) : base(name) { }
+        public PenguinOnFeetState(string name) : base(name) { }
 
         public override void Enter()
         {

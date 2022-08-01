@@ -11,7 +11,7 @@ namespace PQ.Entities.Penguin
         private PenguinEntity         penguinEntity;
         private CharacterController2D characterController2D;
 
-        private PenguinUprightState upright;
+        private PenguinOnFeetState onFeet;
         private PenguinOnBellyState onBelly;
 
         // todo: have this taken care of in the initial state that we enter
@@ -26,8 +26,8 @@ namespace PQ.Entities.Penguin
             return ReferenceEquals(CurrentState, state);
         }
 
-        private bool CanEnterUprightState => !IsCurrently(upright);
-        private bool CanEnterOnbellyState => !IsCurrently(onBelly);
+        private bool CanEnterOnFeetState => !IsCurrently(onFeet);
+        private bool CanEnterOnBellyState => !IsCurrently(onBelly);
 
 
         private void TransitionToState(FsmState newState)
@@ -42,15 +42,15 @@ namespace PQ.Entities.Penguin
         void Awake()
         {
 
-            upright = new PenguinUprightState("Upright_State");
+            onFeet  = new PenguinOnFeetState("OnFeet_State");
             onBelly = new PenguinOnBellyState("OnBelly_State");
-            CurrentState = upright;
+            CurrentState = onFeet;
 
             penguinEntity         = gameObject.GetComponent<PenguinEntity>();
             characterController2D = gameObject.GetComponent<CharacterController2D>();
 
-            // todo: this should be in state machine for upright and we should start in a blank state and then
-            //       entered rather than assuming we start upright here...
+            // todo: this should be in state machine for onFeet and we should start in a blank state and then
+            //       entered rather than assuming we start onFeet here...
             characterController2D.Settings = initialStateCharacterSettings;
 
             initialSpawnPosition = penguinEntity.Rigidbody.position;
@@ -76,11 +76,11 @@ namespace PQ.Entities.Penguin
             /***** disable state changes until state subclasses are properly implemented
             CurrentState.Update();
 
-            if (CanEnterUprightState)
+            if (CanEnterOnFeetState)
             {
-                TransitionToState(upright);
+                TransitionToState(onFeet);
             }
-            else if (CanEnterOnbellyState)
+            else if (CanEnterOnBellyState)
             {
                 TransitionToState(onBelly);
             }
