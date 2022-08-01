@@ -11,8 +11,8 @@ namespace PQ.Entities.Penguin
         private PenguinBlob _penguinBlob;
         private CharacterController2D _characterController2D;
 
-        private PenguinOnFeetState  _onFeet;
-        private PenguinOnBellyState _onBelly;
+        private PenguinStateOnFeet  _onFeet;
+        private PenguinStateOnBelly _onBelly;
 
         // todo: have this taken care of in the initial state that we enter
         [SerializeField] private CharacterController2DSettings initialStateCharacterSettings;
@@ -42,8 +42,8 @@ namespace PQ.Entities.Penguin
         void Awake()
         {
 
-            _onFeet  = new PenguinOnFeetState ("OnFeet_State");
-            _onBelly = new PenguinOnBellyState("OnBelly_State");
+            _onFeet  = new PenguinStateOnFeet ("OnFeet_State");
+            _onBelly = new PenguinStateOnBelly("OnBelly_State");
             CurrentState = _onFeet;
 
             _penguinBlob         = gameObject.GetComponent<PenguinBlob>();
