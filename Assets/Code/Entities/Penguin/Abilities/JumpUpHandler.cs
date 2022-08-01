@@ -23,11 +23,11 @@ namespace PQ.Entities.Penguin
 
 
         private Vector2 _netImpulseForce;
-        private PenguinEntity _penguinEntity;
+        private PenguinBlob _penguinEntity;
 
         void Awake()
         {            
-            _penguinEntity   = transform.GetComponent<PenguinEntity>();
+            _penguinEntity   = transform.GetComponent<PenguinBlob>();
             _netImpulseForce = Vector2.zero;
         }
 

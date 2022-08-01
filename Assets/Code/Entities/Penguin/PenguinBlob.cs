@@ -19,8 +19,8 @@ namespace PQ.Entities.Penguin
     */
     [ExecuteAlways]
     [System.Serializable]
-    [AddComponentMenu("PenguinEntity")]
-    public class PenguinEntity : MonoBehaviour
+    [AddComponentMenu("PenguinBlob")]
+    public class PenguinBlob : MonoBehaviour
     {
         [Header("Mass Settings")]
         [Tooltip("Constant (fixed) total mass for rigidbody")]

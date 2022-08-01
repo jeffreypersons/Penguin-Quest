@@ -9,12 +9,12 @@ namespace PQ.Entities.Penguin
         // todo: move to state machine for onFeet state
         [SerializeField] private CharacterController2DSettings _onFeetSettings;
 
-        private PenguinEntity _penguinEntity;
+        private PenguinBlob _penguinEntity;
         private CharacterController2D _characterController;
 
         void Awake()
         {
-            _penguinEntity       = transform.GetComponent<PenguinEntity>();
+            _penguinEntity       = transform.GetComponent<PenguinBlob>();
             _characterController = transform.GetComponent<CharacterController2D>();
         }
 

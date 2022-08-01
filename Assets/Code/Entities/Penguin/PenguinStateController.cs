@@ -8,7 +8,7 @@ namespace PQ.Entities.Penguin
     //       and then use it here, with penguin states and here as a penguin state controller
     public class PenguinStateController : MonoBehaviour
     {
-        private PenguinEntity         _penguinEntity;
+        private PenguinBlob         _penguinEntity;
         private CharacterController2D _characterController2D;
 
         private PenguinOnFeetState  _onFeet;
@@ -46,7 +46,7 @@ namespace PQ.Entities.Penguin
             _onBelly = new PenguinOnBellyState("OnBelly_State");
             CurrentState = _onFeet;
 
-            _penguinEntity         = gameObject.GetComponent<PenguinEntity>();
+            _penguinEntity         = gameObject.GetComponent<PenguinBlob>();
             _characterController2D = gameObject.GetComponent<CharacterController2D>();
 
             // todo: this should be in state machine for onFeet and we should start in a blank state and then

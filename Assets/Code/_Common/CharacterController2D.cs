@@ -8,7 +8,7 @@ namespace PQ.Common
     public class CharacterController2D : MonoBehaviour
     {
         // todo: get rid of penguin entity and use dependency injection or something as this should be more generic
-        private PenguinEntity _penguinEntity;
+        private PenguinBlob _penguinEntity;
         private CollisionChecker _groundChecker;
         public CharacterController2DSettings Settings { get; set; }
 
@@ -22,7 +22,7 @@ namespace PQ.Common
             // todo: replace ground checker with a 2d character controller that reports surroundings,
             //       and will be a property of penguinEntity
             _groundChecker = gameObject.GetComponent<CollisionChecker>();
-            _penguinEntity = gameObject.GetComponent<PenguinEntity>();
+            _penguinEntity = gameObject.GetComponent<PenguinBlob>();
             Reset();
         }
 

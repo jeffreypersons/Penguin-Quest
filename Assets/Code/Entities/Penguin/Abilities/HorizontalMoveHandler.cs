@@ -20,14 +20,14 @@ namespace PQ.Entities.Penguin
         //[Header("Physics Settings")]
         //[Range(0.50f, 100.00f)] [SerializeField] private float _maxInputSpeed = 10.0f;
 
-        private PenguinEntity _penguinEntity;
+        private PenguinBlob _penguinEntity;
         private bool _isHorizontalInputActive;
         private float _xMotionIntensity;
         private Facing _facing;
 
         void Awake()
         {
-            _penguinEntity = gameObject.GetComponent<PenguinEntity>();
+            _penguinEntity = gameObject.GetComponent<PenguinBlob>();
 
             _isHorizontalInputActive = false;
             _xMotionIntensity = 0.00f;
