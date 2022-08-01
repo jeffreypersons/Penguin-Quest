@@ -293,7 +293,7 @@ Transform:
   m_Children:
   - {fileID: 8190429023145774807}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &4753795910216235720
 Rigidbody2D:
@@ -483,8 +483,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84d3f27435ee1c947b7469a39224e53b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpStrength: 75000
-  jumpAngle: 60
+  _jumpStrength: 50000
+  _jumpAngle: 45
 --- !u!114 &4753795910216235729
 MonoBehaviour:
   m_ObjectHideFlags: 0

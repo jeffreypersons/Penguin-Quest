@@ -17,7 +17,7 @@ namespace PQ.Entities.Penguin
         // todo: have this taken care of in the initial state that we enter
         [SerializeField] private CharacterController2DSettings initialStateCharacterSettings;
 
-        private PlayerInputReceiver input;
+        private PlayerGameplayInputReceiver input;
         
         private Vector2 initialSpawnPosition;
         private FsmState CurrentState { get; set; }
