@@ -306,8 +306,8 @@ Rigidbody2D:
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
-  m_UseAutoMass: 1
-  m_Mass: 335381.75
+  m_UseAutoMass: 0
+  m_Mass: 500
   m_LinearDrag: 0.05
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -374,8 +374,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d843ab528b90ca24986ff473f5abc37e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penguinAnimator: {fileID: 7859832108952071242}
-  logEvents: 0
+  _animator: {fileID: 7859832108952071242}
+  _logEvents: 0
 --- !u!114 &4753795910216235735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,7 +420,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 925dc2bee64be8b4d81ac2070045959e, type: 3}
   m_Name: 
@@ -497,8 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03575db054bb040478b656105bc59aa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uprightStateCharacterSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
-    type: 2}
+  onFeetSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc, type: 2}
 --- !u!114 &4753795910216235743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,7 +510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac7d272be483dc4bbba5f907894fce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lieDownStateCharacterSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+  lieDownStateCharacterSettings: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3,
     type: 2}
 --- !u!1 &4753795910222470411
 GameObject:
