@@ -263,7 +263,6 @@ GameObject:
   - component: {fileID: 4753795910216235721}
   - component: {fileID: 7859832108952071242}
   - component: {fileID: 1728887597599890734}
-  - component: {fileID: 4753795910216235735}
   - component: {fileID: 4753795910216235732}
   - component: {fileID: 9188869225720279910}
   - component: {fileID: 4753795910216235733}
@@ -273,7 +272,7 @@ GameObject:
   - component: {fileID: 4753795910216235729}
   - component: {fileID: 4753795910216235743}
   m_Layer: 9
-  m_Name: Player
+  m_Name: Penguin
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -376,18 +375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: 7859832108952071242}
   _logEvents: 0
---- !u!114 &4753795910216235735
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adc037921f8dad3428173a3d07e0a1b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4753795910216235732
 MonoBehaviour:
   m_ObjectHideFlags: 0
