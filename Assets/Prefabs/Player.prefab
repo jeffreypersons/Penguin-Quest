@@ -470,7 +470,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5fb6dd4466bbb94da2bbaaa6a8bd4eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  locomotionBlendStep: 0.25
+  _locomotionBlendStep: 0.25
 --- !u!114 &4753795910216235742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,7 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03575db054bb040478b656105bc59aa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onFeetSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc, type: 2}
+  _onFeetSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc, type: 2}
 --- !u!114 &4753795910216235743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,8 +510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac7d272be483dc4bbba5f907894fce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lieDownStateCharacterSettings: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3,
-    type: 2}
+  _onBellySettings: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3, type: 2}
 --- !u!1 &4753795910222470411
 GameObject:
   m_ObjectHideFlags: 0

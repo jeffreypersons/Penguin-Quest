@@ -12,9 +12,6 @@ namespace PQ.Camera
     */
     internal class CameraSubjectInfo
     {
-        private readonly Transform  _subject;
-        private readonly Collider2D _collider;
-
         public Vector2 Center  { get; private set; }
         public Vector2 Size    { get; private set; }
         public Vector2 Extents { get; private set; }
@@ -25,7 +22,10 @@ namespace PQ.Camera
         public bool HasPositionChangedSinceLastUpdate { get; private set; }
         public bool HasCollider => _collider != null && _collider.enabled;
 
-        
+
+        private readonly Transform _subject;
+        private readonly Collider2D _collider;
+
         public CameraSubjectInfo(Transform subject)
         {
             if (subject == null)

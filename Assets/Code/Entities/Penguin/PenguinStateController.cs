@@ -8,11 +8,11 @@ namespace PQ.Entities.Penguin
     //       and then use it here, with penguin states and here as a penguin state controller
     public class PenguinStateController : MonoBehaviour
     {
-        private PenguinEntity         penguinEntity;
-        private CharacterController2D characterController2D;
+        private PenguinEntity         _penguinEntity;
+        private CharacterController2D _characterController2D;
 
-        private PenguinOnFeetState onFeet;
-        private PenguinOnBellyState onBelly;
+        private PenguinOnFeetState  _onFeet;
+        private PenguinOnBellyState _onBelly;
 
         // todo: have this taken care of in the initial state that we enter
         [SerializeField] private CharacterController2DSettings initialStateCharacterSettings;
@@ -26,8 +26,8 @@ namespace PQ.Entities.Penguin
             return ReferenceEquals(CurrentState, state);
         }
 
-        private bool CanEnterOnFeetState => !IsCurrently(onFeet);
-        private bool CanEnterOnBellyState => !IsCurrently(onBelly);
+        private bool CanEnterOnFeetState  => !IsCurrently(_onFeet);
+        private bool CanEnterOnBellyState => !IsCurrently(_onBelly);
 
 
         private void TransitionToState(FsmState newState)
@@ -42,27 +42,27 @@ namespace PQ.Entities.Penguin
         void Awake()
         {
 
-            onFeet  = new PenguinOnFeetState("OnFeet_State");
-            onBelly = new PenguinOnBellyState("OnBelly_State");
-            CurrentState = onFeet;
+            _onFeet  = new PenguinOnFeetState ("OnFeet_State");
+            _onBelly = new PenguinOnBellyState("OnBelly_State");
+            CurrentState = _onFeet;
 
-            penguinEntity         = gameObject.GetComponent<PenguinEntity>();
-            characterController2D = gameObject.GetComponent<CharacterController2D>();
+            _penguinEntity         = gameObject.GetComponent<PenguinEntity>();
+            _characterController2D = gameObject.GetComponent<CharacterController2D>();
 
             // todo: this should be in state machine for onFeet and we should start in a blank state and then
             //       entered rather than assuming we start onFeet here...
-            characterController2D.Settings = initialStateCharacterSettings;
+            _characterController2D.Settings = initialStateCharacterSettings;
 
-            initialSpawnPosition = penguinEntity.Rigidbody.position;
+            initialSpawnPosition = _penguinEntity.Rigidbody.position;
             ResetPositioning();
         }
 
         // todo: this should really be extracted out into a proper spawning system...
         public void ResetPositioning()
         {
-            penguinEntity.Rigidbody.velocity = Vector2.zero;
-            penguinEntity.Rigidbody.position = initialSpawnPosition;
-            penguinEntity.Rigidbody.transform.localEulerAngles = Vector3.zero;
+            _penguinEntity.Rigidbody.velocity = Vector2.zero;
+            _penguinEntity.Rigidbody.position = initialSpawnPosition;
+            _penguinEntity.Rigidbody.transform.localEulerAngles = Vector3.zero;
         }
 
         void Start()

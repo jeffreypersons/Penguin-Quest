@@ -15,11 +15,11 @@ namespace PQ
         private PlayerProgressionInfo playerInfo;
 
         // todo: use spawner
-        [SerializeField] private GameObject playerPenguin;
+        [SerializeField] private GameObject _playerPenguin;
 
         void Awake()
         {
-            playerPenguin.SetActive(true);
+            _playerPenguin.SetActive(true);
             GameEventCenter.startNewGame.AddAutoUnsubscribeListener(StartNewGame);
         }
 

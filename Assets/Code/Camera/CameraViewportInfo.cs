@@ -14,8 +14,6 @@ namespace PQ.Camera
     */
     internal class CameraViewportInfo
     {
-        private readonly UnityEngine.Camera cam;
-
         public float   NearClipOffset { get; private set; }
         public Vector2 Center         { get; private set; }
         public Vector2 Size           { get; private set; }
@@ -28,6 +26,8 @@ namespace PQ.Camera
         public bool HasPositionChangedSinceLastUpdate { get; private set; }
 
 
+        private readonly UnityEngine.Camera _cam;
+
         public CameraViewportInfo(UnityEngine.Camera cam)
         {
             if (cam == null)
@@ -35,7 +35,7 @@ namespace PQ.Camera
                 Debug.LogError($"CameraViewportInfo : Received null camera");
             }
 
-            this.cam = cam;
+            _cam = cam;
             Update();
             HasPositionChangedSinceLastUpdate = false;
             HasSizeChangedSinceLastUpdate     = false;
@@ -49,7 +49,7 @@ namespace PQ.Camera
 
         private void UpdatePosition()
         {
-            Vector3 newCenter = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, cam.nearClipPlane));
+            Vector3 newCenter = _cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, _cam.nearClipPlane));
             if (!MathExtensions.AreScalarsEqual(newCenter.z, NearClipOffset))
             {
                 NearClipOffset = newCenter.z;
@@ -67,8 +67,8 @@ namespace PQ.Camera
         }
         private void UpdateSize()
         {
-            Vector2 newMin = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, cam.nearClipPlane));
-            Vector2 newMax = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, cam.nearClipPlane));
+            Vector2 newMin = _cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, _cam.nearClipPlane));
+            Vector2 newMax = _cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, _cam.nearClipPlane));
         
             if (!MathExtensions.AreComponentsEqual(newMin, Min) || !MathExtensions.AreComponentsEqual(newMax, Max))
             {
