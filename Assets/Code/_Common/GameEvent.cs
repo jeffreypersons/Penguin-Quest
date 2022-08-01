@@ -12,23 +12,23 @@ namespace PQ.Common
     */
     public class GameEvent<EventData>
     {
-        Action<EventData> action;
+        private event Action<EventData> _action;
 
-        public int NumListeners { get { return action.GetInvocationList().Length; } }
+        public int NumListeners { get { return _action.GetInvocationList().Length; } }
 
         public GameEvent()
         {
-            action = delegate { };
+            _action = delegate { };
         }
 
         public void Trigger(in EventData eventData)
         {
-            action.Invoke(eventData);
+            _action.Invoke(eventData);
         }
 
         public void AddListener(Action<EventData> listener)
         {
-            action += listener;
+            _action += listener;
         }
 
         /* Add a listener that automatically removes itself just after executing. */
@@ -38,24 +38,24 @@ namespace PQ.Common
             Action<EventData> handler = null;
             handler = (data) =>
             {
-                action -= handler;
+                _action -= handler;
                 oneTimeUseListener.Invoke(data);
             };
-            action += handler;
+            _action += handler;
         }
 
         public void RemoveListener(Action<EventData> listener)
         {
-            action -= listener;
+            _action -= listener;
         }
 
         public void StopAllListeners()
         {
-            if (action != null)
+            if (_action != null)
             {
-                foreach (Delegate d in action.GetInvocationList())
+                foreach (Delegate d in _action.GetInvocationList())
                 {
-                    action -= (Action<EventData>)d;
+                    _action -= (Action<EventData>)d;
                 }
             }
         }

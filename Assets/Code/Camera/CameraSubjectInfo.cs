@@ -12,8 +12,8 @@ namespace PQ.Camera
     */
     internal class CameraSubjectInfo
     {
-        private readonly Transform  subject;
-        private readonly Collider2D collider;
+        private readonly Transform  _subject;
+        private readonly Collider2D _collider;
 
         public Vector2 Center  { get; private set; }
         public Vector2 Size    { get; private set; }
@@ -23,18 +23,18 @@ namespace PQ.Camera
 
         public bool HasSizeChangedSinceLastUpdate     { get; private set; }
         public bool HasPositionChangedSinceLastUpdate { get; private set; }
-        public bool HasCollider => collider != null && collider.enabled;
+        public bool HasCollider => _collider != null && _collider.enabled;
 
         
         public CameraSubjectInfo(Transform subject)
         {
             if (subject == null)
             {
-                Debug.LogError($"CameraSubjectInfo : Received null subject");
+                Debug.LogError($"CameraSubjectInfo : Received null _subject");
             }
 
-            this.subject  = subject;
-            this.collider = ExtractColliderFromTransform(subject);
+            this._subject  = subject;
+            this._collider = ExtractColliderFromTransform(subject);
 
             Update();
             HasPositionChangedSinceLastUpdate = false;
@@ -56,7 +56,7 @@ namespace PQ.Camera
 
         private void UpdatePosition()
         {
-            Vector2 newCenter = HasCollider ? collider.bounds.center : subject.position;
+            Vector2 newCenter = HasCollider ? _collider.bounds.center : _subject.position;
             if (!MathExtensions.AreComponentsEqual(newCenter, Center))
             {
                 Center = newCenter;
@@ -70,7 +70,7 @@ namespace PQ.Camera
 
         private void UpdateSize()
         {
-            Vector2 newSize = HasCollider ? collider.bounds.size : Vector3.zero;
+            Vector2 newSize = HasCollider ? _collider.bounds.size : Vector3.zero;
             if (!MathExtensions.AreComponentsEqual(newSize, Size))
             {
                 Size    = newSize;
