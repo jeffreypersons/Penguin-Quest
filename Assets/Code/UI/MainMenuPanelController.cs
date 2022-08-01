@@ -17,22 +17,22 @@ namespace PQ.UI
     public class MainMenuPanelController : MonoBehaviour
     {
         [Header("Sub-panels")]
-        [SerializeField] private GameObject startPanel;
-        [SerializeField] private GameObject settingsPanel;
-        [SerializeField] private GameObject aboutPanel;
+        [SerializeField] private GameObject _startPanel;
+        [SerializeField] private GameObject _settingsPanel;
+        [SerializeField] private GameObject _aboutPanel;
 
         [Header("Setting Controllers")]
-        [SerializeField] private SliderSettingController difficultySetting;
-        [SerializeField] private SliderSettingController numberOfLivesSetting;
-        [SerializeField] private SliderSettingController soundVolumeSetting;
-        [SerializeField] private SliderSettingController musicVolumeSetting;
+        [SerializeField] private SliderSettingController _difficultySetting;
+        [SerializeField] private SliderSettingController _numberOfLivesSetting;
+        [SerializeField] private SliderSettingController _soundVolumeSetting;
+        [SerializeField] private SliderSettingController _musicVolumeSetting;
 
-        [SerializeField] [TagSelector] private string startButtonTag;
-        [SerializeField] [TagSelector] private string cancelButtonTag;
+        [SerializeField] [TagSelector] private string _startButtonTag;
+        [SerializeField] [TagSelector] private string _cancelButtonTag;
 
-        private Action actionOnStartPress;
-        private Action actionOnPanelOpen;
-        private Action actionOnPanelClose;
+        private event Action _actionOnStartPress;
+        private event Action _actionOnPanelOpen;
+        private event Action _actionOnPanelClose;
 
         void OnEnable()
         {
@@ -40,72 +40,72 @@ namespace PQ.UI
         }
         public void OpenStartPanel()
         {
-            OpenPanel(startPanel);
+            OpenPanel(_startPanel);
         }
         public void OpenSettingsPanel()
         {
-            OpenPanel(settingsPanel);
+            OpenPanel(_settingsPanel);
         }
         public void OpenAboutPanel()
         {
-            OpenPanel(aboutPanel);
+            OpenPanel(_aboutPanel);
         }
 
         public void SetActionOnStartPressed(Action actionOnStartPress)
         {
-            this.actionOnStartPress = actionOnStartPress;
+            this._actionOnStartPress = actionOnStartPress;
         }
         public void SetActionOnPanelOpen(Action actionOnPanelOpen)
         {
-            this.actionOnPanelOpen = actionOnPanelOpen;
+            this._actionOnPanelOpen = actionOnPanelOpen;
         }
         public void SetActionOnPanelClose(Action actionOnPanelClose)
         {
-            this.actionOnPanelClose = actionOnPanelClose;
+            this._actionOnPanelClose = actionOnPanelClose;
         }
         
         public PlayerSettingsInfo GetGameSettings()
         {
             return new PlayerSettingsInfo(
-                numberOfLives:      (int)numberOfLivesSetting.SliderValue,
-                difficultyPercent:  (int)difficultySetting.SliderValue,
-                soundVolumePercent: (int)soundVolumeSetting.SliderValue,
-                musicVolumePercent: (int)musicVolumeSetting.SliderValue
+                numberOfLives:      (int)_numberOfLivesSetting.SliderValue,
+                difficultyPercent:  (int)_difficultySetting.SliderValue,
+                soundVolumePercent: (int)_soundVolumeSetting.SliderValue,
+                musicVolumePercent: (int)_musicVolumeSetting.SliderValue
             );
         }
         private void DeactivePanels()
         {
-            startPanel   .SetActive(false);
-            settingsPanel.SetActive(false);
-            aboutPanel   .SetActive(false);
+            _startPanel   .SetActive(false);
+            _settingsPanel.SetActive(false);
+            _aboutPanel   .SetActive(false);
         }
         
         private void OpenPanel(GameObject submenuPanel)
         {
-            if (startPanel.activeInHierarchy || settingsPanel.activeInHierarchy || aboutPanel.activeInHierarchy)
+            if (_startPanel.activeInHierarchy || _settingsPanel.activeInHierarchy || _aboutPanel.activeInHierarchy)
             {
                 Debug.LogError($"Cannot open {submenuPanel.name}, since only one sub-mainmenu panel can be active at a time.");
             }
 
             submenuPanel.SetActive(true);
-            Button startButton = GetComponentInChildWithTag<Button>(submenuPanel, startButtonTag, true);
+            Button startButton = GetComponentInChildWithTag<Button>(submenuPanel, _startButtonTag, true);
             if (startButton)
             {
                 UiExtensions.AddAutoUnsubscribeOnClickListenerToButton(startButton, () =>
                 {
-                    actionOnStartPress();
+                    _actionOnStartPress();
                 });
             }
-            Button closeButton = GetComponentInChildWithTag<Button>(submenuPanel, cancelButtonTag, true);
+            Button closeButton = GetComponentInChildWithTag<Button>(submenuPanel, _cancelButtonTag, true);
             if (closeButton)
             {
                 UiExtensions.AddAutoUnsubscribeOnClickListenerToButton(closeButton, () =>
                 {
                     DeactivePanels();
-                    actionOnPanelClose();
+                    _actionOnPanelClose();
                 });
             }
-            actionOnPanelOpen();
+            _actionOnPanelOpen();
         }
 
 

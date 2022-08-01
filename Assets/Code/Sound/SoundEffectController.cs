@@ -5,26 +5,27 @@ namespace PQ.Sound
 {
     public class SoundEffectController : MonoBehaviour
     {
-        private AudioSource audioSource;
-        private static float DEFAULT_MASTER_VOLUME = 0.5f;
+        private static float DefaultMasterVolume = 0.5f;
 
-        [SerializeField] private float volumeScalePlayerScored;
-        [SerializeField] private float volumeScalePlayerHit;
-        [SerializeField] private float volumeScaleEnemyHit;
-        [SerializeField] private float volumeScaleGameOver;
+        [SerializeField] private float _volumeScalePlayerScored;
+        [SerializeField] private float _volumeScalePlayerHit;
+        [SerializeField] private float _volumeScaleEnemyHit;
+        [SerializeField] private float _volumeScaleGameOver;
         
-        [SerializeField] private AudioClip playerHit;
-        [SerializeField] private AudioClip playerScored;
-        [SerializeField] private AudioClip enemyHit;
-        [SerializeField] private AudioClip playerWin;
-        [SerializeField] private AudioClip playerLose;
+        [SerializeField] private AudioClip _playerHit;
+        [SerializeField] private AudioClip _playerScored;
+        [SerializeField] private AudioClip _enemyHit;
+        [SerializeField] private AudioClip _playerWin;
+        [SerializeField] private AudioClip _playerLose;
+
+        private AudioSource _audioSource;
 
         void Awake()
         {
-            audioSource = transform.gameObject.GetComponent<AudioSource>();
-            audioSource.loop        = false;
-            audioSource.playOnAwake = false;
-            audioSource.volume      = DEFAULT_MASTER_VOLUME;
+            _audioSource = transform.gameObject.GetComponent<AudioSource>();
+            _audioSource.loop        = false;
+            _audioSource.playOnAwake = false;
+            _audioSource.volume      = DefaultMasterVolume;
         }
 
         void OnEnable()
@@ -52,30 +53,30 @@ namespace PQ.Sound
 
         private void PauseAnyActiveSoundEffects(PlayerProgressionInfo _)
         {
-            audioSource.Pause();
+            _audioSource.Pause();
         }
         private void ResumeAnyActiveSoundEffects(string _)
         {
-            audioSource.UnPause();
+            _audioSource.UnPause();
         }
         private void SetMasterVolume(PlayerSettingsInfo gameSettings)
         {
-            audioSource.volume = gameSettings.SoundVolume / 100.0f;
+            _audioSource.volume = gameSettings.SoundVolume / 100.0f;
         }
 
         private void PlaySoundOnPlayerScored(PlayerProgressionInfo playerInfo)
         {
-            audioSource.PlayOneShot(playerScored, volumeScalePlayerScored);
+            _audioSource.PlayOneShot(_playerScored, _volumeScalePlayerScored);
         }
 
         private void PlaySoundOnEnemyHit(string _)
         {
-            audioSource.PlayOneShot(playerHit, volumeScalePlayerHit);
+            _audioSource.PlayOneShot(_playerHit, _volumeScalePlayerHit);
         }
 
         private void PlaySoundOnEnemyKilled(int numPoints)
         {
-            audioSource.PlayOneShot(enemyHit, volumeScaleEnemyHit);
+            _audioSource.PlayOneShot(_enemyHit, _volumeScaleEnemyHit);
         }
 
         private void PlaySoundOnGameOver(PlayerProgressionInfo playerInfo)
@@ -83,11 +84,11 @@ namespace PQ.Sound
             bool placeHolderVictoryCondition = false;
             if (placeHolderVictoryCondition)
             {
-                audioSource.PlayOneShot(playerWin, volumeScaleGameOver);
+                _audioSource.PlayOneShot(_playerWin, _volumeScaleGameOver);
             }
             else
             {
-                audioSource.PlayOneShot(playerLose, volumeScaleGameOver);
+                _audioSource.PlayOneShot(_playerLose, _volumeScaleGameOver);
             }
         }
     }

@@ -10,11 +10,10 @@ namespace PQ
         public float DifficultyLevel { get; private set; }
         public float SoundVolume     { get; private set; }
         public float MusicVolume     { get; private set; }
-        public override string ToString()
-        {
-            return $"NumberOfLives is {NumberOfLives}, and difficulty is {DifficultyLevel}%, " +
-                   $"SoundVolume is {SoundVolume}%, and MusicVolume is {MusicVolume}%";
-        }
+        public override string ToString() =>
+            $"NumberOfLives is {NumberOfLives}, and difficulty is {DifficultyLevel}%, " +
+            $"SoundVolume is {SoundVolume}%, and MusicVolume is {MusicVolume}%";
+
 
         public PlayerSettingsInfo(int numberOfLives, int difficultyPercent, int soundVolumePercent, int musicVolumePercent)
         {

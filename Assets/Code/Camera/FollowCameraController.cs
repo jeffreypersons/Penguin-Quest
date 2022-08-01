@@ -25,97 +25,90 @@ namespace PQ.Camera
     {        
         [Header("Subject to Follow")]
         [Tooltip("Transform of (any) subject for camera to follow (does not have to be 'visible')")]
-        [SerializeField] private Transform subject;
+        [SerializeField] private Transform _subject;
 
         
         [Header("Follow Position Relative to Subject")]
         [Tooltip("x offset from subject (subject is on left of camera if positive, right if negative)")]
-        [Range(-1000.00f, 1000.00f)] [SerializeField] private float xOffset = 0.00f;
+        [Range(-1000.00f, 1000.00f)] [SerializeField] private float _xOffset = 0.00f;
 
         [Tooltip("y offset from subject (subject is bellow camera if positive, above if negative)")]
-        [Range(-1000.00f, 1000.00f)] [SerializeField] private float yOffset = 0.00f;
+        [Range(-1000.00f, 1000.00f)] [SerializeField] private float _yOffset = 0.00f;
 
         [Tooltip("z offset from subject (subject is 'into' screen camera if positive, 'out' of screen if negative)")]
-        [Range(-1000.00f, 1000.00f)] [SerializeField] private float zOffset = 0.00f;
+        [Range(-1000.00f, 1000.00f)] [SerializeField] private float _zOffset = 0.00f;
         
 
         [Header("Follow Behavior")]
         [Tooltip("Toggle for actively following")]
-        [SerializeField] private bool isActivelyRunning = true;
+        [SerializeField] private bool _isActivelyRunning = true;
 
         [Tooltip("Should we clamp offsets to prevent subject's collider from leaving camera viewport")]
-        [SerializeField] private bool keepSubjectInView = true;
+        [SerializeField] private bool _keepSubjectInView = true;
         
         [Tooltip("How fast can the camera follow the subject?")]
-        [Range(10.00f, 10000.00f)] [SerializeField] private float maxMoveSpeed = 1000.00f;
+        [Range(10.00f, 10000.00f)] [SerializeField] private float _maxMoveSpeed = 1000.00f;
 
         [Tooltip("How far can the subject be from the camera before we update our position?")]
-        [Range(0.01f, 100.00f)] [SerializeField] private float distanceFromTargetPositionThreshold = 0.20f;
+        [Range(0.01f, 100.00f)] [SerializeField] private float _distanceFromTargetPositionThreshold = 0.20f;
 
 
         [Header("Zoom Settings")]
         [Tooltip("Adjust orthographic size (how 'zoomed in' the camera is, by changing the viewport's half height)")]
-        [Range(15.00f, 500.0f)] [SerializeField] private float orthographicSize = 50.00f;
+        [Range(15.00f, 500.0f)] [SerializeField] private float _orthographicSize = 50.00f;
 
         [Tooltip("How fast can the camera's field of view be adjusted?")]
-        [Range(0.10f, 50.00f)] [SerializeField] private float maxZoomSpeed = 10.00f;
+        [Range(0.10f, 50.00f)] [SerializeField] private float _maxZoomSpeed = 10.00f;
 
         [Tooltip("How sensitive to adjustments in zoom are we?")]
-        [Range(0.01f, 100.00f)] [SerializeField] private float differenceFromTargetOrthoSizeThreshold = 0.20f;
+        [Range(0.01f, 100.00f)] [SerializeField] private float _differenceFromTargetOrthoSizeThreshold = 0.20f;
 
 
-        private UnityEngine.Camera cam;
-        private CameraViewportInfo viewportInfo;
-        private CameraSubjectInfo  subjectInfo;
+        private UnityEngine.Camera _cam;
+        private CameraViewportInfo _viewportInfo;
+        private CameraSubjectInfo  _subjectInfo;
 
-        private float   zoomVelocity;
-        private Vector2 moveVelocity;
+        private float   _zoomVelocity;
+        private Vector2 _moveVelocity;
+        
+        private bool IsFullyInitialized =>
+            _cam          != null &&
+            _viewportInfo != null &&
+            _subject      != null &&
+            _subjectInfo  != null;
 
-
-        private Vector3 SubjectPosition
-        {
-            get
-            {
-                return subjectInfo.Center;
-            }
-        }
+        private Vector3 SubjectPosition => _subjectInfo.Center;
         private Vector3 OffsetFromSubject
         {
             get
             {
-                if (keepSubjectInView)
+                if (_keepSubjectInView)
                 {
-                    Vector2 maxOffsetInsideViewport = viewportInfo.Extents - subjectInfo.Extents;
+                    Vector2 maxOffsetInsideViewport = _viewportInfo.Extents - _subjectInfo.Extents;
                     return new Vector3(
-                        x: Mathf.Clamp(xOffset, -maxOffsetInsideViewport.x, maxOffsetInsideViewport.x),
-                        y: Mathf.Clamp(yOffset, -maxOffsetInsideViewport.y, maxOffsetInsideViewport.y),
-                        z: zOffset);
+                        x: Mathf.Clamp(_xOffset, -maxOffsetInsideViewport.x, maxOffsetInsideViewport.x),
+                        y: Mathf.Clamp(_yOffset, -maxOffsetInsideViewport.y, maxOffsetInsideViewport.y),
+                        z: _zOffset);
                 }
                 else
                 {
-                    return new Vector3(xOffset, yOffset, zOffset);
+                    return new Vector3(_xOffset, _yOffset, _zOffset);
                 }
             }
         }
-        private bool IsFullyInitialized =>
-            cam          != null &&
-            viewportInfo != null &&
-            subject      != null &&
-            subjectInfo  != null;
-
 
         private void Init()
         {
-            cam = gameObject.GetComponent<UnityEngine.Camera>();
-            cam.nearClipPlane = 0.30f;
-            cam.rect          = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
-            cam.orthographic  = true;
+            _cam = gameObject.GetComponent<UnityEngine.Camera>();
+            _cam.nearClipPlane = 0.30f;
+            _cam.rect          = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
+            _cam.orthographic  = true;
 
-            viewportInfo = new CameraViewportInfo(cam);
-            subjectInfo  = new CameraSubjectInfo(subject);
+            _viewportInfo = new CameraViewportInfo(_cam);
+            _subjectInfo  = new CameraSubjectInfo(_subject);
 
-            zoomVelocity = 0.00f;
-            moveVelocity = Vector2.zero;
+            _zoomVelocity = 0.00f;
+            _moveVelocity = Vector2.zero;
         }
     
         void Awake()
@@ -126,14 +119,14 @@ namespace PQ.Camera
         void LateUpdate()
         {
             #if UNITY_EDITOR
-            if (!Application.IsPlaying(this) && subject)
+            if (!Application.IsPlaying(this) && _subject)
             {
                 ForcedUpdate();
                 return;
             }
             #endif
 
-            if (isActivelyRunning && subject)
+            if (_isActivelyRunning && _subject)
             {
                 SmoothedUpdate();
             }
@@ -143,7 +136,7 @@ namespace PQ.Camera
         private void ForcedUpdate()
         {
             // warn just once on update if subject is null, to avoid logging the error each frame
-            if (!subject)
+            if (!_subject)
             {
                 Debug.LogError($"FollowCameraController : No subject assigned to follow");
                 return;
@@ -156,38 +149,38 @@ namespace PQ.Camera
                 Init();
             }
 
-            viewportInfo.Update();
-            subjectInfo.Update();
-            cam.orthographicSize   = orthographicSize;
-            cam.transform.position = SubjectPosition + OffsetFromSubject;
+            _viewportInfo.Update();
+            _subjectInfo.Update();
+            _cam.orthographicSize   = _orthographicSize;
+            _cam.transform.position = SubjectPosition + OffsetFromSubject;
         }
 
         private void SmoothedUpdate()
         {
-            viewportInfo.Update();
-            subjectInfo.Update();
-            AdjustZoomTowards(orthographicSize);
+            _viewportInfo.Update();
+            _subjectInfo.Update();
+            AdjustZoomTowards(_orthographicSize);
             MoveCameraTowards(SubjectPosition + OffsetFromSubject);
         }
 
 
         private void AdjustZoomTowards(float targetOrthoSize)
         {
-            float current = cam.orthographicSize;
-            if (!MathExtensions.IsWithinTolerance(current, targetOrthoSize, differenceFromTargetOrthoSizeThreshold))
+            float current = _cam.orthographicSize;
+            if (!MathExtensions.IsWithinTolerance(current, targetOrthoSize, _differenceFromTargetOrthoSizeThreshold))
             {
-                cam.orthographicSize = Mathf.SmoothDamp(current, targetOrthoSize, ref zoomVelocity,
-                    Time.deltaTime, maxZoomSpeed);
+                _cam.orthographicSize = Mathf.SmoothDamp(current, targetOrthoSize, ref _zoomVelocity,
+                    Time.deltaTime, _maxZoomSpeed);
             }
         }
 
         private void MoveCameraTowards(Vector3 target)
         {
-            Vector3 current = cam.transform.position;
-            if (!MathExtensions.IsWithinTolerance(current, target, distanceFromTargetPositionThreshold))
+            Vector3 current = _cam.transform.position;
+            if (!MathExtensions.IsWithinTolerance(current, target, _distanceFromTargetPositionThreshold))
             {
-                Vector2 position = Vector2.SmoothDamp(current, target, ref moveVelocity, Time.deltaTime, maxMoveSpeed);
-                cam.transform.position = new Vector3(position.x, position.y, target.z);
+                Vector2 position = Vector2.SmoothDamp(current, target, ref _moveVelocity, Time.deltaTime, _maxMoveSpeed);
+                _cam.transform.position = new Vector3(position.x, position.y, target.z);
             }
         }
     }

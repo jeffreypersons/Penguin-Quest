@@ -6,47 +6,47 @@ namespace PQ.Entities.Penguin
 {
     public class LieDownHandler : MonoBehaviour
     {
-        private PenguinEntity         penguinEntity;
-        private CharacterController2D characterController;
-
         // todo: move to state machine for lie down state
-        [SerializeField] private CharacterController2DSettings lieDownStateCharacterSettings;
+        [SerializeField] private CharacterController2DSettings _onBellySettings;
+
+        private PenguinEntity _penguinEntity;
+        private CharacterController2D _characterController;
 
         void Awake()
         {
-            penguinEntity       = transform.GetComponent<PenguinEntity>();
-            characterController = transform.GetComponent<CharacterController2D>();
+            _penguinEntity       = transform.GetComponent<PenguinEntity>();
+            _characterController = transform.GetComponent<CharacterController2D>();
         }
 
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
             GameEventCenter.lieDownCommand.AddListener(OnLieDownInputReceived);
-            penguinEntity.Animation.LieDownStarted  += OnLieDownStarted;
-            penguinEntity.Animation.LieDownMidpoint += OnLieDownMidpoint;
-            penguinEntity.Animation.LieDownEnded    += OnLieDownFinished;
+            _penguinEntity.Animation.LieDownStarted  += OnLieDownStarted;
+            _penguinEntity.Animation.LieDownMidpoint += OnLieDownMidpoint;
+            _penguinEntity.Animation.LieDownEnded    += OnLieDownFinished;
         }
 
         void OnDisable()
         {
             GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInputReceived);
-            penguinEntity.Animation.LieDownStarted  -= OnLieDownStarted;
-            penguinEntity.Animation.LieDownMidpoint -= OnLieDownMidpoint;
-            penguinEntity.Animation.LieDownEnded    -= OnLieDownFinished;
+            _penguinEntity.Animation.LieDownStarted  -= OnLieDownStarted;
+            _penguinEntity.Animation.LieDownMidpoint -= OnLieDownMidpoint;
+            _penguinEntity.Animation.LieDownEnded    -= OnLieDownFinished;
         }
 
         
         void OnLieDownInputReceived(string _)
         {
-            penguinEntity.Animation.TriggerParamLieDownParameter();
+            _penguinEntity.Animation.TriggerParamLieDownParameter();
         }
 
         void OnLieDownStarted()
         {
-            penguinEntity.Animation.SetParamIsUpright(false);
+            _penguinEntity.Animation.SetParamIsUpright(false);
 
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            penguinEntity.ColliderConstraints =
+            _penguinEntity.ColliderConstraints =
                 PenguinColliderConstraints.DisableBoundingBox |
                 PenguinColliderConstraints.DisableFeet;
         }
@@ -54,7 +54,7 @@ namespace PQ.Entities.Penguin
         void OnLieDownMidpoint()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            penguinEntity.ColliderConstraints =
+            _penguinEntity.ColliderConstraints =
                 PenguinColliderConstraints.DisableBoundingBox |
                 PenguinColliderConstraints.DisableFeet        |
                 PenguinColliderConstraints.DisableFlippers;
@@ -63,15 +63,15 @@ namespace PQ.Entities.Penguin
         void OnLieDownFinished()
         {
             // todo: this stuff needs to go in the state machine
-            characterController.Settings = lieDownStateCharacterSettings;
+            _characterController.Settings = _onBellySettings;
 
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box
-            penguinEntity.ColliderConstraints =
+            _penguinEntity.ColliderConstraints =
                  PenguinColliderConstraints.DisableFeet |
                  PenguinColliderConstraints.DisableFlippers;
             
-            penguinEntity.ReadjustBoundingBox(
+            _penguinEntity.ReadjustBoundingBox(
                 offset:     new Vector2(0, 5),
                 size:       new Vector2(25, 10),
                 edgeRadius: 1.25f

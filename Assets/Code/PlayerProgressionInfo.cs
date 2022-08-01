@@ -17,13 +17,11 @@ namespace PQ
         public int    Lives      { get; private set; }
         public int    LivesGiven { get; private set; }
 
-        
-        public override string ToString()
-        {
-            return $"Player is in level {LevelName}, " +
-                   $"score is currently set to {Score}, " +
-                   $"lives started at {LivesGiven} and is now {Lives}";
-        }
+        public override string ToString() =>
+            $"Player is in level {LevelName}, " +
+            $"score is currently set to {Score}, " +
+            $"lives started at {LivesGiven} and is now {Lives}";
+
 
         public PlayerProgressionInfo(int livesGiven)
         {

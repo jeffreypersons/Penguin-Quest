@@ -7,43 +7,43 @@ namespace PQ.UI
     public class IngameHudController : MonoBehaviour
     {
         [Header("Visible Ui Elements")]
-        [SerializeField] private Button pauseButton = default;
-        [SerializeField] private TMPro.TextMeshProUGUI levelLabel = default;
-        [SerializeField] private TMPro.TextMeshProUGUI scoreLabel = default;
-        [SerializeField] private TMPro.TextMeshProUGUI livesLabel = default;
+        [SerializeField] private Button _pauseButton;
+        [SerializeField] private TMPro.TextMeshProUGUI _levelLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI _scoreLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI _livesLabel;
 
         [Header("Menu Text")]
-        [SerializeField] private string scorePrefix = default;
-        [SerializeField] private string livesPrefix = default;
+        [SerializeField] private string _scorePrefix;
+        [SerializeField] private string _livesPrefix;
 
-        private PlayerProgressionInfo lastRecordedPlayerInfo;
+        private PlayerProgressionInfo _lastRecordedPlayerInfo;
 
         void Awake()
         {
             // todo: make this script more interdependent
-            lastRecordedPlayerInfo = new PlayerProgressionInfo(PlayerProgressionInfo.MIN_LIVES_GIVEN);
-            levelLabel.text        = lastRecordedPlayerInfo.LevelName;
+            _lastRecordedPlayerInfo = new PlayerProgressionInfo(PlayerProgressionInfo.MIN_LIVES_GIVEN);
+            _levelLabel.text        = _lastRecordedPlayerInfo.LevelName;
         }
         void OnEnable()
         {
             GameEventCenter.scoreChange.AddListener(UpdateScore);
-            pauseButton    .onClick    .AddListener(TriggerPauseGameEvent);
+            _pauseButton    .onClick    .AddListener(TriggerPauseGameEvent);
         }
         void OnDisable()
         {
             GameEventCenter.scoreChange.RemoveListener(UpdateScore);
-            pauseButton    .onClick    .RemoveListener(TriggerPauseGameEvent);
+            _pauseButton    .onClick    .RemoveListener(TriggerPauseGameEvent);
         }
 
         private void UpdateScore(PlayerProgressionInfo playerInfo)
         {
-            lastRecordedPlayerInfo = playerInfo;
-            scoreLabel.text = scorePrefix + playerInfo.Score.ToString();
-            livesLabel.text = livesPrefix + playerInfo.Lives.ToString();
+            _lastRecordedPlayerInfo = playerInfo;
+            _scoreLabel.text = _scorePrefix + playerInfo.Score.ToString();
+            _livesLabel.text = _livesPrefix + playerInfo.Lives.ToString();
         }
         private void TriggerPauseGameEvent()
         {
-            GameEventCenter.pauseGame.Trigger(lastRecordedPlayerInfo);
+            GameEventCenter.pauseGame.Trigger(_lastRecordedPlayerInfo);
         }
     }
 }

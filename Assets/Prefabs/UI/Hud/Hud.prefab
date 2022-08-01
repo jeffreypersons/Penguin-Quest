@@ -306,7 +306,7 @@ RectTransform:
   - {fileID: 6782805227519252164}
   - {fileID: 8100157720832927522}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -387,12 +387,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0064efe4eb4645549ab1b5b9b0ae0b73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseButton: {fileID: 7574834951393275848}
-  levelLabel: {fileID: 6782805226354343960}
-  scoreLabel: {fileID: 1165009680498013802}
-  livesLabel: {fileID: 1350562950733241385}
-  scorePrefix: 'Score:'
-  livesPrefix: 'Lives Left:'
+  _pauseButton: {fileID: 7574834951393275848}
+  _levelLabel: {fileID: 6782805226354343960}
+  _scoreLabel: {fileID: 1165009680498013802}
+  _livesLabel: {fileID: 1350562950733241385}
+  _scorePrefix: 'Score:'
+  _livesPrefix: 'Lives Left:'
 --- !u!114 &1956997448683683722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,18 +405,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d03c7fc19b135a94a94b1cd75728584e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenuSceneName: MainMenu
-  topBanner: {fileID: 6782805227519252165}
-  ingameMenu: {fileID: 7044906182246766840}
-  title: {fileID: 2393425291928613039}
-  subtitle: {fileID: 4701405261201434203}
-  titleOnPause: Game Paused
-  titleOnGameOver: Game Over
-  subtitleSuffix: 
-  resumeButton: {fileID: 6560950033600971438}
-  mainMenuButton: {fileID: 2761134006734877489}
-  restartButton: {fileID: 76840908159429415}
-  quitButton: {fileID: 5270292612611115581}
+  _mainMenuSceneName: MainMenu
+  _topBanner: {fileID: 6782805227519252165}
+  _ingameMenu: {fileID: 7044906182246766840}
+  _title: {fileID: 2393425291928613039}
+  _subtitle: {fileID: 4701405261201434203}
+  _titleOnPause: Game Paused
+  _titleOnGameOver: Game Over
+  _subtitleSuffix: 
+  _resumeButton: {fileID: 6560950033600971438}
+  _mainMenuButton: {fileID: 2761134006734877489}
+  _restartButton: {fileID: 76840908159429415}
+  _quitButton: {fileID: 5270292612611115581}
 --- !u!1 &6782805226354343942
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,116 +600,6 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 6209392992845193033}
     m_Modifications:
-    - target: {fileID: 3047431024499063806, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3047431024499063806, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3047431024499063806, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3047431024499063806, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3611525369059826786, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 125
-      objectReference: {fileID: 0}
-    - target: {fileID: 3611525369059826786, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3611525369059826786, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3611525369059826786, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3611525369059826786, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4063474058922554221, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4063474058922554221, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4063474058922554221, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4063474058922554221, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4988006705614193394, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4988006705614193394, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4988006705614193394, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4988006705614193394, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.spaceCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4988006705614193394, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7095859977298369252, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7095859977298369252, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7095859977298369252, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7095859977298369252, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7151744970975218671, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
         type: 3}
       propertyPath: m_Pivot.x
@@ -819,11 +709,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: IngameMenu
-      objectReference: {fileID: 0}
-    - target: {fileID: 8281302193027281973, guid: 6149a2d1bbcd310458ddc97cb62dbf64,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

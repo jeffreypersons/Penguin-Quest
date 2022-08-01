@@ -7,6 +7,9 @@ namespace PQ.Common.Collisions
 {
     public class BoxPerimeterRayCaster
     {
+        private const int minNumRays = 0;
+        private const int maxNumRays = 10000;
+
         private int _bottomStartIndex;
         private int _topStartIndex;
         private int _leftStartIndex;
@@ -17,8 +20,6 @@ namespace PQ.Common.Collisions
         private OrientedBounds _originBounds;
         private LineCaster     _lineCaster;
 
-        private const int minNumRays = 0;
-        private const int maxNumRays = 10000;
 
         public RayCasterSettings Settings { get; set; }
         public Vector2 CenterOfBounds => _originBounds.Center;
@@ -30,9 +31,13 @@ namespace PQ.Common.Collisions
         public int     NumRaysPerVerticalSide   { get; private set; }
         public int     TotalNumRays             { get; private set; }
 
-        public override string ToString()
-        {
-            return $"{GetType().Name}:" +
+        public ReadOnlySpan<CastResult> AllResults    => _results.AsSpan(0,                 TotalNumRays);
+        public ReadOnlySpan<CastResult> BottomResults => _results.AsSpan(_bottomStartIndex, NumRaysPerHorizontalSide);
+        public ReadOnlySpan<CastResult> TopResults    => _results.AsSpan(_topStartIndex,    NumRaysPerHorizontalSide);
+        public ReadOnlySpan<CastResult> LeftResults   => _results.AsSpan(_leftStartIndex,   NumRaysPerVerticalSide);
+        public ReadOnlySpan<CastResult> RightResults  => _results.AsSpan(_rightStartIndex,  NumRaysPerVerticalSide);
+        public override string ToString() =>
+            $"{GetType().Name}:" +
                 $"RayCasts{{" +
                     $"totalCount:{TotalNumRays}," +
                     $"settings:{Settings.name}}}, " +
@@ -44,13 +49,6 @@ namespace PQ.Common.Collisions
                     $"count:{NumRaysPerVerticalSide}}}, " +
                 $"OrientedBounds{{" +
                     $"{_originBounds}}}";
-        }
-
-        public ReadOnlySpan<CastResult> AllResults    => _results.AsSpan(0,                 TotalNumRays);
-        public ReadOnlySpan<CastResult> BottomResults => _results.AsSpan(_bottomStartIndex, NumRaysPerHorizontalSide);
-        public ReadOnlySpan<CastResult> TopResults    => _results.AsSpan(_topStartIndex,    NumRaysPerHorizontalSide);
-        public ReadOnlySpan<CastResult> LeftResults   => _results.AsSpan(_leftStartIndex,   NumRaysPerVerticalSide);
-        public ReadOnlySpan<CastResult> RightResults  => _results.AsSpan(_rightStartIndex,  NumRaysPerVerticalSide);
 
         public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
