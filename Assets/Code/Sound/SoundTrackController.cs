@@ -5,15 +5,16 @@ namespace PQ.Sound
 {
     public class SoundTrackController : MonoBehaviour
     {
+        private static float DefaultMasterVolume = 1.0f;
+
         private AudioSource track;
-        private static float DEFAULT_MASTER_VOLUME = 1.0f;
 
         void Awake()
         {
             track = transform.gameObject.GetComponent<AudioSource>();
             track.loop        = true;
             track.playOnAwake = false;
-            track.volume      = DEFAULT_MASTER_VOLUME;
+            track.volume      = DefaultMasterVolume;
         }
 
         void OnEnable()

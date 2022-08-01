@@ -12,7 +12,7 @@ namespace PQ
     */
     public class GameController : MonoBehaviour
     {
-        private PlayerProgressionInfo playerInfo;
+        private PlayerProgressionInfo _playerInfo;
 
         // todo: use spawner
         [SerializeField] private GameObject _playerPenguin;
@@ -37,31 +37,31 @@ namespace PQ
 
         private void StartNewGame(PlayerSettingsInfo gameSettings)
         {
-            playerInfo = new PlayerProgressionInfo(gameSettings.NumberOfLives);
-            GameEventCenter.scoreChange.Trigger(playerInfo);
+            _playerInfo = new PlayerProgressionInfo(gameSettings.NumberOfLives);
+            GameEventCenter.scoreChange.Trigger(_playerInfo);
         }
 
         private void RestartGame(string status)
         {
             ResetMovingObjects();
-            playerInfo = new PlayerProgressionInfo(playerInfo.Lives);
-            GameEventCenter.scoreChange.Trigger(playerInfo);
+            _playerInfo = new PlayerProgressionInfo(_playerInfo.Lives);
+            GameEventCenter.scoreChange.Trigger(_playerInfo);
         }
 
         private void UpdateScore(int points)
         {
-            if (playerInfo == null)
+            if (_playerInfo == null)
             {
                 Debug.LogError($"RecordedScore that is set upon starting a new game {GetType().Name} is missing, " +
                                $"perhaps the event wasn't fired or listened to? " +
                                $"...If running from game scene in play mode, try starting from main menu instead");
             }
 
-            playerInfo.AddToScore(points);
-            GameEventCenter.scoreChange.Trigger(playerInfo);
+            _playerInfo.AddToScore(points);
+            GameEventCenter.scoreChange.Trigger(_playerInfo);
             if (LoseConditionMet() || WinConditionMet())
             {
-                GameEventCenter.gameOver.Trigger(playerInfo);
+                GameEventCenter.gameOver.Trigger(_playerInfo);
             }
         }
 
