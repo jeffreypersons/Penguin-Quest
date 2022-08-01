@@ -11,48 +11,48 @@ namespace PQ.UI
     [ExecuteAlways]
     public class SliderSettingController : MonoBehaviour
     {
-        [SerializeField] private string description;
-        [SerializeField] private string numberSuffix;
-        [SerializeField] private string initialValue;
-        [SerializeField] private string minValue;
-        [SerializeField] private string maxValue;
+        [SerializeField] private string _description;
+        [SerializeField] private string _numberSuffix;
+        [SerializeField] private string _initialValue;
+        [SerializeField] private string _minValue;
+        [SerializeField] private string _maxValue;
         
-        [SerializeField] private TMPro.TextMeshProUGUI label;
-        [SerializeField] private Slider slider;
+        [SerializeField] private TMPro.TextMeshProUGUI _label;
+        [SerializeField] private Slider _slider;
         
-        public float  SliderValue => slider.value;
-        public float  MinSliderValue => slider.minValue;
-        public float  MaxSliderValue => slider.maxValue;
-        public string Description => label.text;
-        public bool   IsSliderValueAWholeNumber => slider.wholeNumbers;
+        public float  SliderValue               => _slider.value;
+        public float  MinSliderValue            => _slider.minValue;
+        public float  MaxSliderValue            => _slider.maxValue;
+        public string Description               => _label.text;
+        public bool   IsSliderValueAWholeNumber => _slider.wholeNumbers;
 
         void Awake()
         {
-            if (SetSliderValues(initialValue, minValue, maxValue))
+            if (SetSliderValues(_initialValue, _minValue, _maxValue))
             {
-                slider.value = float.Parse(initialValue);
-                UpdateLabel(slider.value);
+                _slider.value = float.Parse(_initialValue);
+                UpdateLabel(_slider.value);
             }
         }
         void Update()
         {
-            SetSliderValues(initialValue, minValue, maxValue);
+            SetSliderValues(_initialValue, _minValue, _maxValue);
             #if UNITY_EDITOR
-                UpdateLabel(slider.value);
+                UpdateLabel(_slider.value);
             #endif
         }
 
         void OnEnable()
         {
-            slider.onValueChanged.AddListener(UpdateLabel);
+            _slider.onValueChanged.AddListener(UpdateLabel);
         }
         void OnDisable()
         {
-            slider.onValueChanged.RemoveListener(UpdateLabel);
+            _slider.onValueChanged.RemoveListener(UpdateLabel);
         }
         void UpdateLabel(float value)
         {
-            label.text = $"{description}: {value}{numberSuffix}";
+            _label.text = $"{_description}: {value}{_numberSuffix}";
         }
 
         private bool SetSliderValues(string initial, string min, string max)
@@ -62,9 +62,9 @@ namespace PQ.UI
 
             if (isAllInt || isAllFloat)
             {
-                slider.minValue = float.Parse(min);
-                slider.maxValue = float.Parse(max);
-                slider.wholeNumbers = isAllInt;
+                _slider.minValue = float.Parse(min);
+                _slider.maxValue = float.Parse(max);
+                _slider.wholeNumbers = isAllInt;
                 return true;
             }
             else

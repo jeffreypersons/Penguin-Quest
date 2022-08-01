@@ -7,30 +7,30 @@ namespace PQ.UI
 {
     public class MainMenuController : MonoBehaviour
     {
-        [SerializeField] private TMPro.TextMeshProUGUI subtitle;
+        [SerializeField] private TMPro.TextMeshProUGUI _subtitle;
         
         [Header("Scene to load on game start")]
-        [SerializeField] private string sceneName;
+        [SerializeField] private string _sceneName;
         
         [Header("Menu Core Components")]
-        [SerializeField] private GameObject buttonPanel;
-        [SerializeField] private MainMenuPanelController mainMenuPanelController;
+        [SerializeField] private GameObject _buttonPanel;
+        [SerializeField] private MainMenuPanelController _mainMenuPanelController;
         
         [Header("Menu Buttons")]
-        [SerializeField] private Button startButton;
-        [SerializeField] private Button settingsButton;
-        [SerializeField] private Button aboutButton;
-        [SerializeField] private Button quitButton;
+        [SerializeField] private Button _startButton;
+        [SerializeField] private Button _settingsButton;
+        [SerializeField] private Button _aboutButton;
+        [SerializeField] private Button _quitButton;
         
         void Awake()
         {
-            if (!SceneExtensions.IsSceneAbleToLoad(sceneName))
+            if (!SceneExtensions.IsSceneAbleToLoad(_sceneName))
             {
-                Debug.LogError($"Scene cannot be loaded, perhaps `{sceneName}` is misspelled?");
+                Debug.LogError($"Scene cannot be loaded, perhaps `{_sceneName}` is misspelled?");
             }
-            mainMenuPanelController.SetActionOnStartPressed(() => LoadGame());
-            mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMainMenuVisibility(false));
-            mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMainMenuVisibility(true));
+            _mainMenuPanelController.SetActionOnStartPressed(() => LoadGame());
+            _mainMenuPanelController.SetActionOnPanelOpen(()    => ToggleMainMenuVisibility(false));
+            _mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMainMenuVisibility(true));
 
             #if UNITY_WEBGL
                 UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
@@ -39,32 +39,32 @@ namespace PQ.UI
 
         void OnEnable()
         {
-            startButton   .onClick.AddListener(mainMenuPanelController.OpenStartPanel);
-            settingsButton.onClick.AddListener(mainMenuPanelController.OpenSettingsPanel);
-            aboutButton   .onClick.AddListener(mainMenuPanelController.OpenAboutPanel);
-            quitButton    .onClick.AddListener(SceneExtensions.QuitGame);
+            _startButton   .onClick.AddListener(_mainMenuPanelController.OpenStartPanel);
+            _settingsButton.onClick.AddListener(_mainMenuPanelController.OpenSettingsPanel);
+            _aboutButton   .onClick.AddListener(_mainMenuPanelController.OpenAboutPanel);
+            _quitButton    .onClick.AddListener(SceneExtensions.QuitGame);
         }
         void OnDisable()
         {
-            startButton   .onClick.RemoveListener(mainMenuPanelController.OpenStartPanel);
-            settingsButton.onClick.RemoveListener(mainMenuPanelController.OpenSettingsPanel);
-            aboutButton   .onClick.RemoveListener(mainMenuPanelController.OpenAboutPanel);
-            quitButton    .onClick.RemoveListener(SceneExtensions.QuitGame);
+            _startButton   .onClick.RemoveListener(_mainMenuPanelController.OpenStartPanel);
+            _settingsButton.onClick.RemoveListener(_mainMenuPanelController.OpenSettingsPanel);
+            _aboutButton   .onClick.RemoveListener(_mainMenuPanelController.OpenAboutPanel);
+            _quitButton    .onClick.RemoveListener(SceneExtensions.QuitGame);
         }
 
 
         private void LoadGame()
         {
-            SceneExtensions.LoadScene(sceneName, () =>
+            SceneExtensions.LoadScene(_sceneName, () =>
             {
-                GameEventCenter.startNewGame.Trigger(mainMenuPanelController.GetGameSettings());
+                GameEventCenter.startNewGame.Trigger(_mainMenuPanelController.GetGameSettings());
             });
         }
 
         private void ToggleMainMenuVisibility(bool isVisible)
         {
-            UiExtensions.SetLabelVisibility(subtitle, isVisible);
-            buttonPanel.SetActive(isVisible);
+            UiExtensions.SetLabelVisibility(_subtitle, isVisible);
+            _buttonPanel.SetActive(isVisible);
             #if UNITY_WEBGL
                 UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
             #endif

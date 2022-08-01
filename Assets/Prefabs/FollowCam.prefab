@@ -44,7 +44,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.39215687, g: 0.6862745, b: 0.98039216, a: 0}
+  m_BackGroundColor: {r: 0.69195443, g: 0.78465647, b: 0.8773585, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -97,14 +97,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f74ce3d66de2d4e876ac4c6a19bcb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subject: {fileID: 4753795910216235723, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
-  xOffset: 20
-  yOffset: 15
-  zOffset: -10
-  isActivelyRunning: 1
-  keepSubjectInView: 1
-  maxMoveSpeed: 1000
-  distanceFromTargetPositionThreshold: 0.2
-  orthographicSize: 200
-  maxZoomSpeed: 10
-  differenceFromTargetOrthoSizeThreshold: 0.2
+  _subject: {fileID: 0}
+  _xOffset: 20
+  _yOffset: 15
+  _zOffset: -10
+  _isActivelyRunning: 1
+  _keepSubjectInView: 1
+  _maxMoveSpeed: 1000
+  _distanceFromTargetPositionThreshold: 0.2
+  _orthographicSize: 200
+  _maxZoomSpeed: 10
+  _differenceFromTargetOrthoSizeThreshold: 0.2

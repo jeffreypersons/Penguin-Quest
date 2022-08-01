@@ -8,46 +8,46 @@ namespace PQ.UI
     public class IngameMenuController : MonoBehaviour
     {
         [Header("Scene to Load on Return to Main Menu")]
-        [SerializeField] private string mainMenuSceneName;
+        [SerializeField] private string _mainMenuSceneName;
 
         [Header("Scene Objects to Hide on Menu Open")]
-        [SerializeField] private GameObject topBanner;
+        [SerializeField] private GameObject _topBanner;
 
         [Header("Menu Buttons")]
-        [SerializeField] private GameObject ingameMenu;
-        [SerializeField] private TMPro.TextMeshProUGUI title;
-        [SerializeField] private TMPro.TextMeshProUGUI subtitle;
+        [SerializeField] private GameObject _ingameMenu;
+        [SerializeField] private TMPro.TextMeshProUGUI _title;
+        [SerializeField] private TMPro.TextMeshProUGUI _subtitle;
 
         [Header("Menu Text")]
-        [SerializeField] private string titleOnPause;
-        [SerializeField] private string titleOnGameOver;
-        [SerializeField] private string subtitleSuffix;
+        [SerializeField] private string _titleOnPause;
+        [SerializeField] private string _titleOnGameOver;
+        [SerializeField] private string _subtitleSuffix;
 
         [Header("Menu Buttons")]
-        [SerializeField] private Button resumeButton;
-        [SerializeField] private Button mainMenuButton;
-        [SerializeField] private Button restartButton;
-        [SerializeField] private Button quitButton;
+        [SerializeField] private Button _resumeButton;
+        [SerializeField] private Button _mainMenuButton;
+        [SerializeField] private Button _restartButton;
+        [SerializeField] private Button _quitButton;
 
         private void ToggleMenuVisibility(bool isVisible)
         {
             if (isVisible)
             {
                 Time.timeScale = 0;
-                topBanner.SetActive(false);
-                ingameMenu.SetActive(true);
+                _topBanner.SetActive(false);
+                _ingameMenu.SetActive(true);
             }
             else
             {
                 Time.timeScale = 1;
-                topBanner.SetActive(true);
-                ingameMenu.SetActive(false);
+                _topBanner.SetActive(true);
+                _ingameMenu.SetActive(false);
             }
         }
 
         void Awake()
         {
-            ingameMenu.SetActive(false);
+            _ingameMenu.SetActive(false);
             GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
             GameEventCenter.gameOver .AddListener(OpenAsEndGameMenu);
 
@@ -63,34 +63,34 @@ namespace PQ.UI
 
         void OnEnable()
         {
-            resumeButton  .onClick.AddListener(ResumeGame);
-            mainMenuButton.onClick.AddListener(MoveToMainMenu);
-            restartButton .onClick.AddListener(TriggerRestartGameEvent);
-            quitButton    .onClick.AddListener(SceneExtensions.QuitGame);
+            _resumeButton  .onClick.AddListener(ResumeGame);
+            _mainMenuButton.onClick.AddListener(MoveToMainMenu);
+            _restartButton .onClick.AddListener(TriggerRestartGameEvent);
+            _quitButton    .onClick.AddListener(SceneExtensions.QuitGame);
         }
 
         void OnDisable()
         {
-            resumeButton  .onClick.RemoveListener(ResumeGame);
-            mainMenuButton.onClick.RemoveListener(MoveToMainMenu);
-            restartButton .onClick.RemoveListener(TriggerRestartGameEvent);
-            quitButton    .onClick.RemoveListener(SceneExtensions.QuitGame);
+            _resumeButton  .onClick.RemoveListener(ResumeGame);
+            _mainMenuButton.onClick.RemoveListener(MoveToMainMenu);
+            _restartButton .onClick.RemoveListener(TriggerRestartGameEvent);
+            _quitButton    .onClick.RemoveListener(SceneExtensions.QuitGame);
         }
 
 
         private void OpenAsPauseMenu(PlayerProgressionInfo playerInfo)
         {
-            title.text = titleOnPause;
-            subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-            UiExtensions.SetButtonActiveAndEnabled(resumeButton, true);
+            _title.text = _titleOnPause;
+            _subtitle.text = playerInfo.Score.ToString() + _subtitleSuffix;
+            UiExtensions.SetButtonActiveAndEnabled(_resumeButton, true);
             ToggleMenuVisibility(true);
         }
 
         private void OpenAsEndGameMenu(PlayerProgressionInfo playerInfo)
         {
-            title.text = titleOnGameOver;
-            subtitle.text = playerInfo.Score.ToString() + subtitleSuffix;
-            UiExtensions.SetButtonActiveAndEnabled(resumeButton, false);
+            _title.text = _titleOnGameOver;
+            _subtitle.text = playerInfo.Score.ToString() + _subtitleSuffix;
+            UiExtensions.SetButtonActiveAndEnabled(_resumeButton, false);
             ToggleMenuVisibility(true);
         }
 
@@ -104,7 +104,7 @@ namespace PQ.UI
         {
             Time.timeScale = 1;
             GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
-            SceneExtensions.LoadScene(mainMenuSceneName);
+            SceneExtensions.LoadScene(_mainMenuSceneName);
         }
 
         private void TriggerRestartGameEvent()
