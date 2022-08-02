@@ -292,7 +292,7 @@ Transform:
   m_Children:
   - {fileID: 8190429023145774807}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &4753795910216235720
 Rigidbody2D:
@@ -391,8 +391,13 @@ MonoBehaviour:
   _centerOfMassX: 0
   _centerOfMassY: 0
   _colliderConstraints: 0
-  _penguinAnimation: {fileID: 1728887597599890734}
+  _penguinOnFeetSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+    type: 2}
+  _penguinOnBellySettings: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3,
+    type: 2}
   _penguinRigidbody: {fileID: 4753795910216235720}
+  _penguinAnimation: {fileID: 1728887597599890734}
+  _characterController: {fileID: 4489379026178228054}
   _boundingBoxCollider: {fileID: 4753795910216235721}
   _headCollider: {fileID: 4753795911533567600}
   _torsoCollider: {fileID: 4753795910448514483}
@@ -468,8 +473,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84d3f27435ee1c947b7469a39224e53b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumpStrength: 50000
-  _jumpAngle: 45
 --- !u!114 &4753795910216235729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,7 +485,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03575db054bb040478b656105bc59aa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onFeetSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc, type: 2}
 --- !u!114 &4753795910216235743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,7 +497,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac7d272be483dc4bbba5f907894fce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onBellySettings: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3, type: 2}
 --- !u!1 &4753795910222470411
 GameObject:
   m_ObjectHideFlags: 0

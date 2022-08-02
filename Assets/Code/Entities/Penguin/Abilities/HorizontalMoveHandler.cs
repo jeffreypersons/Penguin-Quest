@@ -7,7 +7,7 @@ namespace PQ.Entities.Penguin
 {
     public class HorizontalMoveHandler : MonoBehaviour
     {
-        private enum Facing { Left = -1, Right = 1}
+        private enum Facing { Left = -1, Right = 1 }
         
         private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
         private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
@@ -16,9 +16,6 @@ namespace PQ.Entities.Penguin
         [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
                  "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
         [Range(0.01f, 1.00f)] [SerializeField] private float _locomotionBlendStep = 0.10f;
-
-        //[Header("Physics Settings")]
-        //[Range(0.50f, 100.00f)] [SerializeField] private float _maxInputSpeed = 10.0f;
 
         private PenguinBlob _penguinBlob;
         private bool _isHorizontalInputActive;
