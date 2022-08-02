@@ -73,13 +73,14 @@ namespace PQ.Entities.Penguin
             GameEventCenter.stopHorizontalMoveCommand .RemoveListener(OnStopHorizontalMoveInput);
         }
 
-        void OnStartHorizontalMoveInput(int direction)
+
+        private void OnStartHorizontalMoveInput(int direction)
         {
             TurnToFace((Facing)(direction));
             _isHorizontalInputActive = true;
         }
 
-        void OnStopHorizontalMoveInput(string _)
+        private void OnStopHorizontalMoveInput(string _)
         {
             _isHorizontalInputActive = false;
         }

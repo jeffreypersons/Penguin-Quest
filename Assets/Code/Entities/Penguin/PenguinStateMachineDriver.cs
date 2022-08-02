@@ -15,11 +15,11 @@ namespace PQ.Entities.Penguin
         // todo: replace with a cleaner, more reusable way to do this
         private FsmState onFeet;
         private FsmState onBelly;
+        private FsmState standingUp;
+        private FsmState lyingDown;
+
         private bool CanEnterOnFeetState => !IsCurrently(onFeet);
         private bool CanEnterOnbellyState => !IsCurrently(onBelly);
-
-
-        [SerializeField] private CharacterController2DSettings initialSettings;
 
         protected override void Initialize(FsmState initialState)
         {
@@ -29,10 +29,12 @@ namespace PQ.Entities.Penguin
 
             // todo: this should be in state machine for onFeet and we should start in a blank state and then
             //       entered rather than assuming we start onFeet here...
-            gameObject.GetComponent<CharacterController2D>().Settings = initialSettings;
-
-            onFeet  = new PenguinStateOnFeet ("Penguin.State.OnFeet",  penguinBlob);
-            onBelly = new PenguinStateOnBelly("Penguin.State.OnBelly", penguinBlob);
+            gameObject.GetComponent<CharacterController2D>().Settings = penguinBlob.OnFeetSettings;
+            
+            onFeet  = new PenguinStateOnFeet ("Penguin.State.OnFeet",     penguinBlob);
+            onBelly = new PenguinStateOnBelly("Penguin.State.OnBelly",    penguinBlob);
+            onFeet  = new PenguinStateOnFeet ("Penguin.State.StandingUp", penguinBlob);
+            onBelly = new PenguinStateOnBelly("Penguin.State.LyingDown",  penguinBlob);
             base.Initialize(onFeet);
         }
 

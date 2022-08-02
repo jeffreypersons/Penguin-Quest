@@ -9,7 +9,7 @@ namespace PQ.Common
     {
         // todo: get rid of penguin entity and use dependency injection or something as this should be more generic
         private PenguinBlob _penguinBlob;
-        private CollisionChecker _groundChecker;
+        private CollisionChecker _collisionChecker;
         public CharacterController2DSettings Settings { get; set; }
 
         private void Reset()
@@ -21,20 +21,20 @@ namespace PQ.Common
         {
             // todo: replace ground checker with a 2d character controller that reports surroundings,
             //       and will be a property of penguinBlob
-            _groundChecker = gameObject.GetComponent<CollisionChecker>();
-            _penguinBlob = gameObject.GetComponent<PenguinBlob>();
+            _collisionChecker = gameObject.GetComponent<CollisionChecker>();
+            _penguinBlob      = gameObject.GetComponent<PenguinBlob>();
             Reset();
         }
 
         void Update()
         {
-            _penguinBlob.Animation.SetParamIsGrounded(_groundChecker.IsGrounded);
+            _penguinBlob.Animation.SetParamIsGrounded(_collisionChecker.IsGrounded);
         }
 
 
         void FixedUpdate()
         {
-            if (!_groundChecker.IsGrounded)
+            if (!_collisionChecker.IsGrounded)
             {
                 _penguinBlob.Rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
                 AlignPenguinWithGivenUpAxis(Vector2.up);
@@ -45,7 +45,7 @@ namespace PQ.Common
             if (Settings.MaintainPerpendicularityToSurface)
             {
                 // keep our penguin perpendicular to the surface at all times if option enabled
-                AlignPenguinWithGivenUpAxis(_groundChecker.SurfaceNormal);
+                AlignPenguinWithGivenUpAxis(_collisionChecker.SurfaceNormal);
             }
             else
             {

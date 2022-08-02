@@ -1243,6 +1243,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4753795910216235732, guid: 6d76bc27df941db4d96760c2af2147ca,
+        type: 3}
+      propertyPath: _characterController
+      value: 
+      objectReference: {fileID: 1528079840}
+    - target: {fileID: 4753795910216235732, guid: 6d76bc27df941db4d96760c2af2147ca,
+        type: 3}
+      propertyPath: _penguinOnFeetSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+        type: 2}
+    - target: {fileID: 4753795910216235732, guid: 6d76bc27df941db4d96760c2af2147ca,
+        type: 3}
+      propertyPath: _penguinOnBellySettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3,
+        type: 2}
     - target: {fileID: 4753795910216235740, guid: 6d76bc27df941db4d96760c2af2147ca,
         type: 3}
       propertyPath: m_Name
@@ -1268,6 +1285,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1528079834}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1528079840 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4489379026178228054, guid: 6d76bc27df941db4d96760c2af2147ca,
+    type: 3}
+  m_PrefabInstance: {fileID: 1528079834}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439218191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e9c817aeb9b3c449ab72edec42564a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &1813933554
 LightingSettings:
   m_ObjectHideFlags: 0

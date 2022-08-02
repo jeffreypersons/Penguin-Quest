@@ -6,16 +6,11 @@ namespace PQ.Entities.Penguin
 {
     public class LieDownHandler : MonoBehaviour
     {
-        // todo: move to state machine for lie down state
-        [SerializeField] private CharacterController2DSettings _onBellySettings;
-
         private PenguinBlob _penguinBlob;
-        private CharacterController2D _characterController;
 
         void Awake()
         {
-            _penguinBlob       = transform.GetComponent<PenguinBlob>();
-            _characterController = transform.GetComponent<CharacterController2D>();
+            _penguinBlob = transform.GetComponent<PenguinBlob>();
         }
 
         void OnEnable()
@@ -36,12 +31,12 @@ namespace PQ.Entities.Penguin
         }
 
         
-        void OnLieDownInputReceived(string _)
+        private void OnLieDownInputReceived(string _)
         {
             _penguinBlob.Animation.TriggerParamLieDownParameter();
         }
 
-        void OnLieDownStarted()
+        private void OnLieDownStarted()
         {
             _penguinBlob.Animation.SetParamIsUpright(false);
 
@@ -51,7 +46,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFeet;
         }
 
-        void OnLieDownMidpoint()
+        private void OnLieDownMidpoint()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _penguinBlob.ColliderConstraints =
@@ -60,10 +55,10 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFlippers;
         }
 
-        void OnLieDownFinished()
+        private void OnLieDownFinished()
         {
             // todo: this stuff needs to go in the state machine
-            _characterController.Settings = _onBellySettings;
+            _penguinBlob.CharacterController.Settings = _penguinBlob.OnBellySettings;
 
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box
