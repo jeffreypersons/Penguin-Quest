@@ -1248,17 +1248,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PenguinPlayer
       objectReference: {fileID: 0}
-    - target: {fileID: 9188869225720279910, guid: 6d76bc27df941db4d96760c2af2147ca,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9188869225720279910, guid: 6d76bc27df941db4d96760c2af2147ca,
-        type: 3}
-      propertyPath: initialSettings
-      value: 
-      objectReference: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
-        type: 2}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}

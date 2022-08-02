@@ -1,4 +1,5 @@
 using UnityEngine;
+using PQ.Common;
 using PQ.Common.Extensions;
 
 
@@ -35,9 +36,14 @@ namespace PQ.Entities.Penguin
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         
+        [Header("Setting Bundles")]
+        [SerializeField] private CharacterController2DSettings _penguinOnFeetSettings;
+        [SerializeField] private CharacterController2DSettings _penguinOnBellySettings;
+
         [Header("Component References")]
-        [SerializeField] private PenguinAnimation  _penguinAnimation;
-        [SerializeField] private Rigidbody2D       _penguinRigidbody;
+        [SerializeField] private Rigidbody2D _penguinRigidbody;
+        [SerializeField] private PenguinAnimation _penguinAnimation;
+        [SerializeField] private CharacterController2D _characterController;
 
         [Header("Collider References")]
         [SerializeField] private BoxCollider2D     _boundingBoxCollider;
@@ -47,12 +53,16 @@ namespace PQ.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _frontFlipperLowerCollider;
         [SerializeField] private CapsuleCollider2D _frontFootCollider;
         [SerializeField] private CapsuleCollider2D _backFootCollider;
+        
+        
+        public CharacterController2DSettings OnFeetSettings  => _penguinOnFeetSettings;
+        public CharacterController2DSettings OnBellySettings => _penguinOnFeetSettings;
 
-
-        public PenguinAnimation Animation            => _penguinAnimation;
-        public Rigidbody2D      Rigidbody            => _penguinRigidbody;
-        public Vector2          SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
-        public Vector2          CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
+        public PenguinAnimation      Animation            => _penguinAnimation;
+        public CharacterController2D CharacterController  => _characterController;
+        public Rigidbody2D           Rigidbody            => _penguinRigidbody;
+        public Vector2               SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
+        public Vector2               CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
 
         public BoxCollider2D ColliderBoundingBox       => _boundingBoxCollider;
         public Collider2D    ColliderHead              => _headCollider;
