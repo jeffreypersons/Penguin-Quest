@@ -33,6 +33,12 @@ namespace PQ.Common
         // Update our current state provided that it is distinct from the next
         protected void MoveToState(FsmState next)
         {
+            if (next == null)
+            {
+                throw new ArgumentNullException(
+                    $"Transition from {CurrentState} to {next} is invalid -" +
+                    $" cannot enter a null state");
+            }
             if (next != CurrentState)
             {
                 throw new ArgumentException(
