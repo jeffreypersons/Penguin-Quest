@@ -17,15 +17,14 @@ namespace PQ.Common
         public override string ToString() => Name;
 
         public FsmState(string name) => Name = name;
-        public bool Equals(FsmState other) => other is not null && Name == other.Name;
-
         public abstract void Enter();
         public abstract void Exit();
-        public abstract void Update();
-        public abstract void FixedUpdate();
-        public abstract void LateUpdate();
 
+        public virtual void Update()      { }
+        public virtual void FixedUpdate() { }
+        public virtual void LateUpdate()  { }
 
+        public bool Equals(FsmState other) => other is not null && Name == other.Name;
         public override bool Equals(object obj) => Equals(obj as FsmState);
         public override int GetHashCode() => HashCode.Combine(Name);
         public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
