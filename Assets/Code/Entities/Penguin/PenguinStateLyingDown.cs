@@ -29,8 +29,6 @@ namespace PQ.Entities.Penguin
 
         private void OnLieDownAnimationStarted()
         {
-            _blob.Animation.SetParamIsUpright(false);
-
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
                 PenguinColliderConstraints.DisableBoundingBox |

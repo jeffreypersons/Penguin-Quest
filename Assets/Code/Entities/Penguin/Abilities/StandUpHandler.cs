@@ -44,7 +44,6 @@ namespace PQ.Entities.Penguin
         private void OnStandUpFinished()
         {
             // todo: this stuff needs to go in the state machine
-            _penguinBlob.Animation.SetParamIsUpright(true);
             _penguinBlob.CharacterController.Settings = _penguinBlob.OnFeetSettings;
 
             // enable all colliders as we are now fully onFeet

@@ -34,8 +34,6 @@ namespace PQ.Entities.Penguin
 
         private void OnStandUpAnimationFinished()
         {
-            _blob.Animation.SetParamIsUpright(true);
-
             // enable all colliders as we are now fully onFeet
             _blob.ColliderConstraints = PenguinColliderConstraints.None;
 

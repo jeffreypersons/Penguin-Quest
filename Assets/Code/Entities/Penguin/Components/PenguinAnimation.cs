@@ -30,7 +30,6 @@ namespace PQ.Entities.Penguin
         private readonly string paramXMotion    = "XMotionIntensity";
         private readonly string paramYMotion    = "YMotionIntensity";
         private readonly string paramIsGrounded = "IsGrounded";
-        private readonly string paramIsUpright  = "IsUpright";
         private readonly string paramLie        = "LieDown";
         private readonly string paramStand      = "StandUp";
         private readonly string paramJump       = "JumpUp";
@@ -62,9 +61,7 @@ namespace PQ.Entities.Penguin
 
         public void SetParamXMotionIntensity(float ratio) => _animator.SetFloat(paramXMotion, ratio);
         public void SetParamYMotionIntensity(float ratio) => _animator.SetFloat(paramYMotion, ratio);
-        
         public void SetParamIsGrounded(bool value)        => _animator.SetBool(paramIsGrounded, value);
-        public void SetParamIsUpright(bool value)         => _animator.SetBool(paramIsUpright, value);
         
         public void TriggerParamLieDownParameter()        => _animator.SetTrigger(paramLie);
         public void TriggerParamStandUpParameter()        => _animator.SetTrigger(paramStand);
