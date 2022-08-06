@@ -19,8 +19,9 @@ namespace PQ.Common
         // Initialization method that MUST be overridden in subclasses; don't forget base.Initialize(initialState)
         protected virtual void Initialize(FsmState<TEnum> initialState) => InitialState = initialState;
 
+        // todo: replace with event integration, and/or per frame update with priorities to ensure correct ordering
         // Required method implementation, where transitions are checked and called
-        protected abstract void ExecuteAnyTransitions();
+        //protected abstract void ExecuteAnyTransitions();
         
         // Optional overridable callback for state transitions
         protected virtual void OnTransition(FsmState<TEnum> previous, FsmState<TEnum> next) { }
@@ -40,7 +41,7 @@ namespace PQ.Common
                     $"Transition from {CurrentState} to {next} is invalid -" +
                     $" cannot enter a null state");
             }
-            if (next != CurrentState)
+            if (next == CurrentState)
             {
                 throw new ArgumentException(
                     $"Transition from {CurrentState} to {next} is invalid -" +
@@ -77,7 +78,7 @@ namespace PQ.Common
         private void Update()
         {
             CurrentState.Update();
-            ExecuteAnyTransitions();
+            //ExecuteAnyTransitions();
         }
 
         private void FixedUpdate()

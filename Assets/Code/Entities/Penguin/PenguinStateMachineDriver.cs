@@ -4,8 +4,6 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
-    // todo: try integrating generic flags into state machine/graph/transitions
-    // at the framework level
     [System.Flags]
     public enum PenguinFsmParams
     {
@@ -15,7 +13,13 @@ namespace PQ.Entities.Penguin
     }
 
 
-    // todo: overhaul the placeholder code, and move things to states more
+    /*
+    switch state
+        feet   [liedown signal] -> liedown
+        lie    [finish  signal] -> belly
+        belly  [standup signal] -> standup
+        stand  [finish  signal] -> feet
+    */
     public class PenguinStateMachineDriver : FsmStateMachineDriver<PenguinFsmParams>
     {
         private PlayerGameplayInputReceiver input;
@@ -26,8 +30,13 @@ namespace PQ.Entities.Penguin
         // todo: replace with a cleaner, more reusable way to do this
         private FsmState<PenguinFsmParams> stateFeet;
         private FsmState<PenguinFsmParams> stateBelly;
-        private FsmState<PenguinFsmParams> stateBellyToFeet;
-        private FsmState<PenguinFsmParams> stateFeetToBelly;
+        private FsmState<PenguinFsmParams> stateStandingUp;
+        private FsmState<PenguinFsmParams> stateLyingDown;
+
+        protected override void OnTransition(FsmState<PenguinFsmParams> previous, FsmState<PenguinFsmParams> next)
+        {
+            Debug.Log($"Transitioning Penguin from {previous} to {next}");
+        }
 
         protected override void Initialize(FsmState<PenguinFsmParams> initialState)
         {
@@ -39,34 +48,37 @@ namespace PQ.Entities.Penguin
             //       entered rather than assuming we start onFeet here...
             gameObject.GetComponent<CharacterController2D>().Settings = penguinBlob.OnFeetSettings;
             
-            stateFeet  = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob);
-            stateBelly = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob);
-            stateFeet  = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob);
-            stateBelly = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob);
+            stateFeet       = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob);
+            stateBelly      = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob);
+            stateStandingUp = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob);
+            stateLyingDown  = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob);
             base.Initialize(stateFeet);
         }
         
+        // todo: try integrating events into state machine at framework level
         private void OnEnable()
         {
             GameEventCenter.lieDownCommand.AddListener(OnLieDownInputReceived);
-            /*
-            GameEventCenter.lieDownCommand            .AddListener(OnLieDownInputReceived);
-            GameEventCenter.standUpCommand            .AddListener(OnLieDownInputReceived);
-            GameEventCenter.startHorizontalMoveCommand.AddListener(OnLieDownInputReceived);
-            GameEventCenter.stopHorizontalMoveCommand .AddListener(OnLieDownInputReceived);
-            */
-            // penguinBlob.CharacterController.OnGroundContactChanged += OnGroundedPropertyChanged;
+            GameEventCenter.standUpCommand.AddListener(OnStandUpInputReceived);
         }
         private void OnDisable()
         {
             GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInputReceived);
-            // penguinBlob.CharacterController.OnGroundContactChanged -= OnGroundedPropertyChanged;
+            GameEventCenter.standUpCommand.RemoveListener(OnStandUpInputReceived);
         }
+
         private void OnLieDownInputReceived(string _)
         {
-            if (!IsCurrently(stateBelly))
+            if (IsCurrently(stateFeet))
             {
-
+                MoveToState(stateLyingDown);
+            }
+        }
+        private void OnStandUpInputReceived(string _)
+        {
+            if (IsCurrently(stateBelly))
+            {
+                MoveToState(stateStandingUp);
             }
         }
 
@@ -76,50 +88,6 @@ namespace PQ.Entities.Penguin
             penguinBlob.Rigidbody.velocity = Vector2.zero;
             penguinBlob.Rigidbody.position = initialSpawnPosition;
             penguinBlob.Rigidbody.transform.localEulerAngles = Vector3.zero;
-        }
-
-
-        protected override void ExecuteAnyTransitions()
-        {
-
-            /*
-            belly => standup => feet
-            feet  => liedown => belly
-
-            switch state
-                feet   [liedown signal] -> liedown
-                lie    [finish  signal] -> belly
-                belly  [standup signal] -> standup
-                stand  [finish signal] -> feet
-
-
-            FsmState newState;
-            switch (onFeet)
-            {
-
-            }
-            //MoveToState(newState);
-
-            Disable state changes until state subclasses are properly implemented
-            if (CanEnterOnFeetState)
-            {
-                MoveToState(onFeet);
-            }
-            else if (CanEnterOnFeetState)
-            {
-                MoveToState(onBelly);
-            }
-            */
-        }
-
-        protected override void OnTransition(FsmState<PenguinFsmParams> previous, FsmState<PenguinFsmParams> next)
-        {
-            Debug.Log($"Transitioning Penguin from {previous} to {next}");
-        }
-
-        protected void OnGroundedPropertyChanged(bool isGrounded)
-        {
-            penguinBlob.Animation.SetParamIsGrounded(isGrounded);
         }
     }
 }
