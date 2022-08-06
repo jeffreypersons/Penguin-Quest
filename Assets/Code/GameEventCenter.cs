@@ -14,7 +14,7 @@ namespace PQ
         public static GameEvent<int>                    startHorizontalMoveCommand = new GameEvent<int>();
         public static GameEvent<string>                 stopHorizontalMoveCommand  = new GameEvent<string>();
         public static GameEvent<string>                 lieDownCommand             = new GameEvent<string>();
-        public static GameEvent<string>                 standupCommand             = new GameEvent<string>();
+        public static GameEvent<string>                 standUpCommand             = new GameEvent<string>();
         public static GameEvent<string>                 useCommand                 = new GameEvent<string>();
         public static GameEvent<string>                 fireCommand                = new GameEvent<string>();
         

@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using PQ.Common;
 
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateOnBelly : FsmState
+    public class PenguinStateOnBelly : FsmState<PenguinFsmParams>
     {
         private PenguinBlob _blob;
 
@@ -12,7 +13,7 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
-            //_blob.CharacterController.Settings = _blob.OnBellySettings;
+            _blob.CharacterController.Settings = _blob.OnBellySettings;
         }
 
         public override void Exit()

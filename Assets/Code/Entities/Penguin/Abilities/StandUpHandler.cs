@@ -16,14 +16,14 @@ namespace PQ.Entities.Penguin
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.standupCommand.AddListener(OnStandUpInputReceived);
+            GameEventCenter.standUpCommand.AddListener(OnStandUpInputReceived);
             _penguinBlob.Animation.StandUpStarted += OnStandUpStarted;
             _penguinBlob.Animation.StandUpEnded   += OnStandUpFinished;
         }
 
         void OnDisable()
         {
-            GameEventCenter.standupCommand.RemoveListener(OnStandUpInputReceived);
+            GameEventCenter.standUpCommand.RemoveListener(OnStandUpInputReceived);
             _penguinBlob.Animation.StandUpStarted -= OnStandUpStarted;
             _penguinBlob.Animation.StandUpEnded   -= OnStandUpFinished;
         }

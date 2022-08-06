@@ -4,7 +4,7 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateOnFeet : FsmState
+    public class PenguinStateOnFeet : FsmState<PenguinFsmParams>
     {
         private PenguinBlob _blob;
 
@@ -12,7 +12,7 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
-            //_blob.CharacterController.Settings = _blob.OnFeetSettings;
+            _blob.CharacterController.Settings = _blob.OnFeetSettings;
         }
 
         public override void Exit()

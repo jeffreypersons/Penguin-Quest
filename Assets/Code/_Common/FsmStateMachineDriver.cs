@@ -10,28 +10,29 @@ namespace PQ.Common
     Note that there are no transitional checks - it's entirely up to the child class implementation to
     determine when transitions should occur.
     */
-    public abstract class FsmStateMachineDriver : MonoBehaviour
+    public abstract class FsmStateMachineDriver<TEnum> : MonoBehaviour
+        where TEnum : Enum
     {
-        protected FsmState InitialState { get; private set; }
-        protected FsmState CurrentState { get; private set; }
+        protected FsmState<TEnum> InitialState { get; private set; }
+        protected FsmState<TEnum> CurrentState { get; private set; }
 
         // Initialization method that MUST be overridden in subclasses; don't forget base.Initialize(initialState)
-        protected virtual void Initialize(FsmState initialState) => InitialState = initialState;
+        protected virtual void Initialize(FsmState<TEnum> initialState) => InitialState = initialState;
 
         // Required method implementation, where transitions are checked and called
         protected abstract void ExecuteAnyTransitions();
         
         // Optional overridable callback for state transitions
-        protected virtual void OnTransition(FsmState previous, FsmState next) { }
+        protected virtual void OnTransition(FsmState<TEnum> previous, FsmState<TEnum> next) { }
 
         // Is this our current state in the FSM?
-        protected bool IsCurrently(FsmState state)
+        protected bool IsCurrently(FsmState<TEnum> state)
         {
             return state == CurrentState;
         }
 
         // Update our current state provided that it is distinct from the next
-        protected void MoveToState(FsmState next)
+        protected void MoveToState(FsmState<TEnum> next)
         {
             if (next == null)
             {
@@ -46,7 +47,7 @@ namespace PQ.Common
                     $" cannot loop to the same state");
             }
 
-            FsmState previous = CurrentState;
+            FsmState<TEnum> previous = CurrentState;
             previous.Exit();
             OnTransition(previous, next);
             next.Enter();
