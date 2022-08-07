@@ -7,9 +7,10 @@ namespace PQ.Entities.Penguin
     [System.Flags]
     public enum PenguinFsmParams
     {
-        Grounded,
-        Upright,
-        Moving
+        Uninitialized = 0,
+        Grounded      = 1 << 1,
+        Upright       = 1 << 2,
+        Moving        = 1 << 3,
     }
 
 
@@ -33,6 +34,8 @@ namespace PQ.Entities.Penguin
         private FsmState<PenguinFsmParams> stateStandingUp;
         private FsmState<PenguinFsmParams> stateLyingDown;
 
+        private PenguinFsmParams fsmParams = PenguinFsmParams.Uninitialized;
+
         protected override void OnTransition(FsmState<PenguinFsmParams> previous, FsmState<PenguinFsmParams> next)
         {
             Debug.Log($"Transitioning Penguin from {previous} to {next}");
@@ -47,14 +50,18 @@ namespace PQ.Entities.Penguin
             // todo: this should be in state machine for onFeet and we should start in a blank state and then
             //       entered rather than assuming we start onFeet here...
             gameObject.GetComponent<CharacterController2D>().Settings = penguinBlob.OnFeetSettings;
-            
-            stateFeet       = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob);
-            stateBelly      = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob);
-            stateStandingUp = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob);
-            stateLyingDown  = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob);
+
+
+            stateFeet       = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob, fsmParams);
+            stateBelly      = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob, fsmParams);
+            stateStandingUp = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob, fsmParams);
+            stateLyingDown  = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob, fsmParams);
+
             base.Initialize(stateFeet);
+
+            fsmParams = PenguinFsmParams.Upright | PenguinFsmParams.Grounded | ~PenguinFsmParams.Moving;
         }
-        
+
         // todo: try integrating events into state machine at framework level
         private void OnEnable()
         {
