@@ -4,12 +4,11 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateLyingDown : FsmState<PenguinFsmParams>
+    public class PenguinStateLyingDown : FsmState
     {
         private PenguinBlob _blob;
-        private PenguinFsmParams _fsmParams;
-        public PenguinStateLyingDown(string name, PenguinBlob blob, ref PenguinFsmParams fsmParams)
-            : base(name) { _blob = blob; _fsmParams = fsmParams; }
+        public PenguinStateLyingDown(string name, PenguinBlob blob) : base(name) { _blob = blob; }
+
 
         public override void Enter()
         {
@@ -60,7 +59,6 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 1.25f
             );
 
-            _fsmParams |= ~PenguinFsmParams.Upright;
 
             // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?

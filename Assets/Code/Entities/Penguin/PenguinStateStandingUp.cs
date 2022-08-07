@@ -4,12 +4,11 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateStandingUp : FsmState<PenguinFsmParams>
+    public class PenguinStateStandingUp : FsmState
     {
         private PenguinBlob _blob;
-        private PenguinFsmParams _fsmParams;
-        public PenguinStateStandingUp(string name, PenguinBlob blob, ref PenguinFsmParams fsmParams)
-            : base(name) { _blob = blob; _fsmParams = fsmParams; }
+        public PenguinStateStandingUp(string name, PenguinBlob blob) : base(name) { _blob = blob; }
+
 
         public override void Enter()
         {

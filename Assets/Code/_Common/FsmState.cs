@@ -11,8 +11,7 @@ namespace PQ.Common
     handle when transition is/is-not allowed to occur. Instead, it's up to the state to determine what the
     per-frame behavior is (or isn't) as callbacks are provided for regular, fixed, and late updates.
     */
-    public abstract class FsmState<Fields> : IEquatable<FsmState<Fields>>
-        where Fields : Enum
+    public abstract class FsmState : IEquatable<FsmState>
     {
         public readonly string Name;
         public override string ToString() => Name;
@@ -25,10 +24,10 @@ namespace PQ.Common
         public virtual void FixedUpdate() { }
         public virtual void LateUpdate()  { }
 
-        public bool Equals(FsmState<Fields> other) => other is not null && Name == other.Name;
-        public override bool Equals(object obj) => Equals(obj as FsmState<Fields>);
+        public bool Equals(FsmState other) => other is not null && Name == other.Name;
+        public override bool Equals(object obj) => Equals(obj as FsmState);
         public override int GetHashCode() => HashCode.Combine(Name);
-        public static bool operator ==(FsmState<Fields> left, FsmState<Fields> right) =>  Equals(left, right);
-        public static bool operator !=(FsmState<Fields> left, FsmState<Fields> right) => !Equals(left, right);
+        public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
+        public static bool operator !=(FsmState left, FsmState right) => !Equals(left, right);
     }
 }

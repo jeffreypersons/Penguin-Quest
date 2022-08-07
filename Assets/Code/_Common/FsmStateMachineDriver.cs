@@ -10,22 +10,17 @@ namespace PQ.Common
     Note that there are no transitional checks - it's entirely up to the child class implementation to
     determine when transitions should occur.
     */
-    public abstract class FsmStateMachineDriver<TEnum> : MonoBehaviour
-        where TEnum : Enum
+    public abstract class FsmStateMachineDriver : MonoBehaviour
     {
-        private TEnum _previousFrameParams;
-        private TEnum _params;
-        private FsmState<TEnum> _nextScheduledState;
+        private FsmState _nextScheduledState;
 
-        protected FsmState<TEnum> InitialState { get; private set; }
-        protected FsmState<TEnum> CurrentState { get; private set; }
+        protected FsmState InitialState { get; private set; }
+        protected FsmState CurrentState { get; private set; }
 
         // Initialization method that MUST be overridden in subclasses; don't forget base.Initialize(initialState)
-        protected virtual void Initialize(FsmState<TEnum> initialState, ref TEnum fsmParams)
+        protected virtual void Initialize(FsmState initialState)
         {
             InitialState = initialState;
-            _previousFrameParams = (TEnum)Enum.ToObject(typeof(TEnum), Convert.ToInt32(fsmParams));
-            _params = fsmParams;
             _nextScheduledState = null;
         }
 
@@ -34,16 +29,16 @@ namespace PQ.Common
         //protected abstract void ExecuteAnyTransitions();
 
         // Optional overridable callback for state transitions
-        protected virtual void OnTransition(FsmState<TEnum> previous, FsmState<TEnum> next) { }
+        protected virtual void OnTransition(FsmState previous, FsmState next) { }
 
         // Is this our current state in the FSM?
-        protected bool IsCurrently(FsmState<TEnum> state)
+        protected bool IsCurrently(FsmState state)
         {
             return state == CurrentState;
         }
 
         // Update our current state provided that it is distinct from the next
-        protected void MoveToState(FsmState<TEnum> next)
+        protected void MoveToState(FsmState next)
         {
             if (next == null)
             {
@@ -68,7 +63,7 @@ namespace PQ.Common
                 return false;
             }
 
-            FsmState<TEnum> previous = CurrentState;
+            FsmState previous = CurrentState;
             previous.Exit();
             OnTransition(previous, _nextScheduledState);
             _nextScheduledState.Enter();
@@ -81,7 +76,7 @@ namespace PQ.Common
 
         private void Awake()
         {
-            Initialize(InitialState, ref _params);
+            Initialize(InitialState);
             if (InitialState == null)
             {
                 throw new InvalidOperationException("InitialState is null - " +

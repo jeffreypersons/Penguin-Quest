@@ -5,12 +5,11 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateOnBelly : FsmState<PenguinFsmParams>
+    public class PenguinStateOnBelly : FsmState
     {
         private PenguinBlob _blob;
-        private PenguinFsmParams _fsmParams;
-        public PenguinStateOnBelly(string name, PenguinBlob blob, ref PenguinFsmParams fsmParams)
-            : base(name) { _blob = blob; _fsmParams = fsmParams; }
+        public PenguinStateOnBelly(string name, PenguinBlob blob) : base(name) { _blob = blob; }
+
 
         public override void Enter()
         {
