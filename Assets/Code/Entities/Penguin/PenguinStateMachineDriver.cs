@@ -52,10 +52,10 @@ namespace PQ.Entities.Penguin
             gameObject.GetComponent<CharacterController2D>().Settings = penguinBlob.OnFeetSettings;
 
 
-            stateFeet       = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob, fsmParams);
-            stateBelly      = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob, fsmParams);
-            stateStandingUp = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob, fsmParams);
-            stateLyingDown  = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob, fsmParams);
+            stateFeet       = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob, ref fsmParams);
+            stateBelly      = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob, ref fsmParams);
+            stateStandingUp = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob, ref fsmParams);
+            stateLyingDown  = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob, ref fsmParams);
 
             base.Initialize(stateFeet);
 

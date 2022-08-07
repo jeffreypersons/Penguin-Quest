@@ -9,7 +9,7 @@ namespace PQ.Entities.Penguin
     {
         private PenguinBlob _blob;
         private PenguinFsmParams _fsmParams;
-        public PenguinStateOnBelly(string name, PenguinBlob blob, PenguinFsmParams fsmParams)
+        public PenguinStateOnBelly(string name, PenguinBlob blob, ref PenguinFsmParams fsmParams)
             : base(name) { _blob = blob; _fsmParams = fsmParams; }
 
         public override void Enter()
