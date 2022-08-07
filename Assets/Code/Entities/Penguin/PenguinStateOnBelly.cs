@@ -7,33 +7,27 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateOnBelly : FsmState
     {
+        private PenguinStateMachineDriver _driver;
         private PenguinBlob _blob;
-        public PenguinStateOnBelly(string name, PenguinBlob blob) : base(name) { _blob = blob; }
+        public PenguinStateOnBelly(PenguinStateMachineDriver driver, string name, PenguinBlob blob) : base(name)
+        {
+            _blob = blob;
+            _driver = driver;
+        }
 
-
+        
         public override void Enter()
         {
             _blob.CharacterController.Settings = _blob.OnBellySettings;
+
+            GameEventCenter.lieDownCommand.AddListener(OnStandUpInputReceived);
         }
 
         public override void Exit()
         {
-
+            GameEventCenter.lieDownCommand.RemoveListener(OnStandUpInputReceived);
         }
 
-        public override void FixedUpdate()
-        {
-
-        }
-
-        public override void LateUpdate()
-        {
-
-        }
-
-        public override void Update()
-        {
-
-        }
+        private void OnStandUpInputReceived(string _) => _driver.MoveToState(_driver.StateStandingUp);
     }
 }

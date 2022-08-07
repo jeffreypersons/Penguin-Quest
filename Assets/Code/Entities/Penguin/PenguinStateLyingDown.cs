@@ -6,8 +6,13 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateLyingDown : FsmState
     {
+        private PenguinStateMachineDriver _driver;
         private PenguinBlob _blob;
-        public PenguinStateLyingDown(string name, PenguinBlob blob) : base(name) { _blob = blob; }
+        public PenguinStateLyingDown(PenguinStateMachineDriver driver, string name, PenguinBlob blob) : base(name)
+        {
+            _blob = blob;
+            _driver = driver;
+        }
 
 
         public override void Enter()
@@ -59,6 +64,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 1.25f
             );
 
+            _driver.MoveToState(_driver.StateBelly);
 
             // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?

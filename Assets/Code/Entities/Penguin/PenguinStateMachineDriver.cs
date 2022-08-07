@@ -19,10 +19,18 @@ namespace PQ.Entities.Penguin
         private Vector2 initialSpawnPosition;
 
         // todo: replace with a cleaner, more reusable way to do this
-        private FsmState stateFeet;
-        private FsmState stateBelly;
-        private FsmState stateStandingUp;
-        private FsmState stateLyingDown;
+        public FsmState StateFeet       { get; private set; }
+        public FsmState StateBelly      { get; private set; }
+        public FsmState StateStandingUp { get; private set; }
+        public FsmState StateLyingDown  { get; private set; }
+
+        // todo: extract out a proper spawning system, or consider moving these to blob
+        public void ResetPositioning()
+        {
+            penguinBlob.Rigidbody.velocity = Vector2.zero;
+            penguinBlob.Rigidbody.position = initialSpawnPosition;
+            penguinBlob.Rigidbody.transform.localEulerAngles = Vector3.zero;
+        }
 
         protected override void OnTransition(FsmState previous, FsmState next)
         {
@@ -39,47 +47,12 @@ namespace PQ.Entities.Penguin
             //       entered rather than assuming we start onFeet here...
             gameObject.GetComponent<CharacterController2D>().Settings = penguinBlob.OnFeetSettings;
 
-            stateFeet       = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob);
-            stateBelly      = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob);
-            stateStandingUp = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob);
-            stateLyingDown  = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob);
+            StateFeet       = new PenguinStateOnFeet   (this, "Penguin.State.OnFeet",     penguinBlob);
+            StateBelly      = new PenguinStateOnBelly  (this, "Penguin.State.OnBelly",    penguinBlob);
+            StateStandingUp = new PenguinStateOnFeet   (this, "Penguin.State.StandingUp", penguinBlob);
+            StateLyingDown  = new PenguinStateLyingDown(this, "Penguin.State.LyingDown",  penguinBlob);
             
-            base.Initialize(stateFeet);
-        }
-
-        // todo: try integrating events into state machine at framework level
-        private void OnEnable()
-        {
-            GameEventCenter.lieDownCommand.AddListener(OnLieDownInputReceived);
-            GameEventCenter.standUpCommand.AddListener(OnStandUpInputReceived);
-        }
-        private void OnDisable()
-        {
-            GameEventCenter.lieDownCommand.RemoveListener(OnLieDownInputReceived);
-            GameEventCenter.standUpCommand.RemoveListener(OnStandUpInputReceived);
-        }
-
-        private void OnLieDownInputReceived(string _)
-        {
-            if (IsCurrently(stateFeet))
-            {
-                MoveToState(stateLyingDown);
-            }
-        }
-        private void OnStandUpInputReceived(string _)
-        {
-            if (IsCurrently(stateBelly))
-            {
-                MoveToState(stateStandingUp);
-            }
-        }
-
-        // todo: extract out a proper spawning system, or consider moving these to blob
-        public void ResetPositioning()
-        {
-            penguinBlob.Rigidbody.velocity = Vector2.zero;
-            penguinBlob.Rigidbody.position = initialSpawnPosition;
-            penguinBlob.Rigidbody.transform.localEulerAngles = Vector3.zero;
+            base.Initialize(StateFeet);
         }
     }
 }

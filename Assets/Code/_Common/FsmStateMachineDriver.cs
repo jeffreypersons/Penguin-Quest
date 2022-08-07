@@ -13,7 +13,6 @@ namespace PQ.Common
     public abstract class FsmStateMachineDriver : MonoBehaviour
     {
         private FsmState _nextScheduledState;
-
         protected FsmState InitialState { get; private set; }
         protected FsmState CurrentState { get; private set; }
 
@@ -38,7 +37,7 @@ namespace PQ.Common
         }
 
         // Update our current state provided that it is distinct from the next
-        protected void MoveToState(FsmState next)
+        public void MoveToState(FsmState next)
         {
             if (next == null)
             {
