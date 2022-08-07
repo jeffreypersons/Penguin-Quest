@@ -13,11 +13,11 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
-            _blob.Animation.TriggerParamLieDownParameter();
-
             _blob.Animation.LieDownStarted  += OnLieDownAnimationStarted;
             _blob.Animation.LieDownMidpoint += OnLieDownAnimationMidpoint;
             _blob.Animation.LieDownEnded    += OnLieDownAnimationFinished;
+
+            _blob.Animation.TriggerParamLieDownParameter();
         }
 
         public override void Exit()
@@ -59,6 +59,8 @@ namespace PQ.Entities.Penguin
                 size:       new Vector2(25, 10),
                 edgeRadius: 1.25f
             );
+
+            _fsmParams |= ~PenguinFsmParams.Upright;
 
             // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?

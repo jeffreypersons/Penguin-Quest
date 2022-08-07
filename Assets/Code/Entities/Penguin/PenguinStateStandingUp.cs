@@ -13,10 +13,10 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
-            _blob.Animation.TriggerParamStandUpParameter();
-
             _blob.Animation.LieDownStarted  += OnStandUpAnimationStarted;
             _blob.Animation.LieDownMidpoint += OnStandUpAnimationFinished;
+
+            _blob.Animation.TriggerParamStandUpParameter();
         }
 
         public override void Exit()

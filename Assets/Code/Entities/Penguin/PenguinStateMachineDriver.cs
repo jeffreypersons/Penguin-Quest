@@ -13,6 +13,13 @@ namespace PQ.Entities.Penguin
         Moving        = 1 << 3,
     }
 
+    public class StateMachineContext
+    {
+        public FsmState<PenguinFsmParams> stateFeet;
+        public FsmState<PenguinFsmParams> stateBelly;
+        public FsmState<PenguinFsmParams> stateStandingUp;
+        public FsmState<PenguinFsmParams> stateLyingDown;
+    }
 
     /*
     switch state
@@ -41,7 +48,7 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {previous} to {next}");
         }
 
-        protected override void Initialize(FsmState<PenguinFsmParams> initialState)
+        protected override void Initialize(FsmState<PenguinFsmParams> initialState, ref PenguinFsmParams a)
         {
             penguinBlob = gameObject.GetComponent<PenguinBlob>();
             initialSpawnPosition = penguinBlob.Rigidbody.position;
@@ -51,15 +58,13 @@ namespace PQ.Entities.Penguin
             //       entered rather than assuming we start onFeet here...
             gameObject.GetComponent<CharacterController2D>().Settings = penguinBlob.OnFeetSettings;
 
-
+            fsmParams = PenguinFsmParams.Upright | PenguinFsmParams.Grounded | ~PenguinFsmParams.Moving;
             stateFeet       = new PenguinStateOnFeet   ("Penguin.State.OnFeet",     penguinBlob, ref fsmParams);
             stateBelly      = new PenguinStateOnBelly  ("Penguin.State.OnBelly",    penguinBlob, ref fsmParams);
             stateStandingUp = new PenguinStateOnFeet   ("Penguin.State.StandingUp", penguinBlob, ref fsmParams);
             stateLyingDown  = new PenguinStateLyingDown("Penguin.State.LyingDown",  penguinBlob, ref fsmParams);
-
-            base.Initialize(stateFeet);
-
-            fsmParams = PenguinFsmParams.Upright | PenguinFsmParams.Grounded | ~PenguinFsmParams.Moving;
+            
+            base.Initialize(stateFeet, ref fsmParams);
         }
 
         // todo: try integrating events into state machine at framework level
