@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using UnityEngine;
 using PQ.Common;
 using PQ.Common.Extensions;
@@ -181,6 +182,7 @@ namespace PQ.Entities.Penguin
             _previousConstraints = _colliderConstraints;
         }
 
+
         private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
         {
             _headCollider             .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableHead);
@@ -196,32 +198,40 @@ namespace PQ.Entities.Penguin
         {
             // note that for any flag to be set, _all_ corresponding colliders must be disabled
             PenguinColliderConstraints constraints = PenguinColliderConstraints.None;
-            if (!_headCollider.enabled)
+            if (IsDisabled(_headCollider))
             {
                 constraints |= PenguinColliderConstraints.DisableHead;
             }
-            if (!_torsoCollider.enabled)
+            if (IsDisabled(_torsoCollider))
             {
                 constraints |= PenguinColliderConstraints.DisableTorso;
             }
-            if (!_frontFlipperUpperCollider.enabled && !_frontFlipperLowerCollider.enabled)
+            if (IsDisabled(_frontFlipperUpperCollider) && IsDisabled(_frontFlipperLowerCollider))
             {
                 constraints |= PenguinColliderConstraints.DisableFlippers;
             }
-            if (!_frontFootCollider.enabled && !_backFootCollider.enabled)
+            if (IsDisabled(_frontFootCollider) && IsDisabled(_backFootCollider))
             {
                 constraints |= PenguinColliderConstraints.DisableFeet;
             }
-            if (!_boundingBoxCollider.enabled)
+            if (IsDisabled(_boundingBoxCollider))
             {
                 constraints |= PenguinColliderConstraints.DisableBoundingBox;
             }
             return constraints;
         }
 
-        // do the constraints contain all given flags?
+
+        [Pure]
+        private static bool IsDisabled(Collider2D collider)
+        {
+            return !collider.enabled;
+        }
+
+        [Pure]
         private static bool HasAllFlags(PenguinColliderConstraints constraints, PenguinColliderConstraints flags)
         {
+            // check if ALL given flags are a proper subset of constraints
             return (constraints & flags) == flags;
         }
     }

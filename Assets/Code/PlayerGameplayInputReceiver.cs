@@ -80,7 +80,7 @@ namespace PQ
 
         private void OnStandUp(InputAction.CallbackContext _)
         {
-            GameEventCenter.standupCommand.Trigger("Received stand up input");
+            GameEventCenter.standUpCommand.Trigger("Received stand up input");
         }
 
         private void OnLieDown(InputAction.CallbackContext _)
