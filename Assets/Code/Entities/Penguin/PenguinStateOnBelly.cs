@@ -20,12 +20,12 @@ namespace PQ.Entities.Penguin
         {
             _blob.CharacterController.Settings = _blob.OnBellySettings;
 
-            GameEventCenter.lieDownCommand.AddListener(OnStandUpInputReceived);
+            GameEventCenter.standUpCommand.AddListener(OnStandUpInputReceived);
         }
 
         public override void Exit()
         {
-            GameEventCenter.lieDownCommand.RemoveListener(OnStandUpInputReceived);
+            GameEventCenter.standUpCommand.RemoveListener(OnStandUpInputReceived);
         }
 
         private void OnStandUpInputReceived(string _) => _driver.MoveToState(_driver.StateStandingUp);

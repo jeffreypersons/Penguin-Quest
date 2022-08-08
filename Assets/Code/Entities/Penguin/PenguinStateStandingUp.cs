@@ -32,7 +32,6 @@ namespace PQ.Entities.Penguin
         private void OnStandUpAnimationStarted()
         {
             // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
-            _blob.Animation.SetParamIsGrounded(true);
             _blob.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         }
 
