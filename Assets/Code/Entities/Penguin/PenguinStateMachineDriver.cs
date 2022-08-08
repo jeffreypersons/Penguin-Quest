@@ -43,10 +43,6 @@ namespace PQ.Entities.Penguin
             initialSpawnPosition = penguinBlob.Rigidbody.position;
             ResetPositioning();
 
-            // todo: this should be in state machine for onFeet and we should start in a blank state and then
-            //       entered rather than assuming we start onFeet here...
-            gameObject.GetComponent<CharacterController2D>().Settings = penguinBlob.OnFeetSettings;
-
             StateFeet       = new PenguinStateOnFeet    (this, "Penguin.State.OnFeet",     penguinBlob);
             StateBelly      = new PenguinStateOnBelly   (this, "Penguin.State.OnBelly",    penguinBlob);
             StateStandingUp = new PenguinStateStandingUp(this, "Penguin.State.StandingUp", penguinBlob);
