@@ -7,8 +7,8 @@ namespace PQ.Common
     /*
     Driver for state machine that hooks up state callbacks to MonoBehaviour.
 
-    Note that there are no transitional checks - it's entirely up to the child class implementation to
-    determine when transitions should occur.
+    Note that there are no transitional checks - it's entirely up to the specific implementation to
+    determine when and how transitions should occur.
     */
     public abstract class FsmStateMachineDriver : MonoBehaviour
     {
@@ -22,10 +22,6 @@ namespace PQ.Common
             InitialState = initialState;
             _nextScheduledState = null;
         }
-
-        // todo: replace with event integration, and/or per frame update with priorities to ensure correct ordering
-        // Required method implementation, where transitions are checked and called
-        //protected abstract void ExecuteAnyTransitions();
 
         // Optional overridable callback for state transitions
         protected virtual void OnTransition(FsmState previous, FsmState next) { }
