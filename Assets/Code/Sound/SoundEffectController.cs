@@ -19,9 +19,12 @@ namespace PQ.Sound
         [SerializeField] private AudioClip _playerLose;
 
         private AudioSource _audioSource;
+        private GameEventCenter _eventCenter;
 
         void Awake()
         {
+            _eventCenter = GameEventCenter.Instance;
+
             _audioSource = transform.gameObject.GetComponent<AudioSource>();
             _audioSource.loop        = false;
             _audioSource.playOnAwake = false;
@@ -30,25 +33,25 @@ namespace PQ.Sound
 
         void OnEnable()
         {
-            GameEventCenter.scoreChange .AddListener(PlaySoundOnPlayerScored);
-            GameEventCenter.enemyHit    .AddListener(PlaySoundOnEnemyHit);
-            GameEventCenter.enemyKilled .AddListener(PlaySoundOnEnemyKilled);
-
-            GameEventCenter.startNewGame.AddListener(SetMasterVolume);
-            GameEventCenter.pauseGame   .AddListener(PauseAnyActiveSoundEffects);
-            GameEventCenter.resumeGame  .AddListener(ResumeAnyActiveSoundEffects);
-            GameEventCenter.gameOver    .AddListener(PlaySoundOnGameOver);
+            _eventCenter.scoreChange .AddListener(PlaySoundOnPlayerScored);
+            _eventCenter.enemyHit    .AddListener(PlaySoundOnEnemyHit);
+            _eventCenter.enemyKilled .AddListener(PlaySoundOnEnemyKilled);
+            
+            _eventCenter.startNewGame.AddListener(SetMasterVolume);
+            _eventCenter.pauseGame   .AddListener(PauseAnyActiveSoundEffects);
+            _eventCenter.resumeGame  .AddListener(ResumeAnyActiveSoundEffects);
+            _eventCenter.gameOver    .AddListener(PlaySoundOnGameOver);
         }
         void OnDisable()
         {
-            GameEventCenter.scoreChange .RemoveListener(PlaySoundOnPlayerScored);
-            GameEventCenter.enemyHit    .RemoveListener(PlaySoundOnEnemyHit);
-            GameEventCenter.enemyKilled .RemoveListener(PlaySoundOnEnemyKilled);
-
-            GameEventCenter.startNewGame.RemoveListener(SetMasterVolume);
-            GameEventCenter.pauseGame   .RemoveListener(PauseAnyActiveSoundEffects);
-            GameEventCenter.resumeGame  .RemoveListener(ResumeAnyActiveSoundEffects);
-            GameEventCenter.gameOver    .RemoveListener(PlaySoundOnGameOver);
+            _eventCenter.scoreChange .RemoveListener(PlaySoundOnPlayerScored);
+            _eventCenter.enemyHit    .RemoveListener(PlaySoundOnEnemyHit);
+            _eventCenter.enemyKilled .RemoveListener(PlaySoundOnEnemyKilled);
+            
+            _eventCenter.startNewGame.RemoveListener(SetMasterVolume);
+            _eventCenter.pauseGame   .RemoveListener(PauseAnyActiveSoundEffects);
+            _eventCenter.resumeGame  .RemoveListener(ResumeAnyActiveSoundEffects);
+            _eventCenter.gameOver    .RemoveListener(PlaySoundOnGameOver);
         }
 
         private void PauseAnyActiveSoundEffects(PlayerProgressionInfo _)

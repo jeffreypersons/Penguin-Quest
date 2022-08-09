@@ -16,6 +16,7 @@ namespace PQ
     public class PlayerGameplayInputReceiver : MonoBehaviour
     {
         private PlayerControls _generatedPlayerControls;
+        private GameEventCenter _eventCenter;
 
         private InputAction _moveHorizontal;
         private InputAction _jumpUp;
@@ -26,6 +27,8 @@ namespace PQ
 
         void Awake()
         {
+            _eventCenter = GameEventCenter.Instance;
+
             PlayerControls controls = new PlayerControls();
 
             _generatedPlayerControls = controls;
@@ -65,37 +68,37 @@ namespace PQ
         private void OnMoveHorizontalStarted(InputAction.CallbackContext context)
         {
             int direction = context.action.ReadValue<float>() < 0.00f ? -1 : 1;
-            GameEventCenter.startHorizontalMoveCommand.Trigger(direction);
+            _eventCenter.startHorizontalMoveCommand.Trigger(direction);
         }
 
         private void OnMoveHorizontalStopped(InputAction.CallbackContext _)
         {
-            GameEventCenter.stopHorizontalMoveCommand.Trigger("Received input to stop horizontal movement");
+            _eventCenter.stopHorizontalMoveCommand.Trigger("Received input to stop horizontal movement");
         }
 
         private void OnJumpUp(InputAction.CallbackContext _)
         {
-            GameEventCenter.jumpCommand.Trigger("Received jump up input");
+            _eventCenter.jumpCommand.Trigger("Received jump up input");
         }
 
         private void OnStandUp(InputAction.CallbackContext _)
         {
-            GameEventCenter.standUpCommand.Trigger("Received stand up input");
+            _eventCenter.standUpCommand.Trigger("Received stand up input");
         }
 
         private void OnLieDown(InputAction.CallbackContext _)
         {
-            GameEventCenter.lieDownCommand.Trigger("Received lie down input");
+            _eventCenter.lieDownCommand.Trigger("Received lie down input");
         }
 
         private void OnUse(InputAction.CallbackContext _)
         {
-            GameEventCenter.useCommand.Trigger("Received use input");
+            _eventCenter.useCommand.Trigger("Received use input");
         }
 
         private void OnFire(InputAction.CallbackContext _)
         {
-            GameEventCenter.fireCommand.Trigger("Received fire input");
+            _eventCenter.fireCommand.Trigger("Received fire input");
         }
     }
 }

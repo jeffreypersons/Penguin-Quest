@@ -7,54 +7,57 @@ namespace PQ.Sound
     {
         private static float DefaultMasterVolume = 1.0f;
 
-        private AudioSource track;
+        private AudioSource _track;
+        private GameEventCenter _eventCenter;
 
         void Awake()
         {
-            track = transform.gameObject.GetComponent<AudioSource>();
-            track.loop        = true;
-            track.playOnAwake = false;
-            track.volume      = DefaultMasterVolume;
+            _eventCenter = GameEventCenter.Instance;
+
+            _track = transform.gameObject.GetComponent<AudioSource>();
+            _track.loop        = true;
+            _track.playOnAwake = false;
+            _track.volume      = DefaultMasterVolume;
         }
 
         void OnEnable()
         {
-            GameEventCenter.startNewGame.AddListener(StartTrack);
-            GameEventCenter.restartGame .AddListener(RestartTrack);
-            GameEventCenter.pauseGame   .AddListener(PauseTrack);
-            GameEventCenter.resumeGame  .AddListener(ResumeTrack);
-            GameEventCenter.gameOver    .AddListener(EndTrack);
+            _eventCenter.startNewGame.AddListener(StartTrack);
+            _eventCenter.restartGame .AddListener(RestartTrack);
+            _eventCenter.pauseGame   .AddListener(PauseTrack);
+            _eventCenter.resumeGame  .AddListener(ResumeTrack);
+            _eventCenter.gameOver    .AddListener(EndTrack);
         }
         void OnDisable()
         {
-            GameEventCenter.startNewGame.RemoveListener(StartTrack);
-            GameEventCenter.restartGame .RemoveListener(RestartTrack);
-            GameEventCenter.pauseGame   .RemoveListener(PauseTrack);
-            GameEventCenter.resumeGame  .RemoveListener(ResumeTrack);
-            GameEventCenter.gameOver    .RemoveListener(EndTrack);
+            _eventCenter.startNewGame.RemoveListener(StartTrack);
+            _eventCenter.restartGame .RemoveListener(RestartTrack);
+            _eventCenter.pauseGame   .RemoveListener(PauseTrack);
+            _eventCenter.resumeGame  .RemoveListener(ResumeTrack);
+            _eventCenter.gameOver    .RemoveListener(EndTrack);
         }
 
         private void StartTrack(PlayerSettingsInfo gameSettings)
         {
-            track.volume = gameSettings.MusicVolume / 100.0f;
-            track.Play();
+            _track.volume = gameSettings.MusicVolume / 100.0f;
+            _track.Play();
         }
         private void RestartTrack(string _)
         {
-            track.Stop();
-            track.Play();
+            _track.Stop();
+            _track.Play();
         }
         private void PauseTrack(PlayerProgressionInfo _)
         {
-            track.Pause();
+            _track.Pause();
         }
         private void ResumeTrack(string _)
         {
-            track.UnPause();
+            _track.UnPause();
         }
         private void EndTrack(PlayerProgressionInfo _)
         {
-            track.Stop();
+            _track.Stop();
         }
     }
 }

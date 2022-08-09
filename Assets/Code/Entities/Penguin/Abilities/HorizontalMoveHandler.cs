@@ -22,13 +22,18 @@ namespace PQ.Entities.Penguin
         private float _xMotionIntensity;
         private Facing _facing;
 
+        private GameEventCenter _eventCenter;
+
         void Awake()
         {
+            _eventCenter = GameEventCenter.Instance;
+
             _penguinBlob = gameObject.GetComponent<PenguinBlob>();
 
             _isHorizontalInputActive = false;
             _xMotionIntensity = 0.00f;
             _facing = GetFacing(_penguinBlob.Rigidbody);
+
         }
 
         void Update()
@@ -61,13 +66,13 @@ namespace PQ.Entities.Penguin
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.startHorizontalMoveCommand.AddListener(OnStartHorizontalMoveInput);
-            GameEventCenter.stopHorizontalMoveCommand .AddListener(OnStopHorizontalMoveInput);
+            _eventCenter.startHorizontalMoveCommand.AddListener(OnStartHorizontalMoveInput);
+            _eventCenter.stopHorizontalMoveCommand .AddListener(OnStopHorizontalMoveInput);
         }
         void OnDisable()
         {
-            GameEventCenter.startHorizontalMoveCommand.RemoveListener(OnStartHorizontalMoveInput);
-            GameEventCenter.stopHorizontalMoveCommand .RemoveListener(OnStopHorizontalMoveInput);
+            _eventCenter.startHorizontalMoveCommand.RemoveListener(OnStartHorizontalMoveInput);
+            _eventCenter.stopHorizontalMoveCommand .RemoveListener(OnStopHorizontalMoveInput);
         }
 
 

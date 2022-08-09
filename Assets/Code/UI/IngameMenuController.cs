@@ -29,6 +29,8 @@ namespace PQ.UI
         [SerializeField] private Button _restartButton;
         [SerializeField] private Button _quitButton;
 
+        private GameEventCenter _eventCenter;
+
         private void ToggleMenuVisibility(bool isVisible)
         {
             if (isVisible)
@@ -47,9 +49,11 @@ namespace PQ.UI
 
         void Awake()
         {
+            _eventCenter = GameEventCenter.Instance;
+
             _ingameMenu.SetActive(false);
-            GameEventCenter.pauseGame.AddListener(OpenAsPauseMenu);
-            GameEventCenter.gameOver .AddListener(OpenAsEndGameMenu);
+            _eventCenter.pauseGame.AddListener(OpenAsPauseMenu);
+            _eventCenter.gameOver .AddListener(OpenAsEndGameMenu);
 
             #if UNITY_WEBGL
                 UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
@@ -57,8 +61,8 @@ namespace PQ.UI
         }
         void OnDestroy()
         {
-            GameEventCenter.pauseGame.RemoveListener(OpenAsPauseMenu);
-            GameEventCenter.gameOver .RemoveListener(OpenAsEndGameMenu);
+            _eventCenter.pauseGame.RemoveListener(OpenAsPauseMenu);
+            _eventCenter.gameOver .RemoveListener(OpenAsEndGameMenu);
         }
 
         void OnEnable()
@@ -97,20 +101,20 @@ namespace PQ.UI
         private void ResumeGame()
         {
             ToggleMenuVisibility(false);
-            GameEventCenter.resumeGame.Trigger("Resuming game");
+            _eventCenter.resumeGame.Trigger("Resuming game");
         }
 
         private void MoveToMainMenu()
         {
             Time.timeScale = 1;
-            GameEventCenter.gotoMainMenu.Trigger("Opening main menu");
+            _eventCenter.gotoMainMenu.Trigger("Opening main menu");
             SceneExtensions.LoadScene(_mainMenuSceneName);
         }
 
         private void TriggerRestartGameEvent()
         {
             ToggleMenuVisibility(false);
-            GameEventCenter.restartGame.Trigger("Restarting game");
+            _eventCenter.restartGame.Trigger("Restarting game");
         }
     }
 }

@@ -8,10 +8,14 @@ namespace PQ.Entities.Penguin
     {
         private PenguinStateMachineDriver _driver;
         private PenguinBlob _blob;
-        public PenguinStateLyingDown(PenguinStateMachineDriver driver, string name, PenguinBlob blob) : base(name)
+        private GameEventCenter _eventCenter;
+
+        public PenguinStateLyingDown(PenguinStateMachineDriver driver, string name,
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
             _driver = driver;
+            _eventCenter = eventCenter;
         }
 
 

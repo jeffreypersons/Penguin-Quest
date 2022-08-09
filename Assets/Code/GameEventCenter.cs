@@ -8,25 +8,38 @@ namespace PQ
 
     Note that events are triggered and handled ENTIRELY programmatically (via listeners and invocations).
     */
-    public static class GameEventCenter
+    public class GameEventCenter
     {
-        public static GameEvent<string>                 jumpCommand                = new();
-        public static GameEvent<int>                    startHorizontalMoveCommand = new();
-        public static GameEvent<string>                 stopHorizontalMoveCommand  = new();
-        public static GameEvent<string>                 lieDownCommand             = new();
-        public static GameEvent<string>                 standUpCommand             = new();
-        public static GameEvent<string>                 useCommand                 = new();
-        public static GameEvent<string>                 fireCommand                = new();
+        public GameEvent<string>                 jumpCommand                = new();
+        public GameEvent<int>                    startHorizontalMoveCommand = new();
+        public GameEvent<string>                 stopHorizontalMoveCommand  = new();
+        public GameEvent<string>                 lieDownCommand             = new();
+        public GameEvent<string>                 standUpCommand             = new();
+        public GameEvent<string>                 useCommand                 = new();
+        public GameEvent<string>                 fireCommand                = new();
 
-        public static GameEvent<string>                 enemyHit                   = new();
-        public static GameEvent<int>                    enemyKilled                = new();
-        public static GameEvent<PlayerProgressionInfo>  scoreChange                = new();
+        public GameEvent<string>                 enemyHit                   = new();
+        public GameEvent<int>                    enemyKilled                = new();
+        public GameEvent<PlayerProgressionInfo>  scoreChange                = new();
         
-        public static GameEvent<PlayerSettingsInfo>     startNewGame               = new();
-        public static GameEvent<PlayerProgressionInfo>  pauseGame                  = new();
-        public static GameEvent<string>                 resumeGame                 = new();
-        public static GameEvent<string>                 gotoMainMenu               = new();
-        public static GameEvent<PlayerProgressionInfo>  gameOver                   = new();
-        public static GameEvent<string>                 restartGame                = new();
+        public GameEvent<PlayerSettingsInfo>     startNewGame               = new();
+        public GameEvent<PlayerProgressionInfo>  pauseGame                  = new();
+        public GameEvent<string>                 resumeGame                 = new();
+        public GameEvent<string>                 gotoMainMenu               = new();
+        public GameEvent<PlayerProgressionInfo>  gameOver                   = new();
+        public GameEvent<string>                 restartGame                = new();
+
+        private static GameEventCenter _instance;
+        public static GameEventCenter Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new GameEventCenter();
+                }
+                return _instance;
+            }
+        }
     }
 }
