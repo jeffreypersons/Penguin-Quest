@@ -21,9 +21,13 @@ namespace PQ.UI
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _aboutButton;
         [SerializeField] private Button _quitButton;
-        
+
+        private GameEventCenter _eventCenter;
+
         void Awake()
         {
+            _eventCenter = GameEventCenter.Instance;
+
             if (!SceneExtensions.IsSceneAbleToLoad(_sceneName))
             {
                 Debug.LogError($"Scene cannot be loaded, perhaps `{_sceneName}` is misspelled?");
@@ -57,7 +61,7 @@ namespace PQ.UI
         {
             SceneExtensions.LoadScene(_sceneName, () =>
             {
-                GameEventCenter.startNewGame.Trigger(_mainMenuPanelController.GetGameSettings());
+                _eventCenter.startNewGame.Trigger(_mainMenuPanelController.GetGameSettings());
             });
         }
 

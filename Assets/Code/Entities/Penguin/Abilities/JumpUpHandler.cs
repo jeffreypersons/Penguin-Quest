@@ -8,8 +8,12 @@ namespace PQ.Entities.Penguin
         private Vector2 _netImpulseForce;
         private PenguinBlob _penguinBlob;
 
+        private GameEventCenter _eventCenter;
+
         void Awake()
-        {            
+        {
+            _eventCenter = GameEventCenter.Instance;
+
             _penguinBlob = transform.GetComponent<PenguinBlob>();
             _netImpulseForce = Vector2.zero;
         }
@@ -28,13 +32,13 @@ namespace PQ.Entities.Penguin
         void OnEnable()
         {
             // note that for animation events the registration is done implicitly
-            GameEventCenter.jumpCommand.AddListener(OnJumpInputReceived);
+            _eventCenter.jumpCommand.AddListener(OnJumpInputReceived);
             _penguinBlob.Animation.JumpLiftOff += ApplyJumpImpulse;
         }
 
         void OnDisable()
         {
-            GameEventCenter.jumpCommand.RemoveListener(OnJumpInputReceived);
+            _eventCenter.jumpCommand.RemoveListener(OnJumpInputReceived);
             _penguinBlob.Animation.JumpLiftOff -= ApplyJumpImpulse;
         }
 

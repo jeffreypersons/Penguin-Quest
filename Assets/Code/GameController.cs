@@ -12,6 +12,7 @@ namespace PQ
     */
     public class GameController : MonoBehaviour
     {
+        private GameEventCenter _gameEventCenter;
         private PlayerProgressionInfo _playerInfo;
 
         // todo: use spawner
@@ -19,33 +20,34 @@ namespace PQ
 
         void Awake()
         {
+            _gameEventCenter = GameEventCenter.Instance;
             _playerPenguin.SetActive(true);
-            GameEventCenter.startNewGame.AddAutoUnsubscribeListener(StartNewGame);
+            _gameEventCenter.startNewGame.AddAutoUnsubscribeListener(StartNewGame);
         }
 
         void OnEnable()
         {
-            GameEventCenter.enemyKilled.AddListener(UpdateScore);
-            GameEventCenter.restartGame.AddListener(RestartGame);
+            _gameEventCenter.enemyKilled.AddListener(UpdateScore);
+            _gameEventCenter.restartGame.AddListener(RestartGame);
         }
         void OnDisable()
         {
-            GameEventCenter.enemyKilled.RemoveListener(UpdateScore);
-            GameEventCenter.restartGame.RemoveListener(RestartGame);
+            _gameEventCenter.enemyKilled.RemoveListener(UpdateScore);
+            _gameEventCenter.restartGame.RemoveListener(RestartGame);
         }
 
 
         private void StartNewGame(PlayerSettingsInfo gameSettings)
         {
             _playerInfo = new PlayerProgressionInfo(gameSettings.NumberOfLives);
-            GameEventCenter.scoreChange.Trigger(_playerInfo);
+            _gameEventCenter.scoreChange.Trigger(_playerInfo);
         }
 
         private void RestartGame(string status)
         {
             ResetMovingObjects();
             _playerInfo = new PlayerProgressionInfo(_playerInfo.Lives);
-            GameEventCenter.scoreChange.Trigger(_playerInfo);
+            _gameEventCenter.scoreChange.Trigger(_playerInfo);
         }
 
         private void UpdateScore(int points)
@@ -58,10 +60,10 @@ namespace PQ
             }
 
             _playerInfo.AddToScore(points);
-            GameEventCenter.scoreChange.Trigger(_playerInfo);
+            _gameEventCenter.scoreChange.Trigger(_playerInfo);
             if (LoseConditionMet() || WinConditionMet())
             {
-                GameEventCenter.gameOver.Trigger(_playerInfo);
+                _gameEventCenter.gameOver.Trigger(_playerInfo);
             }
         }
 

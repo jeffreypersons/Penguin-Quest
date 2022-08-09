@@ -18,21 +18,26 @@ namespace PQ.UI
 
         private PlayerProgressionInfo _lastRecordedPlayerInfo;
 
+        private GameEventCenter _eventCenter;
+
         void Awake()
         {
+            _eventCenter = GameEventCenter.Instance;
+
             // todo: make this script more interdependent
             _lastRecordedPlayerInfo = new PlayerProgressionInfo(PlayerProgressionInfo.MIN_LIVES_GIVEN);
             _levelLabel.text        = _lastRecordedPlayerInfo.LevelName;
         }
+
         void OnEnable()
         {
-            GameEventCenter.scoreChange.AddListener(UpdateScore);
-            _pauseButton    .onClick    .AddListener(TriggerPauseGameEvent);
+            _eventCenter.scoreChange.AddListener(UpdateScore);
+            _pauseButton.onClick    .AddListener(TriggerPauseGameEvent);
         }
         void OnDisable()
         {
-            GameEventCenter.scoreChange.RemoveListener(UpdateScore);
-            _pauseButton    .onClick    .RemoveListener(TriggerPauseGameEvent);
+            _eventCenter.scoreChange.RemoveListener(UpdateScore);
+            _pauseButton.onClick    .RemoveListener(TriggerPauseGameEvent);
         }
 
         private void UpdateScore(PlayerProgressionInfo playerInfo)
@@ -43,7 +48,7 @@ namespace PQ.UI
         }
         private void TriggerPauseGameEvent()
         {
-            GameEventCenter.pauseGame.Trigger(_lastRecordedPlayerInfo);
+            _eventCenter.pauseGame.Trigger(_lastRecordedPlayerInfo);
         }
     }
 }
