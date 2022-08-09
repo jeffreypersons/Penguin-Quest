@@ -18,7 +18,7 @@ namespace PQ.Common
     {
         private event Action<EventData> _action;
 
-        public int NumListeners { get { return _action.GetInvocationList().Length; } }
+        public int NumListeners => _action.GetInvocationList().Length;
 
         public GameEvent()
         {
