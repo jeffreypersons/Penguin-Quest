@@ -10,23 +10,23 @@ namespace PQ
     */
     public static class GameEventCenter
     {
-        public static PQEvent<string>                 jumpCommand                = new();
-        public static PQEvent<int>                    startHorizontalMoveCommand = new();
-        public static PQEvent<string>                 stopHorizontalMoveCommand  = new();
-        public static PQEvent<string>                 lieDownCommand             = new();
-        public static PQEvent<string>                 standUpCommand             = new();
-        public static PQEvent<string>                 useCommand                 = new();
-        public static PQEvent<string>                 fireCommand                = new();
+        public static GameEvent<string>                 jumpCommand                = new();
+        public static GameEvent<int>                    startHorizontalMoveCommand = new();
+        public static GameEvent<string>                 stopHorizontalMoveCommand  = new();
+        public static GameEvent<string>                 lieDownCommand             = new();
+        public static GameEvent<string>                 standUpCommand             = new();
+        public static GameEvent<string>                 useCommand                 = new();
+        public static GameEvent<string>                 fireCommand                = new();
 
-        public static PQEvent<string>                 enemyHit                   = new();
-        public static PQEvent<int>                    enemyKilled                = new();
-        public static PQEvent<PlayerProgressionInfo>  scoreChange                = new();
+        public static GameEvent<string>                 enemyHit                   = new();
+        public static GameEvent<int>                    enemyKilled                = new();
+        public static GameEvent<PlayerProgressionInfo>  scoreChange                = new();
         
-        public static PQEvent<PlayerSettingsInfo>     startNewGame               = new();
-        public static PQEvent<PlayerProgressionInfo>  pauseGame                  = new();
-        public static PQEvent<string>                 resumeGame                 = new();
-        public static PQEvent<string>                 gotoMainMenu               = new();
-        public static PQEvent<PlayerProgressionInfo>  gameOver                   = new();
-        public static PQEvent<string>                 restartGame                = new();
+        public static GameEvent<PlayerSettingsInfo>     startNewGame               = new();
+        public static GameEvent<PlayerProgressionInfo>  pauseGame                  = new();
+        public static GameEvent<string>                 resumeGame                 = new();
+        public static GameEvent<string>                 gotoMainMenu               = new();
+        public static GameEvent<PlayerProgressionInfo>  gameOver                   = new();
+        public static GameEvent<string>                 restartGame                = new();
     }
 }
