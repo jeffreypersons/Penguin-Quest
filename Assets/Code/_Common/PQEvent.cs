@@ -6,17 +6,20 @@ namespace PQ.Common
     /*
     Lightweight event, as a wrapper over the native c# events, and as an alternative to the much slower UnityEvent.
 
+    Additionally, unlike normal events, this wrapper can be passed around, whereas 'event Action's
+    cannot be taken as an argument.
+
     Notes
     - Unsupported features: serialization (since delegate body is null), threading, or assignment via Unity inspector
     - Currently only allows single parameter events, which is a non-issue as it's better to use custom objects are preferable
     */
-    public class GameEvent<EventData>
+    public class PQEvent<EventData>
     {
         private event Action<EventData> _action;
 
         public int NumListeners { get { return _action.GetInvocationList().Length; } }
 
-        public GameEvent()
+        public PQEvent()
         {
             _action = delegate { };
         }
