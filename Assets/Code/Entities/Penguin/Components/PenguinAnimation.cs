@@ -21,21 +21,31 @@ namespace PQ.Entities.Penguin
         [SerializeField] private Animator _animator;
         [SerializeField] private bool _logEvents = false;
 
+        [Header("Animation Settings")]
+        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
+         "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
+        [Range(0.01f, 1.00f)][SerializeField] private float _locomotionBlendStep = 0.10f;
+
         /*
         Reminder: These parameters _must_ match the names in mecanim.
         Unfortunately there is no easy way to generate the parameter names,
         so just be careful to make sure that they match the parameters listed in the Unity Animator.
         */
         // todo: look into validation of the param names with the animator
-        private readonly string paramXMotion    = "XMotionIntensity";
-        private readonly string paramYMotion    = "YMotionIntensity";
+        private readonly string paramLocomotion = "LocomotionIntensity";
+        private readonly string paramSlope      = "SlopeIntensity";
         private readonly string paramIsGrounded = "IsGrounded";
         private readonly string paramLie        = "LieDown";
         private readonly string paramStand      = "StandUp";
         private readonly string paramJump       = "JumpUp";
         private readonly string paramFire       = "Fire";
         private readonly string paramUse        = "Use";
-        
+
+
+        // How quickly do we blend locomotion? Note that this does not affect anything in the animator,
+        // rather it's an animation related kept here for relevance
+        public float LocomotionBlendStep => _locomotionBlendStep;
+
         public event Action JumpLiftOff;
         public event Action LieDownStarted;
         public event Action LieDownMidpoint;
@@ -59,9 +69,9 @@ namespace PQ.Entities.Penguin
 
         public Vector2 SkeletalRootPosition => _animator.rootPosition;
 
-        public void SetParamXMotionIntensity(float ratio) => _animator.SetFloat(paramXMotion, ratio);
-        public void SetParamYMotionIntensity(float ratio) => _animator.SetFloat(paramYMotion, ratio);
-        public void SetParamIsGrounded(bool value)        => _animator.SetBool(paramIsGrounded, value);
+        public void SetParamLocomotionIntensity(float ratio) => _animator.SetFloat(paramLocomotion, ratio);
+        public void SetParamSlopeIntensity(float ratio)      => _animator.SetFloat(paramSlope,      ratio);
+        public void SetParamIsGrounded(bool value)           => _animator.SetBool(paramIsGrounded,  value);
         
         public void TriggerParamLieDownParameter()        => _animator.SetTrigger(paramLie);
         public void TriggerParamStandUpParameter()        => _animator.SetTrigger(paramStand);
