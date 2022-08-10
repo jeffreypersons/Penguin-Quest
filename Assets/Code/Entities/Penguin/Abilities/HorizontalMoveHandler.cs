@@ -2,7 +2,6 @@
 using UnityEngine;
 
 
-// todo: use distances, max speed, and transition percent per step for easier inspector usage..
 namespace PQ.Entities.Penguin
 {
     public class HorizontalMoveHandler : MonoBehaviour
