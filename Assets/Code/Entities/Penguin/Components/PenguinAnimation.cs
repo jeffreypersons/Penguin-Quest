@@ -21,6 +21,11 @@ namespace PQ.Entities.Penguin
         [SerializeField] private Animator _animator;
         [SerializeField] private bool _logEvents = false;
 
+        [Header("Animation Settings")]
+        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
+         "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
+        [Range(0.01f, 1.00f)][SerializeField] private float _locomotionBlendStep = 0.10f;
+
         /*
         Reminder: These parameters _must_ match the names in mecanim.
         Unfortunately there is no easy way to generate the parameter names,
@@ -35,7 +40,11 @@ namespace PQ.Entities.Penguin
         private readonly string paramJump       = "JumpUp";
         private readonly string paramFire       = "Fire";
         private readonly string paramUse        = "Use";
-        
+
+        // How quickly do we blend locomotion? Note that this does not affect anything in the animator,
+        // rather it's an animation related kept here for relevance
+        public float LocomotionBlendStep => _locomotionBlendStep;
+
         public event Action JumpLiftOff;
         public event Action LieDownStarted;
         public event Action LieDownMidpoint;

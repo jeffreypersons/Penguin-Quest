@@ -12,11 +12,6 @@ namespace PQ.Entities.Penguin
         private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
         private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
 
-        [Header("Animation Settings")]
-        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
-                 "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
-        [Range(0.01f, 1.00f)] [SerializeField] private float _locomotionBlendStep = 0.10f;
-
         private PenguinBlob _penguinBlob;
         private bool _isHorizontalInputActive;
         private float _xMotionIntensity;
@@ -46,11 +41,11 @@ namespace PQ.Entities.Penguin
         {
             if (_isHorizontalInputActive)
             {
-                _xMotionIntensity = Mathf.Clamp01(_xMotionIntensity + _locomotionBlendStep);
+                _xMotionIntensity = Mathf.Clamp01(_xMotionIntensity + _penguinBlob.Animation.LocomotionBlendStep);
             }
             else
             {
-                _xMotionIntensity = Mathf.Clamp01(_xMotionIntensity - _locomotionBlendStep);
+                _xMotionIntensity = Mathf.Clamp01(_xMotionIntensity - _penguinBlob.Animation.LocomotionBlendStep);
             }
 
             // in this case, comparing floats is okay since we assume that values are _only_ adjusted via clamp01
