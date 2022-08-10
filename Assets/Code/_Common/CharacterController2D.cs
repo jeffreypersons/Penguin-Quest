@@ -8,18 +8,26 @@ namespace PQ.Common
     // todo: add more character movement settings for things like speed and jump height
     public class CharacterController2D : MonoBehaviour
     {
-        private enum Facing { Left = -1, Right = 1 }
+        public enum Facing { Left = -1, Right = 1 }
         
-        private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
-        private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
-
-        private Facing _facing;
         private Rigidbody2D _rigidbody;
         private CollisionChecker _collisionChecker;
         public CharacterController2DSettings Settings { get; set; }
 
+        private Facing _facing;
+        private Facing _facingRequested;
+        private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
+        private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
+        
+        public void ChangeFacing(Facing facing)
+        {
+            _facingRequested = facing;
+        }
+
+
         private bool _isCurrentlyContactingGround;
         public event Action<bool> GroundContactChanged;
+
         private void UpdateGroundContactInfo(bool force = false)
         {
             if (_isCurrentlyContactingGround != _collisionChecker.IsGrounded || force)
@@ -38,8 +46,10 @@ namespace PQ.Common
 
         void Awake()
         {
-            _rigidbody = gameObject.GetComponent<Rigidbody2D>();
+            _rigidbody        = gameObject.GetComponent<Rigidbody2D>();
             _collisionChecker = gameObject.GetComponent<CollisionChecker>();
+            _facing = GetFacing(_rigidbody);
+            _facingRequested = _facing;
         }
 
         private void Start()
@@ -54,6 +64,12 @@ namespace PQ.Common
 
         void FixedUpdate()
         {
+            if (_facing != _facingRequested)
+            {
+                TurnToFace(_facingRequested);
+                _facingRequested = _facing;
+            }
+
             if (!_collisionChecker.IsGrounded)
             {
                 _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -64,12 +80,12 @@ namespace PQ.Common
             _rigidbody.constraints = RigidbodyConstraints2D.None;
             if (Settings.MaintainPerpendicularityToSurface)
             {
-                // keep our penguin perpendicular to the surface at all times if option enabled
+                // keep our character perpendicular to the surface at all times if option enabled
                 AlignPenguinWithGivenUpAxis(_collisionChecker.SurfaceNormal);
             }
             else
             {
-                // keep our penguin onFeet at all times if main perpendicularity option is not enabled
+                // keep our character onFeet at all times if main perpendicularity option is not enabled
                 AlignPenguinWithGivenUpAxis(Vector2.up);
                 _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
             }
@@ -108,14 +124,13 @@ namespace PQ.Common
 
         private void TurnToFace(Facing facing)
         {
-            // todo: move rigidbody force/movement calls to character controller 2d
-            if (this._facing == facing)
+            if (_facing == facing)
             {
                 return;
             }
 
-            this._facing = facing;
-            switch (this._facing)
+            _facing = facing;
+            switch (_facing)
             {
                 case Facing.Left:
                     transform.localRotation = ROTATION_FACING_LEFT;
@@ -138,11 +153,12 @@ namespace PQ.Common
         }
 
         /* Move along forward axis at a given horizontal speed contribution and time delta. */
-        private static void MoveHorizontal(Rigidbody2D rigidbody, float speed, float time)
+        private static void MoveHorizontal(Rigidbody2D rigidbody, Facing facing, float speed, float time)
         {
+            // todo: might want to try taking movement axis as parameter instead of facing
             // todo: might want to do the projected horizontal speed contribution calculations in the
             //       ground handler script rather than here, and just use the same value regardless (same for midair)
-            Vector2 movementAxis    = GetFacing(rigidbody) == Facing.Right? Vector2.right : Vector2.left;
+            Vector2 movementAxis    = facing == Facing.Right? Vector2.right : Vector2.left;
             Vector2 currentPosition = rigidbody.transform.position;
             Vector2 currentForward  = rigidbody.transform.forward.normalized;
 
