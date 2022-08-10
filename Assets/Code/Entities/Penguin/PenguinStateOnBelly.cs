@@ -22,16 +22,21 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
-            _blob.CharacterController.Settings = _blob.OnBellySettings;
-
             _eventCenter.standUpCommand.AddListener(OnStandUpInputReceived);
+            _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
+
+            _blob.CharacterController.Settings = _blob.OnBellySettings;
         }
 
         public override void Exit()
         {
             _eventCenter.standUpCommand.RemoveListener(OnStandUpInputReceived);
+            _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
         }
 
+
+        // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
+        private void OnGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
         private void OnStandUpInputReceived(string _) => _driver.MoveToState(_driver.StateStandingUp);
     }
 }
