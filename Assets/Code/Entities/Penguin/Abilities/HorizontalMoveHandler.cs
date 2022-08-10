@@ -13,7 +13,7 @@ namespace PQ.Entities.Penguin
 
         private PenguinBlob _penguinBlob;
         private bool _isHorizontalInputActive;
-        private float _xMotionIntensity;
+        private float _locomotionBlend;
         private Facing _facing;
 
         private GameEventCenter _eventCenter;
@@ -25,7 +25,7 @@ namespace PQ.Entities.Penguin
             _penguinBlob = gameObject.GetComponent<PenguinBlob>();
 
             _isHorizontalInputActive = false;
-            _xMotionIntensity = 0.00f;
+            _locomotionBlend = 0.00f;
             _facing = GetFacing(_penguinBlob.Rigidbody);
 
         }
@@ -40,21 +40,21 @@ namespace PQ.Entities.Penguin
         {
             if (_isHorizontalInputActive)
             {
-                _xMotionIntensity = Mathf.Clamp01(_xMotionIntensity + _penguinBlob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + _penguinBlob.Animation.LocomotionBlendStep);
             }
             else
             {
-                _xMotionIntensity = Mathf.Clamp01(_xMotionIntensity - _penguinBlob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _penguinBlob.Animation.LocomotionBlendStep);
             }
 
             // in this case, comparing floats is okay since we assume that values are _only_ adjusted via clamp01
-            if (_xMotionIntensity != 0.00f)
+            if (_locomotionBlend != 0.00f)
             {
                 // todo: move rigidbody force/movement calls to character controller 2d
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
             }
 
-            _penguinBlob.Animation.SetParamXMotionIntensity(_xMotionIntensity);
+            _penguinBlob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
         void OnEnable()

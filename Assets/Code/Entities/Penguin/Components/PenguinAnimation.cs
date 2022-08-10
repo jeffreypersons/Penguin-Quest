@@ -32,14 +32,15 @@ namespace PQ.Entities.Penguin
         so just be careful to make sure that they match the parameters listed in the Unity Animator.
         */
         // todo: look into validation of the param names with the animator
-        private readonly string paramXMotion    = "XMotionIntensity";
-        private readonly string paramYMotion    = "YMotionIntensity";
+        private readonly string paramLocomotion = "LocomotionIntensity";
+        private readonly string paramSlope      = "SlopeIntensity";
         private readonly string paramIsGrounded = "IsGrounded";
         private readonly string paramLie        = "LieDown";
         private readonly string paramStand      = "StandUp";
         private readonly string paramJump       = "JumpUp";
         private readonly string paramFire       = "Fire";
         private readonly string paramUse        = "Use";
+
 
         // How quickly do we blend locomotion? Note that this does not affect anything in the animator,
         // rather it's an animation related kept here for relevance
@@ -68,9 +69,9 @@ namespace PQ.Entities.Penguin
 
         public Vector2 SkeletalRootPosition => _animator.rootPosition;
 
-        public void SetParamXMotionIntensity(float ratio) => _animator.SetFloat(paramXMotion, ratio);
-        public void SetParamYMotionIntensity(float ratio) => _animator.SetFloat(paramYMotion, ratio);
-        public void SetParamIsGrounded(bool value)        => _animator.SetBool(paramIsGrounded, value);
+        public void SetParamLocomotionIntensity(float ratio) => _animator.SetFloat(paramLocomotion, ratio);
+        public void SetParamSlopeIntensity(float ratio)      => _animator.SetFloat(paramSlope,      ratio);
+        public void SetParamIsGrounded(bool value)           => _animator.SetBool(paramIsGrounded,  value);
         
         public void TriggerParamLieDownParameter()        => _animator.SetTrigger(paramLie);
         public void TriggerParamStandUpParameter()        => _animator.SetTrigger(paramStand);
