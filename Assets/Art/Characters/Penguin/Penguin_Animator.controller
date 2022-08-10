@@ -477,7 +477,7 @@ AnimatorState:
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
-  m_TimeParameter: LocomotionBlend
+  m_TimeParameter: LocomotionIntensity
 --- !u!206 &-1576576611975587083
 BlendTree:
   m_ObjectHideFlags: 1
@@ -533,7 +533,7 @@ BlendTree:
     m_CycleOffset: 0
     m_DirectBlendParameter: XMotionIntensity
     m_Mirror: 0
-  m_BlendParameter: LocomotionBlend
+  m_BlendParameter: LocomotionIntensity
   m_BlendParameterY: XMotionIntensity
   m_MinThreshold: 0
   m_MaxThreshold: 1
@@ -670,7 +670,7 @@ AnimatorController:
   m_Name: Penguin_Animator
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: LocomotionBlend
+  - m_Name: LocomotionIntensity
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -1118,7 +1118,7 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: -1241894774223098344}
   m_Tag: GroundMotion
-  m_SpeedParameter: LocomotionBlend
+  m_SpeedParameter: LocomotionIntensity
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
@@ -1188,7 +1188,7 @@ BlendTree:
     m_CycleOffset: 0
     m_DirectBlendParameter: Motion_Intensity
     m_Mirror: 0
-  m_BlendParameter: LocomotionBlend
+  m_BlendParameter: LocomotionIntensity
   m_BlendParameterY: Blend
   m_MinThreshold: 0
   m_MaxThreshold: 1
