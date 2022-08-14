@@ -18,7 +18,7 @@ MonoBehaviour:
   _jumpAngle: 45
   _maxAscendableSlopeAngle: 45
   _maxToleratedDistanceFromGround: 0.3
-  _maintainPerpendicularityToSurface: 1
+  _maintainPerpendicularityToSurface: 0
   _surfaceAlignmentRotationalStrength: 0.1
   _degreesFromSurfaceNormalThreshold: 0.01
   _enableAutomaticAxisLockingForSmallVelocities: 1
