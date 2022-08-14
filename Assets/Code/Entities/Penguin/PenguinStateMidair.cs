@@ -37,7 +37,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.SetParamIsGrounded(isGrounded);
             if (isGrounded)
             {
-                _driver.MoveToState(_driver.StateMidair);
+                _driver.MoveToState(_driver.PreviousState);
             }
         }
     }

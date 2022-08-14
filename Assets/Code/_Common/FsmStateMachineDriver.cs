@@ -13,13 +13,17 @@ namespace PQ.Common
     public abstract class FsmStateMachineDriver : MonoBehaviour
     {
         private FsmState _nextScheduledState;
-        protected FsmState InitialState { get; private set; }
-        protected FsmState CurrentState { get; private set; }
+        public FsmState InitialState  { get; private set; }
+        public FsmState CurrentState  { get; private set; }
+        public FsmState PreviousState { get; private set; }
+
 
         // Initialization method that MUST be overridden in subclasses; don't forget base.Initialize(initialState)
         protected virtual void Initialize(FsmState initialState)
         {
             InitialState = initialState;
+            CurrentState = null;
+            PreviousState = null;
             _nextScheduledState = null;
         }
 
@@ -59,9 +63,12 @@ namespace PQ.Common
             }
 
             FsmState previous = CurrentState;
+
             previous.Exit();
             OnTransition(previous, _nextScheduledState);
             _nextScheduledState.Enter();
+
+            PreviousState = previous;
             CurrentState = _nextScheduledState;
             _nextScheduledState = null;
             return true;
