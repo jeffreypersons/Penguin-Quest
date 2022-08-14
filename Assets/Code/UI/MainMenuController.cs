@@ -37,7 +37,7 @@ namespace PQ.UI
             _mainMenuPanelController.SetActionOnPanelClose(()   => ToggleMainMenuVisibility(true));
 
             #if UNITY_WEBGL
-                UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
+                UiExtensions.SetButtonActiveAndEnabled(_quitButton, false);
             #endif
         }
 
@@ -69,8 +69,9 @@ namespace PQ.UI
         {
             UiExtensions.SetLabelVisibility(_subtitle, isVisible);
             _buttonPanel.SetActive(isVisible);
+
             #if UNITY_WEBGL
-                UiExtensions.SetButtonActiveAndEnabled(quitButton, false);
+                UiExtensions.SetButtonActiveAndEnabled(_quitButton, false);
             #endif
         }
     }
