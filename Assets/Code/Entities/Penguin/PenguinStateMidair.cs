@@ -4,6 +4,7 @@ using PQ.Common;
 
 namespace PQ.Entities.Penguin
 {
+    // todo: add some sort of free fall check that forces a respawn/death
     public class PenguinStateMidair : FsmState
     {
         private PenguinStateMachineDriver _driver;
@@ -21,11 +22,23 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
+            _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
+
+            _blob.Animation.TriggerParamJumpUpParameter();
         }
 
         public override void Exit()
         {
-        
+            _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
+        }
+
+        private void OnGroundContactChanged(bool isGrounded)
+        {
+            _blob.Animation.SetParamIsGrounded(isGrounded);
+            if (isGrounded)
+            {
+                _driver.MoveToState(_driver.StateMidair);
+            }
         }
     }
 }

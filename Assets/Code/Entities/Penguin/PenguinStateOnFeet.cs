@@ -23,7 +23,8 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
-            //_eventCenter.jumpCommand               .AddListener(OnJumpInputReceived);
+            _blob.Animation.JumpLiftOff += OnJumpLiftOff;
+            _eventCenter.jumpCommand               .AddListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand            .AddListener(OnLieDownInputReceived);
             _eventCenter.startHorizontalMoveCommand.AddListener(OnStartHorizontalMoveInput);
             _eventCenter.stopHorizontalMoveCommand .AddListener(OnStopHorizontalMoveInput);
@@ -36,7 +37,8 @@ namespace PQ.Entities.Penguin
 
         public override void Exit()
         {
-            //_eventCenter.jumpCommand               .RemoveListener(OnJumpInputReceived);
+            _blob.Animation.JumpLiftOff -= OnJumpLiftOff;
+            _eventCenter.jumpCommand               .RemoveListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand            .RemoveListener(OnLieDownInputReceived);
             _eventCenter.startHorizontalMoveCommand.RemoveListener(OnStartHorizontalMoveInput);
             _eventCenter.stopHorizontalMoveCommand .RemoveListener(OnStopHorizontalMoveInput);
@@ -53,10 +55,30 @@ namespace PQ.Entities.Penguin
         }
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
-        private void OnGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
-        //private void OnJumpInputReceived(string _)           => _driver.MoveToState(_driver.StateJump);
-        private void OnLieDownInputReceived(string _)        => _driver.MoveToState(_driver.StateLyingDown);
+        private void OnLieDownInputReceived(string _)
+        {
+            _driver.MoveToState(_driver.StateLyingDown);
+        }
 
+        private void OnGroundContactChanged(bool isGrounded)
+        {
+            _blob.Animation.SetParamIsGrounded(isGrounded);
+            if (!isGrounded)
+            {
+                _driver.MoveToState(_driver.StateMidair);
+            }
+        }
+
+
+        // todo: come up with a better way to handle jump without having extra states that mimic the animator's states
+        private void OnJumpInputReceived(string _)
+        {
+            _blob.Animation.TriggerParamJumpUpParameter();
+        }
+        private void OnJumpLiftOff()
+        {
+            _blob.CharacterController.Jump();
+        }
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void OnStartHorizontalMoveInput(int direction)
