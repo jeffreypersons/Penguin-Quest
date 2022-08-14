@@ -21,11 +21,24 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
+            _blob.Animation.JumpLiftOff += ApplyJumpImpulse;
+
+            _blob.Animation.TriggerParamJumpUpParameter();
         }
 
         public override void Exit()
         {
-        
+            _blob.Animation.JumpLiftOff -= ApplyJumpImpulse;
+        }
+
+        void OnJumpInputReceived(string _)
+        {
+            _blob.Animation.TriggerParamJumpUpParameter();
+        }
+
+        void ApplyJumpImpulse()
+        {
+            _blob.CharacterController.Jump();
         }
     }
 }

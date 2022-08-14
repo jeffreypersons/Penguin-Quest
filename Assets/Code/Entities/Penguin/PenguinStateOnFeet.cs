@@ -23,6 +23,7 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
+            //_eventCenter.jumpCommand               .AddListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand            .AddListener(OnLieDownInputReceived);
             _eventCenter.startHorizontalMoveCommand.AddListener(OnStartHorizontalMoveInput);
             _eventCenter.stopHorizontalMoveCommand .AddListener(OnStopHorizontalMoveInput);
@@ -35,6 +36,7 @@ namespace PQ.Entities.Penguin
 
         public override void Exit()
         {
+            //_eventCenter.jumpCommand               .RemoveListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand            .RemoveListener(OnLieDownInputReceived);
             _eventCenter.startHorizontalMoveCommand.RemoveListener(OnStartHorizontalMoveInput);
             _eventCenter.stopHorizontalMoveCommand .RemoveListener(OnStopHorizontalMoveInput);
@@ -52,13 +54,14 @@ namespace PQ.Entities.Penguin
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void OnGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
-        private void OnLieDownInputReceived(string _) => _driver.MoveToState(_driver.StateLyingDown);
+        //private void OnJumpInputReceived(string _)           => _driver.MoveToState(_driver.StateJump);
+        private void OnLieDownInputReceived(string _)        => _driver.MoveToState(_driver.StateLyingDown);
 
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void OnStartHorizontalMoveInput(int direction)
         {
-            _blob.CharacterController.ChangeFacing((CharacterController2D.Facing)(direction));
+            _blob.CharacterController.ChangeFacing((CharacterController2D.Facing)direction);
             _isHorizontalInputActive = true;
         }
         private void OnStopHorizontalMoveInput(string _)

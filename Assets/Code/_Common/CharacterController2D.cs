@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 using PQ.Common.Collisions;
 
@@ -14,19 +15,22 @@ namespace PQ.Common
         private CollisionChecker _collisionChecker;
         public CharacterController2DSettings Settings { get; set; }
 
+        // todo: add speed and stuff here
+        private Vector2 _netImpulseForce;
         private Facing _facing;
+
+        private bool _wasJumpRequested;
+        private bool _wasMoveRequested;
         private Facing _facingRequested;
         private static readonly Quaternion ROTATION_FACING_RIGHT = Quaternion.Euler(0,   0, 0);
         private static readonly Quaternion ROTATION_FACING_LEFT  = Quaternion.Euler(0, 180, 0);
         
-        public void ChangeFacing(Facing facing)
-        {
-            _facingRequested = facing;
-        }
-
-
         private bool _isCurrentlyContactingGround;
         public event Action<bool> GroundContactChanged;
+
+        public void ChangeFacing(Facing facing) => _facingRequested = facing;
+        public void Jump()                      => _wasJumpRequested = true;
+        public void MoveForward()               => _wasMoveRequested = true;
 
         private void UpdateGroundContactInfo(bool force = false)
         {
@@ -48,8 +52,11 @@ namespace PQ.Common
         {
             _rigidbody        = gameObject.GetComponent<Rigidbody2D>();
             _collisionChecker = gameObject.GetComponent<CollisionChecker>();
-            _facing = GetFacing(_rigidbody);
-            _facingRequested = _facing;
+            _facing           = GetFacing(_rigidbody);
+            _wasJumpRequested = false;
+            _facingRequested  = _facing;
+
+            _netImpulseForce = Vector2.zero;
         }
 
         private void Start()
@@ -64,16 +71,31 @@ namespace PQ.Common
 
         void FixedUpdate()
         {
+            // todo: come up with a better way of dealing with these movement 'requests' that's not so adhoc
             if (_facing != _facingRequested)
             {
                 TurnToFace(_facingRequested);
                 _facingRequested = _facing;
             }
 
+            if (_wasJumpRequested)
+            {
+                _netImpulseForce += ComputeJumpForce(Settings.JumpAngle, Settings.JumpStrength);
+                _wasJumpRequested = false;
+                _wasMoveRequested = false;
+                return;
+            }
+
+            if (_wasMoveRequested)
+            {
+                MoveAlongForwardAxis();
+                _wasMoveRequested = false;
+            }
+
             if (!_collisionChecker.IsGrounded)
             {
                 _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
-                AlignPenguinWithGivenUpAxis(Vector2.up);
+                AlignWithGivenUpAxis(Vector2.up);
                 return;
             }
 
@@ -81,12 +103,12 @@ namespace PQ.Common
             if (Settings.MaintainPerpendicularityToSurface)
             {
                 // keep our character perpendicular to the surface at all times if option enabled
-                AlignPenguinWithGivenUpAxis(_collisionChecker.SurfaceNormal);
+                AlignWithGivenUpAxis(_collisionChecker.SurfaceNormal);
             }
             else
             {
                 // keep our character onFeet at all times if main perpendicularity option is not enabled
-                AlignPenguinWithGivenUpAxis(Vector2.up);
+                AlignWithGivenUpAxis(Vector2.up);
                 _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
             }
 
@@ -102,7 +124,18 @@ namespace PQ.Common
             }
         }
 
-        private void AlignPenguinWithGivenUpAxis(Vector2 targetUpAxis)
+        void LateUpdate()
+        {
+            if (_netImpulseForce != Vector2.zero)
+            {
+                _rigidbody.constraints = RigidbodyConstraints2D.None;
+                _rigidbody.AddForce(_netImpulseForce, ForceMode2D.Impulse);
+                _netImpulseForce = Vector2.zero;
+            }
+        }
+
+
+        private void AlignWithGivenUpAxis(Vector2 targetUpAxis)
         {
             float degreesUnaligned = Vector2.SignedAngle(targetUpAxis, transform.up);
             if (Mathf.Abs(degreesUnaligned) >= Settings.DegreesFromSurfaceNormalThreshold)
@@ -113,14 +146,19 @@ namespace PQ.Common
             }
         }
 
-
-        private static Quaternion ComputeOrientationForGivenUpAxis(Rigidbody2D rigidbody, Vector3 targetUpAxis)
+        /* Move along forward axis at a given horizontal speed contribution and time delta. */
+        private void MoveAlongForwardAxis()
         {
-            Vector3 currentForwardAxis = rigidbody.transform.forward;
-            Vector3 targetLeftAxis    = Vector3.Cross(currentForwardAxis, targetUpAxis);
-            Vector3 targetForwardAxis = Vector3.Cross(targetUpAxis,       targetLeftAxis);
-            return Quaternion.LookRotation(targetForwardAxis, targetUpAxis);
+            Vector2 movementAxis      = _facing == Facing.Right ? Vector2.right : Vector2.left;
+            Vector2 movementDirection = _rigidbody.transform.forward.normalized;
+            float   movementTime      = Time.deltaTime;
+            float   movementSpeed     = Settings.HorizontalMovementPeakSpeed;
+
+            Vector2 currentPosition = _rigidbody.transform.position;
+            Vector2 displacement = ComputeMovementStep(movementAxis, movementDirection, movementSpeed, movementTime);
+            _rigidbody.MovePosition(currentPosition + displacement);
         }
+
 
         private void TurnToFace(Facing facing)
         {
@@ -145,6 +183,7 @@ namespace PQ.Common
         }
 
 
+        [Pure]
         private static Facing GetFacing(Rigidbody2D rigidbody)
         {
             return Mathf.Abs(rigidbody.transform.localEulerAngles.y) <= 90.0f ?
@@ -152,19 +191,38 @@ namespace PQ.Common
                 Facing.Left;
         }
 
-        /* Move along forward axis at a given horizontal speed contribution and time delta. */
-        private static void MoveHorizontal(Rigidbody2D rigidbody, Facing facing, float speed, float time)
+        [Pure]
+        private static Quaternion ComputeOrientationForGivenUpAxis(Rigidbody2D rigidbody, Vector3 targetUpAxis)
+        {
+            Vector3 currentForwardAxis = rigidbody.transform.forward;
+            Vector3 targetLeftAxis = Vector3.Cross(currentForwardAxis, targetUpAxis);
+            Vector3 targetForwardAxis = Vector3.Cross(targetUpAxis, targetLeftAxis);
+            return Quaternion.LookRotation(targetForwardAxis, targetUpAxis);
+        }
+
+
+        [Pure]
+        private static Vector2 ComputeMovementStep(Vector2 surfaceAxis, Vector2 direction, float speed, float time)
         {
             // todo: might want to try taking movement axis as parameter instead of facing
             // todo: might want to do the projected horizontal speed contribution calculations in the
             //       ground handler script rather than here, and just use the same value regardless (same for midair)
-            Vector2 movementAxis    = facing == Facing.Right? Vector2.right : Vector2.left;
-            Vector2 currentPosition = rigidbody.transform.position;
-            Vector2 currentForward  = rigidbody.transform.forward.normalized;
 
-            // project the given velocity along the forward axis (1 if forward is completely horizontal, 0 if vertical)
-            Vector2 displacement = Vector2.Dot(movementAxis, currentForward) * (speed * time) * movementAxis;
-            rigidbody.MovePosition(currentPosition + displacement);
+            // project the given velocity along the forward axis (1 if forward is completely aligned, 0 if perpendicular)
+            float   scale    = Vector2.Dot(surfaceAxis, direction);
+            Vector2 velocity = speed * direction;
+            return (scale * velocity) * time;
+        }
+
+        [Pure]
+        private static Vector2 ComputeJumpForce(float angle, float magnitude)
+        {
+            float jumpAngle = angle * Mathf.Deg2Rad;
+            float jumpStrength = magnitude;
+
+            // todo: change computations such that jump is relative to the character's forward
+            // todo: compute angle and strength as a function of height and width
+            return jumpStrength * new Vector2(Mathf.Cos(jumpAngle), Mathf.Sin(jumpAngle));
         }
     }
 }
