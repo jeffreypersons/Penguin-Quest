@@ -30,6 +30,10 @@ namespace PQ.Entities.Penguin
         public override void Exit()
         {
             _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
+
+            // reset any triggers such that any pending animation events are cleared out to avoid them
+            // from firing automatically on landing
+            _blob.Animation.ResetAllTriggers();
         }
 
         private void OnGroundContactChanged(bool isGrounded)
