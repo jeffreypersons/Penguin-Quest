@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f553ac3cb2829d241939c13af200fa74, type: 3}
   m_Name: PenguinOnFeet_Controller2DSettings
   m_EditorClassIdentifier: 
-  maxAscendableSlopeAngle: 45
-  maxToleratedDistanceFromGround: 0.3
-  maintainPerpendicularityToSurface: 0
-  surfaceAlignmentRotationalStrength: 0.1
-  degreesFromSurfaceNormalThreshold: 0.01
-  enableAutomaticAxisLockingForSmallVelocities: 1
-  linearVelocityThreshold: 5
-  angularVelocityThreshold: 5
+  _locomotionBlendStep: 0.1
+  _horizontalMovementPeakSpeed: 5
+  _jumpStrength: 150000
+  _jumpAngle: 45
+  _maxAscendableSlopeAngle: 45
+  _maxToleratedDistanceFromGround: 0.3
+  _maintainPerpendicularityToSurface: 0
+  _surfaceAlignmentRotationalStrength: 0.1
+  _degreesFromSurfaceNormalThreshold: 0.01
+  _enableAutomaticAxisLockingForSmallVelocities: 1
+  _linearVelocityThreshold: 5
+  _angularVelocityThreshold: 5

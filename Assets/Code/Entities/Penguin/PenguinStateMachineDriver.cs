@@ -24,6 +24,8 @@ namespace PQ.Entities.Penguin
         public FsmState StateBelly      { get; private set; }
         public FsmState StateStandingUp { get; private set; }
         public FsmState StateLyingDown  { get; private set; }
+        public FsmState StateMidair     { get; private set; }
+
 
         // todo: extract out a proper spawning system, or consider moving these to blob
         public void ResetPositioning()
@@ -50,7 +52,8 @@ namespace PQ.Entities.Penguin
             StateBelly      = new PenguinStateOnBelly   (this, "Penguin.State.OnBelly",    _penguinBlob, _eventCenter);
             StateStandingUp = new PenguinStateStandingUp(this, "Penguin.State.StandingUp", _penguinBlob, _eventCenter);
             StateLyingDown  = new PenguinStateLyingDown (this, "Penguin.State.LyingDown",  _penguinBlob, _eventCenter);
-            
+            StateMidair     = new PenguinStateMidair    (this, "Penguin.State.Midair",     _penguinBlob, _eventCenter);
+
             base.Initialize(StateFeet);
         }
     }
