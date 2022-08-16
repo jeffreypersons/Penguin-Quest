@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using UnityEngine;
 using PQ.Common.Collisions;
@@ -167,19 +168,13 @@ namespace PQ.Common
                 return;
             }
 
-            _facing = facing;
-            switch (_facing)
+            _facing = Facing.Left;
+            _rigidbody.transform.localRotation = _facing switch
             {
-                case Facing.Left:
-                    transform.localRotation = ROTATION_FACING_LEFT;
-                    break;
-                case Facing.Right:
-                    transform.localRotation = ROTATION_FACING_RIGHT;
-                    break;
-                default:
-                    Debug.LogError($"Given value `{facing}` is not a valid Facing");
-                    break;
-            }
+                Facing.Left  => ROTATION_FACING_LEFT,
+                Facing.Right => ROTATION_FACING_RIGHT,
+                _ => throw new InvalidEnumArgumentException($"Given value `{facing}` is not a valid Facing")
+            };
         }
 
 
