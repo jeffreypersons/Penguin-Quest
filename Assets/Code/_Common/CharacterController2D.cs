@@ -12,7 +12,7 @@ namespace PQ.Common
         public enum Facing { Left = -1, Right = 1 }
         
         private Rigidbody2D _rigidbody;
-        private CollisionChecker _collisionChecker;
+        private CollisionChecker2D _collisionChecker;
         public CharacterController2DSettings Settings { get; set; }
 
         // todo: add speed and stuff here
@@ -51,7 +51,7 @@ namespace PQ.Common
         void Awake()
         {
             _rigidbody        = gameObject.GetComponent<Rigidbody2D>();
-            _collisionChecker = gameObject.GetComponent<CollisionChecker>();
+            _collisionChecker = gameObject.GetComponent<CollisionChecker2D>();
             _facing           = GetFacing(_rigidbody);
             _wasJumpRequested = false;
             _facingRequested  = _facing;

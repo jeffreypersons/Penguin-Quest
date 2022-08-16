@@ -12,7 +12,7 @@ namespace PQ.Common.Collisions
 
     TODO: Account for different layers and different sides being activated/deactivated etc?
     */
-    public class CollisionChecker : MonoBehaviour
+    public class CollisionChecker2D : MonoBehaviour
     {
         // todo: look into integrating with box perimeter caster? Or at least putting things in different places
         [Header("Ground Settings")]
