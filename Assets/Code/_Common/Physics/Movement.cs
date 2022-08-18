@@ -1,15 +1,14 @@
 using System.Diagnostics.Contracts;
 using UnityEngine;
-using PQ.Common;
 using PQ.Common.Collisions;
 
 
-namespace PQ.Entities.Placeholder
+namespace PQ.Common.Physics
 {
-    public class RectMovement
+    public class Movement
     {
-        public Vector2 Up       => _transform.up.normalized;
         public Vector2 Forward  => _transform.right.normalized;
+        public Vector2 Up       => _transform.up.normalized;
         public Vector2 Position => _transform.position;
         public float   Rotation => _transform.eulerAngles.z;
 
@@ -27,7 +26,7 @@ namespace PQ.Entities.Placeholder
         private static readonly Quaternion RightFacing = Quaternion.Euler(0,   0, 0);
         private static readonly Quaternion LeftFacing  = Quaternion.Euler(0, 180, 0);
 
-        public RectMovement(Transform transform, RayCasterSettings casterSettings)
+        public Movement(Transform transform, RayCasterSettings casterSettings)
         {
             _transform   = transform;
             _boundingBox = transform.GetComponent<BoxCollider2D>();

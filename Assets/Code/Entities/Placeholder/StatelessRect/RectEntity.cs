@@ -1,5 +1,6 @@
 using UnityEngine;
 using PQ.Common;
+using PQ.Common.Physics;
 using PQ.Common.Collisions;
 
 
@@ -9,7 +10,7 @@ namespace PQ.Entities.Placeholder
     {
         private RectBlob _blob;
         private GameEventCenter _eventCenter;
-        private RectMovement _movement;
+        private Movement _movement;
 
         private HorizontalInput _horizontalInput;
 
@@ -17,7 +18,7 @@ namespace PQ.Entities.Placeholder
         {
             _blob            = gameObject.GetComponent<RectBlob>();
             _eventCenter     = GameEventCenter.Instance;
-            _movement        = new RectMovement(_blob.Transform, _blob.CastSettings);
+            _movement        = new Movement(_blob.Transform, _blob.CastSettings);
             _horizontalInput = HorizontalInput.None;
         }
 
