@@ -12,7 +12,7 @@ namespace PQ.Entities.Penguin
         private GameEventCenter _eventCenter;
 
         private float _locomotionBlend;
-        private bool _isHorizontalInputActive;
+        private HorizontalInput _horizontalInput;
 
         public PenguinStateOnBelly(PenguinStateMachineDriver driver, string name,
             PenguinBlob blob, GameEventCenter eventCenter) : base(name)
@@ -25,25 +25,22 @@ namespace PQ.Entities.Penguin
 
         public override void Enter()
         {
-            _eventCenter.standUpCommand            .AddListener(OnStandUpInputReceived);
-            _eventCenter.startHorizontalMoveCommand.AddListener(OnStartHorizontalMoveInput);
-            _eventCenter.stopHorizontalMoveCommand .AddListener(OnStopHorizontalMoveInput);
+            _eventCenter.standUpCommand      .AddListener(OnStandUpInputReceived);
+            _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
             _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
 
             _blob.CharacterController.Settings = _blob.OnBellySettings;
             _locomotionBlend = 0.0f;
-            _isHorizontalInputActive = false;
+            _horizontalInput = HorizontalInput.None;
         }
 
         public override void Exit()
         {
-            _eventCenter.standUpCommand            .RemoveListener(OnStandUpInputReceived);
-            _eventCenter.startHorizontalMoveCommand.RemoveListener(OnStartHorizontalMoveInput);
-            _eventCenter.stopHorizontalMoveCommand .RemoveListener(OnStopHorizontalMoveInput);
+            _eventCenter.standUpCommand      .RemoveListener(OnStandUpInputReceived);
+            _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
             _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
 
             _locomotionBlend = 0.0f;
-            _isHorizontalInputActive = false;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
@@ -52,32 +49,35 @@ namespace PQ.Entities.Penguin
             HandleHorizontalMovement();
         }
 
+
+
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void OnGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
         private void OnStandUpInputReceived(string _) => _driver.MoveToState(_driver.StateStandingUp);
 
-
         // todo: find a flexible solution for all this duplicated movement code in multiple states
-        private void OnStartHorizontalMoveInput(int direction)
+        private void OnMoveHorizontalChanged(HorizontalInput state)
         {
-            _blob.CharacterController.ChangeFacing((CharacterController2D.Facing)(direction));
-            _isHorizontalInputActive = true;
+            _horizontalInput = state;
+            if (_horizontalInput == HorizontalInput.Right)
+            {
+                _blob.CharacterController.ChangeFacing(CharacterController2D.Facing.Right);
+            }
+            else if (_horizontalInput == HorizontalInput.Left)
+            {
+                _blob.CharacterController.ChangeFacing(CharacterController2D.Facing.Left);
+            }
         }
-        private void OnStopHorizontalMoveInput(string _)
-        {
-            _isHorizontalInputActive = false;
-        }
-
 
         private void HandleHorizontalMovement()
         {
-            if (_isHorizontalInputActive)
+            if (_horizontalInput == HorizontalInput.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _blob.Animation.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + _blob.Animation.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller

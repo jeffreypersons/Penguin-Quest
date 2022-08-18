@@ -11,55 +11,47 @@ namespace PQ.Entities.Placeholder
         private GameEventCenter _eventCenter;
         private RectMovement _movement;
 
-        private bool _isHorizontalInputActive;
+        private HorizontalInput _horizontalInput;
 
         void Awake()
         {
-            _blob = gameObject.GetComponent<RectBlob>();
-
-            _eventCenter = GameEventCenter.Instance;
-            _isHorizontalInputActive = false;
-            _movement = new RectMovement(_blob.Transform, _blob.CastSettings);
+            _blob            = gameObject.GetComponent<RectBlob>();
+            _eventCenter     = GameEventCenter.Instance;
+            _movement        = new RectMovement(_blob.Transform, _blob.CastSettings);
+            _horizontalInput = HorizontalInput.None;
         }
 
         void OnEnable()
         {
-            _eventCenter.startHorizontalMoveCommand.AddListener(OnMoveHorizontalStarted);
-            _eventCenter.stopHorizontalMoveCommand .AddListener(OnMoveHorizontalStopped);
-            _eventCenter.jumpCommand               .AddListener(OnJump);
+            _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
+            _eventCenter.jumpCommand         .AddListener(OnJump);
         }
 
         void OnDisable()
         {
-            _eventCenter.startHorizontalMoveCommand.RemoveListener(OnMoveHorizontalStarted);
-            _eventCenter.stopHorizontalMoveCommand .RemoveListener(OnMoveHorizontalStopped);
-            _eventCenter.jumpCommand               .RemoveListener(OnJump);
+            _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
+            _eventCenter.jumpCommand         .RemoveListener(OnJump);
         }
 
         void Update()
         {
-            if (_isHorizontalInputActive)
+            if (_horizontalInput != HorizontalInput.None)
             {
                 _movement.MoveForwardForTime(Time.deltaTime);
             }
         }
 
-        private void OnMoveHorizontalStarted(int direction)
+        private void OnMoveHorizontalChanged(HorizontalInput state)
         {
-            _isHorizontalInputActive = true;
-            if (direction == 1)
+            _horizontalInput = state;
+            if (_horizontalInput == HorizontalInput.Right)
             {
                 _movement.FaceRight();
             }
-            else
+            else if (_horizontalInput == HorizontalInput.Left)
             {
                 _movement.FaceLeft();
             }
-
-        }
-        private void OnMoveHorizontalStopped(string _)
-        {
-            _isHorizontalInputActive = false;
         }
 
         private void OnJump(string _)

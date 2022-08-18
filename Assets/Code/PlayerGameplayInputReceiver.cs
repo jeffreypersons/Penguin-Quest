@@ -18,6 +18,7 @@ namespace PQ
         private PlayerControls _generatedPlayerControls;
         private GameEventCenter _eventCenter;
 
+        private HorizontalInput _horizontalInputState;
         private InputAction _moveHorizontal;
         private InputAction _jumpUp;
         private InputAction _standUp;
@@ -38,14 +39,16 @@ namespace PQ
             _lieDown        = controls.Gameplay.LieDown;
             _use            = controls.Gameplay.Fire;
             _fire           = controls.Gameplay.Use;
+
+            _horizontalInputState = HorizontalInput.None;
         }
 
 
         void OnEnable()
         {
             _generatedPlayerControls.Gameplay.Enable();
-            _moveHorizontal.started   += OnMoveHorizontalStarted;
-            _moveHorizontal.canceled  += OnMoveHorizontalStopped;
+            _moveHorizontal.started   += OnMoveHorizontalChanged;
+            _moveHorizontal.canceled  += OnMoveHorizontalChanged;
             _jumpUp        .performed += OnJumpUp;
             _standUp       .performed += OnStandUp;
             _lieDown       .performed += OnLieDown;
@@ -56,8 +59,8 @@ namespace PQ
         void OnDisable()
         {
             _generatedPlayerControls.Gameplay.Disable();
-            _moveHorizontal.started   -= OnMoveHorizontalStarted;
-            _moveHorizontal.canceled  -= OnMoveHorizontalStopped;
+            _moveHorizontal.started   -= OnMoveHorizontalChanged;
+            _moveHorizontal.canceled  -= OnMoveHorizontalChanged;
             _jumpUp        .performed -= OnJumpUp;
             _standUp       .performed -= OnStandUp;
             _lieDown       .performed -= OnLieDown;
@@ -65,15 +68,28 @@ namespace PQ
             _fire          .performed -= OnFire;
         }
 
-        private void OnMoveHorizontalStarted(InputAction.CallbackContext context)
+        private void OnMoveHorizontalChanged(InputAction.CallbackContext context)
         {
-            int direction = context.action.ReadValue<float>() < 0.00f ? -1 : 1;
-            _eventCenter.startHorizontalMoveCommand.Trigger(direction);
-        }
+            HorizontalInput mappedValue;
+            float rawValue = context.action.ReadValue<float>();
+            if (Mathf.Approximately(rawValue, 0))
+            {
+                mappedValue = HorizontalInput.None;
+            }
+            else if (rawValue < 0)
+            {
+                mappedValue = HorizontalInput.Left;
+            }
+            else
+            {
+                mappedValue = HorizontalInput.Right;
+            }
 
-        private void OnMoveHorizontalStopped(InputAction.CallbackContext _)
-        {
-            _eventCenter.stopHorizontalMoveCommand.Trigger("Received input to stop horizontal movement");
+            if (mappedValue != _horizontalInputState)
+            {
+                _eventCenter.movementInputChanged.Trigger(mappedValue);
+                _horizontalInputState = mappedValue;
+            }
         }
 
         private void OnJumpUp(InputAction.CallbackContext _)
