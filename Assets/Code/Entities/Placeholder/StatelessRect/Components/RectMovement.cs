@@ -60,10 +60,6 @@ namespace PQ.Entities.Placeholder
             Vector2 direction = Forward;
             float   distance  = speed * time;
 
-            _transform.localRotation = IsTargetBehind(origin, direction, target) ?
-                LeftFacing : RightFacing;
-
-
             Vector2 newPosition = Vector2.MoveTowards(origin, target, distance);
             if (!ArePointsWithinDistance(origin, newPosition, DistanceThreshold))
             {
