@@ -168,7 +168,7 @@ namespace PQ.Common
                 return;
             }
 
-            _facing = Facing.Left;
+            _facing = facing;
             _rigidbody.transform.localRotation = _facing switch
             {
                 Facing.Left  => ROTATION_FACING_LEFT,
