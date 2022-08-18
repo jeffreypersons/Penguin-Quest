@@ -10,7 +10,7 @@ namespace PQ.Entities.Placeholder
     {
         public Vector2 Up       => _transform.up.normalized;
         public Vector2 Forward  => _transform.right.normalized;
-        public Vector2 Position => _rigidBody.position;
+        public Vector2 Position => _transform.position;
         public float   Rotation => _transform.eulerAngles.z;
 
         public float GroundDistanceThreshold { get; set; }
@@ -21,7 +21,6 @@ namespace PQ.Entities.Placeholder
         public float AngularThreshold        { get; set; }
 
         private Transform     _transform;
-        private Rigidbody2D   _rigidBody;
         private BoxCollider2D _boundingBox;
         private LineCaster    _caster;
 
@@ -31,7 +30,6 @@ namespace PQ.Entities.Placeholder
         public RectMovement(Transform transform, RayCasterSettings casterSettings)
         {
             _transform   = transform;
-            _rigidBody   = transform.GetComponent<Rigidbody2D>();
             _boundingBox = transform.GetComponent<BoxCollider2D>();
             _caster      = new LineCaster(casterSettings);
 
@@ -67,18 +65,9 @@ namespace PQ.Entities.Placeholder
 
 
             Vector2 newPosition = Vector2.MoveTowards(origin, target, distance);
-            if (ArePointsWithinDistance(origin, newPosition, DistanceThreshold))
-            {
-                return;
-            }
-
-            if (_rigidBody == null || _rigidBody.isKinematic)
+            if (!ArePointsWithinDistance(origin, newPosition, DistanceThreshold))
             {
                 _transform.position = newPosition;
-            }
-            else
-            {
-                _rigidBody.MovePosition(newPosition);
             }
         }
 

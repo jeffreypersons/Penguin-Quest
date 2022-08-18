@@ -190,21 +190,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rect
       objectReference: {fileID: 0}
-    - target: {fileID: 3204818302733060367, guid: 6d16b93b3de4a8a4dafa9df1c5990975,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 3483740157722355579, guid: 6d16b93b3de4a8a4dafa9df1c5990975,
-        type: 3}
-      propertyPath: m_BodyType
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3483740157722355579, guid: 6d16b93b3de4a8a4dafa9df1c5990975,
-        type: 3}
-      propertyPath: m_UseFullKinematicContacts
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d16b93b3de4a8a4dafa9df1c5990975, type: 3}
 --- !u!4 &1196662009 stripped

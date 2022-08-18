@@ -13,13 +13,13 @@ namespace PQ.Entities.Placeholder
 
         private bool _isHorizontalInputActive;
 
-        [SerializeField] private RayCasterSettings _castSettings;
-
         void Awake()
         {
+            _blob = gameObject.GetComponent<RectBlob>();
+
             _eventCenter = GameEventCenter.Instance;
             _isHorizontalInputActive = false;
-            _movement = new RectMovement(transform, _castSettings);
+            _movement = new RectMovement(_blob.Transform, _blob.CastSettings);
         }
 
         void OnEnable()
@@ -34,14 +34,6 @@ namespace PQ.Entities.Placeholder
             _eventCenter.startHorizontalMoveCommand.RemoveListener(OnMoveHorizontalStarted);
             _eventCenter.stopHorizontalMoveCommand .RemoveListener(OnMoveHorizontalStopped);
             _eventCenter.jumpCommand               .RemoveListener(OnJump);
-        }
-
-        void FixedUpdate()
-        {
-            if (_isHorizontalInputActive)
-            {
-                _movement.MoveForwardForTime(Time.fixedDeltaTime);
-            }
         }
 
         void Update()
