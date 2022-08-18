@@ -9,7 +9,7 @@ namespace PQ.Entities.Placeholder
     public class RectMovement
     {
         public Vector2 Up       => _transform.up.normalized;
-        public Vector2 Forward  => _transform.forward.normalized;
+        public Vector2 Forward  => _transform.right.normalized;
         public Vector2 Position => _rigidBody.position;
         public float   Rotation => _transform.eulerAngles.z;
 
@@ -36,11 +36,11 @@ namespace PQ.Entities.Placeholder
             _caster      = new LineCaster(casterSettings);
 
             MaintainGroundAlignment = false;
-            HorizontalSpeed         = 10.0f;
-            AngularSpeed            = 10.0f;
-            DistanceThreshold       =  5.0f;
-            AngularThreshold        =  5.0f;
-            GroundDistanceThreshold =  0.3f;
+            HorizontalSpeed         = 100.0f;
+            AngularSpeed            =  10.0f;
+            DistanceThreshold       =   0.5f;
+            AngularThreshold        =   0.5f;
+            GroundDistanceThreshold =   0.3f;
         }
 
         public void PlaceAt(Vector2 position, float angle) =>
@@ -72,7 +72,7 @@ namespace PQ.Entities.Placeholder
                 return;
             }
 
-            if (_rigidBody == null)
+            if (_rigidBody == null || _rigidBody.isKinematic)
             {
                 _transform.position = newPosition;
             }

@@ -44,6 +44,14 @@ namespace PQ.Entities.Placeholder
             }
         }
 
+        void Update()
+        {
+            if (_isHorizontalInputActive)
+            {
+                _movement.MoveForwardForTime(Time.deltaTime);
+            }
+        }
+
         private void OnMoveHorizontalStarted(int direction)
         {
             _isHorizontalInputActive = true;
