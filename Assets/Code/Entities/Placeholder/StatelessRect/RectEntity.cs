@@ -1,7 +1,5 @@
 using UnityEngine;
 using PQ.Common;
-using PQ.Common.Physics;
-using PQ.Common.Collisions;
 
 
 namespace PQ.Entities.Placeholder
@@ -10,35 +8,37 @@ namespace PQ.Entities.Placeholder
     {
         private RectBlob _blob;
         private GameEventCenter _eventCenter;
-        private Movement _movement;
-
         private HorizontalInput _horizontalInput;
 
         void Awake()
         {
             _blob            = gameObject.GetComponent<RectBlob>();
             _eventCenter     = GameEventCenter.Instance;
-            _movement        = new Movement(_blob.Transform, _blob.CastSettings);
             _horizontalInput = HorizontalInput.None;
+            _blob.CharacterController.Settings = _blob.CharacterSettings;
+        }
+        void Start()
+        {
+            _blob.CharacterController.FaceRight();
         }
 
         void OnEnable()
         {
+            _eventCenter.jumpCommand.AddListener(OnJump);
             _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
-            _eventCenter.jumpCommand         .AddListener(OnJump);
         }
 
         void OnDisable()
         {
+            _eventCenter.jumpCommand.RemoveListener(OnJump);
             _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
-            _eventCenter.jumpCommand         .RemoveListener(OnJump);
         }
 
         void Update()
         {
             if (_horizontalInput != HorizontalInput.None)
             {
-                _movement.MoveForwardForTime(Time.deltaTime);
+                _blob.CharacterController.MoveForward();
             }
         }
 
@@ -47,17 +47,14 @@ namespace PQ.Entities.Placeholder
             _horizontalInput = state;
             if (_horizontalInput == HorizontalInput.Right)
             {
-                _movement.FaceRight();
+                _blob.CharacterController.FaceRight();
             }
             else if (_horizontalInput == HorizontalInput.Left)
             {
-                _movement.FaceLeft();
+                _blob.CharacterController.FaceLeft();
             }
         }
 
-        private void OnJump(string _)
-        {
-
-        }
+        private void OnJump(string _) { }
     }
 }
