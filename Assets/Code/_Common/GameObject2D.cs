@@ -19,6 +19,12 @@ namespace PQ.Common
         public float     Rotation    => _transform.eulerAngles.z;
         public float     Depth       => _transform.position.z;
 
+        public override string ToString() =>
+            $"GameObject2D@({Position.x},{Position.y},{Depth}), " +
+                $"rotation: {Rotation}, " +
+                $"Forward: {Forward}, " +
+                $"Up: {Up}";
+
         public Transform     Transform   => _transform;
         public Rigidbody2D   RigidBody   => _rigidBody;
         public BoxCollider2D BoundingBox => _boundingBox;
@@ -39,10 +45,12 @@ namespace PQ.Common
 
         public void MoveForward(float distance) => _transform.Translate(distance * Forward);
         
+        public Vector3 GetPosition3D()    => _transform.position;
+        public Vector3 GetOrientation3D() => _transform.localRotation.eulerAngles;
         public void SetPosition3D(float x, float y, float z) =>
-            _transform.localPosition = new Vector3(x, y, z);
+            _transform.position = new Vector3(x, y, z);
         public void SetOrientation3D(float xDegrees, float yDegrees, float zDegrees) =>
-            _transform.localRotation = Quaternion.Euler(xDegrees, yDegrees, zDegrees);
+            _transform.rotation = Quaternion.Euler(xDegrees, yDegrees, zDegrees);
 
         public void AlignTo(Vector2 forward)
         {

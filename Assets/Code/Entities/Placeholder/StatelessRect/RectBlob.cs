@@ -22,7 +22,7 @@ namespace PQ.Entities.Placeholder
         public Rigidbody2D                   Rigidbody           => _rigidBody;
         public BoxCollider2D                 ColliderBoundingBox => _boundingBoxCollider;
         public RayCasterSettings             CastSettings        => _castSettings;
-        public CharacterController2D      CharacterController => _characterController;
+        public CharacterController2D         CharacterController => _characterController;
         public CharacterController2DSettings CharacterSettings   => _characterSettings;
     }
 }

@@ -19,7 +19,6 @@ namespace PQ.Entities.Placeholder
         }
         void Start()
         {
-            _blob.CharacterController.FaceRight();
         }
 
         void OnEnable()
