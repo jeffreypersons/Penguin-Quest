@@ -1,25 +1,34 @@
 using UnityEngine;
 
 
-namespace PQ.Common.Physics
+namespace PQ.Common
 {
     /*
-    Wrapper over transform with convenience methods for 2D.
+    Convenience wrapper with a transform, optional rigidbody and bounding box.
+    Note that all adjustments are done via transform.
     */
-    public class Transform2D
+    public class GameObject2D
     {
-        private Transform _transform;
+        private Transform     _transform;
+        private Rigidbody2D   _rigidBody;
+        private BoxCollider2D _boundingBox;
 
         public Vector2   Forward     => _transform.right.normalized;
         public Vector2   Up          => _transform.up.normalized;
         public Vector2   Position    => _transform.position;
         public float     Rotation    => _transform.eulerAngles.z;
         public float     Depth       => _transform.position.z;
-        public Transform Transform3D => _transform;
 
-        public Transform2D(Transform transform)
+        public Transform     Transform   => _transform;
+        public Rigidbody2D   RigidBody   => _rigidBody;
+        public BoxCollider2D BoundingBox => _boundingBox;
+
+
+        public GameObject2D(Transform transform)
         {
-            _transform = transform;
+            _transform   = transform;
+            _rigidBody   = transform.GetComponent<Rigidbody2D>();
+            _boundingBox = transform.GetComponent<BoxCollider2D>();
         }
 
         public void MoveTo(Vector2 position)    => _transform.position = position;
