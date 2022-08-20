@@ -14,8 +14,9 @@ GameObject:
   - component: {fileID: 4765852279069534298}
   - component: {fileID: 6424954451660586289}
   - component: {fileID: 6868416680427606836}
-  - component: {fileID: 7353475874864163616}
+  - component: {fileID: 1196662017}
   - component: {fileID: 2023673911}
+  - component: {fileID: 7353475874864163616}
   m_Layer: 9
   m_Name: Rect
   m_TagString: Untagged
@@ -136,7 +137,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   serializedVersion: 2
   m_Size: {x: 2.56, y: 2.56}
-  m_EdgeRadius: 0
+  m_EdgeRadius: 0.5
 --- !u!114 &6424954451660586289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,7 +166,7 @@ MonoBehaviour:
   _castSettings: {fileID: 11400000, guid: 07baa96e014820c4d890bed9bc863a2b, type: 2}
   _characterController: {fileID: 2023673911}
   _characterSettings: {fileID: 11400000, guid: dc71f0931f5518447bd325847a856081, type: 2}
---- !u!114 &7353475874864163616
+--- !u!114 &1196662017
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,9 +175,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3204818302733060367}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43ba05ef2ccf9aa44baa2454b9315ac1, type: 3}
+  m_Script: {fileID: 11500000, guid: bbb89727eb0ba244a8ec1dc724330eaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _toleratedDistanceFromGround: 8
+  _perimeterCasterSettings: {fileID: 11400000, guid: 07baa96e014820c4d890bed9bc863a2b,
+    type: 2}
 --- !u!114 &2023673911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,17 +196,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdb583593b5744f4ca1d0115c20342fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _groundContactFilter:
-    useTriggers: 0
-    useLayerMask: 0
-    useDepth: 0
-    useOutsideDepth: 0
-    useNormalAngle: 0
-    useOutsideNormalAngle: 0
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 0
-    minDepth: 0
-    maxDepth: 0
-    minNormalAngle: 0
-    maxNormalAngle: 0
+--- !u!114 &7353475874864163616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3204818302733060367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ba05ef2ccf9aa44baa2454b9315ac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

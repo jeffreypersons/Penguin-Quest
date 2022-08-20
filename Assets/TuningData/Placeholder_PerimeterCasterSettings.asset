@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d78141fe98f00b4a96924ba4cc63655, type: 3}
   m_Name: Placeholder_PerimeterCasterSettings
   m_EditorClassIdentifier: 
-  _distanceBetweenRays: 3
-  _rayCastOffset: -0.15
+  _distanceBetweenRays: 0.5
+  _rayCastOffset: 0.25
   _maxRayDistance: 7.5
   _targetLayers:
     serializedVersion: 2

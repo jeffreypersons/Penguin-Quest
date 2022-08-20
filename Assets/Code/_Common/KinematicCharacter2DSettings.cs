@@ -5,25 +5,24 @@ namespace PQ.Common
 {
     [CreateAssetMenu(
         fileName = "CharacterControllerSettings",
-        menuName = "ScriptableObjects/CharacterController2DSettings_old",
+        menuName = "ScriptableObjects/CharacterController2DSettings",
         order    = 1)]
-    public class CharacterController2DSettings_old : ScriptableObject
+    public class KinematicCharacter2DSettings : ScriptableObject
     {
-        public float LocomotionBlendStep                          => _locomotionBlendStep;
-        public float JumpStrength                                 => _jumpStrength;
-        public float JumpAngle                                    => _jumpAngle;
+        public float   LocomotionBlendStep                => _locomotionBlendStep;
+        public float   GravityStrength                    => _gravityStrength;
+        public Vector2 JumpDistanceToPeak                 => new(_jumpLengthToApex, _jumpHeightToApex);
 
-        public float HorizontalMovementPeakSpeed                  => _horizontalMovementPeakSpeed;
-        public float MaxAscendableSlopeAngle                      => _maxAscendableSlopeAngle;
-        public float MaxToleratedDistanceFromGround               => _maxToleratedDistanceFromGround;
+        public float   HorizontalMovementPeakSpeed        => _horizontalMovementPeakSpeed;
+        public float   MaxAscendableSlopeAngle            => _maxAscendableSlopeAngle;
+        public float   MaxToleratedDistanceFromGround     => _maxToleratedDistanceFromGround;
 
-        public bool  MaintainPerpendicularityToSurface            => _maintainPerpendicularityToSurface;
-        public float SurfaceAlignmentRotationalStrength           => _surfaceAlignmentRotationalStrength;
-        public float DegreesFromSurfaceNormalThreshold            => _degreesFromSurfaceNormalThreshold;
+        public bool    MaintainPerpendicularityToSurface  => _maintainPerpendicularityToSurface;
+        public float   SurfaceAlignmentRotationalStrength => _surfaceAlignmentRotationalStrength;
+        public float   DegreesFromSurfaceNormalThreshold  => _degreesFromSurfaceNormalThreshold;
 
-        public bool  EnableAutomaticAxisLockingForSmallVelocities => _enableAutomaticAxisLockingForSmallVelocities;
-        public float LinearVelocityThreshold                      => _linearVelocityThreshold;
-        public float AngularVelocityThreshold                     => _angularVelocityThreshold;
+        public float   LinearVelocityThreshold            => _linearVelocityThreshold;
+        public float   AngularVelocityThreshold           => _angularVelocityThreshold;
 
 
         [Header("Animation Settings")]
@@ -35,23 +34,21 @@ namespace PQ.Common
         [Tooltip("Step size used to move the character")]
         [Range(1, 1000)][SerializeField] private float _horizontalMovementPeakSpeed = 100f;
 
-        // todo: once we fully switch over to kinematic physics, then just give a height, distance to apex
         [Header("Jump Settings")]
-        [Tooltip("Strength of jump force in newtons")]
-        [Range(25000, 250000)] [SerializeField] private float _jumpStrength = 50000f;
+        [Tooltip("Horizontal distance from jump origin to bottom center of arc")]
+        [Range(0, 100)][SerializeField] private float _jumpLengthToApex = 10f;
 
-        [Tooltip("Angle to jump (in degrees counterclockwise to the character's forward facing direction)")]
-        [Range(0, 90)] [SerializeField] private float _jumpAngle = 45f;
+        [Tooltip("Vertical Distance from jump origin to top of arc")]
+        [Range(0, 100)][SerializeField] private float _jumpHeightToApex = 10f;
 
-
-        //[Header("Movement Settings")]
-        //[Range(0.50f, 100.00f)] [SerializeField] private float _maxInputSpeed = 10.0f;
+        [Tooltip("How strong is the pull of gravity?")]
+        [Range(0, 100)][SerializeField] private float _gravityStrength = 10f;
 
 
         [Header("Surface Handling Ranges")]
 
         [Tooltip("At what slope angle do we allow the character to walk up to?")]
-        [SerializeField] [Range(0.00f, 70.00f)] private float _maxAscendableSlopeAngle = 45.00f;
+        [SerializeField] [Range(0.00f, 70.00f)] private float _maxAscendableSlopeAngle = 45f;
 
         [Tooltip("At what distance from ground do we consider the character no longer grounded?")]
         [SerializeField] [Range(0.25f, 25.00f)] private float _maxToleratedDistanceFromGround = 0.30f;

@@ -13,12 +13,12 @@ namespace PQ.Entities.Placeholder
         [Header("Component References")]
         [SerializeField] private Transform                     _rootTransform;
         [SerializeField] private RayCasterSettings             _castSettings;
-        [SerializeField] private CharacterController2D         _characterController;
-        [SerializeField] private CharacterController2DSettings _characterSettings;
+        [SerializeField] private KinematicCharacter2D         _characterController;
+        [SerializeField] private KinematicCharacter2DSettings _characterSettings;
 
         public Transform                     Transform           => _rootTransform;
         public RayCasterSettings             CastSettings        => _castSettings;
-        public CharacterController2D         CharacterController => _characterController;
-        public CharacterController2DSettings CharacterSettings   => _characterSettings;
+        public KinematicCharacter2D         CharacterController => _characterController;
+        public KinematicCharacter2DSettings CharacterSettings   => _characterSettings;
     }
 }

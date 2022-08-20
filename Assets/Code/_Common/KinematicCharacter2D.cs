@@ -1,33 +1,36 @@
 ﻿using System;
 using UnityEngine;
+using PQ.Common.Collisions;
 
 
 namespace PQ.Common
 {
-    public class CharacterController2D : MonoBehaviour
+    public class KinematicCharacter2D : MonoBehaviour
     {
-        [SerializeField] private ContactFilter2D _groundContactFilter;
+        private CollisionChecker2D _collisionChecker;
 
         private bool _isGrounded;
         private KinematicBody2D _kinematicBody2D;
 
-        void Awake()
-        {
-            _kinematicBody2D = gameObject.GetComponent<KinematicBody2D>();
-        }
-
         public event Action<bool> GroundContactChanged;
-        public CharacterController2DSettings Settings { get; set; }
+        public KinematicCharacter2DSettings Settings { get; set; }
 
         public void FaceRight() => _kinematicBody2D.SetLocalOrientation3D(0, 0, 0);
         public void FaceLeft()  => _kinematicBody2D.SetLocalOrientation3D(0, 180, 0);
         public void MoveForward()
         {
-            float distanceToMove = Settings.HorizontalMovementPeakSpeed * Time.smoothDeltaTime;
+            float distanceToMove = Settings.HorizontalMovementPeakSpeed * Time.fixedDeltaTime;
             _kinematicBody2D.MoveBy(distanceToMove * _kinematicBody2D.Forward);
         }
 
-        private void Start()
+
+        void Awake()
+        {
+            _kinematicBody2D  = gameObject.GetComponent<KinematicBody2D>();
+            _collisionChecker = gameObject.GetComponent<CollisionChecker2D>();
+        }
+
+        void Start()
         {
             if (Settings == null)
             {
@@ -46,9 +49,10 @@ namespace PQ.Common
             }
         }
 
+
         private void UpdateGroundContactInfo(bool force = false)
         {
-            bool isInContactWithGround = _kinematicBody2D.IsTouching(_groundContactFilter);
+            bool isInContactWithGround = _collisionChecker.IsGrounded;
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;

@@ -38,13 +38,13 @@ namespace PQ.Entities.Penguin
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         
         [Header("Setting Bundles")]
-        [SerializeField] private CharacterController2DSettings_old _penguinOnFeetSettings;
-        [SerializeField] private CharacterController2DSettings_old _penguinOnBellySettings;
+        [SerializeField] private DynamicController2DSettings _penguinOnFeetSettings;
+        [SerializeField] private DynamicController2DSettings _penguinOnBellySettings;
 
         [Header("Component References")]
         [SerializeField] private Rigidbody2D _penguinRigidbody;
         [SerializeField] private PenguinAnimation _penguinAnimation;
-        [SerializeField] private CharacterController2D_old _characterController;
+        [SerializeField] private DynamicController2D _characterController;
 
         [Header("Collider References")]
         [SerializeField] private BoxCollider2D     _boundingBoxCollider;
@@ -56,11 +56,11 @@ namespace PQ.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _backFootCollider;
         
         
-        public CharacterController2DSettings_old OnFeetSettings  => _penguinOnFeetSettings;
-        public CharacterController2DSettings_old OnBellySettings => _penguinOnFeetSettings;
+        public DynamicController2DSettings OnFeetSettings  => _penguinOnFeetSettings;
+        public DynamicController2DSettings OnBellySettings => _penguinOnFeetSettings;
 
         public PenguinAnimation      Animation            => _penguinAnimation;
-        public CharacterController2D_old CharacterController  => _characterController;
+        public DynamicController2D CharacterController  => _characterController;
         public Rigidbody2D           Rigidbody            => _penguinRigidbody;
         public Vector2               SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
         public Vector2               CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
