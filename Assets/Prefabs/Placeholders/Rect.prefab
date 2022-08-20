@@ -163,11 +163,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rootTransform: {fileID: 3204818302733060353}
-  _rigidBody: {fileID: 1001543055492729391}
-  _boundingBoxCollider: {fileID: 4765852279069534298}
   _castSettings: {fileID: 11400000, guid: 07baa96e014820c4d890bed9bc863a2b, type: 2}
   _characterController: {fileID: 2023673911}
-  _characterSettings: {fileID: 11400000, guid: 1fccb5d052a529744a0aeef2aacc8f68, type: 2}
+  _characterSettings: {fileID: 11400000, guid: dc71f0931f5518447bd325847a856081, type: 2}
 --- !u!114 &7353475874864163616
 MonoBehaviour:
   m_ObjectHideFlags: 0

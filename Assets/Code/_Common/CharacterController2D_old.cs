@@ -14,7 +14,7 @@ namespace PQ.Common
         
         private Rigidbody2D _rigidbody;
         private CollisionChecker2D _collisionChecker;
-        public CharacterController2DSettings Settings { get; set; }
+        public CharacterController2DSettings_old Settings { get; set; }
 
         // todo: add speed and stuff here
         private Vector2 _netImpulseForce;

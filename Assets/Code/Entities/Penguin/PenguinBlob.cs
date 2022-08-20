@@ -38,8 +38,8 @@ namespace PQ.Entities.Penguin
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         
         [Header("Setting Bundles")]
-        [SerializeField] private CharacterController2DSettings _penguinOnFeetSettings;
-        [SerializeField] private CharacterController2DSettings _penguinOnBellySettings;
+        [SerializeField] private CharacterController2DSettings_old _penguinOnFeetSettings;
+        [SerializeField] private CharacterController2DSettings_old _penguinOnBellySettings;
 
         [Header("Component References")]
         [SerializeField] private Rigidbody2D _penguinRigidbody;
@@ -56,8 +56,8 @@ namespace PQ.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _backFootCollider;
         
         
-        public CharacterController2DSettings OnFeetSettings  => _penguinOnFeetSettings;
-        public CharacterController2DSettings OnBellySettings => _penguinOnFeetSettings;
+        public CharacterController2DSettings_old OnFeetSettings  => _penguinOnFeetSettings;
+        public CharacterController2DSettings_old OnBellySettings => _penguinOnFeetSettings;
 
         public PenguinAnimation      Animation            => _penguinAnimation;
         public CharacterController2D_old CharacterController  => _characterController;

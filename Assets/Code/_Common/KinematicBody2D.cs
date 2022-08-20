@@ -26,6 +26,8 @@ namespace PQ.Common
         public float   Rotation => _rigidBody.rotation;
         public float   Depth    => _rigidBody.transform.position.z;
 
+
+
         public override string ToString() =>
             $"KinematicBody2D@({Position.x},{Position.y},{Depth}), " +
                 $"Rotation: {Rotation}, " +
