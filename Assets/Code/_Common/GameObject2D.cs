@@ -43,14 +43,17 @@ namespace PQ.Common
         public void MoveBy(Vector2 delta)       => _transform.Translate(delta.x, delta.y, 0);
         public void RotateBy(float degrees)     => _transform.Rotate(0, 0, degrees);
 
-        public void MoveForward(float distance) => _transform.Translate(distance * Forward);
-        
+        public void MoveForward(float distance)
+        {
+            _transform.Translate(distance * Forward);
+        }
+
         public Vector3 GetPosition3D()    => _transform.position;
         public Vector3 GetOrientation3D() => _transform.localRotation.eulerAngles;
-        public void SetPosition3D(float x, float y, float z) =>
-            _transform.position = new Vector3(x, y, z);
-        public void SetOrientation3D(float xDegrees, float yDegrees, float zDegrees) =>
-            _transform.rotation = Quaternion.Euler(xDegrees, yDegrees, zDegrees);
+        public void SetLocalPosition3D(float x, float y, float z) =>
+            _transform.localPosition = new Vector3(x, y, z);
+        public void SetLocalOrientation3D(float xDegrees, float yDegrees, float zDegrees) =>
+            _transform.localEulerAngles = new Vector3(xDegrees, yDegrees, zDegrees);
 
         public void AlignTo(Vector2 forward)
         {

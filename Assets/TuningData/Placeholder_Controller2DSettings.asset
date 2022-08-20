@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Placeholder_Controller2DSettings
   m_EditorClassIdentifier: 
   _locomotionBlendStep: 0.1
-  _horizontalMovementPeakSpeed: 5
+  _horizontalMovementPeakSpeed: 200
   _jumpStrength: 150000
   _jumpAngle: 45
   _maxAscendableSlopeAngle: 45
@@ -22,5 +22,5 @@ MonoBehaviour:
   _surfaceAlignmentRotationalStrength: 0.1
   _degreesFromSurfaceNormalThreshold: 0.01
   _enableAutomaticAxisLockingForSmallVelocities: 1
-  _linearVelocityThreshold: 5
-  _angularVelocityThreshold: 5
+  _linearVelocityThreshold: 0.01
+  _angularVelocityThreshold: 0.01

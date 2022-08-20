@@ -33,12 +33,12 @@ namespace PQ.Common
 
         [Header("Walk Settings")]
         [Tooltip("Step size used to move the character")]
-        [Range(1, 50)][SerializeField] private float _horizontalMovementPeakSpeed = 5.00f;
+        [Range(1, 1000)][SerializeField] private float _horizontalMovementPeakSpeed = 100f;
 
         // todo: once we fully switch over to kinematic physics, then just give a height, distance to apex
         [Header("Jump Settings")]
         [Tooltip("Strength of jump force in newtons")]
-        [Range(25000, 250000)] [SerializeField] private float _jumpStrength = 50000;
+        [Range(25000, 250000)] [SerializeField] private float _jumpStrength = 50000f;
 
         [Tooltip("Angle to jump (in degrees counterclockwise to the character's forward facing direction)")]
         [Range(0, 90)] [SerializeField] private float _jumpAngle = 45f;

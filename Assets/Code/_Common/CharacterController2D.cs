@@ -74,12 +74,12 @@ namespace PQ.Common
                 Facing.Left  => 180,
                 _ => throw new InvalidEnumArgumentException(),
             };
-            _gameObject2D.SetOrientation3D(0, degreesAboutYAxis, 0);
+            _gameObject2D.SetLocalOrientation3D(0, degreesAboutYAxis, 0);
         }
 
         private void ExecuteHorizontalMove()
         {
-            _gameObject2D.MoveForward(Settings.HorizontalMovementPeakSpeed * Time.fixedDeltaTime);
+            _gameObject2D.MoveForward(Settings.HorizontalMovementPeakSpeed * Time.smoothDeltaTime);
         }
     }
 }
