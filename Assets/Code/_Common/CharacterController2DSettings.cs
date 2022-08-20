@@ -9,19 +9,20 @@ namespace PQ.Common
         order    = 1)]
     public class CharacterController2DSettings : ScriptableObject
     {
-        public float LocomotionBlendStep                => _locomotionBlendStep;
-        public Vector2 JumpDistanceToPeak               => new(_jumpLengthToApex, _jumpHeightToApex);
+        public float   LocomotionBlendStep                => _locomotionBlendStep;
+        public float   GravityStrength                    => _gravityStrength;
+        public Vector2 JumpDistanceToPeak                 => new(_jumpLengthToApex, _jumpHeightToApex);
 
-        public float HorizontalMovementPeakSpeed        => _horizontalMovementPeakSpeed;
-        public float MaxAscendableSlopeAngle            => _maxAscendableSlopeAngle;
-        public float MaxToleratedDistanceFromGround     => _maxToleratedDistanceFromGround;
+        public float   HorizontalMovementPeakSpeed        => _horizontalMovementPeakSpeed;
+        public float   MaxAscendableSlopeAngle            => _maxAscendableSlopeAngle;
+        public float   MaxToleratedDistanceFromGround     => _maxToleratedDistanceFromGround;
 
-        public bool  MaintainPerpendicularityToSurface  => _maintainPerpendicularityToSurface;
-        public float SurfaceAlignmentRotationalStrength => _surfaceAlignmentRotationalStrength;
-        public float DegreesFromSurfaceNormalThreshold  => _degreesFromSurfaceNormalThreshold;
+        public bool    MaintainPerpendicularityToSurface  => _maintainPerpendicularityToSurface;
+        public float   SurfaceAlignmentRotationalStrength => _surfaceAlignmentRotationalStrength;
+        public float   DegreesFromSurfaceNormalThreshold  => _degreesFromSurfaceNormalThreshold;
 
-        public float LinearVelocityThreshold            => _linearVelocityThreshold;
-        public float AngularVelocityThreshold           => _angularVelocityThreshold;
+        public float   LinearVelocityThreshold            => _linearVelocityThreshold;
+        public float   AngularVelocityThreshold           => _angularVelocityThreshold;
 
 
         [Header("Animation Settings")]
@@ -39,6 +40,9 @@ namespace PQ.Common
 
         [Tooltip("Vertical Distance from jump origin to top of arc")]
         [Range(0, 100)][SerializeField] private float _jumpHeightToApex = 10f;
+
+        [Tooltip("How strong is the pull of gravity?")]
+        [Range(0, 100)][SerializeField] private float _gravityStrength = 10f;
 
 
         [Header("Surface Handling Ranges")]

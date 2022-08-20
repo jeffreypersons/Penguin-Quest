@@ -16,27 +16,27 @@ namespace PQ.Common.Collisions
     {
         // todo: look into integrating with box perimeter caster? Or at least putting things in different places
         [Header("Ground Settings")]
-        [SerializeField] private BoxCollider2D _colliderToCastFrom;
         [SerializeField] private LayerMask _groundMask;
         [SerializeField] [Range(0.25f, 25.00f)] private float _toleratedDistanceFromGround = 0.30f;
         [SerializeField] private RayCasterSettings _perimeterCasterSettings;
 
+        private BoxCollider2D _boundingBox;
         private BoxPerimeterRayCaster _perimeterCaster;
 
         public bool    IsGrounded    { get; private set; } = false;
         public Vector2 SurfaceNormal { get; private set; } = Vector2.up;
 
 
-        // TODO: build out above/below/front/back that uses the BoxPerimeterRayCaster for querying those areas
         void Start()
         {
-            _perimeterCaster = new BoxPerimeterRayCaster(_colliderToCastFrom, _perimeterCasterSettings);
+            _boundingBox = gameObject.GetComponent<BoxCollider2D>();
+            _perimeterCaster = new BoxPerimeterRayCaster(_boundingBox, _perimeterCasterSettings);
             CheckForGround();
         }
 
         void FixedUpdate()
         {
-            if (_colliderToCastFrom)
+            if (_boundingBox)
             {
                 CheckForGround();
             }

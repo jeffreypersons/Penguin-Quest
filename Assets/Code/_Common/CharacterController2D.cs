@@ -1,35 +1,31 @@
 ﻿using System;
 using UnityEngine;
-using PQ.Common.Collisions;
 
 
 namespace PQ.Common
 {
     public class CharacterController2D : MonoBehaviour
     {
-        private KinematicBody2D _kinematicBody2D;
-        private CollisionChecker2D _collisionChecker;
-        
-        public override string ToString() =>
-            $"CharacterController2D@{_kinematicBody2D}";
+        [SerializeField] private ContactFilter2D _groundContactFilter;
 
-        bool _isCurrentlyContactingGround;
+        private bool _isGrounded;
+        private KinematicBody2D _kinematicBody2D;
 
         void Awake()
         {
-            _kinematicBody2D  = gameObject.GetComponent<KinematicBody2D>();
-            _collisionChecker = gameObject.GetComponent<CollisionChecker2D>();
-
-            _isCurrentlyContactingGround = false;
+            _kinematicBody2D = gameObject.GetComponent<KinematicBody2D>();
         }
 
         public event Action<bool> GroundContactChanged;
         public CharacterController2DSettings Settings { get; set; }
 
         public void FaceRight() => _kinematicBody2D.SetLocalOrientation3D(0, 0, 0);
-        public void FaceLeft() => _kinematicBody2D.SetLocalOrientation3D(0, 180, 0);
-        public void MoveForward() =>
-            _kinematicBody2D.MoveForward(Settings.HorizontalMovementPeakSpeed * Time.smoothDeltaTime);
+        public void FaceLeft()  => _kinematicBody2D.SetLocalOrientation3D(0, 180, 0);
+        public void MoveForward()
+        {
+            float distanceToMove = Settings.HorizontalMovementPeakSpeed * Time.smoothDeltaTime;
+            _kinematicBody2D.MoveBy(distanceToMove * _kinematicBody2D.Forward);
+        }
 
         private void Start()
         {
@@ -40,17 +36,23 @@ namespace PQ.Common
             UpdateGroundContactInfo();
         }
 
-        void Update()
+        void FixedUpdate()
         {
             UpdateGroundContactInfo();
+
+            if (!_isGrounded)
+            {
+                _kinematicBody2D.MoveBy(Settings.GravityStrength * Vector2.down);
+            }
         }
 
         private void UpdateGroundContactInfo(bool force = false)
         {
-            if (_isCurrentlyContactingGround != _collisionChecker.IsGrounded || force)
+            bool isInContactWithGround = _kinematicBody2D.IsTouching(_groundContactFilter);
+            if (_isGrounded != isInContactWithGround || force)
             {
-                _isCurrentlyContactingGround = _collisionChecker.IsGrounded;
-                GroundContactChanged?.Invoke(_isCurrentlyContactingGround);
+                _isGrounded = isInContactWithGround;
+                GroundContactChanged?.Invoke(_isGrounded);
             }
         }
     }

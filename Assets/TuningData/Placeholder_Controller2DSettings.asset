@@ -16,6 +16,7 @@ MonoBehaviour:
   _horizontalMovementPeakSpeed: 250
   _jumpLengthToApex: 10
   _jumpHeightToApex: 10
+  _gravityStrength: 0.2
   _maxAscendableSlopeAngle: 45
   _maxToleratedDistanceFromGround: 0.3
   _maintainPerpendicularityToSurface: 0
