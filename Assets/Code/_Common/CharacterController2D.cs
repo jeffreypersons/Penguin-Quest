@@ -11,11 +11,11 @@ namespace PQ.Common
     {
         private enum Facing { Left, Right };
 
-        private GameObject2D _gameObject2D;
+        private KinematicBody2D _kinematicBody2D;
         private CollisionChecker2D _collisionChecker;
         
         public override string ToString() =>
-            $"CharacterController2D@{_gameObject2D}";
+            $"CharacterController2D@{_kinematicBody2D}";
 
         bool _isCurrentlyContactingGround;
         private Command<Facing> _turnCommand;
@@ -23,7 +23,7 @@ namespace PQ.Common
 
         void Awake()
         {
-            _gameObject2D = new GameObject2D(transform);
+            _kinematicBody2D  = gameObject.GetComponent<KinematicBody2D>();
             _collisionChecker = gameObject.GetComponent<CollisionChecker2D>();
 
             _isCurrentlyContactingGround = false;
@@ -74,12 +74,12 @@ namespace PQ.Common
                 Facing.Left  => 180,
                 _ => throw new InvalidEnumArgumentException(),
             };
-            _gameObject2D.SetLocalOrientation3D(0, degreesAboutYAxis, 0);
+            _kinematicBody2D.SetLocalOrientation3D(0, degreesAboutYAxis, 0);
         }
 
         private void ExecuteHorizontalMove()
         {
-            _gameObject2D.MoveForward(Settings.HorizontalMovementPeakSpeed * Time.smoothDeltaTime);
+            _kinematicBody2D.MoveForward(Settings.HorizontalMovementPeakSpeed * Time.smoothDeltaTime);
         }
     }
 }
