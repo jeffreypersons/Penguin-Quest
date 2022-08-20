@@ -28,8 +28,8 @@ namespace PQ.Common
 
             _isCurrentlyContactingGround = false;
 
-            _turnCommand = new(ExecuteTurn);
-            _moveCommand = new(ExecuteMove);
+            _turnCommand = new(ExecuteFacingChange);
+            _moveCommand = new(ExecuteHorizontalMove);
         }
 
         public event Action<bool> GroundContactChanged;
@@ -66,7 +66,7 @@ namespace PQ.Common
             }
         }
 
-        private void ExecuteTurn(Facing facing)
+        private void ExecuteFacingChange(Facing facing)
         {
             float degreesAboutYAxis = facing switch
             {
@@ -77,7 +77,7 @@ namespace PQ.Common
             _gameObject2D.SetOrientation3D(0, degreesAboutYAxis, 0);
         }
 
-        private void ExecuteMove()
+        private void ExecuteHorizontalMove()
         {
             _gameObject2D.MoveForward(Settings.HorizontalMovementPeakSpeed * Time.fixedDeltaTime);
         }
