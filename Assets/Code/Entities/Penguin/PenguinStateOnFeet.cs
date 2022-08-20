@@ -11,7 +11,7 @@ namespace PQ.Entities.Penguin
         private GameEventCenter _eventCenter;
 
         private float _locomotionBlend;
-        private bool _isHorizontalInputActive;
+        private HorizontalInput _horizontalInput;
 
         public PenguinStateOnFeet(PenguinStateMachineDriver driver, string name,
             PenguinBlob blob, GameEventCenter eventCenter) : base(name)
@@ -24,28 +24,26 @@ namespace PQ.Entities.Penguin
         public override void Enter()
         {
             _blob.Animation.JumpLiftOff += OnJumpLiftOff;
-            _eventCenter.jumpCommand               .AddListener(OnJumpInputReceived);
-            _eventCenter.lieDownCommand            .AddListener(OnLieDownInputReceived);
-            _eventCenter.startHorizontalMoveCommand.AddListener(OnStartHorizontalMoveInput);
-            _eventCenter.stopHorizontalMoveCommand .AddListener(OnStopHorizontalMoveInput);
+            _eventCenter.jumpCommand         .AddListener(OnJumpInputReceived);
+            _eventCenter.lieDownCommand      .AddListener(OnLieDownInputReceived);
+            _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
             _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
 
             _blob.CharacterController.Settings = _blob.OnFeetSettings;
             _locomotionBlend = 0.0f;
-            _isHorizontalInputActive = false;
+            _horizontalInput = HorizontalInput.None;
         }
 
         public override void Exit()
         {
             _blob.Animation.JumpLiftOff -= OnJumpLiftOff;
-            _eventCenter.jumpCommand               .RemoveListener(OnJumpInputReceived);
-            _eventCenter.lieDownCommand            .RemoveListener(OnLieDownInputReceived);
-            _eventCenter.startHorizontalMoveCommand.RemoveListener(OnStartHorizontalMoveInput);
-            _eventCenter.stopHorizontalMoveCommand .RemoveListener(OnStopHorizontalMoveInput);
+            _eventCenter.jumpCommand         .RemoveListener(OnJumpInputReceived);
+            _eventCenter.lieDownCommand      .RemoveListener(OnLieDownInputReceived);
+            _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
             _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
 
             _locomotionBlend = 0.0f;
-            _isHorizontalInputActive = false;
+            _horizontalInput = HorizontalInput.None;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
@@ -70,7 +68,6 @@ namespace PQ.Entities.Penguin
         }
 
 
-        // todo: come up with a better way to handle jump without having extra states that mimic the animator's states
         private void OnJumpInputReceived(string _)
         {
             _blob.Animation.TriggerParamJumpUpParameter();
@@ -80,27 +77,32 @@ namespace PQ.Entities.Penguin
             _blob.CharacterController.Jump();
         }
 
-        // todo: find a flexible solution for all this duplicated movement code in multiple states
-        private void OnStartHorizontalMoveInput(int direction)
-        {
-            _blob.CharacterController.ChangeFacing((CharacterController2D.Facing)direction);
-            _isHorizontalInputActive = true;
-        }
-        private void OnStopHorizontalMoveInput(string _)
-        {
-            _isHorizontalInputActive = false;
-        }
 
+
+
+        // todo: find a flexible solution for all this duplicated movement code in multiple states
+        private void OnMoveHorizontalChanged(HorizontalInput state)
+        {
+            _horizontalInput = state;
+            if (_horizontalInput == HorizontalInput.Right)
+            {
+                _blob.CharacterController.ChangeFacing(CharacterController2D_old.Facing.Right);
+            }
+            else if (_horizontalInput == HorizontalInput.Left)
+            {
+                _blob.CharacterController.ChangeFacing(CharacterController2D_old.Facing.Left);
+            }
+        }
 
         private void HandleHorizontalMovement()
         {
-            if (_isHorizontalInputActive)
+            if (_horizontalInput == HorizontalInput.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _blob.Animation.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + _blob.Animation.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
