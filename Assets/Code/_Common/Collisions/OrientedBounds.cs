@@ -21,25 +21,20 @@ namespace PQ.Common.Collisions
         public Vector2 LeftTop     { get; private set; }
         public Vector2 RightBottom { get; private set; }
         public Vector2 RightTop    { get; private set; }
-            
+
         public Vector2 LeftDir     { get; private set; }
         public Vector2 RightDir    { get; private set; }
         public Vector2 DownDir     { get; private set; }
         public Vector2 UpDir       { get; private set; }
+        
+        public override string ToString() =>
+            $"OrientedBounds{{"     +
+                $"Center:{Center}," +
+                $"Size:{Size}"      +
+                $"Rotation:{Orientation}";
 
-        public override string ToString()
-        {
-            return $"Center:{Center},Size:{Size},Rotation:{Orientation}";
-        }
-
-        public OrientedBounds()
-        {
-            Set(Vector2.zero, Vector2.zero);
-        }
-        public OrientedBounds(Vector2 min, Vector2 max)
-        {
-            Set(min, max);
-        }
+        public OrientedBounds() => Set(Vector2.zero, Vector2.zero);
+        public OrientedBounds(Vector2 min, Vector2 max) => Set(min, max);
         
         public void Update(Vector2 min, Vector2 max)
         {
@@ -49,6 +44,7 @@ namespace PQ.Common.Collisions
                 Set(min, max);
             }
         }
+
 
         private void Set(Vector2 min, Vector2 max)
         {
