@@ -61,11 +61,11 @@ namespace PQ.Entities.Penguin
             _horizontalInput = state;
             if (_horizontalInput == HorizontalInput.Right)
             {
-                _blob.CharacterController.ChangeFacing(DynamicController2D.Facing.Right);
+                _blob.CharacterController.ChangeFacing(DynamicCharacter2D.Facing.Right);
             }
             else if (_horizontalInput == HorizontalInput.Left)
             {
-                _blob.CharacterController.ChangeFacing(DynamicController2D.Facing.Left);
+                _blob.CharacterController.ChangeFacing(DynamicCharacter2D.Facing.Left);
             }
         }
 

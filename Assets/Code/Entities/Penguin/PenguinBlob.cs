@@ -44,7 +44,7 @@ namespace PQ.Entities.Penguin
         [Header("Component References")]
         [SerializeField] private Rigidbody2D _penguinRigidbody;
         [SerializeField] private PenguinAnimation _penguinAnimation;
-        [SerializeField] private DynamicController2D _characterController;
+        [SerializeField] private DynamicCharacter2D _characterController;
 
         [Header("Collider References")]
         [SerializeField] private BoxCollider2D     _boundingBoxCollider;
@@ -60,7 +60,7 @@ namespace PQ.Entities.Penguin
         public DynamicController2DSettings OnBellySettings => _penguinOnFeetSettings;
 
         public PenguinAnimation      Animation            => _penguinAnimation;
-        public DynamicController2D CharacterController  => _characterController;
+        public DynamicCharacter2D CharacterController  => _characterController;
         public Rigidbody2D           Rigidbody            => _penguinRigidbody;
         public Vector2               SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
         public Vector2               CenterOfMass         => _penguinRigidbody.worldCenterOfMass;

@@ -8,7 +8,7 @@ using PQ.Common.Collisions;
 namespace PQ.Common
 {
     // todo: add more character movement settings for things like speed and jump height
-    public class DynamicController2D : MonoBehaviour
+    public class DynamicCharacter2D : MonoBehaviour
     {
         public enum Facing { Left = -1, Right = 1 }
         
