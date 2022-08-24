@@ -52,13 +52,13 @@ namespace PQ.Common.Collisions
 
         public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
-            this._box          = box;
-            this.Settings      = settings;
-            this._lineCaster   = new LineCaster(settings);
-            this._originBounds = new OrientedBounds();
-            this._results      = Array.Empty<CastResult>();
+            _box          = box;
+            Settings      = settings;
+            _lineCaster   = new LineCaster(settings);
+            _originBounds = new OrientedBounds();
+            _results      = Array.Empty<CastResult>();
 
-            UpdateOrientedBounds(box.bounds, box.transform, settings.Offset);
+            UpdateOrientedBounds(_box, Settings.Offset);
             ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, _originBounds.Size);
             Debug.Log(this);
         }
@@ -70,7 +70,7 @@ namespace PQ.Common.Collisions
                 return;
             }
 
-            UpdateOrientedBounds(_box.bounds, _box.transform, Settings.Offset);
+            UpdateOrientedBounds(_box, Settings.Offset);
             ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, _originBounds.Size);
 
             Vector2 horizontalStep = RaySpacingHorizontalSide * _originBounds.RightDir;
@@ -95,13 +95,17 @@ namespace PQ.Common.Collisions
             return _lineCaster.CastFromPoint(origin, direction);
         }
 
-        private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)
+
+        private void UpdateOrientedBounds(BoxCollider2D box, float expansionAmount)
         {
-            Bounds expandedBounds = bounds;
-            expandedBounds.Expand(boundsOffset);
-            Vector2 min = MathExtensions.RotatePointAroundPivot(bounds.min, bounds.center, transform.localEulerAngles.z);
-            Vector2 max = MathExtensions.RotatePointAroundPivot(bounds.max, bounds.center, transform.localEulerAngles.z);
-            _originBounds.Update(min, max);
+            Vector2 center  = box.bounds.center;
+            Vector2 forward = (box.bounds.extents.x + expansionAmount) * box.transform.right.normalized;
+            Vector2 up      = (box.bounds.extents.y + expansionAmount) * box.transform.up.normalized;
+
+            Debug.DrawLine(center, center + forward);
+            Debug.DrawLine(center, center + up);
+
+            _originBounds.Update(center - forward - up, center + forward + up);
         }
 
         private void ComputeRaySpacingAndCounts(float distanceBetweenRays, Vector2 size)
