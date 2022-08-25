@@ -82,7 +82,12 @@ namespace PQ.Common.Collisions
                 return;
             }
 
-            GizmoExtensions.DrawRect(_perimeterCaster.Center, _perimeterCaster.Forward, _perimeterCaster.Up);
+            var center = _perimeterCaster.Center;
+            var xAxis  = _perimeterCaster.Forward;
+            var yAxis  = _perimeterCaster.Up;
+            GizmoExtensions.DrawArrow(center, center + xAxis, Color.red);
+            GizmoExtensions.DrawArrow(center, center + yAxis, Color.green);
+            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
 
             foreach (CastResult result in _perimeterCaster.AllResults)
             {
