@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Diagnostics.Contracts;
 
 
 namespace PQ.Common.Collisions
@@ -12,8 +11,10 @@ namespace PQ.Common.Collisions
     */
     public class OrientedBoundingBox
     {
-        private Collider2D _collider;
+        private Bounds      _bounds;
+        private Collider2D  _collider;
         private Rigidbody2D _rigidBody;
+        private Transform   _transform;
 
         public Vector2 Center      { get; private set; }
         public Vector2 ForwardAxis { get; private set; }
@@ -33,7 +34,6 @@ namespace PQ.Common.Collisions
         public Vector2 LeftTop     { get; private set; }
         public Vector2 RightBottom { get; private set; }
         public Vector2 RightTop    { get; private set; }
-        public Bounds  AABBounds   { get; private set; }
 
         
         public override string ToString() =>
@@ -48,24 +48,28 @@ namespace PQ.Common.Collisions
         {
             _collider  = collider;
             _rigidBody = collider.attachedRigidbody;
+            _transform = collider.transform;
             Update();
         }
 
         public void Update()
         {
-            Bounds aabBounds   = _collider.bounds;
-            float  rotation = _rigidBody.rotation;
-            if (aabBounds != AABBounds || !Mathf.Approximately(rotation, Rotation))
+            Bounds bounds   = _collider.bounds;
+            float  rotation = _collider.transform.localEulerAngles.z;
+            if (bounds != _bounds || !Mathf.Approximately(rotation, Rotation))
             {
-                Set(aabBounds.center, aabBounds.extents, rotation, aabBounds.center.z);
+                _bounds = bounds;
+                Set(bounds.center,
+                    bounds.extents,
+                    _transform.right.normalized,
+                    _transform.up.normalized,
+                    rotation, bounds.center.z);
             }
         }
 
 
-        private void Set(Vector2 center, Vector2 extents, float rotation, float depth)
+        private void Set(Vector2 center, Vector2 extents, Vector2 rightDir, Vector2 upDir, float rotation, float depth)
         {
-            Vector2 rightDir    = ComputeDirection(rotation);
-            Vector2 upDir       = ComputeDirection(rotation + 90f);
             Vector2 forwardAxis = extents.x * rightDir;
             Vector2 upAxis      = extents.y * upDir;
             Vector2 min         = center - forwardAxis - upAxis;
@@ -80,20 +84,12 @@ namespace PQ.Common.Collisions
             Depth       = depth;
             ForwardDir  = rightDir;
             UpDir       = upDir;
-            BehindDir   = -1f * rightDir;
-            DownDir     = -1f * upDir;
+            BehindDir   = -1 * rightDir;
+            DownDir     = -1 * upDir;
             LeftBottom  = new Vector2(min.x, min.y);
             LeftTop     = new Vector2(min.x, max.y);
             RightBottom = new Vector2(max.x, min.y);
             RightTop    = new Vector2(max.x, max.y);
-        }
-
-
-        [Pure]
-        Vector2 ComputeDirection(float degrees)
-        {
-            float radiansAboutUnitCircle = degrees * Mathf.Deg2Rad;
-            return new Vector2(Mathf.Cos(radiansAboutUnitCircle), Mathf.Sin(radiansAboutUnitCircle)).normalized;
         }
     }
 }
