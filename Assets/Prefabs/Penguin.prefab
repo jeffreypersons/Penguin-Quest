@@ -385,17 +385,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c415f633318d75347abc38dc748c8bc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mass: 500
-  _centerOfMassX: 0
-  _centerOfMassY: 0
   _colliderConstraints: 0
-  _penguinOnFeetSettings: {fileID: 11400000, guid: 71f0e623a7cf8a5439ceda6712c812bc,
+  _penguinOnFeetSettings: {fileID: 11400000, guid: dc71f0931f5518447bd325847a856081,
     type: 2}
-  _penguinOnBellySettings: {fileID: 11400000, guid: 40f90a84fd491744e99b56b83d7936a3,
+  _penguinOnBellySettings: {fileID: 11400000, guid: dc71f0931f5518447bd325847a856081,
     type: 2}
-  _penguinRigidbody: {fileID: 4753795910216235720}
   _penguinAnimation: {fileID: 1728887597599890734}
-  _characterController: {fileID: 0}
+  _characterController: {fileID: 2138608317391900897}
   _boundingBoxCollider: {fileID: 4753795910216235721}
   _headCollider: {fileID: 4753795911533567600}
   _torsoCollider: {fileID: 4753795910448514483}
