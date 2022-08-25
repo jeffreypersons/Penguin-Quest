@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using PQ.Common.Extensions;
 
 
 namespace PQ
@@ -60,11 +59,12 @@ namespace PQ
 
         private static bool ValidateBounds(int value, int min, int max)
         {
-            if (!MathExtensions.IsWithinRange(value, min, max))
+            if (min >= max || value < min || value > max)
             {
                 Debug.LogError($"{nameof(value)} must be within range of [{min} and {max}], received {value} instead");
                 return false;
             }
+
             return true;
         }
     }
