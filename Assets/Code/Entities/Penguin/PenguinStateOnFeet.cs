@@ -78,19 +78,17 @@ namespace PQ.Entities.Penguin
         }
 
 
-
-
         // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void OnMoveHorizontalChanged(HorizontalInput state)
         {
             _horizontalInput = state;
             if (_horizontalInput == HorizontalInput.Right)
             {
-                _blob.CharacterController.ChangeFacing(DynamicCharacter2D.Facing.Right);
+                _blob.CharacterController.FaceRight();
             }
             else if (_horizontalInput == HorizontalInput.Left)
             {
-                _blob.CharacterController.ChangeFacing(DynamicCharacter2D.Facing.Left);
+                _blob.CharacterController.FaceLeft();
             }
         }
 

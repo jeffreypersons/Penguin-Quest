@@ -266,7 +266,8 @@ GameObject:
   - component: {fileID: 4753795910216235732}
   - component: {fileID: 9188869225720279910}
   - component: {fileID: 4753795910216235733}
-  - component: {fileID: 4489379026178228054}
+  - component: {fileID: 2138608317391900897}
+  - component: {fileID: 331518940653301218}
   m_Layer: 9
   m_Name: Penguin
   m_TagString: Player
@@ -298,7 +299,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4753795910216235740}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
@@ -394,7 +395,7 @@ MonoBehaviour:
     type: 2}
   _penguinRigidbody: {fileID: 4753795910216235720}
   _penguinAnimation: {fileID: 1728887597599890734}
-  _characterController: {fileID: 4489379026178228054}
+  _characterController: {fileID: 0}
   _boundingBoxCollider: {fileID: 4753795910216235721}
   _headCollider: {fileID: 4753795911533567600}
   _torsoCollider: {fileID: 4753795910448514483}
@@ -432,7 +433,7 @@ MonoBehaviour:
   _toleratedDistanceFromGround: 8
   _perimeterCasterSettings: {fileID: 11400000, guid: 9fe49ebb17348634aa5ed40ce5525fa1,
     type: 2}
---- !u!114 &4489379026178228054
+--- !u!114 &2138608317391900897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -441,7 +442,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 4753795910216235740}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 973d0c2f6d011894a9b03e3d3c584b71, type: 3}
+  m_Script: {fileID: 11500000, guid: bdb583593b5744f4ca1d0115c20342fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &331518940653301218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753795910216235740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70406c6c6808105499fa172e7827cb8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4753795910222470411
