@@ -1,5 +1,5 @@
-﻿using PQ.Common.Extensions;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Diagnostics.Contracts;
 
 
 namespace PQ.Common.Collisions
@@ -13,9 +13,7 @@ namespace PQ.Common.Collisions
     public class OrientedBoundingBox
     {
         private Collider2D _collider;
-        private Transform _transform;
         private Rigidbody2D _rigidBody;
-
 
         public Vector2 Center      { get; private set; }
         public Vector2 ForwardAxis { get; private set; }
@@ -35,6 +33,7 @@ namespace PQ.Common.Collisions
         public Vector2 LeftTop     { get; private set; }
         public Vector2 RightBottom { get; private set; }
         public Vector2 RightTop    { get; private set; }
+        public Bounds  AABBounds   { get; private set; }
 
         
         public override string ToString() =>
@@ -47,43 +46,37 @@ namespace PQ.Common.Collisions
 
         public OrientedBoundingBox(Collider2D collider)
         {
-            _collider = collider;
-            _transform = _collider.transform;
-            _rigidBody = _collider.attachedRigidbody;
+            _collider  = collider;
+            _rigidBody = collider.attachedRigidbody;
             Update();
         }
 
         public void Update()
         {
-            Vector2 worldPosition = _collider.bounds.center;
-            Vector2 worldExtents  = _collider.bounds.extents;
-            float   worldRotation = _rigidBody.rotation;
-
-            if (!MathExtensions.AreComponentsEqual(worldPosition, Center) ||
-                !MathExtensions.AreComponentsEqual(worldExtents, Extents) ||
-                !MathExtensions.AreScalarsEqual(worldRotation, Rotation))
+            Bounds aabBounds   = _collider.bounds;
+            float  rotation = _rigidBody.rotation;
+            if (aabBounds != AABBounds || !Mathf.Approximately(rotation, Rotation))
             {
-                Set(center:   worldPosition,
-                    extents:  worldExtents,
-                    rightDir: _transform.right.normalized,
-                    upDir:    _transform.up.normalized,
-                    depth:    _transform.position.z);
+                Set(aabBounds.center, aabBounds.extents, rotation, aabBounds.center.z);
             }
         }
 
-        private void Set(Vector2 center, Vector2 extents, Vector2 rightDir, Vector2 upDir, float depth)
+
+        private void Set(Vector2 center, Vector2 extents, float rotation, float depth)
         {
+            Vector2 rightDir    = ComputeDirection(rotation);
+            Vector2 upDir       = ComputeDirection(rotation + 90f);
             Vector2 forwardAxis = extents.x * rightDir;
             Vector2 upAxis      = extents.y * upDir;
-            Vector2 min = center - forwardAxis - upAxis;
-            Vector2 max = center + forwardAxis + upAxis;
+            Vector2 min         = center - forwardAxis - upAxis;
+            Vector2 max         = center + forwardAxis + upAxis;
 
             Center      = center;
             ForwardAxis = forwardAxis;
             UpAxis      = upAxis;
             Size        = 2f * extents;
             Extents     = extents;
-            Rotation    = Vector2.Angle(from: upDir, to: upDir);
+            Rotation    = rotation;
             Depth       = depth;
             ForwardDir  = rightDir;
             UpDir       = upDir;
@@ -93,6 +86,14 @@ namespace PQ.Common.Collisions
             LeftTop     = new Vector2(min.x, max.y);
             RightBottom = new Vector2(max.x, min.y);
             RightTop    = new Vector2(max.x, max.y);
+        }
+
+
+        [Pure]
+        Vector2 ComputeDirection(float degrees)
+        {
+            float radiansAboutUnitCircle = degrees * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(radiansAboutUnitCircle), Mathf.Sin(radiansAboutUnitCircle)).normalized;
         }
     }
 }
