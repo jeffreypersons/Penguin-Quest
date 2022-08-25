@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common.Extensions;
+using System.Diagnostics.Contracts;
 
 
 namespace PQ
@@ -23,9 +23,9 @@ namespace PQ
                 ValidatePercentage(musicVolumePercent))
             {
                 NumberOfLives   = numberOfLives;
-                DifficultyLevel = MathExtensions.PercentToRatio(difficultyPercent);
-                SoundVolume     = MathExtensions.PercentToRatio(soundVolumePercent);
-                MusicVolume     = MathExtensions.PercentToRatio(musicVolumePercent);
+                DifficultyLevel = PercentToRatio(difficultyPercent);
+                SoundVolume     = PercentToRatio(soundVolumePercent);
+                MusicVolume     = PercentToRatio(musicVolumePercent);
             }
         }
 
@@ -42,12 +42,16 @@ namespace PQ
 
         private bool ValidatePercentage(int value)
         {
-            if (!MathExtensions.IsWithinRange(value, 0, 100))
+            if (value < 0 || value > 100)
             {
                 Debug.LogError($"`{nameof(value)}` must be given as an integer percentage between 0 and 100, received {value} instead");
                 return false;
             }
             return true;
         }
+
+        
+        [Pure] private static float PercentToRatio(float percent) =>
+            Mathf.Approximately(percent, 0.00f) ? 0.00f : percent / 100.00f;
     }
 }
