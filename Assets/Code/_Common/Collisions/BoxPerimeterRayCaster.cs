@@ -22,8 +22,8 @@ namespace PQ.Common.Collisions
 
         public RayCasterSettings Settings { get; set; }
         public Vector2 Center  => _originBounds.Center;
-        public Vector2 Forward => _originBounds.Size;
-        public Vector2 Up      => _originBounds.Size;
+        public Vector2 Forward => _originBounds.ForwardAxis;
+        public Vector2 Up      => _originBounds.UpAxis;
 
         public float   RaySpacingHorizontalSide { get; private set; }
         public float   RaySpacingVerticalSide   { get; private set; }
@@ -73,6 +73,10 @@ namespace PQ.Common.Collisions
 
             _originBounds.Update();
             ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, _originBounds.Size);
+
+            Debug.DrawLine(Center, Center + Forward);
+            Debug.DrawLine(Center, Center + Up);
+            Debug.DrawLine(_originBounds.LeftBottom, _originBounds.RightTop);
 
             Vector2 horizontalStep = RaySpacingHorizontalSide * _originBounds.ForwardDir;
             for (int i = 0; i < NumRaysPerHorizontalSide; i++)
