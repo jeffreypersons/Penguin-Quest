@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using PQ.Common;
 
 
@@ -50,7 +49,6 @@ namespace PQ.Entities.Penguin
         }
 
 
-
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void OnGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
         private void OnStandUpInputReceived(string _) => _driver.MoveToState(_driver.StateStandingUp);
@@ -61,11 +59,11 @@ namespace PQ.Entities.Penguin
             _horizontalInput = state;
             if (_horizontalInput == HorizontalInput.Right)
             {
-                _blob.CharacterController.ChangeFacing(DynamicCharacter2D.Facing.Right);
+                _blob.CharacterController.FaceRight();
             }
             else if (_horizontalInput == HorizontalInput.Left)
             {
-                _blob.CharacterController.ChangeFacing(DynamicCharacter2D.Facing.Left);
+                _blob.CharacterController.FaceLeft();
             }
         }
 
