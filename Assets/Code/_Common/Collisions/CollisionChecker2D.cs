@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Collisions
@@ -82,14 +81,12 @@ namespace PQ.Common.Collisions
                 return;
             }
 
-            GizmoExtensions.DrawRect(_perimeterCaster.Center, _perimeterCaster.Forward, _perimeterCaster.Up);
-
             foreach (CastResult result in _perimeterCaster.AllResults)
             {
-                GizmoExtensions.DrawLine(from: result.origin, to: result.terminal, color: Color.red);
+                Extensions.GizmoExtensions.DrawLine(from: result.origin, to: result.terminal, color: Color.red);
                 if (result.hit != null)
                 {
-                    GizmoExtensions.DrawLine(from: result.origin, to: result.hit.Value.point, color: Color.green);
+                    Extensions.GizmoExtensions.DrawLine(from: result.origin, to: result.hit.Value.point, color: Color.green);
                 }
             }
         }

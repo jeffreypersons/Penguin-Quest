@@ -55,7 +55,7 @@ namespace PQ.Common.Collisions
         public void Update()
         {
             Bounds bounds   = _collider.bounds;
-            float  rotation = _collider.transform.eulerAngles.z;
+            float  rotation = _collider.transform.localEulerAngles.z;
             if (bounds != _bounds || !Mathf.Approximately(rotation, Rotation))
             {
                 _bounds = bounds;
@@ -86,10 +86,10 @@ namespace PQ.Common.Collisions
             UpDir       = upDir;
             BehindDir   = -1 * rightDir;
             DownDir     = -1 * upDir;
-            LeftBottom  = new(min.x, min.y);
-            LeftTop     = new(min.x, max.y);
-            RightBottom = new(max.x, min.y);
-            RightTop    = new(max.x, max.y);
+            LeftBottom  = new Vector2(min.x, min.y);
+            LeftTop     = new Vector2(min.x, max.y);
+            RightBottom = new Vector2(max.x, min.y);
+            RightTop    = new Vector2(max.x, max.y);
         }
     }
 }

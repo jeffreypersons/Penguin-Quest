@@ -74,6 +74,10 @@ namespace PQ.Common.Collisions
             _originBounds.Update();
             ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, _originBounds.Size);
 
+            Debug.DrawLine(Center, Center + Forward);
+            Debug.DrawLine(Center, Center + Up);
+            Debug.DrawLine(_originBounds.LeftBottom, _originBounds.RightTop);
+
             Vector2 horizontalStep = RaySpacingHorizontalSide * _originBounds.ForwardDir;
             for (int i = 0; i < NumRaysPerHorizontalSide; i++)
             {
