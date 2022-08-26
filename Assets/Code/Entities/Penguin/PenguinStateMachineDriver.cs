@@ -19,7 +19,6 @@ namespace PQ.Entities.Penguin
 
         private Vector2 _initialSpawnPosition;
 
-        // todo: replace with a cleaner, more reusable way to do this
         public FsmState StateFeet       { get; private set; }
         public FsmState StateBelly      { get; private set; }
         public FsmState StateStandingUp { get; private set; }
@@ -27,12 +26,9 @@ namespace PQ.Entities.Penguin
         public FsmState StateMidair     { get; private set; }
 
 
-        // todo: extract out a proper spawning system, or consider moving these to blob
         public void ResetPositioning()
         {
-            _penguinBlob.Rigidbody.velocity = Vector2.zero;
-            _penguinBlob.Rigidbody.position = _initialSpawnPosition;
-            _penguinBlob.Rigidbody.transform.localEulerAngles = Vector3.zero;
+            _penguinBlob.CharacterController.PlaceAt(_initialSpawnPosition, rotation: 0);
         }
 
         protected override void OnTransition(FsmState previous, FsmState next)
@@ -45,7 +41,7 @@ namespace PQ.Entities.Penguin
             _eventCenter = GameEventCenter.Instance;
 
             _penguinBlob = gameObject.GetComponent<PenguinBlob>();
-            _initialSpawnPosition = _penguinBlob.Rigidbody.position;
+            _initialSpawnPosition = _penguinBlob.CharacterController.Position;
             ResetPositioning();
 
             StateFeet       = new PenguinStateOnFeet    (this, "Penguin.State.OnFeet",     _penguinBlob, _eventCenter);

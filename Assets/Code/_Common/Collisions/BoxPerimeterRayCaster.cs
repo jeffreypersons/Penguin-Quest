@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Collisions
@@ -17,13 +16,14 @@ namespace PQ.Common.Collisions
         private CastResult[] _results;
         
         private BoxCollider2D  _box;
-        private OrientedBounds _originBounds;
-        private LineCaster     _lineCaster;
+        private OrientedBoundingBox _originBounds;
+        private LineCaster _lineCaster;
 
 
         public RayCasterSettings Settings { get; set; }
-        public Vector2 CenterOfBounds => _originBounds.Center;
-        public Vector2 SizeOfBounds   => _originBounds.Size;
+        public Vector2 Center  => _originBounds.Center;
+        public Vector2 Forward => _originBounds.ForwardAxis;
+        public Vector2 Up      => _originBounds.UpAxis;
 
         public float   RaySpacingHorizontalSide { get; private set; }
         public float   RaySpacingVerticalSide   { get; private set; }
@@ -52,13 +52,14 @@ namespace PQ.Common.Collisions
 
         public BoxPerimeterRayCaster(BoxCollider2D box, RayCasterSettings settings)
         {
-            this._box          = box;
-            this.Settings      = settings;
-            this._lineCaster   = new LineCaster(settings);
-            this._originBounds = new OrientedBounds();
-            this._results      = Array.Empty<CastResult>();
+            _box          = box;
+            Settings      = settings;
 
-            UpdateOrientedBounds(box.bounds, box.transform, settings.Offset);
+            _lineCaster   = new LineCaster(Settings);
+            _originBounds = new OrientedBoundingBox(_box);
+            _results      = Array.Empty<CastResult>();
+
+            _originBounds.Update();
             ComputeRaySpacingAndCounts(settings.DistanceBetweenRays, _originBounds.Size);
             Debug.Log(this);
         }
@@ -70,10 +71,10 @@ namespace PQ.Common.Collisions
                 return;
             }
 
-            UpdateOrientedBounds(_box.bounds, _box.transform, Settings.Offset);
+            _originBounds.Update();
             ComputeRaySpacingAndCounts(Settings.DistanceBetweenRays, _originBounds.Size);
 
-            Vector2 horizontalStep = RaySpacingHorizontalSide * _originBounds.RightDir;
+            Vector2 horizontalStep = RaySpacingHorizontalSide * _originBounds.ForwardDir;
             for (int i = 0; i < NumRaysPerHorizontalSide; i++)
             {
                 Vector2 offsetFromLeftSide = (i * horizontalStep);
@@ -85,23 +86,14 @@ namespace PQ.Common.Collisions
             for (int i = 0; i < NumRaysPerVerticalSide; i++)
             {
                 Vector2 offsetFromBottomSide = (i * verticalStep);
-                _results[_leftStartIndex  + i] = Cast(_originBounds.LeftBottom  + offsetFromBottomSide, _originBounds.LeftDir);
-                _results[_rightStartIndex + i] = Cast(_originBounds.RightBottom + offsetFromBottomSide, _originBounds.RightDir);
+                _results[_leftStartIndex  + i] = Cast(_originBounds.LeftBottom  + offsetFromBottomSide, _originBounds.BehindDir);
+                _results[_rightStartIndex + i] = Cast(_originBounds.RightBottom + offsetFromBottomSide, _originBounds.ForwardDir);
             }
         }
 
         private CastResult Cast(Vector2 origin, Vector2 direction)
         {
             return _lineCaster.CastFromPoint(origin, direction);
-        }
-
-        private void UpdateOrientedBounds(Bounds bounds, Transform transform, float boundsOffset)
-        {
-            Bounds expandedBounds = bounds;
-            expandedBounds.Expand(boundsOffset);
-            Vector2 min = MathExtensions.RotatePointAroundPivot(bounds.min, bounds.center, transform.localEulerAngles.z);
-            Vector2 max = MathExtensions.RotatePointAroundPivot(bounds.max, bounds.center, transform.localEulerAngles.z);
-            _originBounds.Update(min, max);
         }
 
         private void ComputeRaySpacingAndCounts(float distanceBetweenRays, Vector2 size)

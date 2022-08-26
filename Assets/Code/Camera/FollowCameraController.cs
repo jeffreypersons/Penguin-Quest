@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common.Extensions;
+using System.Diagnostics.Contracts;
 
 
 namespace PQ.Camera
@@ -167,7 +167,7 @@ namespace PQ.Camera
         private void AdjustZoomTowards(float targetOrthoSize)
         {
             float current = _cam.orthographicSize;
-            if (!MathExtensions.IsWithinTolerance(current, targetOrthoSize, _differenceFromTargetOrthoSizeThreshold))
+            if (!IsWithinTolerance(current, targetOrthoSize, _differenceFromTargetOrthoSizeThreshold))
             {
                 _cam.orthographicSize = Mathf.SmoothDamp(current, targetOrthoSize, ref _zoomVelocity,
                     Time.deltaTime, _maxZoomSpeed);
@@ -177,11 +177,18 @@ namespace PQ.Camera
         private void MoveCameraTowards(Vector3 target)
         {
             Vector3 current = _cam.transform.position;
-            if (!MathExtensions.IsWithinTolerance(current, target, _distanceFromTargetPositionThreshold))
+            if (!IsWithinTolerance(current, target, _distanceFromTargetPositionThreshold))
             {
                 Vector2 position = Vector2.SmoothDamp(current, target, ref _moveVelocity, Time.deltaTime, _maxMoveSpeed);
                 _cam.transform.position = new Vector3(position.x, position.y, target.z);
             }
         }
+
+
+        [Pure] private static bool IsWithinTolerance(float a, float b, float tolerance) =>
+            Mathf.Abs(b - a) <= tolerance;
+
+        [Pure] private static bool IsWithinTolerance(Vector2 a, Vector2 b, float tolerance) =>
+            Mathf.Abs(b.x - a.x) <= tolerance && Mathf.Abs(b.y - a.y) <= tolerance;
     }
 }
