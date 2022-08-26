@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Diagnostics.Contracts;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Camera
@@ -47,16 +47,15 @@ namespace PQ.Camera
             UpdateSize();
         }
 
-
         private void UpdatePosition()
         {
             Vector3 newCenter = _cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, _cam.nearClipPlane));
-            if (!Mathf.Approximately(newCenter.z, NearClipOffset))
+            if (!MathExtensions.AreScalarsEqual(newCenter.z, NearClipOffset))
             {
                 NearClipOffset = newCenter.z;
             }
         
-            if (!AreComponentsEqual(newCenter, Center))
+            if (!MathExtensions.AreComponentsEqual(newCenter, Center))
             {
                 Center = newCenter;
                 HasPositionChangedSinceLastUpdate = true;
@@ -66,13 +65,12 @@ namespace PQ.Camera
                 HasPositionChangedSinceLastUpdate = false;
             }
         }
-
         private void UpdateSize()
         {
             Vector2 newMin = _cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, _cam.nearClipPlane));
             Vector2 newMax = _cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, _cam.nearClipPlane));
         
-            if (!AreComponentsEqual(newMin, Min) || !AreComponentsEqual(newMax, Max))
+            if (!MathExtensions.AreComponentsEqual(newMin, Min) || !MathExtensions.AreComponentsEqual(newMax, Max))
             {
                 Min     = newMin;
                 Max     = newMax;
@@ -85,9 +83,5 @@ namespace PQ.Camera
                 HasSizeChangedSinceLastUpdate = false;
             }
         }
-
-
-        [Pure] private static bool AreComponentsEqual(Vector2 a, Vector2 b) =>
-            Mathf.Approximately(a.x, b.x) && Mathf.Approximately(a.y, b.y);
     }
 }
