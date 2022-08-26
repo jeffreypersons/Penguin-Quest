@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using PQ.Common.Extensions;
 
 
 namespace PQ
@@ -12,10 +11,10 @@ namespace PQ
         public static int MAX_LIVES_GIVEN = 100;
         public static readonly string DEFAULT_LEVEL = "The Beginnings";
 
-        public string LevelName { get; private set; }
-        public int Score { get; private set; }
-        public int Lives { get; private set; }
-        public int LivesGiven { get; private set; }
+        public string LevelName  { get; private set; }
+        public int    Score      { get; private set; }
+        public int    Lives      { get; private set; }
+        public int    LivesGiven { get; private set; }
 
         public override string ToString() =>
             $"Player is in level {LevelName}, " +
@@ -33,8 +32,8 @@ namespace PQ
             LevelName = DEFAULT_LEVEL;
             if (ValidateBounds(livesGiven, MIN_LIVES_GIVEN, MAX_LIVES_GIVEN))
             {
-                Score = MIN_SCORE;
-                Lives = livesGiven;
+                Score      = MIN_SCORE;
+                Lives      = livesGiven;
                 LivesGiven = livesGiven;
             }
         }
@@ -60,11 +59,12 @@ namespace PQ
 
         private static bool ValidateBounds(int value, int min, int max)
         {
-            if (!MathExtensions.IsWithinRange(value, min, max))
+            if (min >= max || value < min || value > max)
             {
                 Debug.LogError($"{nameof(value)} must be within range of [{min} and {max}], received {value} instead");
                 return false;
             }
+
             return true;
         }
     }
