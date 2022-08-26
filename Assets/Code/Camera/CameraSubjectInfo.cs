@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Diagnostics.Contracts;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Camera
@@ -33,8 +33,8 @@ namespace PQ.Camera
                 Debug.LogError($"CameraSubjectInfo : Received null _subject");
             }
 
-            _subject  = subject;
-            _collider = ExtractColliderFromTransform(subject);
+            this._subject  = subject;
+            this._collider = ExtractColliderFromTransform(subject);
 
             Update();
             HasPositionChangedSinceLastUpdate = false;
@@ -57,7 +57,7 @@ namespace PQ.Camera
         private void UpdatePosition()
         {
             Vector2 newCenter = HasCollider ? _collider.bounds.center : _subject.position;
-            if (!AreComponentsEqual(newCenter, Center))
+            if (!MathExtensions.AreComponentsEqual(newCenter, Center))
             {
                 Center = newCenter;
                 HasPositionChangedSinceLastUpdate = true;
@@ -71,7 +71,7 @@ namespace PQ.Camera
         private void UpdateSize()
         {
             Vector2 newSize = HasCollider ? _collider.bounds.size : Vector3.zero;
-            if (!AreComponentsEqual(newSize, Size))
+            if (!MathExtensions.AreComponentsEqual(newSize, Size))
             {
                 Size    = newSize;
                 Extents = newSize * 0.50f;
@@ -83,11 +83,9 @@ namespace PQ.Camera
             }
         }
 
-
-        [Pure] private static Collider2D ExtractColliderFromTransform(Transform transform) =>
-            transform.TryGetComponent(out Collider2D collider) ? collider : null;
-
-        [Pure] private static bool AreComponentsEqual(Vector2 a, Vector2 b) =>
-            Mathf.Approximately(a.x, b.x) && Mathf.Approximately(a.y, b.y);
+        private static Collider2D ExtractColliderFromTransform(Transform transform)
+        {
+            return transform.TryGetComponent(out Collider2D collider) ? collider : null;
+        }
     }
 }
