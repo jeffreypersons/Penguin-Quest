@@ -24,16 +24,27 @@ namespace PQ.Entities.Penguin
     [AddComponentMenu("PenguinBlob")]
     public class PenguinBlob : MonoBehaviour
     {
+        [Header("Mass Settings")]
+        [Tooltip("Constant (fixed) total mass for rigidbody")]
+        [Range(50, 5000)] [SerializeField] private float _mass = 500;
+
+        [Tooltip("Center of mass x component relative to skeletal root (ie smaller x means more prone to fall backwards)")]
+        [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassX = 0.00f;
+
+        [Tooltip("Center of mass y component relative to skeletal root (ie smaller y means more resistant to falling over)")]
+        [Range(-500.00f, 500.00f)] [SerializeField] private float _centerOfMassY = 0.00f;
+
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         
         [Header("Setting Bundles")]
-        [SerializeField] private KinematicCharacter2DSettings _penguinOnFeetSettings;
-        [SerializeField] private KinematicCharacter2DSettings _penguinOnBellySettings;
+        [SerializeField] private DynamicController2DSettings _penguinOnFeetSettings;
+        [SerializeField] private DynamicController2DSettings _penguinOnBellySettings;
 
         [Header("Component References")]
-        [SerializeField] private PenguinAnimation     _penguinAnimation;
-        [SerializeField] private KinematicCharacter2D _characterController;
+        [SerializeField] private Rigidbody2D _penguinRigidbody;
+        [SerializeField] private PenguinAnimation _penguinAnimation;
+        [SerializeField] private DynamicCharacter2D _characterController;
 
         [Header("Collider References")]
         [SerializeField] private BoxCollider2D     _boundingBoxCollider;
@@ -45,12 +56,14 @@ namespace PQ.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _backFootCollider;
         
         
-        public KinematicCharacter2DSettings OnFeetSettings  => _penguinOnFeetSettings;
-        public KinematicCharacter2DSettings OnBellySettings => _penguinOnBellySettings;
+        public DynamicController2DSettings OnFeetSettings  => _penguinOnFeetSettings;
+        public DynamicController2DSettings OnBellySettings => _penguinOnFeetSettings;
 
-        public PenguinAnimation     Animation            => _penguinAnimation;
-        public KinematicCharacter2D CharacterController  => _characterController;
-        public Vector2              SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
+        public PenguinAnimation      Animation            => _penguinAnimation;
+        public DynamicCharacter2D CharacterController  => _characterController;
+        public Rigidbody2D           Rigidbody            => _penguinRigidbody;
+        public Vector2               SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
+        public Vector2               CenterOfMass         => _penguinRigidbody.worldCenterOfMass;
 
         public BoxCollider2D ColliderBoundingBox       => _boundingBoxCollider;
         public Collider2D    ColliderHead              => _headCollider;
@@ -107,9 +120,27 @@ namespace PQ.Entities.Penguin
         }
         
         #if UNITY_EDITOR
+        void OnValidate()
+        {
+            if (_penguinRigidbody == null || _penguinRigidbody.useAutoMass)
+            {
+                return;
+            }
+            if (!Mathf.Approximately(_centerOfMassX, _penguinRigidbody.centerOfMass.x) ||
+                !Mathf.Approximately(_centerOfMassY, _penguinRigidbody.centerOfMass.y))
+            {
+                _penguinRigidbody.centerOfMass = new Vector2(_centerOfMassX, _centerOfMassY);
+            }
+            if (!Mathf.Approximately(_mass, _penguinRigidbody.mass))
+            {
+                _penguinRigidbody.mass = _mass;
+            }
+        }
+
         void OnDrawGizmos()
         {
             GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
+            GizmoExtensions.DrawSphere(_penguinRigidbody.worldCenterOfMass,    2.00f, Color.red);
         }
         #endif
         
