@@ -14,7 +14,7 @@ namespace PQ.Common.Casts
         private Vector2 _segmentEnd;
         private Vector2 _offsetBetweenRays;
 
-        private RayCaster  _rayCaster;
+        private RayCaster _rayCaster;
         private RayCaster.Hit?[] _results;
 
 
@@ -28,9 +28,26 @@ namespace PQ.Common.Casts
         public int       RayCount        => _results.Length;
         public float     RaySpacing      => _offsetBetweenRays.magnitude;
         public Vector2   RayDirection    => _rayDir;
-        public float     RayLength       => _rayCaster.MaxDistance;
+        public float     RayDistance     => _rayCaster.MaxDistance;
         public LayerMask RayTargetLayers => _rayCaster.LayerMask;
 
+        public override string ToString() =>
+            $"{GetType().Name}:" +
+                $"Segment{{" +
+                    $"start:{SegmentStart}," +
+                    $"end:{SegmentEnd}}}," +
+                    $"length:{SegmentLength}}}, " +
+                $"RayOrigins{{" +
+                    $"spacing:{RaySpacing}," +
+                    $"count:{RayCount}}}, " +
+                $"RayCasts{{" +
+                    $"direction:{RayDirection}," +
+                    $"distance:{RayDistance}," +
+                    $"layerMask:{RayTargetLayers}}}";
+
+        public RayCasterSegment() :
+            this(Vector2.zero, Vector2.zero, distanceBetweenRays: 0.5f, Vector2.right)
+        { }
 
         public RayCasterSegment(Vector2 start, Vector2 end, float distanceBetweenRays, Vector2 castDirection)
         {
@@ -40,15 +57,6 @@ namespace PQ.Common.Casts
             UpdateCastParams(castDirection, layerMask: ~0, maxDistance: Mathf.Infinity);
         }
 
-        /* In the same direction, cast out rays from each origin along the segment. */
-        public void CastAll()
-        {
-            for (int rayIndex = 0; rayIndex < _results.Length; rayIndex++)
-            {
-                Cast(rayIndex);
-            }
-        }
-
         /* Between which points and with how much gap should ray origins be placed? */
         public void UpdatePositioning(Vector2 start, Vector2 end, float distanceBetweenRays)
         {
@@ -56,8 +64,18 @@ namespace PQ.Common.Casts
             float   segmentDistance  = segment.magnitude;
             Vector2 segmentDirection = segment.normalized;
 
-            int   rayCount   = Mathf.Clamp(Mathf.RoundToInt(segmentDistance / distanceBetweenRays), MinNumRays, MaxNumRays);
-            float raySpacing = segmentDistance / (rayCount - 1);
+            int rayCount;
+            float raySpacing;
+            if (Mathf.Approximately(segmentDistance, 0f) || segmentDirection != Vector2.zero)
+            {
+                rayCount   = 1;
+                raySpacing = 0.5f;
+            }
+            else
+            {
+                rayCount   = Mathf.RoundToInt(segmentDistance / distanceBetweenRays);
+                raySpacing = segmentDistance / (rayCount - 1);
+            }
 
             _segmentStart      = start;
             _segmentEnd        = end;
@@ -69,13 +87,21 @@ namespace PQ.Common.Casts
         }
 
         /* In what direction, what layers, and for what distance should we cast rays? */
-        public void UpdateCastParams(Vector2 direction, LayerMask layerMask, float maxDistance)
+        public void UpdateCastParams(Vector2 rayDirection, LayerMask layerMask, float maxDistance)
         {
-            _rayDir                = direction;
+            _rayDir                = rayDirection.normalized;
             _rayCaster.LayerMask   = layerMask;
             _rayCaster.MaxDistance = maxDistance;
         }
 
+        /* In the same direction, cast out rays from each origin along the segment. */
+        public void CastAll()
+        {
+            for (int rayIndex = 0; rayIndex < _results.Length; rayIndex++)
+            {
+                Cast(rayIndex);
+            }
+        }
 
         private void Cast(int rayIndex)
         {
