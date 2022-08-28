@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PQ.Common.Collisions
+namespace PQ.Common
 {
     /*
     Box aligned with axes extending from center to right and top sides respectively.
@@ -9,7 +9,7 @@ namespace PQ.Common.Collisions
     In other words, represents an (worldspace) oriented bounding box, given (local space)
     bounds of an axis-aligned bounding box.
     */
-    public class OrientedBounds
+    public class OrientedBounds2D
     {
         private Bounds      _bounds;
         private Collider2D  _collider;
@@ -49,7 +49,7 @@ namespace PQ.Common.Collisions
                 $"Depth:{Depth}";
 
 
-        public OrientedBounds(Collider2D collider)
+        public OrientedBounds2D(Collider2D collider)
         {
             _collider  = collider;
             _rigidBody = collider.attachedRigidbody;
@@ -68,29 +68,30 @@ namespace PQ.Common.Collisions
                     bounds.extents,
                     _transform.right.normalized,
                     _transform.up.normalized,
-                    rotation, bounds.center.z);
+                    rotation,
+                    bounds.center.z);
             }
         }
 
 
-        private void Set(Vector2 center, Vector2 extents, Vector2 rightDir, Vector2 upDir, float rotation, float depth)
+        private void Set(Vector2 center, Vector2 extents, Vector2 forwardDir, Vector2 upDir, float rotation, float depth)
         {
-            Vector2 forwardAxis = extents.x * rightDir;
+            Vector2 forwardAxis = extents.x * forwardDir;
             Vector2 upAxis      = extents.y * upDir;
             Vector2 min         = center - forwardAxis - upAxis;
             Vector2 max         = center + forwardAxis + upAxis;
 
             Center      = center;
-            AxisX = forwardAxis;
-            AxisY      = upAxis;
+            AxisX       = forwardAxis;
+            AxisY       = upAxis;
             Size        = 2f * extents;
             Extents     = extents;
             Rotation    = rotation;
             Depth       = depth;
-            Forward  = rightDir;
-            Up       = upDir;
-            Back   = -1 * rightDir;
-            Down     = -1 * upDir;
+            Forward     = forwardDir;
+            Up          = upDir;
+            Back        = -1f * forwardDir;
+            Down        = -1f * upDir;
             RearBottom  = new(min.x, min.y);
             RearTop     = new(min.x, max.y);
             FrontBottom = new(max.x, min.y);

@@ -35,7 +35,7 @@ namespace PQ.Common
         private RayCasterSegment _topSideCaster;
 
         private BoxCollider2D _boundingBox;
-        private OrientedBoundingBox _bounds;
+        private OrientedBounds2D _bounds;
 
 
         void Awake()

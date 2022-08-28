@@ -17,7 +17,7 @@ namespace PQ.Common.Collisions
         private CastResult[] _results;
         
         private BoxCollider2D  _box;
-        private OrientedBoundingBox _originBounds;
+        private OrientedBounds _originBounds;
         private LineCaster _lineCaster;
 
 
@@ -57,7 +57,7 @@ namespace PQ.Common.Collisions
             Settings      = settings;
 
             _lineCaster   = new LineCaster(Settings);
-            _originBounds = new OrientedBoundingBox(_box);
+            _originBounds = new OrientedBounds(_box);
             _results      = Array.Empty<CastResult>();
 
             _originBounds.Update();
