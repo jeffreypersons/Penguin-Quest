@@ -41,7 +41,7 @@ namespace PQ.Entities.Penguin
             _eventCenter = GameEventCenter.Instance;
 
             _penguinBlob = gameObject.GetComponent<PenguinBlob>();
-            _initialSpawnPosition = _penguinBlob.CharacterController.Position;
+            _initialSpawnPosition = _penguinBlob.SkeletalRootPosition;
             ResetPositioning();
 
             StateFeet       = new PenguinStateOnFeet    (this, "Penguin.State.OnFeet",     _penguinBlob, _eventCenter);

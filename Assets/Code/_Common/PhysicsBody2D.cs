@@ -3,21 +3,25 @@ using UnityEngine;
 
 namespace PQ.Common
 {
-    // todo: make this the game's core physics component source of truth, adding mass, etc
-    //       this would probably entail having an info pane in the inspector that displays the same sort of info
-    //       that rigidbody does, for contacts/positions/velocity/etc
+    /*
+    Wrapper over rigidbody, colliders, and transforms to form a single source of truth for 2D movement.
+
+    Note that no caching is done - that is up to any client code.
+    */
     [ExecuteAlways]
     [System.Serializable]
-    [AddComponentMenu("KinematicBody2D")]
-    public class KinematicBody2D : MonoBehaviour
+    [AddComponentMenu("PhysicsBody2D")]
+    public sealed class PhysicsBody2D : MonoBehaviour
     {
         private Rigidbody2D _rigidBody;
+        private Collider2D  _collider;
 
-        public Vector2 Forward  => _rigidBody.transform.right.normalized;
-        public Vector2 Up       => _rigidBody.transform.up.normalized;
-        public Vector2 Position => _rigidBody.position;
-        public float   Rotation => _rigidBody.rotation;
-        public float   Depth    => _rigidBody.transform.position.z;
+        public Vector2 Forward      => _rigidBody.transform.right.normalized;
+        public Vector2 Up           => _rigidBody.transform.up.normalized;
+        public Vector2 Position     => _collider? _collider.bounds.center : _rigidBody.position;
+        public float   Rotation     => _rigidBody.rotation;
+        public Vector2 BoundExtents => _collider? _collider.bounds.extents : Vector2.zero;
+        public float   Depth        => _rigidBody.transform.position.z;
 
         public override string ToString() =>
             $"KinematicBody2D@({Position.x},{Position.y},{Depth}), " +
@@ -29,6 +33,7 @@ namespace PQ.Common
         void Awake()
         {
             _rigidBody = gameObject.GetComponent<Rigidbody2D>();
+            _collider  = gameObject.GetComponent<Collider2D>();
             if (_rigidBody == null)
             {
                 throw new MissingComponentException("Expected attached rigidbody2D - not found");

@@ -23,6 +23,7 @@ namespace PQ.Common.Casts
         public ReadOnlySpan<RayCaster.Hit?> RayCastResults => _results.AsSpan();
 
         public Vector2   SegmentStart    => _segmentStart;
+        public Vector2   SegmentMid      => Vector2.Lerp(_segmentStart, _segmentEnd, 0.50f);
         public Vector2   SegmentEnd      => _segmentEnd;
         public float     SegmentLength   => (_segmentEnd - _segmentStart).magnitude;
         public int       RayCount        => _results.Length;

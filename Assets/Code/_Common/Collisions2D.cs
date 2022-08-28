@@ -1,7 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using PQ.Common.Extensions;
-using PQ.Common.Collisions;
 using PQ.Common.Casts;
 
 
@@ -29,18 +27,19 @@ namespace PQ.Common
         [SerializeField] private SensorSettings _bottomSideCasterSettings;
         [SerializeField] private SensorSettings _topSideCasterSettings;
 
+        private Vector2 _center;
+        private Vector2 _xAxis;
+        private Vector2 _yAxis;
+        private PhysicsBody2D _physicsBody;
         private RayCasterSegment _backSideCaster;
         private RayCasterSegment _frontSideCaster;
         private RayCasterSegment _bottomSideCaster;
         private RayCasterSegment _topSideCaster;
 
-        private BoxCollider2D _boundingBox;
-        private OrientedBounds2D _bounds;
-
 
         void Awake()
         {
-            _boundingBox = gameObject.GetComponent<BoxCollider2D>();
+            _physicsBody = gameObject.GetComponent<PhysicsBody2D>();
             _backSideCaster   = new();
             _frontSideCaster  = new();
             _bottomSideCaster = new();
@@ -65,43 +64,48 @@ namespace PQ.Common
             UpdateAll();
         }
 
-        
+
         private void UpdateAll()
         {
-            if (!_boundingBox)
+            _center = _physicsBody.Position;
+            _xAxis  = _physicsBody.BoundExtents.x * _physicsBody.Forward;
+            _yAxis  = _physicsBody.BoundExtents.y * _physicsBody.Up;
+            if (_xAxis == Vector2.zero || _yAxis == Vector2.zero)
             {
                 return;
             }
 
-            _bounds.Update();
-
+            Vector2 rearBottom  = _center - _xAxis - _yAxis;
+            Vector2 rearTop     = _center - _xAxis + _yAxis;
+            Vector2 frontBottom = _center + _xAxis - _yAxis;
+            Vector2 frontTop    = _center + _xAxis + _yAxis;
             UpdateCaster(
                 caster:       _backSideCaster,
                 settings:     _backSideCasterSettings,
-                start:        _bounds.RearBottom,
-                end:          _bounds.RearTop,
-                rayDirection: _bounds.Back);
+                start:        rearBottom,
+                end:          rearTop,
+                rayDirection: -_xAxis);
 
             UpdateCaster(
                 caster:       _frontSideCaster,
                 settings:     _frontSideCasterSettings,
-                start:        _bounds.FrontBottom,
-                end:          _bounds.FrontTop,
-                rayDirection: _bounds.Forward);
+                start:        frontBottom,
+                end:          frontTop,
+                rayDirection: _xAxis);
 
             UpdateCaster(
                 caster:       _bottomSideCaster,
                 settings:     _bottomSideCasterSettings,
-                start:        _bounds.RearBottom,
-                end:          _bounds.FrontBottom,
-                rayDirection: _bounds.Down);
+                start:        rearBottom,
+                end:          frontBottom,
+                rayDirection: -_yAxis);
 
             UpdateCaster(
                 caster:       _topSideCaster,
                 settings:     _topSideCasterSettings,
-                start:        _bounds.RearTop,
-                end:          _bounds.FrontTop,
-                rayDirection: _bounds.Up);
+                start:        rearTop,
+                end:          frontTop,
+                rayDirection: _yAxis);
         }
 
 
@@ -121,9 +125,15 @@ namespace PQ.Common
                 return;
             }
 
-            //GizmoExtensions.DrawArrow(from: _bounds.Center, to: _bounds.Center + _bounds.AxisX, color: Color.red);
-            //GizmoExtensions.DrawArrow(from: _bounds.Center, to: _bounds.Center + _bounds.AxisY, color: Color.green);
-            //GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
+            // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window
+            GizmoExtensions.DrawLine(_backSideCaster  .SegmentStart, _backSideCaster  .SegmentEnd, Color.gray);
+            GizmoExtensions.DrawLine(_frontSideCaster .SegmentStart, _frontSideCaster .SegmentEnd, Color.gray);
+            GizmoExtensions.DrawLine(_bottomSideCaster.SegmentStart, _bottomSideCaster.SegmentEnd, Color.gray);
+            GizmoExtensions.DrawLine(_topSideCaster   .SegmentStart, _topSideCaster   .SegmentEnd, Color.gray);
+
+            // draw a pair of arrows from the that should be identical to the transform's axes in the editor window
+            GizmoExtensions.DrawArrow(from: _center, to: _center + _xAxis, color: Color.red);
+            GizmoExtensions.DrawArrow(from: _center, to: _center + _yAxis, color: Color.green);
         }
         #endif
     }

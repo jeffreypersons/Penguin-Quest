@@ -1,12 +1,12 @@
 using UnityEngine;
-using PQ.Common;
+using PQ.Entities;
 
 
 namespace PQ.TestScenes.Minimal
 {
     public class RectEntity : MonoBehaviour
     {
-        [SerializeField] private KinematicCharacter2DSettings _characterSettings;
+        [SerializeField] private Character2DSettings _characterSettings;
 
         private GameEventCenter _eventCenter;
         private RectMovement _controller;

@@ -81,16 +81,16 @@ namespace PQ.Common.Collisions
             Vector2 max         = center + forwardAxis + upAxis;
 
             Center      = center;
-            AxisX = forwardAxis;
-            AxisY      = upAxis;
+            AxisX       = forwardAxis;
+            AxisY       = upAxis;
             Size        = 2f * extents;
             Extents     = extents;
             Rotation    = rotation;
             Depth       = depth;
-            Forward  = rightDir;
-            Up       = upDir;
-            Back   = -1 * rightDir;
-            Down     = -1 * upDir;
+            Forward     = rightDir;
+            Up          = upDir;
+            Back        = -1 * rightDir;
+            Down        = -1 * upDir;
             RearBottom  = new(min.x, min.y);
             RearTop     = new(min.x, max.y);
             FrontBottom = new(max.x, min.y);
