@@ -13,37 +13,57 @@ namespace PQ.Common
     */
     public class Collisions2D : MonoBehaviour
     {
-        public struct SensorSettings
+        public struct Settings
         {
-            public float     offset;
-            public float     distance;
-            public float     distanceBetweenRays;
-            public LayerMask layerMask;
-        }
+            public readonly float distanceToCast;
+            public readonly float distanceBetweenRays;
+            public readonly LayerMask layerMask;
 
-        [Header("Sensor Settings")]
-        [SerializeField] private SensorSettings _backSideCasterSettings;
-        [SerializeField] private SensorSettings _frontSideCasterSettings;
-        [SerializeField] private SensorSettings _bottomSideCasterSettings;
-        [SerializeField] private SensorSettings _topSideCasterSettings;
+            public Settings(float distanceToCast, float distanceBetweenRays, LayerMask layerMask)
+            {
+                this.distanceToCast      = distanceToCast;
+                this.distanceBetweenRays = distanceBetweenRays;
+                this.layerMask           = layerMask;
+            }
+        }
+        public struct Result
+        {
+            public readonly float hitPercentage;
+            public readonly float hitDistance;
+
+            public Result(float hitPercentage, float hitDistance)
+            {
+                this.hitPercentage = hitPercentage;
+                this.hitDistance   = hitDistance;
+            }
+        }
 
         private Vector2 _center;
         private Vector2 _xAxis;
         private Vector2 _yAxis;
         private PhysicsBody2D _physicsBody;
-        private RayCasterSegment _backSideCaster;
-        private RayCasterSegment _frontSideCaster;
-        private RayCasterSegment _bottomSideCaster;
-        private RayCasterSegment _topSideCaster;
-
+        private RayCasterSegment _backSensor;
+        private RayCasterSegment _frontSensor;
+        private RayCasterSegment _bottomSensor;
+        private RayCasterSegment _topSensor;
+        
+        public Settings BackSensorSettings   { get; set; }
+        public Settings FrontSensorSettings  { get; set; }
+        public Settings BottomSensorSettings { get; set; }
+        public Settings TopSensorSettings    { get; set; }
+        
+        public Result BackSensorResults   { get; set; }
+        public Result FrontSensorResults  { get; set; }
+        public Result BottomSensorResults { get; set; }
+        public Result TopSensorResults    { get; set; }
 
         void Awake()
         {
             _physicsBody = gameObject.GetComponent<PhysicsBody2D>();
-            _backSideCaster   = new();
-            _frontSideCaster  = new();
-            _bottomSideCaster = new();
-            _topSideCaster    = new();
+            _backSensor   = new();
+            _frontSensor  = new();
+            _bottomSensor = new();
+            _topSensor    = new();
         }
 
         void Start()
@@ -53,10 +73,10 @@ namespace PQ.Common
 
         void FixedUpdate()
         {
-            _backSideCaster  .CastAll();
-            _frontSideCaster .CastAll();
-            _bottomSideCaster.CastAll();
-            _topSideCaster   .CastAll();
+            _backSensor  .CastAll();
+            _frontSensor .CastAll();
+            _bottomSensor.CastAll();
+            _topSensor   .CastAll();
         }
 
         void Update()
@@ -80,39 +100,39 @@ namespace PQ.Common
             Vector2 frontBottom = _center + _xAxis - _yAxis;
             Vector2 frontTop    = _center + _xAxis + _yAxis;
             UpdateCaster(
-                caster:       _backSideCaster,
-                settings:     _backSideCasterSettings,
+                caster:       _backSensor,
+                settings:     BackSensorSettings,
                 start:        rearBottom,
                 end:          rearTop,
                 rayDirection: -_xAxis);
 
             UpdateCaster(
-                caster:       _frontSideCaster,
-                settings:     _frontSideCasterSettings,
+                caster:       _frontSensor,
+                settings:     FrontSensorSettings,
                 start:        frontBottom,
                 end:          frontTop,
                 rayDirection: _xAxis);
 
             UpdateCaster(
-                caster:       _bottomSideCaster,
-                settings:     _bottomSideCasterSettings,
+                caster:       _bottomSensor,
+                settings:     BottomSensorSettings,
                 start:        rearBottom,
                 end:          frontBottom,
                 rayDirection: -_yAxis);
 
             UpdateCaster(
-                caster:       _topSideCaster,
-                settings:     _topSideCasterSettings,
+                caster:       _topSensor,
+                settings:     TopSensorSettings,
                 start:        rearTop,
                 end:          frontTop,
                 rayDirection: _yAxis);
         }
 
 
-        private static void UpdateCaster(RayCasterSegment caster, SensorSettings settings,
+        private static void UpdateCaster(RayCasterSegment caster, Settings settings,
             Vector2 start, Vector2 end, Vector2 rayDirection)
         {
-            caster.UpdateCastParams(rayDirection, settings.layerMask, settings.distance);
+            caster.UpdateCastParams(rayDirection, settings.layerMask, settings.distanceToCast);
             caster.UpdatePositioning(start, end, settings.distanceBetweenRays);
         }
 
@@ -126,10 +146,10 @@ namespace PQ.Common
             }
 
             // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window
-            GizmoExtensions.DrawLine(_backSideCaster  .SegmentStart, _backSideCaster  .SegmentEnd, Color.gray);
-            GizmoExtensions.DrawLine(_frontSideCaster .SegmentStart, _frontSideCaster .SegmentEnd, Color.gray);
-            GizmoExtensions.DrawLine(_bottomSideCaster.SegmentStart, _bottomSideCaster.SegmentEnd, Color.gray);
-            GizmoExtensions.DrawLine(_topSideCaster   .SegmentStart, _topSideCaster   .SegmentEnd, Color.gray);
+            GizmoExtensions.DrawLine(_backSensor  .SegmentStart, _backSensor  .SegmentEnd, Color.gray);
+            GizmoExtensions.DrawLine(_frontSensor .SegmentStart, _frontSensor .SegmentEnd, Color.gray);
+            GizmoExtensions.DrawLine(_bottomSensor.SegmentStart, _bottomSensor.SegmentEnd, Color.gray);
+            GizmoExtensions.DrawLine(_topSensor   .SegmentStart, _topSensor   .SegmentEnd, Color.gray);
 
             // draw a pair of arrows from the that should be identical to the transform's axes in the editor window
             GizmoExtensions.DrawArrow(from: _center, to: _center + _xAxis, color: Color.red);

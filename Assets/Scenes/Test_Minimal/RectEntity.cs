@@ -9,13 +9,13 @@ namespace PQ.TestScenes.Minimal
         [SerializeField] private Character2DSettings _characterSettings;
 
         private GameEventCenter _eventCenter;
-        private RectMovement _controller;
+        private RectMovementController _controller;
 
         private HorizontalInput _horizontalInput;
 
         void Awake()
         {
-            _controller = gameObject.GetComponent<RectMovement>();
+            _controller = gameObject.GetComponent<RectMovementController>();
             _eventCenter = GameEventCenter.Instance;
             _horizontalInput = HorizontalInput.None;
 

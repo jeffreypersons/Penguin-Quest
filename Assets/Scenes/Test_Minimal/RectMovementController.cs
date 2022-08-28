@@ -6,7 +6,7 @@ using PQ.Entities;
 
 namespace PQ.TestScenes.Minimal
 {
-    public class RectMovement : MonoBehaviour
+    public class RectMovementController : MonoBehaviour
     {
         private Collisions2D _collisionChecker;
         private PhysicsBody2D _physicsBody2D;

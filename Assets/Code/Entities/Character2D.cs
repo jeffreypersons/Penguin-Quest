@@ -35,7 +35,7 @@ namespace PQ.Entities
 
         void Awake()
         {
-            _body  = gameObject.GetComponent<PhysicsBody2D>();
+            _body = gameObject.GetComponent<PhysicsBody2D>();
             _collisionChecker = gameObject.GetComponent<CollisionChecker2D>();
         }
 

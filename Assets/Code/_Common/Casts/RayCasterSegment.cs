@@ -9,6 +9,14 @@ namespace PQ.Common.Casts
     */
     public class RayCasterSegment
     {
+        public struct Hit
+        {
+            public readonly Vector2    point;
+            public readonly Vector2    normal;
+            public readonly float      distance;
+            public readonly Collider2D collider;
+        }
+
         private Vector2 _rayDir;
         private Vector2 _segmentStart;
         private Vector2 _segmentEnd;
