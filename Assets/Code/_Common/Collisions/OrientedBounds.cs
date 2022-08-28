@@ -16,24 +16,29 @@ namespace PQ.Common.Collisions
         private Rigidbody2D _rigidBody;
         private Transform   _transform;
 
+        /* World position of bounding box's origin point. */
         public Vector2 Center      { get; private set; }
-        public Vector2 ForwardAxis { get; private set; }
-        public Vector2 UpAxis      { get; private set; }
+
+        /* Relative x axis - in relative forward direction with length of extents.x. */
+        public Vector2 AxisX       { get; private set; }
+
+        /* Relative y axis - in relative up direction with length of extents.y. */
+        public Vector2 AxisY       { get; private set; }
 
         public Vector2 Size        { get; private set; }
         public Vector2 Extents     { get; private set; }
         public float   Rotation    { get; private set; }
         public float   Depth       { get; private set; }
 
-        public Vector2 ForwardDir  { get; private set; }
-        public Vector2 UpDir       { get; private set; }
-        public Vector2 BehindDir   { get; private set; }
-        public Vector2 DownDir     { get; private set; }
+        public Vector2 Forward     { get; private set; }
+        public Vector2 Up          { get; private set; }
+        public Vector2 Back        { get; private set; }
+        public Vector2 Down        { get; private set; }
 
-        public Vector2 LeftBottom  { get; private set; }
-        public Vector2 LeftTop     { get; private set; }
-        public Vector2 RightBottom { get; private set; }
-        public Vector2 RightTop    { get; private set; }
+        public Vector2 RearBottom  { get; private set; }
+        public Vector2 RearTop     { get; private set; }
+        public Vector2 FrontBottom { get; private set; }
+        public Vector2 FrontTop    { get; private set; }
 
         
         public override string ToString() =>
@@ -76,20 +81,20 @@ namespace PQ.Common.Collisions
             Vector2 max         = center + forwardAxis + upAxis;
 
             Center      = center;
-            ForwardAxis = forwardAxis;
-            UpAxis      = upAxis;
+            AxisX = forwardAxis;
+            AxisY      = upAxis;
             Size        = 2f * extents;
             Extents     = extents;
             Rotation    = rotation;
             Depth       = depth;
-            ForwardDir  = rightDir;
-            UpDir       = upDir;
-            BehindDir   = -1 * rightDir;
-            DownDir     = -1 * upDir;
-            LeftBottom  = new(min.x, min.y);
-            LeftTop     = new(min.x, max.y);
-            RightBottom = new(max.x, min.y);
-            RightTop    = new(max.x, max.y);
+            Forward  = rightDir;
+            Up       = upDir;
+            Back   = -1 * rightDir;
+            Down     = -1 * upDir;
+            RearBottom  = new(min.x, min.y);
+            RearTop     = new(min.x, max.y);
+            FrontBottom = new(max.x, min.y);
+            FrontTop    = new(max.x, max.y);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace PQ.Common.Collisions
             Vector2 offset = offsetAmount * (to - from).normalized;
             Vector2 start  = from + offset;
             Vector2 end    = to   + offset;
-            
+
             CastHit? hit = null;
             RaycastHit2D castHit2D = Physics2D.Linecast(start, end, layerMask);
             if (castHit2D)
