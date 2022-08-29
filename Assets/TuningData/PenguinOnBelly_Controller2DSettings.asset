@@ -9,19 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4e3a6607fbe72945ae8181b84f1a1da, type: 3}
+  m_Script: {fileID: 11500000, guid: 61945fdda264f4a47ac8bb7d84220e99, type: 3}
   m_Name: PenguinOnBelly_Controller2DSettings
   m_EditorClassIdentifier: 
   _locomotionBlendStep: 0.1
-  _horizontalMovementPeakSpeed: 200
+  _horizontalMovementPeakSpeed: 100
   _jumpLengthToApex: 10
   _jumpHeightToApex: 10
-  _gravityStrength: 0.2
+  _gravityStrength: 10
   _maxAscendableSlopeAngle: 45
   _maxToleratedDistanceFromGround: 0.3
-  _maintainPerpendicularityToSurface: 0
+  _maintainPerpendicularityToSurface: 1
   _surfaceAlignmentRotationalStrength: 0.1
   _degreesFromSurfaceNormalThreshold: 0.01
   _enableAutomaticAxisLockingForSmallVelocities: 1
-  _linearVelocityThreshold: 1
-  _angularVelocityThreshold: 1
+  _linearVelocityThreshold: 5
+  _angularVelocityThreshold: 5
