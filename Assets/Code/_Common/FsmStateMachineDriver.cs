@@ -74,10 +74,13 @@ namespace PQ.Common
             return true;
         }
 
+
         /*** Tnternal Hooks to MonoBehavior ***/
 
-        private void Awake()
+        private void Start()
         {
+            // since states may have may game object dependencies, we explicitly want to
+            // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
             Initialize(InitialState);
             if (InitialState == null)
             {
@@ -86,10 +89,6 @@ namespace PQ.Common
             }
 
             CurrentState = InitialState;
-        }
-
-        private void Start()
-        {
             CurrentState.Enter();
         }
 
