@@ -868,6 +868,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6401969791377146357, guid: 6d16b93b3de4a8a4dafa9df1c5990975,
+        type: 3}
+      propertyPath: _backSideCasterSettings.distance
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6401969791377146357, guid: 6d16b93b3de4a8a4dafa9df1c5990975,
+        type: 3}
+      propertyPath: _backSideCasterSettings.layerMask.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d16b93b3de4a8a4dafa9df1c5990975, type: 3}
 --- !u!1001 &1465313722
