@@ -8,7 +8,7 @@ namespace PQ.TestScenes.Minimal
 {
     public class RectMovementController : MonoBehaviour
     {
-        private Collisions2D _collisionChecker;
+        private RayCasterBox _collisionChecker;
         private PhysicsBody2D _physicsBody2D;
 
         public event Action<bool> GroundContactChanged;
@@ -35,7 +35,7 @@ namespace PQ.TestScenes.Minimal
         void Awake()
         {
             _physicsBody2D    = gameObject.GetComponent<PhysicsBody2D>();
-            _collisionChecker = gameObject.GetComponent<Collisions2D>();
+            _collisionChecker = gameObject.GetComponent<RayCasterBox>();
         }
 
         void Start()

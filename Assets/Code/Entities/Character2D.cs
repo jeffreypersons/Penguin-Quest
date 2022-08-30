@@ -1,14 +1,13 @@
 ﻿using System;
 using UnityEngine;
 using PQ.Common;
-using PQ.Common.Collisions;
 
 
 namespace PQ.Entities
 {
     public class Character2D : MonoBehaviour
     {
-        private CollisionChecker2D _collisionChecker;
+        private RayCasterBox _casterBox;
 
         private bool _isGrounded;
         private PhysicsBody2D _body;
@@ -36,7 +35,7 @@ namespace PQ.Entities
         void Awake()
         {
             _body = gameObject.GetComponent<PhysicsBody2D>();
-            _collisionChecker = gameObject.GetComponent<CollisionChecker2D>();
+            _casterBox = gameObject.GetComponent<RayCasterBox>();
         }
 
         void Start()
@@ -57,7 +56,8 @@ namespace PQ.Entities
 
         private void UpdateGroundContactInfo(bool force = false)
         {
-            bool isInContactWithGround = _collisionChecker.IsGrounded;
+            bool isInContactWithGround = _casterBox.BottomSensorResults.hitPercentage > 0f;
+
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;
