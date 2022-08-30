@@ -59,6 +59,25 @@ namespace PQ.Common.Extensions
 
             Gizmos.color = previousColor;
         }
+        
+        /* Draw lines between given points. */
+        public static void DrawWaypoints(Vector2[] points, Color? color = null)
+        {
+            if (points == null || points.Length < 2)
+            {
+                return;
+            }
+
+            Color previousColor = Gizmos.color;
+            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+
+            for (int i = 1; i < points.Length; i++)
+            {
+                Gizmos.DrawLine(points[i-1], points[i]);
+            }
+
+            Gizmos.color = previousColor;
+        }
 
         /* Draw a 3d sphere at given world position.*/
         public static void DrawSphere(Vector2 origin, float radius, Color? color = null)

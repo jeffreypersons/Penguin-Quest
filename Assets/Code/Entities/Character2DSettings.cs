@@ -1,13 +1,13 @@
 using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Entities
 {
     [CreateAssetMenu(
-        fileName = "CharacterControllerSettings",
-        menuName = "ScriptableObjects/CharacterController2DSettings",
+        fileName = "Character2DSettings",
+        menuName = "ScriptableObjects/Character2DSettings",
         order    = 1)]
-    public class KinematicCharacter2DSettings : ScriptableObject
+    public class Character2DSettings : ScriptableObject
     {
         public float   LocomotionBlendStep                => _locomotionBlendStep;
         public float   GravityStrength                    => _gravityStrength;

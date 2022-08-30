@@ -262,12 +262,12 @@ GameObject:
   - component: {fileID: 4753795910216235720}
   - component: {fileID: 4753795910216235721}
   - component: {fileID: 7859832108952071242}
+  - component: {fileID: 2138608317391900897}
+  - component: {fileID: 4753795910216235733}
+  - component: {fileID: 331518940653301218}
   - component: {fileID: 1728887597599890734}
   - component: {fileID: 4753795910216235732}
   - component: {fileID: 9188869225720279910}
-  - component: {fileID: 4753795910216235733}
-  - component: {fileID: 2138608317391900897}
-  - component: {fileID: 331518940653301218}
   m_Layer: 9
   m_Name: Penguin
   m_TagString: Player
@@ -358,6 +358,48 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2138608317391900897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753795910216235740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 637eb8d598f82704c90e42b06cb7bc1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4753795910216235733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753795910216235740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb89727eb0ba244a8ec1dc724330eaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _toleratedDistanceFromGround: 8
+  _perimeterCasterSettings: {fileID: 11400000, guid: 9fe49ebb17348634aa5ed40ce5525fa1,
+    type: 2}
+--- !u!114 &331518940653301218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753795910216235740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97c2a621b9eb0104e90dd99e3a9a3122, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1728887597599890734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,12 +428,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _colliderConstraints: 0
-  _penguinOnFeetSettings: {fileID: 11400000, guid: dc71f0931f5518447bd325847a856081,
+  _penguinOnFeetSettings: {fileID: 11400000, guid: 06315a86b522e2e47b0e1a7cf2b82ee8,
     type: 2}
-  _penguinOnBellySettings: {fileID: 11400000, guid: dc71f0931f5518447bd325847a856081,
+  _penguinOnBellySettings: {fileID: 11400000, guid: 18187a383bafbcb439199a3912f5c3a2,
     type: 2}
   _penguinAnimation: {fileID: 1728887597599890734}
-  _characterController: {fileID: 2138608317391900897}
+  _characterController: {fileID: 331518940653301218}
   _boundingBoxCollider: {fileID: 4753795910216235721}
   _headCollider: {fileID: 4753795911533567600}
   _torsoCollider: {fileID: 4753795910448514483}
@@ -409,48 +451,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79e0413346044954e9a41b7a83eb98de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4753795910216235733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbb89727eb0ba244a8ec1dc724330eaf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _groundMask:
-    serializedVersion: 2
-    m_Bits: 256
-  _toleratedDistanceFromGround: 8
-  _perimeterCasterSettings: {fileID: 11400000, guid: 9fe49ebb17348634aa5ed40ce5525fa1,
-    type: 2}
---- !u!114 &2138608317391900897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb583593b5744f4ca1d0115c20342fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &331518940653301218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70406c6c6808105499fa172e7827cb8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4753795910222470411

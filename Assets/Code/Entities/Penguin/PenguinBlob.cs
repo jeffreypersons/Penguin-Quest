@@ -1,7 +1,5 @@
 using System.Diagnostics.Contracts;
 using UnityEngine;
-using PQ.Common;
-using PQ.Common.Extensions;
 
 
 namespace PQ.Entities.Penguin
@@ -28,12 +26,12 @@ namespace PQ.Entities.Penguin
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         
         [Header("Setting Bundles")]
-        [SerializeField] private KinematicCharacter2DSettings _penguinOnFeetSettings;
-        [SerializeField] private KinematicCharacter2DSettings _penguinOnBellySettings;
+        [SerializeField] private Character2DSettings _penguinOnFeetSettings;
+        [SerializeField] private Character2DSettings _penguinOnBellySettings;
 
         [Header("Component References")]
-        [SerializeField] private PenguinAnimation     _penguinAnimation;
-        [SerializeField] private KinematicCharacter2D _characterController;
+        [SerializeField] private PenguinAnimation _penguinAnimation;
+        [SerializeField] private Character2D      _characterController;
 
         [Header("Collider References")]
         [SerializeField] private BoxCollider2D     _boundingBoxCollider;
@@ -45,12 +43,12 @@ namespace PQ.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _backFootCollider;
         
         
-        public KinematicCharacter2DSettings OnFeetSettings  => _penguinOnFeetSettings;
-        public KinematicCharacter2DSettings OnBellySettings => _penguinOnBellySettings;
+        public Character2DSettings OnFeetSettings  => _penguinOnFeetSettings;
+        public Character2DSettings OnBellySettings => _penguinOnBellySettings;
 
-        public PenguinAnimation     Animation            => _penguinAnimation;
-        public KinematicCharacter2D CharacterController  => _characterController;
-        public Vector2              SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
+        public PenguinAnimation Animation            => _penguinAnimation;
+        public Character2D      CharacterController  => _characterController;
+        public Vector2          SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
         public BoxCollider2D ColliderBoundingBox       => _boundingBoxCollider;
         public Collider2D    ColliderHead              => _headCollider;
@@ -109,7 +107,7 @@ namespace PQ.Entities.Penguin
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
-            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
+            Common.Extensions.GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
         }
         #endif
         

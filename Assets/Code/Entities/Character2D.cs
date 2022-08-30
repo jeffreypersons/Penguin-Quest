@@ -1,33 +1,32 @@
-using System;
+﻿using System;
 using UnityEngine;
 using PQ.Common;
 using PQ.Common.Collisions;
 
 
-namespace PQ.TestScenes.Minimal
+namespace PQ.Entities
 {
-    public class RectMovement : MonoBehaviour
+    public class Character2D : MonoBehaviour
     {
         private CollisionChecker2D _collisionChecker;
 
         private bool _isGrounded;
-        private KinematicBody2D _kinematicBody2D;
+        private PhysicsBody2D _body;
 
         public event Action<bool> GroundContactChanged;
-        public KinematicCharacter2DSettings Settings { get; set; }
+        public Character2DSettings Settings { get; set; }
 
-        public Vector2 Position => _kinematicBody2D.Position;
         public void PlaceAt(Vector2 position, float rotation)
         {
-            _kinematicBody2D.MoveTo(position);
-            _kinematicBody2D.SetLocalOrientation3D(0, 0, rotation);
+            _body.MoveTo(position);
+            _body.SetLocalOrientation3D(0, 0, rotation);
         }
-        public void FaceRight() => _kinematicBody2D.SetLocalOrientation3D(0, 0, 0);
-        public void FaceLeft() => _kinematicBody2D.SetLocalOrientation3D(0, 180, 0);
+        public void FaceRight() => _body.SetLocalOrientation3D(0, 0, 0);
+        public void FaceLeft()  => _body.SetLocalOrientation3D(0, 180, 0);
         public void MoveForward()
         {
             float distanceToMove = Settings.HorizontalMovementPeakSpeed * Time.fixedDeltaTime;
-            _kinematicBody2D.MoveBy(distanceToMove * _kinematicBody2D.Forward);
+            _body.MoveBy(distanceToMove * _body.Forward);
         }
         public void Jump()
         {
@@ -36,7 +35,7 @@ namespace PQ.TestScenes.Minimal
 
         void Awake()
         {
-            _kinematicBody2D = gameObject.GetComponent<KinematicBody2D>();
+            _body = gameObject.GetComponent<PhysicsBody2D>();
             _collisionChecker = gameObject.GetComponent<CollisionChecker2D>();
         }
 
@@ -51,7 +50,7 @@ namespace PQ.TestScenes.Minimal
 
             if (!_isGrounded)
             {
-                _kinematicBody2D.MoveBy(Settings.GravityStrength * Vector2.down);
+                _body.MoveBy(Settings.GravityStrength * Vector2.down);
             }
         }
 
