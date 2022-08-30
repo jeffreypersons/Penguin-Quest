@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using PQ.Common.Extensions;
-using PQ.Common.Casts;
 
 
 namespace PQ.Common
@@ -11,7 +10,7 @@ namespace PQ.Common
     For example, is there something X distance in front of me?
     What about the front half of the box's bottom side?
     */
-    public class Collisions2D : MonoBehaviour
+    public class RayCasterBox : MonoBehaviour
     {
         public struct Settings
         {
