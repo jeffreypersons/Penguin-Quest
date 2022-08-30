@@ -40,7 +40,7 @@ namespace PQ.Common
         private Vector2 _center;
         private Vector2 _xAxis;
         private Vector2 _yAxis;
-        private PhysicsBody2D _physicsBody;
+        private KinematicBody2D _physicsBody;
         private RayCasterSegment _backSensor;
         private RayCasterSegment _frontSensor;
         private RayCasterSegment _bottomSensor;
@@ -58,7 +58,7 @@ namespace PQ.Common
 
         void Awake()
         {
-            _physicsBody = gameObject.GetComponent<PhysicsBody2D>();
+            _physicsBody = gameObject.GetComponent<KinematicBody2D>();
             _backSensor   = new();
             _frontSensor  = new();
             _bottomSensor = new();

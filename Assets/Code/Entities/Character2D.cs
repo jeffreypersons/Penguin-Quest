@@ -10,7 +10,7 @@ namespace PQ.Entities
         private RayCasterBox _casterBox;
 
         private bool _isGrounded;
-        private PhysicsBody2D _body;
+        private KinematicBody2D _body;
 
         public event Action<bool> GroundContactChanged;
         public Character2DSettings Settings { get; set; }
@@ -34,7 +34,7 @@ namespace PQ.Entities
 
         void Awake()
         {
-            _body = gameObject.GetComponent<PhysicsBody2D>();
+            _body = gameObject.GetComponent<KinematicBody2D>();
             _casterBox = gameObject.GetComponent<RayCasterBox>();
         }
 

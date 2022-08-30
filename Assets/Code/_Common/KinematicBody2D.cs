@@ -10,8 +10,8 @@ namespace PQ.Common
     */
     [ExecuteAlways]
     [System.Serializable]
-    [AddComponentMenu("PhysicsBody2D")]
-    public sealed class PhysicsBody2D : MonoBehaviour
+    [AddComponentMenu("KinematicBody2D")]
+    public sealed class KinematicBody2D : MonoBehaviour
     {
         private Rigidbody2D _rigidBody;
         private Collider2D  _collider;
