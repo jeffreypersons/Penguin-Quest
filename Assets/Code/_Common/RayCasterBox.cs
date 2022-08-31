@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using PQ.Common.Extensions;
 
 
@@ -12,31 +13,6 @@ namespace PQ.Common
     */
     public class RayCasterBox : MonoBehaviour
     {
-        public struct Settings
-        {
-            public readonly float distanceToCast;
-            public readonly float distanceBetweenRays;
-            public readonly LayerMask layerMask;
-
-            public Settings(float distanceToCast, float distanceBetweenRays, LayerMask layerMask)
-            {
-                this.distanceToCast      = distanceToCast;
-                this.distanceBetweenRays = distanceBetweenRays;
-                this.layerMask           = layerMask;
-            }
-        }
-        public struct Result
-        {
-            public readonly float hitPercentage;
-            public readonly float hitDistance;
-
-            public Result(float hitPercentage, float hitDistance)
-            {
-                this.hitPercentage = hitPercentage;
-                this.hitDistance   = hitDistance;
-            }
-        }
-
         private Vector2 _center;
         private Vector2 _xAxis;
         private Vector2 _yAxis;
@@ -45,16 +21,43 @@ namespace PQ.Common
         private RayCasterSegment _frontSensor;
         private RayCasterSegment _bottomSensor;
         private RayCasterSegment _topSensor;
-        
-        public Settings BackSensorSettings   { get; set; }
-        public Settings FrontSensorSettings  { get; set; }
-        public Settings BottomSensorSettings { get; set; }
-        public Settings TopSensorSettings    { get; set; }
-        
-        public Result BackSensorResults   { get; set; }
-        public Result FrontSensorResults  { get; set; }
-        public Result BottomSensorResults { get; set; }
-        public Result TopSensorResults    { get; set; }
+
+        private bool _hasAnySpacingChanged;
+        private float _backRaySpacing;
+        private float _frontRaySpacing;
+        private float _bottomRaySpacing;
+        private float _topRaySpacing;
+        private void SetSpacing(ref float field, float value)
+        {
+            if (!Mathf.Approximately(field, value))
+            {
+                field = value;
+                _hasAnySpacingChanged = true;
+            }
+        }
+
+        public struct Result
+        {
+            public readonly float hitPercentage;
+            public readonly float hitDistance;
+
+            public Result(float hitPercentage, float hitDistance)
+            {
+                this.hitPercentage = hitPercentage;
+                this.hitDistance = hitDistance;
+            }
+        }
+
+        public float BackSensorSpacing   { get => _backRaySpacing;   set => SetSpacing(ref _backRaySpacing,   value); }
+        public float FrontSensorSpacing  { get => _frontRaySpacing;  set => SetSpacing(ref _frontRaySpacing,  value); }
+        public float BottomSensorSpacing { get => _bottomRaySpacing; set => SetSpacing(ref _bottomRaySpacing, value); }
+        public float TopSensorSpacing    { get => _topRaySpacing;    set => SetSpacing(ref _topRaySpacing,    value); }
+
+        public Result CheckBehind(LayerMask target, float distance) => Cast(_backSensor,   target, distance);
+        public Result CheckFront(LayerMask target,  float distance) => Cast(_frontSensor,  target, distance);
+        public Result CheckAbove(LayerMask target,  float distance) => Cast(_topSensor,    target, distance);
+        public Result CheckBelow(LayerMask target,  float distance) => Cast(_bottomSensor, target, distance);
+
 
         void Awake()
         {
@@ -70,71 +73,60 @@ namespace PQ.Common
             UpdateAll();
         }
 
-        void FixedUpdate()
-        {
-            _backSensor  .CastAll();
-            _frontSensor .CastAll();
-            _bottomSensor.CastAll();
-            _topSensor   .CastAll();
-        }
-
         void Update()
         {
             UpdateAll();
         }
 
+        private Result Cast(RayCasterSegment caster, LayerMask layerMask, float distanceToCast)
+        {
+            // todo: properly compute actual results, and add result/standard-deviation/etc functionality
+            caster.UpdateCastOptions(layerMask, distanceToCast);
+            caster.CastAll();
+            var results = caster.RayCastResults;
+            return new Result(hitPercentage: 0.50f, hitDistance: 0.25f);
+        }
 
         private void UpdateAll()
         {
-            _center = _physicsBody.Position;
-            _xAxis  = _physicsBody.BoundExtents.x * _physicsBody.Forward;
-            _yAxis  = _physicsBody.BoundExtents.y * _physicsBody.Up;
-            if (_xAxis == Vector2.zero || _yAxis == Vector2.zero)
+            SetBounds(
+                center: _physicsBody.Position,
+                xAxis:  _physicsBody.BoundExtents.x * _physicsBody.Forward,
+                yAxis:  _physicsBody.BoundExtents.y * _physicsBody.Up);
+        }
+
+        private void SetBounds(Vector2 center, Vector2 xAxis, Vector2 yAxis)
+        {
+            // since change in bounds or ray spacing can result in different ray counts,
+            // only update updating positioning when we have to
+            if (!_hasAnySpacingChanged &&
+                center == _center &&
+                Mathf.Approximately(xAxis.x, _xAxis.x) && Mathf.Approximately(xAxis.y, _xAxis.y) &&
+                Mathf.Approximately(yAxis.x, _yAxis.x) && Mathf.Approximately(yAxis.y, _yAxis.y))
             {
                 return;
             }
+            
+            Vector2 min = center - xAxis - yAxis;
+            Vector2 max = center + xAxis + yAxis;
+            Vector2 rearBottom  = new(min.x, min.y);
+            Vector2 rearTop     = new(min.x, max.y);
+            Vector2 frontBottom = new(max.x, min.y);
+            Vector2 frontTop    = new(max.x, max.y);
 
-            Vector2 rearBottom  = _center - _xAxis - _yAxis;
-            Vector2 rearTop     = _center - _xAxis + _yAxis;
-            Vector2 frontBottom = _center + _xAxis - _yAxis;
-            Vector2 frontTop    = _center + _xAxis + _yAxis;
-            UpdateCaster(
-                caster:       _backSensor,
-                settings:     BackSensorSettings,
-                start:        rearBottom,
-                end:          rearTop,
-                rayDirection: -_xAxis);
-
-            UpdateCaster(
-                caster:       _frontSensor,
-                settings:     FrontSensorSettings,
-                start:        frontBottom,
-                end:          frontTop,
-                rayDirection: _xAxis);
-
-            UpdateCaster(
-                caster:       _bottomSensor,
-                settings:     BottomSensorSettings,
-                start:        rearBottom,
-                end:          frontBottom,
-                rayDirection: -_yAxis);
-
-            UpdateCaster(
-                caster:       _topSensor,
-                settings:     TopSensorSettings,
-                start:        rearTop,
-                end:          frontTop,
-                rayDirection: _yAxis);
+            _center = center;
+            _xAxis  = xAxis;
+            _yAxis  = yAxis;
+            _hasAnySpacingChanged = false;
+            _backSensor  .UpdateCastDirection(-xAxis);
+            _frontSensor .UpdateCastDirection( xAxis);
+            _bottomSensor.UpdateCastDirection(-yAxis);
+            _topSensor   .UpdateCastDirection( yAxis);
+            _backSensor  .UpdatePositioning(rearBottom,  rearTop,     _backRaySpacing);
+            _frontSensor .UpdatePositioning(frontBottom, frontTop,    _frontRaySpacing);
+            _bottomSensor.UpdatePositioning(rearBottom,  frontBottom, _bottomRaySpacing);
+            _topSensor   .UpdatePositioning(rearTop,     frontTop,    _topRaySpacing);
         }
-
-
-        private static void UpdateCaster(RayCasterSegment caster, Settings settings,
-            Vector2 start, Vector2 end, Vector2 rayDirection)
-        {
-            caster.UpdateCastParams(rayDirection, settings.layerMask, settings.distanceToCast);
-            caster.UpdatePositioning(start, end, settings.distanceBetweenRays);
-        }
-
 
         #if UNITY_EDITOR
         void OnDrawGizmos()

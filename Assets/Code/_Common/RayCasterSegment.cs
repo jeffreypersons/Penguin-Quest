@@ -63,7 +63,8 @@ namespace PQ.Common
             _results   = Array.Empty<RayCaster.Hit?>();
             _rayCaster = new RayCaster();
             UpdatePositioning(start, end, distanceBetweenRays);
-            UpdateCastParams(castDirection, layerMask: ~0, maxDistance: Mathf.Infinity);
+            UpdateCastDirection(castDirection);
+            UpdateCastOptions(layerMask: ~0, maxDistance: Mathf.Infinity);
         }
 
         /* Between which points and with how much gap should ray origins be placed? */
@@ -75,7 +76,9 @@ namespace PQ.Common
 
             int rayCount;
             float raySpacing;
-            if (Mathf.Approximately(segmentDistance, 0f) || segmentDirection != Vector2.zero)
+            if (segmentDirection != Vector2.zero ||
+                Mathf.Approximately(segmentDistance, 0f) ||
+                Mathf.Approximately(distanceBetweenRays, 0f))
             {
                 rayCount   = 1;
                 raySpacing = 0.5f;
@@ -95,10 +98,15 @@ namespace PQ.Common
             }
         }
 
-        /* In what direction, what layers, and for what distance should we cast rays? */
-        public void UpdateCastParams(Vector2 rayDirection, LayerMask layerMask, float maxDistance)
+        /* In what direction should we cast rays? */
+        public void UpdateCastDirection(Vector2 rayDirection)
         {
-            _rayDir                = rayDirection.normalized;
+            _rayDir = rayDirection.normalized;
+        }
+
+        /* What layers, and for what distance should we cast rays? */
+        public void UpdateCastOptions(LayerMask layerMask, float maxDistance)
+        {
             _rayCaster.LayerMask   = layerMask;
             _rayCaster.MaxDistance = maxDistance;
         }
