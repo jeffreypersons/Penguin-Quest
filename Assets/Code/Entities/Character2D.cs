@@ -36,11 +36,17 @@ namespace PQ.Entities
         {
             _body = gameObject.GetComponent<KinematicBody2D>();
             _casterBox = gameObject.GetComponent<RayCasterBox>();
+
+            // todo: add proper config settings for things like this, and set these using those values
+            _casterBox.BackSensorSpacing   = 0.50f;
+            _casterBox.FrontSensorSpacing  = 0.50f;
+            _casterBox.BottomSensorSpacing = 0.50f;
+            _casterBox.TopSensorSpacing    = 0.50f;
         }
 
         void Start()
         {
-            UpdateGroundContactInfo();
+            UpdateGroundContactInfo(force: true);
         }
 
         void FixedUpdate()
@@ -56,7 +62,9 @@ namespace PQ.Entities
 
         private void UpdateGroundContactInfo(bool force = false)
         {
-            bool isInContactWithGround = _casterBox.BottomSensorResults.hitPercentage > 0f;
+            // todo: use a scriptable object or something for these checks
+            var result = _casterBox.CheckBelow(target: LayerMask.GetMask("Platform"), distance: int.MaxValue);
+            bool isInContactWithGround = result.hitPercentage >= 0.50f && result.hitDistance <= 0.25f;
 
             if (_isGrounded != isInContactWithGround || force)
             {
