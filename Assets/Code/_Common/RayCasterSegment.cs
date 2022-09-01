@@ -9,26 +9,18 @@ namespace PQ.Common
     */
     public class RayCasterSegment
     {
-        public struct Hit
-        {
-            public readonly Vector2    point;
-            public readonly Vector2    normal;
-            public readonly float      distance;
-            public readonly Collider2D collider;
-        }
-
         private Vector2 _rayDir;
         private Vector2 _segmentStart;
         private Vector2 _segmentEnd;
         private Vector2 _offsetBetweenRays;
 
         private RayCaster _rayCaster;
-        private Hit?[] _results;
+        private RayHit?[] _results;
 
 
         public const int MinNumRays = 1;
         public const int MaxNumRays = 10000;
-        public ReadOnlySpan<Hit?> RayCastResults => _results.AsSpan();
+        public ReadOnlySpan<RayHit?> RayCastResults => _results.AsSpan();
 
         public Vector2   SegmentStart    => _segmentStart;
         public Vector2   SegmentMid      => Vector2.Lerp(_segmentStart, _segmentEnd, 0.50f);
@@ -60,7 +52,7 @@ namespace PQ.Common
 
         public RayCasterSegment(Vector2 start, Vector2 end, float distanceBetweenRays, Vector2 castDirection)
         {
-            _results   = Array.Empty<Hit?>();
+            _results   = Array.Empty<RayHit?>();
             _rayCaster = new RayCaster();
             UpdatePositioning(start, end, distanceBetweenRays);
             UpdateCastDirection(castDirection);
@@ -94,7 +86,7 @@ namespace PQ.Common
             _offsetBetweenRays = raySpacing * segmentDirection;
             if (_results.Length != rayCount)
             {
-                _results = new Hit?[rayCount];
+                _results = new RayHit?[rayCount];
             }
         }
 
