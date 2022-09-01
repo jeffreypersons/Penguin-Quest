@@ -115,7 +115,7 @@ namespace PQ.Common
         private void Cast(int rayIndex)
         {
             Vector2 rayOrigin = _segmentStart + (rayIndex * _offsetBetweenRays);
-            _rayCaster.CastFromPoint(rayOrigin, _rayDir);
+            _results[rayIndex] = _rayCaster.CastFromPoint(rayOrigin, _rayDir);
         }
     }
 }
