@@ -65,6 +65,7 @@ namespace PQ.Common
             _frontSensor  = new();
             _bottomSensor = new();
             _topSensor    = new();
+            _hasAnySpacingChanged = true;
         }
 
         void Start()

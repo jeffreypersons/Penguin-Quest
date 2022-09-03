@@ -108,6 +108,7 @@ namespace PQ.Common
         {
             for (int rayIndex = 0; rayIndex < _results.Length; rayIndex++)
             {
+                Debug.Log($"segment.cast[{rayIndex}]");
                 Cast(rayIndex);
             }
         }

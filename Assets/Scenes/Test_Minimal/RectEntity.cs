@@ -22,10 +22,6 @@ namespace PQ.TestScenes.Minimal
             _controller.Settings = _characterSettings;
         }
 
-        void Start()
-        {
-        }
-
         void OnEnable()
         {
             _eventCenter.jumpCommand.AddListener(OnJump);
