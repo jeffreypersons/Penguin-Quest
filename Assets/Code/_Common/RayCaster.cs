@@ -6,11 +6,18 @@ namespace PQ.Common
     /*
     Provides a streamlined interface for casting lines from specific points or colliders.
     */
-    public class RayCaster
+    public sealed class RayCaster
     {
         public float     MaxDistance      { get; set; } = Mathf.Infinity;
         public LayerMask LayerMask        { get; set; } = ~0;
         public bool      DrawCastInEditor { get; set; } = true;
+
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"distance:{MaxDistance}," +
+                $"layerMask:{LayerMask}," +
+                $"drawCastInEditor:{DrawCastInEditor}}}";
+
 
         public RayCaster() { }
 
