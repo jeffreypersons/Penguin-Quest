@@ -7,116 +7,91 @@ namespace PQ.Common
     /*
     Provides a streamlined interface for casting rays from a series of line casters along a segment.
     */
-    public class RayCasterSegment
+    public sealed class RayCasterSegment
     {
-        private Vector2 _rayDir;
         private Vector2 _segmentStart;
         private Vector2 _segmentEnd;
-        private Vector2 _offsetBetweenRays;
 
+        private Vector2 _rayDirection;
         private RayCaster _rayCaster;
         private RayHit?[] _results;
 
+        public const int MinRayCount = 3;
+        public const int MaxRayCount = 1000;
 
-        public const int MinNumRays = 1;
-        public const int MaxNumRays = 10000;
+
         public ReadOnlySpan<RayHit?> RayCastResults => _results.AsSpan();
 
-        public Vector2   SegmentStart    => _segmentStart;
-        public Vector2   SegmentMid      => Vector2.Lerp(_segmentStart, _segmentEnd, 0.50f);
-        public Vector2   SegmentEnd      => _segmentEnd;
-        public float     SegmentLength   => (_segmentEnd - _segmentStart).magnitude;
-        public int       RayCount        => _results.Length;
-        public float     RaySpacing      => _offsetBetweenRays.magnitude;
-        public Vector2   RayDirection    => _rayDir;
-        public float     RayDistance     => _rayCaster.MaxDistance;
-        public LayerMask RayTargetLayers => _rayCaster.LayerMask;
+        public Vector2   SegmentStart     => _segmentStart;
+        public Vector2   SegmentMid       => Vector2.Lerp(_segmentStart, _segmentEnd, 0.50f);
+        public Vector2   SegmentEnd       => _segmentEnd;
+        public Vector2   SegmentDirection => (_segmentEnd - _segmentStart).normalized;
+        public float     SegmentLength    => (_segmentEnd - _segmentStart).magnitude;
+
+        public int       RayCount         => _results.Length;
+        public float     RaySpacing       => (_segmentEnd - _segmentStart).magnitude / (_results.Length - 1);
+        public Vector2   RayDirection     => _rayDirection;
+        public float     RayDistance      => _rayCaster.MaxDistance;
+        public LayerMask RayTargetLayers  => _rayCaster.LayerMask;
 
         public override string ToString() =>
-            $"{GetType().Name}:" +
-                $"Segment{{" +
-                    $"start:{SegmentStart}," +
-                    $"end:{SegmentEnd}}}," +
-                    $"length:{SegmentLength}}}, " +
-                $"RayOrigins{{" +
-                    $"spacing:{RaySpacing}," +
-                    $"count:{RayCount}}}, " +
-                $"RayCasts{{" +
-                    $"direction:{RayDirection}," +
-                    $"distance:{RayDistance}," +
-                    $"layerMask:{RayTargetLayers}}}";
+            $"{GetType().Name}{{" +
+                $"endpoints[{SegmentStart},{SegmentEnd}], " +
+                $"raySpacing:{RaySpacing}," +
+                $"rayCount:{RayCount}," +
+                $"rayDirection:{RayDirection}}}";
+
 
         public RayCasterSegment() :
-            this(Vector2.zero, Vector2.zero, distanceBetweenRays: 0.5f, Vector2.right)
+            this(segmentStart: Vector2.zero, segmentEnd: Vector2.zero, rayCount: MinRayCount, Vector2.right)
         { }
 
-        public RayCasterSegment(Vector2 start, Vector2 end, float distanceBetweenRays, Vector2 castDirection)
+        public RayCasterSegment(Vector2 segmentStart, Vector2 segmentEnd, int rayCount, Vector2 rayDirection)
         {
-            _results   = Array.Empty<RayHit?>();
-            _rayCaster = new RayCaster();
-            UpdatePositioning(start, end, distanceBetweenRays);
-            UpdateCastDirection(castDirection);
-            UpdateCastOptions(layerMask: ~0, maxDistance: Mathf.Infinity);
+            _rayCaster = new RayCaster { MaxDistance = Mathf.Infinity, LayerMask = ~0 };
+            SetRayCount(rayCount);
+            UpdatePositioning(segmentStart, segmentEnd, rayDirection);
         }
 
-        /* Between which points and with how much gap should ray origins be placed? */
-        public void UpdatePositioning(Vector2 start, Vector2 end, float distanceBetweenRays)
+        /* How many rays should we shoot out from our segment? Warning: incurs allocations when changed. */
+        public void SetRayCount(int rayCount)
         {
-            Vector2 segment          = end - start;
-            float   segmentDistance  = segment.magnitude;
-            Vector2 segmentDirection = segment.normalized;
-
-            int rayCount;
-            float raySpacing;
-            if (segmentDirection != Vector2.zero ||
-                Mathf.Approximately(segmentDistance, 0f) ||
-                Mathf.Approximately(distanceBetweenRays, 0f))
+            if (rayCount < MinRayCount || rayCount > MaxRayCount)
             {
-                rayCount   = 1;
-                raySpacing = 0.5f;
-            }
-            else
-            {
-                rayCount   = Mathf.RoundToInt(segmentDistance / distanceBetweenRays);
-                raySpacing = segmentDistance / (rayCount - 1);
+                throw new ArgumentException($"Ray count {rayCount} out of range [{MinRayCount},{MaxRayCount}]");
             }
 
-            _segmentStart      = start;
-            _segmentEnd        = end;
-            _offsetBetweenRays = raySpacing * segmentDirection;
-            if (_results.Length != rayCount)
+            if (_results == null || _results.Length != rayCount)
             {
                 _results = new RayHit?[rayCount];
             }
         }
 
-        /* In what direction should we cast rays? */
-        public void UpdateCastDirection(Vector2 rayDirection)
+        /* Between which points and how many times should the line be divided for computing ray origins? */
+        public void UpdatePositioning(Vector2 segmentStart, Vector2 segmentEnd, Vector2 rayDirection)
         {
-            _rayDir = rayDirection.normalized;
+            _segmentStart = segmentStart;
+            _segmentEnd   = segmentEnd;
+            _rayDirection = rayDirection.normalized;
         }
 
-        /* What layers, and for what distance should we cast rays? */
-        public void UpdateCastOptions(LayerMask layerMask, float maxDistance)
+        /* In the same direction, cast out rays from each origin along the segment with given options. */
+        public void Cast(LayerMask layerMask, float maxDistance)
         {
-            _rayCaster.LayerMask   = layerMask;
+            Vector2 offsetBetweenRays = RaySpacing * SegmentDirection;
+            if (offsetBetweenRays == Vector2.zero)
+            {
+                Debug.LogWarning($"Insufficient spacing between ray origins {RaySpacing} - skipping casts");
+                return;
+            }
+
+            _rayCaster.LayerMask = layerMask;
             _rayCaster.MaxDistance = maxDistance;
-        }
-
-        /* In the same direction, cast out rays from each origin along the segment. */
-        public void CastAll()
-        {
             for (int rayIndex = 0; rayIndex < _results.Length; rayIndex++)
             {
-                Debug.Log($"segment.cast[{rayIndex}]");
-                Cast(rayIndex);
+                Vector2 rayOrigin = _segmentStart + (rayIndex * offsetBetweenRays);
+                _results[rayIndex] = _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
             }
-        }
-
-        private void Cast(int rayIndex)
-        {
-            Vector2 rayOrigin = _segmentStart + (rayIndex * _offsetBetweenRays);
-            _results[rayIndex] = _rayCaster.CastFromPoint(rayOrigin, _rayDir);
         }
     }
 }

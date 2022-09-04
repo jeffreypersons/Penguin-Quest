@@ -1,13 +1,14 @@
 ﻿using System;
 using UnityEngine;
 using PQ.Common;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Entities
 {
     public class Character2D : MonoBehaviour
     {
-        private RayCasterBox _casterBox;
+        private RayCasterBox _caster;
 
         private bool _isGrounded;
         private KinematicBody2D _body;
@@ -35,13 +36,7 @@ namespace PQ.Entities
         void Awake()
         {
             _body = gameObject.GetComponent<KinematicBody2D>();
-            _casterBox = gameObject.GetComponent<RayCasterBox>();
-
-            // todo: add proper config settings for things like this, and set these using those values
-            _casterBox.BackSensorSpacing   = 0.50f;
-            _casterBox.FrontSensorSpacing  = 0.50f;
-            _casterBox.BottomSensorSpacing = 0.50f;
-            _casterBox.TopSensorSpacing    = 0.50f;
+            _caster = new RayCasterBox(_body);
         }
 
         void Start()
@@ -62,8 +57,14 @@ namespace PQ.Entities
 
         private void UpdateGroundContactInfo(bool force = false)
         {
+            // collider is turned off - check back later
+            if (_body.BoundExtents == Vector2.zero)
+            {
+                return;
+            }
+
             // todo: use a scriptable object or something for these checks
-            var result = _casterBox.CheckBelow(target: LayerMask.GetMask("Platform"), distance: int.MaxValue);
+            var result = _caster.CheckBelow(target: LayerMask.GetMask("Platform"), distance: int.MaxValue);
             bool isInContactWithGround = result.hitPercentage >= 0.50f && result.hitDistance <= 0.25f;
 
             if (_isGrounded != isInContactWithGround || force)
@@ -72,5 +73,25 @@ namespace PQ.Entities
                 GroundContactChanged?.Invoke(_isGrounded);
             }
         }
+        
+        #if UNITY_EDITOR
+        void OnDrawGizmos()
+        {
+            if (!Application.IsPlaying(this) || !enabled)
+            {
+                return;
+            }
+
+            // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window
+            GizmoExtensions.DrawLine(_caster.BackSide,   Color.gray);
+            GizmoExtensions.DrawLine(_caster.FrontSide,  Color.gray);
+            GizmoExtensions.DrawLine(_caster.BottomSide, Color.gray);
+            GizmoExtensions.DrawLine(_caster.TopSide,    Color.gray);
+
+            // draw a pair of arrows from the that should be identical to the transform's axes in the editor window
+            GizmoExtensions.DrawArrow(from: _caster.Center, to: _caster.Center + _caster.ForwardAxis, color: Color.red);
+            GizmoExtensions.DrawArrow(from: _caster.Center, to: _caster.Center + _caster.UpAxis,      color: Color.green);
+        }
+        #endif
     }
 }

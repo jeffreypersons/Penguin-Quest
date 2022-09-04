@@ -35,7 +35,7 @@ namespace PQ.TestScenes.Minimal
         void Awake()
         {
             _body   = gameObject.GetComponent<KinematicBody2D>();
-            _caster = gameObject.GetComponent<RayCasterBox>();
+            _caster = new RayCasterBox(_body);
         }
 
         void Start()
