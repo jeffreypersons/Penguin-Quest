@@ -29,12 +29,12 @@ namespace PQ.Common.Extensions
         }
 
         /* Draw line between given world positions. */
-        public static void DrawLine(Vector2 from, Vector2 to, Color? color = null)
+        public static void DrawLine((Vector2, Vector2) endpoints, Color? color = null)
         {
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
 
-            Gizmos.DrawLine(from, to);
+            Gizmos.DrawLine(endpoints.Item1, endpoints.Item2);
 
             Gizmos.color = previousColor;
         }

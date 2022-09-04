@@ -21,9 +21,6 @@ namespace PQ.Entities
         public float   SurfaceAlignmentRotationalStrength => _surfaceAlignmentRotationalStrength;
         public float   DegreesFromSurfaceNormalThreshold  => _degreesFromSurfaceNormalThreshold;
 
-        public float   LinearVelocityThreshold            => _linearVelocityThreshold;
-        public float   AngularVelocityThreshold           => _angularVelocityThreshold;
-
 
         [Header("Animation Settings")]
         [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
@@ -64,17 +61,5 @@ namespace PQ.Entities
 
         [Tooltip("At what degrees between up axis and surface normal is considered to be misaligned?")]
         [SerializeField] [Range(0.01f, 20.00f)] private float _degreesFromSurfaceNormalThreshold = 0.01f;
-
-
-        [Header("Movement Sensitives (Tolerances for Jitter Reduction)")]
-
-        [Tooltip("Should we automatically lock movement axes when velocities are within thresholds?")]
-        [SerializeField] private bool _enableAutomaticAxisLockingForSmallVelocities = true;
-
-        [Tooltip("What linear velocities (in x or y units) do we consider to be small enough to ignore?")]
-        [SerializeField] [Range(0.01f, 20.00f)] private float _linearVelocityThreshold = 5.00f;
-
-        [Tooltip("What angular velocities (in degrees) do we consider to be small enough to ignore?")]
-        [SerializeField] [Range(0.01f, 20.00f)] private float _angularVelocityThreshold = 5.00f;
     }
 }

@@ -6,10 +6,18 @@ namespace PQ.Common
     /*
     Provides a streamlined interface for casting lines from specific points or colliders.
     */
-    public class RayCaster
+    public sealed class RayCaster
     {
-        public float     MaxDistance { get; set; } = Mathf.Infinity;
-        public LayerMask LayerMask   { get; set; } = ~0;
+        public float     MaxDistance      { get; set; } = Mathf.Infinity;
+        public LayerMask LayerMask        { get; set; } = ~0;
+        public bool      DrawCastInEditor { get; set; } = true;
+
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"distance:{MaxDistance}," +
+                $"layerMask:{LayerMask}," +
+                $"drawCastInEditor:{DrawCastInEditor}}}";
+
 
         public RayCaster() { }
 
@@ -34,9 +42,15 @@ namespace PQ.Common
         }
 
 
-        private static RayHit? Cast(Vector2 origin, Vector2 direction, float distance, LayerMask layerMask)
+        private RayHit? Cast(Vector2 origin, Vector2 direction, float distance, LayerMask layerMask)
         {
             RaycastHit2D castHit2D = Physics2D.Raycast(origin, direction, distance, layerMask);
+
+            #if UNITY_EDITOR
+            if (DrawCastInEditor)
+                DrawCastResultAsLineInEditor(origin, direction, distance, castHit2D);
+            #endif
+
             if (!castHit2D)
             {
                 return null;
@@ -50,11 +64,32 @@ namespace PQ.Common
             );
         }
 
+
         private static Vector2 FindPositionOnColliderEdgeInGivenDirection(Collider2D collider, Vector2 direction)
         {
             Vector2 center = collider.bounds.center;
             collider.bounds.IntersectRay(new Ray(center, direction), out float distanceFromCenterToEdge);
             return center - (distanceFromCenterToEdge * direction);
         }
+        
+        #if UNITY_EDITOR
+        private static void DrawCastResultAsLineInEditor(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit)
+        {
+            Color color;
+            Vector2 terminal;
+            if (hit)
+            {
+                color = Color.green;
+                terminal = hit.point;
+            }
+            else
+            {
+                color = Color.red;
+                terminal = origin + distance * direction;
+            }
+
+            Debug.DrawLine(origin, terminal, color, duration: Time.deltaTime);
+        }
+        #endif
     }
 }

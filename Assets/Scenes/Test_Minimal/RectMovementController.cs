@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using PQ.Common;
 using PQ.Entities;
@@ -8,24 +7,25 @@ namespace PQ.TestScenes.Minimal
 {
     public class RectMovementController : MonoBehaviour
     {
-        private RayCasterBox _collisionChecker;
-        private KinematicBody2D _physicsBody2D;
+        private RayCasterBox _caster;
+        private KinematicBody2D _body;
 
-        public event Action<bool> GroundContactChanged;
+        private bool _isGrounded;
+
+        public Vector2 Position => _body.Position;
         public Character2DSettings Settings { get; set; }
 
-        public Vector2 Position => _physicsBody2D.Position;
         public void PlaceAt(Vector2 position, float rotation)
         {
-            _physicsBody2D.MoveTo(position);
-            _physicsBody2D.SetLocalOrientation3D(0, 0, rotation);
+            _body.MoveTo(position);
+            _body.SetLocalOrientation3D(0, 0, rotation);
         }
-        public void FaceRight() => _physicsBody2D.SetLocalOrientation3D(0, 0, 0);
-        public void FaceLeft() => _physicsBody2D.SetLocalOrientation3D(0, 180, 0);
+        public void FaceRight() => _body.SetLocalOrientation3D(0, 0, 0);
+        public void FaceLeft()  => _body.SetLocalOrientation3D(0, 180, 0);
         public void MoveForward()
         {
             float distanceToMove = Settings.HorizontalMovementPeakSpeed * Time.fixedDeltaTime;
-            _physicsBody2D.MoveBy(distanceToMove * _physicsBody2D.Forward);
+            _body.MoveBy(distanceToMove * _body.Forward);
         }
         public void Jump()
         {
@@ -34,18 +34,36 @@ namespace PQ.TestScenes.Minimal
 
         void Awake()
         {
-            _physicsBody2D    = gameObject.GetComponent<KinematicBody2D>();
-            _collisionChecker = gameObject.GetComponent<RayCasterBox>();
+            _body   = gameObject.GetComponent<KinematicBody2D>();
+            _caster = new RayCasterBox(_body);
         }
 
         void Start()
         {
-
+            UpdateGroundContactInfo(force: true);
         }
 
         void FixedUpdate()
         {
+            UpdateGroundContactInfo();
 
+            if (!_isGrounded)
+            {
+                _body.MoveBy(Settings.GravityStrength * Vector2.down);
+            }
+        }
+
+
+        private void UpdateGroundContactInfo(bool force = false)
+        {
+            // todo: use a scriptable object or something for these checks
+            var result = _caster.CheckBelow(target: LayerMask.GetMask("Platform"), distance: int.MaxValue);
+            bool isInContactWithGround = result.hitPercentage >= 0.50f && result.hitDistance <= 0.25f;
+
+            if (_isGrounded != isInContactWithGround || force)
+            {
+                _isGrounded = isInContactWithGround;
+            }
         }
     }
 }
