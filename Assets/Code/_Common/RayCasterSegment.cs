@@ -82,32 +82,20 @@ namespace PQ.Common
             if (offsetBetweenRays == Vector2.zero)
             {
                 Debug.LogWarning($"Insufficient spacing between ray origins {RaySpacing} - skipping casts");
-                return new RayHitGroup(hitPercentage: 0f, hitDistance: 0f);
+                return new RayHitGroup(ReadOnlySpan<RayHit>.Empty);
             }
 
             _rayCaster.LayerMask = layerMask;
             _rayCaster.MaxDistance = maxDistance;
 
-            int hitCount = 0;
             int castCount = _results.Length;
-            float distanceSum = 0;
             for (int rayIndex = 0; rayIndex < castCount; rayIndex++)
             {
                 Vector2 rayOrigin = _segmentStart + (rayIndex * offsetBetweenRays);
-                var hit = _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
-                if (hit)
-                {
-                    hitCount++;
-                    distanceSum += hit.distance;
-                }
-
-                _results[rayIndex] = hit;
+                _results[rayIndex] = _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
             }
 
-            return new RayHitGroup(
-                hitPercentage: castCount / (float)hitCount,
-                hitDistance:   castCount / (float)distanceSum
-            );
+            return new RayHitGroup(_results.AsSpan());
         }
     }
 }
