@@ -15,52 +15,52 @@ namespace PQ.Common
         private Vector2 _xAxis;
         private Vector2 _yAxis;
         private KinematicBody2D _body;
-        private RayCasterSegment _backSensor;
-        private RayCasterSegment _frontSensor;
+        private RayCasterSegment _backCaster;
+        private RayCasterSegment _frontCaster;
         private RayCasterSegment _bottomSensor;
-        private RayCasterSegment _topSensor;
-                
+        private RayCasterSegment _topCaster;
+
         public Vector2 Center      => _center;
         public Vector2 ForwardAxis => _xAxis;
         public Vector2 UpAxis      => _yAxis;
 
-        public (Vector2, Vector2) BackSide   => (_backSensor.SegmentStart,   _backSensor.SegmentEnd);
-        public (Vector2, Vector2) FrontSide  => (_frontSensor.SegmentStart,  _frontSensor.SegmentEnd);
+        public (Vector2, Vector2) BackSide   => (_backCaster.SegmentStart,   _backCaster.SegmentEnd);
+        public (Vector2, Vector2) FrontSide  => (_frontCaster.SegmentStart,  _frontCaster.SegmentEnd);
         public (Vector2, Vector2) BottomSide => (_bottomSensor.SegmentStart, _bottomSensor.SegmentEnd);
-        public (Vector2, Vector2) TopSide    => (_topSensor.SegmentStart,    _topSensor.SegmentEnd);
+        public (Vector2, Vector2) TopSide    => (_topCaster.SegmentStart,    _topCaster.SegmentEnd);
 
         public override string ToString() =>
             $"{GetType().Name}{{" +
-                $"Back{_backSensor}, " +
-                $"Front{_frontSensor}, " +
+                $"Back{_backCaster}, " +
+                $"Front{_frontCaster}, " +
                 $"Bottom{_bottomSensor}, " +
-                $"Top{_topSensor}}}";
+                $"Top{_topCaster}}}";
 
 
         public RayCasterBox(KinematicBody2D body)
         {
             _body = body;
-            _backSensor   = new();
-            _frontSensor  = new();
+            _backCaster   = new();
+            _frontCaster  = new();
             _bottomSensor = new();
-            _topSensor    = new();
+            _topCaster    = new();
         }
 
-        public void SetBehindRayCount(int rayCount) => _backSensor.SetRayCount(rayCount);
-        public void SetFrontRayCount(int rayCount)  => _frontSensor.SetRayCount(rayCount);
+        public void SetBehindRayCount(int rayCount) => _backCaster.SetRayCount(rayCount);
+        public void SetFrontRayCount(int rayCount)  => _frontCaster.SetRayCount(rayCount);
         public void SetBelowRayCount(int rayCount)  => _bottomSensor.SetRayCount(rayCount);
-        public void SetAboveRayCount(int rayCount)  => _topSensor.SetRayCount(rayCount);
+        public void SetAboveRayCount(int rayCount)  => _topCaster.SetRayCount(rayCount);
         public void SetAllRayCounts(int rayCount)
         {
-            _backSensor  .SetRayCount(rayCount);
-            _frontSensor .SetRayCount(rayCount);
+            _backCaster  .SetRayCount(rayCount);
+            _frontCaster .SetRayCount(rayCount);
             _bottomSensor.SetRayCount(rayCount);
-            _topSensor   .SetRayCount(rayCount);
+            _topCaster   .SetRayCount(rayCount);
         }
 
-        public RayHitGroup CheckBehind(LayerMask target, float distance) => Cast(_backSensor,   target, distance);
-        public RayHitGroup CheckFront(LayerMask target,  float distance) => Cast(_frontSensor,  target, distance);
-        public RayHitGroup CheckAbove(LayerMask target,  float distance) => Cast(_topSensor,    target, distance);
+        public RayHitGroup CheckBehind(LayerMask target, float distance) => Cast(_backCaster,   target, distance);
+        public RayHitGroup CheckFront(LayerMask target,  float distance) => Cast(_frontCaster,  target, distance);
+        public RayHitGroup CheckAbove(LayerMask target,  float distance) => Cast(_topCaster,    target, distance);
         public RayHitGroup CheckBelow(LayerMask target,  float distance) => Cast(_bottomSensor, target, distance);
 
 
@@ -93,10 +93,10 @@ namespace PQ.Common
             _center = center;
             _xAxis  = xAxis;
             _yAxis  = yAxis;
-            _backSensor  .UpdatePositioning(segmentStart: rearBottom,  segmentEnd: rearTop,     rayDirection: -xAxis);
-            _frontSensor .UpdatePositioning(segmentStart: frontBottom, segmentEnd: frontTop,    rayDirection:  xAxis);
+            _backCaster  .UpdatePositioning(segmentStart: rearBottom,  segmentEnd: rearTop,     rayDirection: -xAxis);
+            _frontCaster .UpdatePositioning(segmentStart: frontBottom, segmentEnd: frontTop,    rayDirection:  xAxis);
             _bottomSensor.UpdatePositioning(segmentStart: rearBottom,  segmentEnd: frontBottom, rayDirection: -yAxis);
-            _topSensor   .UpdatePositioning(segmentStart: rearTop,     segmentEnd: frontTop,    rayDirection:  yAxis);
+            _topCaster   .UpdatePositioning(segmentStart: rearTop,     segmentEnd: frontTop,    rayDirection:  yAxis);
         }
     }
 }
