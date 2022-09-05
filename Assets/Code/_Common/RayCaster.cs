@@ -75,20 +75,20 @@ namespace PQ.Common
         #if UNITY_EDITOR
         private static void DrawCastResultAsLineInEditor(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit)
         {
-            Color color;
-            Vector2 terminal;
+            float duration = Time.deltaTime;
+            Vector2 terminal = origin + distance * direction;
+
             if (hit)
             {
-                color = Color.green;
-                terminal = hit.point;
+                // draw the ray past the hit point all the way to max distance,
+                // making optimization easier since excessively long cast distance becomes obvious
+                Debug.DrawLine(origin, hit.point, Color.green, duration);
+                Debug.DrawLine(hit.point, terminal, Color.red, duration);
             }
             else
             {
-                color = Color.red;
-                terminal = origin + distance * direction;
+                Debug.DrawLine(origin, terminal, Color.red, duration);
             }
-
-            Debug.DrawLine(origin, terminal, color, duration: Time.deltaTime);
         }
         #endif
     }
