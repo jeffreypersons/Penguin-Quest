@@ -14,13 +14,13 @@ namespace PQ.Common
 
         private Vector2 _rayDirection;
         private RayCaster _rayCaster;
-        private RayHit?[] _results;
+        private RayHit[] _results;
 
         public const int MinRayCount = 3;
         public const int MaxRayCount = 1000;
 
 
-        public ReadOnlySpan<RayHit?> RayCastResults => _results.AsSpan();
+        public ReadOnlySpan<RayHit> RayCastResults => _results.AsSpan();
 
         public Vector2   SegmentStart     => _segmentStart;
         public Vector2   SegmentMid       => Vector2.Lerp(_segmentStart, _segmentEnd, 0.50f);
@@ -63,7 +63,7 @@ namespace PQ.Common
 
             if (_results == null || _results.Length != rayCount)
             {
-                _results = new RayHit?[rayCount];
+                _results = new RayHit[rayCount];
             }
         }
 
@@ -76,13 +76,14 @@ namespace PQ.Common
         }
 
         /* In the same direction, cast out rays from each origin along the segment with given options. */
-        public void Cast(LayerMask layerMask, float maxDistance)
+        public RayHitGroup Cast(LayerMask layerMask, float maxDistance)
         {
+            RayHitGroup hitGroup = default;
             Vector2 offsetBetweenRays = RaySpacing * SegmentDirection;
             if (offsetBetweenRays == Vector2.zero)
             {
                 Debug.LogWarning($"Insufficient spacing between ray origins {RaySpacing} - skipping casts");
-                return;
+                return new RayHitGroup(hitPercentage: 0f, hitDistance: 0f);
             }
 
             _rayCaster.LayerMask = layerMask;
@@ -92,6 +93,7 @@ namespace PQ.Common
                 Vector2 rayOrigin = _segmentStart + (rayIndex * offsetBetweenRays);
                 _results[rayIndex] = _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
             }
+            return hitGroup;
         }
     }
 }

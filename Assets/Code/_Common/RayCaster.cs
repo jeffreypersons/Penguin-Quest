@@ -23,26 +23,26 @@ namespace PQ.Common
 
 
         /* Shoot out a line between given points, seeing if a TargetLayer is hit. */
-        public RayHit? CastBetween(Vector2 from, Vector2 to)
+        public RayHit CastBetween(Vector2 from, Vector2 to)
         {
             return Cast(from, (to - from).normalized, MaxDistance, LayerMask);
         }
 
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
-        public RayHit? CastFromPoint(Vector2 point, Vector2 direction)
+        public RayHit CastFromPoint(Vector2 point, Vector2 direction)
         {
             return Cast(point, direction, MaxDistance, LayerMask);
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public RayHit? CastFromCollider(Collider2D collider, Vector2 direction)
+        public RayHit CastFromCollider(Collider2D collider, Vector2 direction)
         {
             Vector2 point = FindPositionOnColliderEdgeInGivenDirection(collider, direction);
             return Cast(point, direction, MaxDistance, LayerMask);
         }
 
 
-        private RayHit? Cast(Vector2 origin, Vector2 direction, float distance, LayerMask layerMask)
+        private RayHit Cast(Vector2 origin, Vector2 direction, float distance, LayerMask layerMask)
         {
             RaycastHit2D castHit2D = Physics2D.Raycast(origin, direction, distance, layerMask);
 
@@ -53,7 +53,7 @@ namespace PQ.Common
 
             if (!castHit2D)
             {
-                return null;
+                return default;
             }
 
             return new RayHit(

@@ -19,20 +19,7 @@ namespace PQ.Common
         private RayCasterSegment _frontSensor;
         private RayCasterSegment _bottomSensor;
         private RayCasterSegment _topSensor;
-
-        public struct Result
-        {
-            public readonly float hitPercentage;
-            public readonly float hitDistance;
-
-            public Result(float hitPercentage, float hitDistance)
-            {
-                this.hitPercentage = hitPercentage;
-                this.hitDistance = hitDistance;
-            }
-        }
-        
-        
+                
         public Vector2 Center      => _center;
         public Vector2 ForwardAxis => _xAxis;
         public Vector2 UpAxis      => _yAxis;
@@ -71,20 +58,20 @@ namespace PQ.Common
             _topSensor   .SetRayCount(rayCount);
         }
 
-        public Result CheckBehind(LayerMask target, float distance) => Cast(_backSensor,   target, distance);
-        public Result CheckFront(LayerMask target,  float distance) => Cast(_frontSensor,  target, distance);
-        public Result CheckAbove(LayerMask target,  float distance) => Cast(_topSensor,    target, distance);
-        public Result CheckBelow(LayerMask target,  float distance) => Cast(_bottomSensor, target, distance);
+        public RayHitGroup CheckBehind(LayerMask target, float distance) => Cast(_backSensor,   target, distance);
+        public RayHitGroup CheckFront(LayerMask target,  float distance) => Cast(_frontSensor,  target, distance);
+        public RayHitGroup CheckAbove(LayerMask target,  float distance) => Cast(_topSensor,    target, distance);
+        public RayHitGroup CheckBelow(LayerMask target,  float distance) => Cast(_bottomSensor, target, distance);
 
 
-        private Result Cast(RayCasterSegment caster, LayerMask layerMask, float distanceToCast)
+        private RayHitGroup Cast(RayCasterSegment caster, LayerMask layerMask, float distanceToCast)
         {
             // todo: properly compute actual results, and add result/standard-deviation/etc functionality
             UpdateBounds();
 
             caster.Cast(layerMask, distanceToCast);
             var results = caster.RayCastResults;
-            return new Result(hitPercentage: 0.50f, hitDistance: 0.25f);
+            return new RayHitGroup(hitPercentage: 0.50f, hitDistance: 0.25f);
         }
 
         private void UpdateBounds()

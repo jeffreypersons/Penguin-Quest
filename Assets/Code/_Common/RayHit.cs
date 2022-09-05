@@ -11,12 +11,18 @@ namespace PQ.Common
         public readonly float      distance;
         public readonly Collider2D collider;
 
+
         public RayHit(Vector2 point, Vector2 normal, float distance, Collider2D collider)
         {
             this.point    = point;
             this.normal   = normal;
             this.distance = distance;
             this.collider = collider;
+        }
+
+        public static implicit operator bool(RayHit hit)
+        {
+            return hit.collider != null;
         }
     }
 }
