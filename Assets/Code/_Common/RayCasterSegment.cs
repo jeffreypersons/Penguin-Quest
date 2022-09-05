@@ -93,6 +93,8 @@ namespace PQ.Common
                 Vector2 rayOrigin = _segmentStart + (rayIndex * offsetBetweenRays);
                 _results[rayIndex] = _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
             }
+
+            // todo: properly compute actual results, and add result/standard-deviation/etc functionality
             return hitGroup;
         }
     }

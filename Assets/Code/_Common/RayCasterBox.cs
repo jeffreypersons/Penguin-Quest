@@ -66,15 +66,11 @@ namespace PQ.Common
 
         private RayHitGroup Cast(RayCasterSegment caster, LayerMask layerMask, float distanceToCast)
         {
-            // todo: properly compute actual results, and add result/standard-deviation/etc functionality
-            UpdateBounds();
-
-            caster.Cast(layerMask, distanceToCast);
-            var results = caster.RayCastResults;
-            return new RayHitGroup(hitPercentage: 0.50f, hitDistance: 0.25f);
+            UpdateBoundsIfChanged();
+            return caster.Cast(layerMask, distanceToCast);
         }
 
-        private void UpdateBounds()
+        private void UpdateBoundsIfChanged()
         {
             Vector2 center = _body.Position;
             Vector2 xAxis  = _body.BoundExtents.x * _body.Forward;
