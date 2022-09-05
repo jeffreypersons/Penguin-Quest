@@ -63,9 +63,15 @@ namespace PQ.Entities
                 return;
             }
 
-            // todo: use a scriptable object or something for these checks
-            var result = _caster.CheckBelow(target: LayerMask.GetMask("Platform"), distance: int.MaxValue);
-            bool isInContactWithGround = result.hitPercentage >= 0.50f && result.hitDistance <= 0.25f;
+            // todo: use a scriptable object or something for these variables
+            var groundLayer = LayerMask.GetMask("Platform");
+            var groundDistanceToCheck   = 5.00f;
+            var groundDistanceTolerated = 0.25f;
+
+            var result = _caster.CheckBelow(target: groundLayer, groundDistanceToCheck);
+            bool isInContactWithGround =
+                result.hitPercentage >= 0.50f &&
+                result.hitDistance <= groundDistanceTolerated;
 
             if (_isGrounded != isInContactWithGround || force)
             {

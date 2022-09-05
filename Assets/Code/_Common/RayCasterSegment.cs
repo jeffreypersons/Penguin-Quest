@@ -78,7 +78,6 @@ namespace PQ.Common
         /* In the same direction, cast out rays from each origin along the segment with given options. */
         public RayHitGroup Cast(LayerMask layerMask, float maxDistance)
         {
-            RayHitGroup hitGroup = default;
             Vector2 offsetBetweenRays = RaySpacing * SegmentDirection;
             if (offsetBetweenRays == Vector2.zero)
             {
@@ -88,14 +87,27 @@ namespace PQ.Common
 
             _rayCaster.LayerMask = layerMask;
             _rayCaster.MaxDistance = maxDistance;
-            for (int rayIndex = 0; rayIndex < _results.Length; rayIndex++)
+
+            int hitCount = 0;
+            int castCount = _results.Length;
+            float distanceSum = 0;
+            for (int rayIndex = 0; rayIndex < castCount; rayIndex++)
             {
                 Vector2 rayOrigin = _segmentStart + (rayIndex * offsetBetweenRays);
-                _results[rayIndex] = _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
+                var hit = _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
+                if (hit)
+                {
+                    hitCount++;
+                    distanceSum += hit.distance;
+                }
+
+                _results[rayIndex] = hit;
             }
 
-            // todo: properly compute actual results, and add result/standard-deviation/etc functionality
-            return hitGroup;
+            return new RayHitGroup(
+                hitPercentage: castCount / (float)hitCount,
+                hitDistance:   castCount / (float)distanceSum
+            );
         }
     }
 }

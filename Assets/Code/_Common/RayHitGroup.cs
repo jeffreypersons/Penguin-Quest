@@ -18,7 +18,7 @@ namespace PQ.Common
 
         public static implicit operator bool(RayHitGroup hitGroup)
         {
-            return Mathf.Approximately(hitGroup.hitPercentage, 0f);
+            return hitGroup.hitPercentage > 0f;
         }
     }
 }
