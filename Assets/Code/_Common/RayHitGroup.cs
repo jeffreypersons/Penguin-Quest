@@ -11,6 +11,13 @@ namespace PQ.Common
         public readonly int   hitCount;
         public readonly float hitPercentage;
         public readonly float hitDistance;
+        
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"rayCount:{rayCount}," +
+                $"hitCount:{hitCount}," +
+                $"hitPercentage:{hitPercentage}," +
+                $"hitDistance:{hitDistance}}}";
 
         // todo: move results _into_ this class, or at least a reference to it
         public RayHitGroup(ReadOnlySpan<RayHit> hits)
@@ -29,9 +36,10 @@ namespace PQ.Common
 
             this.rayCount      = rayCount;
             this.hitCount      = hitCount;
-            this.hitPercentage = distanceSum > 0f? ((float)rayCount / hitCount)    : 0f;
+            this.hitPercentage = hitCount    > 0f? ((float)rayCount / hitCount)    : 0f;
             this.hitDistance   = distanceSum > 0f? ((float)rayCount / distanceSum) : 0f;
         }
+
 
         public static implicit operator bool(RayHitGroup hitGroup)
         {
