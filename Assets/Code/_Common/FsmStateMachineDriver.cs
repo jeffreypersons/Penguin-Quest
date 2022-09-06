@@ -17,6 +17,11 @@ namespace PQ.Common
         public FsmState CurrentState  { get; private set; }
         public FsmState PreviousState { get; private set; }
 
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"initialState:{InitialState}," +
+                $"currentState:{CurrentState}," +
+                $"previousState:{PreviousState}}}";
 
         // Initialization method that MUST be overridden in subclasses; don't forget base.Initialize(initialState)
         protected virtual void Initialize(FsmState initialState)
