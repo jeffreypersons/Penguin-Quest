@@ -4,14 +4,11 @@
 namespace PQ.Camera
 {
     /*
-    Camera viewport tracking for given camera.
+    Camera viewport world bounds tracking for given camera.
     
-    Assumptions
-    - assumes orthographic camera
-    - assumes a single display and eye
-    - all external functionality is in world space coords unless otherwise stated
+    Camera is assumed to be orthographic with a single display and eye.
     */
-    internal class CameraViewportInfo
+    internal class CameraViewportTracker
     {
         private readonly UnityEngine.Camera _cam;
 
@@ -23,10 +20,9 @@ namespace PQ.Camera
             $"{GetType().Name}:{{" +
                 $"center:{Center}," +
                 $"nearClip:{NearClipOffset}," +
-                $"size:{Extents * 2f}," +
-            $"}}";
+                $"size:{Extents * 2f}}}";
 
-        public CameraViewportInfo(UnityEngine.Camera cam)
+        public CameraViewportTracker(UnityEngine.Camera cam)
         {
             if (cam == null)
             {

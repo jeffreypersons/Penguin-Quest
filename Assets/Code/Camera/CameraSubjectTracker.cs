@@ -4,22 +4,16 @@
 namespace PQ.Camera
 {
     /*
-    Positional tracking for given transform, intended for use by rendering/camera/etc scripts.
+    World positional tracking for given transform, intended for use by rendering/camera/etc scripts.
 
-    Center and size is synced from collider if attached,
-    otherwise we use transform.position and assume size to be zero.
-
-    Note that we do not take rotation into account.
-
-    Note that we only check for collider once, so dynamically adding colliders won't automatically
-    update it.
+    Center and size are taken from attached active collider, otherwise transform.position with zero size is used.
     */
-    internal class CameraSubjectInfo
+    internal class CameraSubjectTracker
     {
         private readonly Transform _subject;
         private readonly Collider2D _collider;
 
-        public string  Name => _subject.name;
+        public string  Name => _subject == null? "null" : _subject.name;
         public Vector2 Center  { get; private set; }
         public float   Depth   { get; private set; }
         public Vector2 Extents { get; private set; }
@@ -28,10 +22,9 @@ namespace PQ.Camera
             $"{GetType().Name}:{{" +
                 $"name:{Name}," +
                 $"center:{Center}," +
-                $"size:{Extents * 2f}," +
-            $"}}";
+                $"size:{Extents * 2f}}}";
 
-        public CameraSubjectInfo(Transform subject)
+        public CameraSubjectTracker(Transform subject)
         {
             if (subject == null)
             {

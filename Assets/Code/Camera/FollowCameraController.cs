@@ -8,16 +8,16 @@ namespace PQ.Camera
     Camera behavior for following a subject.
 
     Features
-    - option to restrict subject to camera viewport
-    - applies smoothing when following subject
-    - reduces jitter by avoids moving if super close to object
+    - Option to restrict subject to camera viewport
+    - Applies smoothing when following subject
+    - Reduces jitter by avoids moving if super close to object
     - forces immediate updates in editor so that offsets are always kept in sync prior to game start
 
     Notes
-    - only orthographic mode is supported
-    - assumes camera position is center of viewport
-    - assumes subject's dimensions are less than viewport
-    - the above could possibly be handled in future by changing the orthographic size
+    - Only orthographic mode is supported
+    - Assumes camera position is center of viewport
+    - Assumes subject's dimensions are less than viewport
+    - The above could possibly be handled in future by changing the orthographic size
     */
     [ExecuteAlways]
     [RequireComponent(typeof(UnityEngine.Camera))]
@@ -62,11 +62,22 @@ namespace PQ.Camera
 
         [Tooltip("How sensitive to adjustments in zoom are we?")]
         [Range(0.01f, 100.00f)] [SerializeField] private float _differenceFromTargetOrthoSizeThreshold = 0.20f;
+        
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"name:{_cam.name}," +
+                $"orthoSize:{_orthographicSize}," +
+                $"maxMoveSpeed:{_maxMoveSpeed}," +
+                $"maxZoomSpeed:{_maxZoomSpeed}," +
+                $"keepSubjectInView:{_keepSubjectInView}, " +
+                $"offsetFromSubject:{OffsetFromSubject}, " +
+                $"viewport:{_viewportInfo}, " +
+                $"subject:{_subjectInfo}}}";
 
 
         private UnityEngine.Camera _cam;
-        private CameraViewportInfo _viewportInfo;
-        private CameraSubjectInfo  _subjectInfo;
+        private CameraViewportTracker _viewportInfo;
+        private CameraSubjectTracker  _subjectInfo;
 
         private float   _zoomVelocity;
         private Vector2 _moveVelocity;
@@ -104,8 +115,8 @@ namespace PQ.Camera
             _cam.rect          = new Rect(0.00f, 0.00f, 1.00f, 1.00f);
             _cam.orthographic  = true;
 
-            _viewportInfo = new CameraViewportInfo(_cam);
-            _subjectInfo  = new CameraSubjectInfo(_subject);
+            _viewportInfo = new CameraViewportTracker(_cam);
+            _subjectInfo  = new CameraSubjectTracker(_subject);
 
             _zoomVelocity = 0.00f;
             _moveVelocity = Vector2.zero;
