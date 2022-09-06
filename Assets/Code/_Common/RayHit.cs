@@ -10,6 +10,13 @@ namespace PQ.Common
         public readonly Vector2    normal;
         public readonly float      distance;
         public readonly Collider2D collider;
+        
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"point:{point}," +
+                $"normal:{normal}," +
+                $"distance:{distance}," +
+                $"collider:{collider}}}";
 
         public RayHit(Vector2 point, Vector2 normal, float distance, Collider2D collider)
         {
@@ -17,6 +24,12 @@ namespace PQ.Common
             this.normal   = normal;
             this.distance = distance;
             this.collider = collider;
+        }
+
+
+        public static implicit operator bool(RayHit hit)
+        {
+            return hit.collider != null;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 
 namespace PQ.Common
@@ -6,17 +7,43 @@ namespace PQ.Common
     /* Results of multiple ray intersections. */
     public struct RayHitGroup
     {
-        public readonly Vector2    point;
-        public readonly Vector2    normal;
-        public readonly float      distance;
-        public readonly Collider2D collider;
+        public readonly int   rayCount;
+        public readonly int   hitCount;
+        public readonly float hitPercentage;
+        public readonly float hitDistance;
+        
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"rayCount:{rayCount}," +
+                $"hitCount:{hitCount}," +
+                $"hitPercentage:{hitPercentage}," +
+                $"hitDistance:{hitDistance}}}";
 
-        public RayHitGroup(Vector2 point, Vector2 normal, float distance, Collider2D collider)
+        // todo: move results _into_ this class, or at least a reference to it
+        public RayHitGroup(ReadOnlySpan<RayHit> hits)
         {
-            this.point    = point;
-            this.normal   = normal;
-            this.distance = distance;
-            this.collider = collider;
+            int hitCount = 0;
+            float distanceSum = 0f;
+            int rayCount = hits.Length;
+            for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
+            {
+                if (hits[rayIndex])
+                {
+                    hitCount++;
+                    distanceSum += hits[rayIndex].distance;
+                }
+            }
+
+            this.rayCount      = rayCount;
+            this.hitCount      = hitCount;
+            this.hitPercentage = hitCount    > 0f? ((float)rayCount / hitCount)    : 0f;
+            this.hitDistance   = distanceSum > 0f? ((float)rayCount / distanceSum) : 0f;
+        }
+
+
+        public static implicit operator bool(RayHitGroup hitGroup)
+        {
+            return hitGroup.hitCount > 0f;
         }
     }
 }
