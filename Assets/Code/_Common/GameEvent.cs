@@ -18,7 +18,10 @@ namespace PQ.Common
     {
         private event Action<EventData> _action;
 
-        public int NumListeners => _action.GetInvocationList().Length;
+        public int ListenerCount => _action.GetInvocationList().Length;
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"listenerCount:{ListenerCount}}}";
 
         public GameEvent()
         {
