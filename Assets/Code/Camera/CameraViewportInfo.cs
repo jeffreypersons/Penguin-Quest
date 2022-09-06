@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Diagnostics.Contracts;
 
 
 namespace PQ.Camera
@@ -14,19 +13,18 @@ namespace PQ.Camera
     */
     internal class CameraViewportInfo
     {
-        public float   NearClipOffset { get; private set; }
-        public Vector2 Center         { get; private set; }
-        public Vector2 Size           { get; private set; }
-        public Vector2 Extents        { get; private set; }
-        public Vector2 Min            { get; private set; }
-        public Vector2 Max            { get; private set; }
-
-
-        public bool HasSizeChangedSinceLastUpdate     { get; private set; }
-        public bool HasPositionChangedSinceLastUpdate { get; private set; }
-
-
         private readonly UnityEngine.Camera _cam;
+
+        public Vector2 Center         { get; private set; }
+        public Vector2 Extents        { get; private set; }
+        public float   NearClipOffset { get; private set; }
+
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"center:{Center}," +
+                $"nearClip:{NearClipOffset}," +
+                $"size:{Extents * 2f}," +
+            $"}}";
 
         public CameraViewportInfo(UnityEngine.Camera cam)
         {
@@ -37,57 +35,26 @@ namespace PQ.Camera
 
             _cam = cam;
             Update();
-            HasPositionChangedSinceLastUpdate = false;
-            HasSizeChangedSinceLastUpdate     = false;
         }
 
         public void Update()
         {
-            UpdatePosition();
-            UpdateSize();
+            Bounds bounds = ExtractViewportBounds(_cam);
+
+            Center         = bounds.center;
+            NearClipOffset = bounds.center.z;
+            Extents        = bounds.extents;
         }
 
 
-        private void UpdatePosition()
+        private static Bounds ExtractViewportBounds(UnityEngine.Camera cam)
         {
-            Vector3 newCenter = _cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, _cam.nearClipPlane));
-            if (!Mathf.Approximately(newCenter.z, NearClipOffset))
-            {
-                NearClipOffset = newCenter.z;
-            }
-        
-            if (!AreComponentsEqual(newCenter, Center))
-            {
-                Center = newCenter;
-                HasPositionChangedSinceLastUpdate = true;
-            }
-            else
-            {
-                HasPositionChangedSinceLastUpdate = false;
-            }
+            float nearClipPlaneDistance = cam.nearClipPlane;
+            Vector3 position = cam.ViewportToWorldPoint(new Vector3(0.50f, 0.50f, nearClipPlaneDistance));
+            Vector3 min      = cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, nearClipPlaneDistance));
+            Vector3 max      = cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, nearClipPlaneDistance));
+
+            return new Bounds(center: position, size: max - min);
         }
-
-        private void UpdateSize()
-        {
-            Vector2 newMin = _cam.ViewportToWorldPoint(new Vector3(0.00f, 0.00f, _cam.nearClipPlane));
-            Vector2 newMax = _cam.ViewportToWorldPoint(new Vector3(1.00f, 1.00f, _cam.nearClipPlane));
-        
-            if (!AreComponentsEqual(newMin, Min) || !AreComponentsEqual(newMax, Max))
-            {
-                Min     = newMin;
-                Max     = newMax;
-                Size    = newMax - newMin;
-                Extents = Size * 0.50f;
-                HasSizeChangedSinceLastUpdate = true;
-            }
-            else
-            {
-                HasSizeChangedSinceLastUpdate = false;
-            }
-        }
-
-
-        [Pure] private static bool AreComponentsEqual(Vector2 a, Vector2 b) =>
-            Mathf.Approximately(a.x, b.x) && Mathf.Approximately(a.y, b.y);
     }
 }

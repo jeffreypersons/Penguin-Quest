@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Diagnostics.Contracts;
 
 
 namespace PQ.Camera
@@ -9,85 +8,49 @@ namespace PQ.Camera
 
     Center and size is synced from collider if attached,
     otherwise we use transform.position and assume size to be zero.
+
+    Note that we do not take rotation into account.
+
+    Note that we only check for collider once, so dynamically adding colliders won't automatically
+    update it.
     */
     internal class CameraSubjectInfo
     {
-        public Vector2 Center  { get; private set; }
-        public Vector2 Size    { get; private set; }
-        public Vector2 Extents { get; private set; }
-        public Vector2 Min     { get; private set; }
-        public Vector2 Max     { get; private set; }
-
-        public bool HasSizeChangedSinceLastUpdate     { get; private set; }
-        public bool HasPositionChangedSinceLastUpdate { get; private set; }
-        public bool HasCollider => _collider != null && _collider.enabled;
-
-
         private readonly Transform _subject;
         private readonly Collider2D _collider;
+
+        public string  Name => _subject.name;
+        public Vector2 Center  { get; private set; }
+        public float   Depth   { get; private set; }
+        public Vector2 Extents { get; private set; }
+
+        public override string ToString() =>
+            $"{GetType().Name}:{{" +
+                $"name:{Name}," +
+                $"center:{Center}," +
+                $"size:{Extents * 2f}," +
+            $"}}";
 
         public CameraSubjectInfo(Transform subject)
         {
             if (subject == null)
             {
-                Debug.LogError($"CameraSubjectInfo : Received null _subject");
+                Debug.LogError($"CameraSubjectInfo : Received null subject");
             }
 
             _subject  = subject;
-            _collider = ExtractColliderFromTransform(subject);
-
+            _collider = subject.GetComponent<Collider2D>();
             Update();
-            HasPositionChangedSinceLastUpdate = false;
-            HasSizeChangedSinceLastUpdate     = false;
         }
 
         public void Update()
         {
-            UpdatePosition();
-            UpdateSize();
+            Bounds bounds = _collider ?
+                _collider.bounds : new Bounds(_subject.position, Vector3.zero);
 
-            if (HasPositionChangedSinceLastUpdate || HasSizeChangedSinceLastUpdate)
-            {
-                Min = Center - Extents;
-                Max = Center + Extents;
-            }
+            Center  = bounds.center;
+            Depth   = bounds.center.z;
+            Extents = bounds.extents;
         }
-
-
-        private void UpdatePosition()
-        {
-            Vector2 newCenter = HasCollider ? _collider.bounds.center : _subject.position;
-            if (!AreComponentsEqual(newCenter, Center))
-            {
-                Center = newCenter;
-                HasPositionChangedSinceLastUpdate = true;
-            }
-            else
-            {
-                HasPositionChangedSinceLastUpdate = false;
-            }
-        }
-
-        private void UpdateSize()
-        {
-            Vector2 newSize = HasCollider ? _collider.bounds.size : Vector3.zero;
-            if (!AreComponentsEqual(newSize, Size))
-            {
-                Size    = newSize;
-                Extents = newSize * 0.50f;
-                HasSizeChangedSinceLastUpdate = true;
-            }
-            else
-            {
-                HasSizeChangedSinceLastUpdate = false;
-            }
-        }
-
-
-        [Pure] private static Collider2D ExtractColliderFromTransform(Transform transform) =>
-            transform.TryGetComponent(out Collider2D collider) ? collider : null;
-
-        [Pure] private static bool AreComponentsEqual(Vector2 a, Vector2 b) =>
-            Mathf.Approximately(a.x, b.x) && Mathf.Approximately(a.y, b.y);
     }
 }
