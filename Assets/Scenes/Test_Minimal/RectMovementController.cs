@@ -58,7 +58,7 @@ namespace PQ.TestScenes.Minimal
         {
             // todo: use a scriptable object or something for these checks
             var result = _caster.CheckBelow(target: LayerMask.GetMask("Platform"), distance: int.MaxValue);
-            bool isInContactWithGround = result.hitPercentage >= 0.50f && result.hitDistance <= 0.25f;
+            bool isInContactWithGround = result.hitRatio >= 0.50f && result.hitDistanceAverage <= 0.25f;
 
             if (_isGrounded != isInContactWithGround || force)
             {

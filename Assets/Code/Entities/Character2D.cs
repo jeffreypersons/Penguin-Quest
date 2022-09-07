@@ -50,7 +50,7 @@ namespace PQ.Entities
 
             if (!_isGrounded)
             {
-                _body.MoveBy(Settings.GravityStrength * Vector2.down);
+                _body.MoveBy(0.10f * Settings.GravityStrength * Vector2.down);
             }
         }
 
@@ -60,6 +60,7 @@ namespace PQ.Entities
             // collider is turned off - check back later
             if (_body.BoundExtents == Vector2.zero)
             {
+                Debug.Log("Collider is turned off - skipping");
                 return;
             }
 
@@ -68,10 +69,12 @@ namespace PQ.Entities
             var groundDistanceToCheck   = 5.00f;
             var groundDistanceTolerated = 0.25f;
 
-            var result = _caster.CheckBelow(target: groundLayer, groundDistanceToCheck);
+            var result = _caster.CheckBelow(groundLayer, groundDistanceToCheck);
+            Debug.Log($"Character Ground Check: {result}");
+
             bool isInContactWithGround =
-                result.hitPercentage >= 0.50f &&
-                result.hitDistance <= groundDistanceTolerated;
+                result.hitRatio >= 0.50f &&
+                result.hitDistanceAverage <= groundDistanceTolerated;
 
             if (_isGrounded != isInContactWithGround || force)
             {
@@ -79,7 +82,7 @@ namespace PQ.Entities
                 GroundContactChanged?.Invoke(_isGrounded);
             }
         }
-        
+
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
