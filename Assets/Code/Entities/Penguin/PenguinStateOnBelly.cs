@@ -26,7 +26,7 @@ namespace PQ.Entities.Penguin
         {
             _eventCenter.standUpCommand      .AddListener(OnStandUpInputReceived);
             _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.AddListener(OnGroundContactChanged);
 
             _blob.CharacterController.Settings = _blob.OnBellySettings;
             _locomotionBlend = 0.0f;
@@ -37,7 +37,7 @@ namespace PQ.Entities.Penguin
         {
             _eventCenter.standUpCommand      .RemoveListener(OnStandUpInputReceived);
             _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.RemoveListener(OnGroundContactChanged);
 
             _locomotionBlend = 0.0f;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);

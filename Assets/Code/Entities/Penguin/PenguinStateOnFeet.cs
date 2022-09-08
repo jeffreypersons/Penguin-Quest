@@ -27,7 +27,7 @@ namespace PQ.Entities.Penguin
             _eventCenter.jumpCommand         .AddListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand      .AddListener(OnLieDownInputReceived);
             _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.AddListener(OnGroundContactChanged);
 
             _blob.CharacterController.Settings = _blob.OnFeetSettings;
             _locomotionBlend = 0.0f;
@@ -40,7 +40,7 @@ namespace PQ.Entities.Penguin
             _eventCenter.jumpCommand         .RemoveListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand      .RemoveListener(OnLieDownInputReceived);
             _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.RemoveListener(OnGroundContactChanged);
 
             _locomotionBlend = 0.0f;
             _horizontalInput = HorizontalInput.None;
