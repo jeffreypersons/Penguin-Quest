@@ -20,14 +20,14 @@ namespace PQ.Entities.Penguin
         }
 
 
-        public override void Enter()
+        public override void OnEnter()
         {
             _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
 
             _blob.Animation.TriggerParamJumpUpParameter();
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
 

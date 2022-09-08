@@ -17,12 +17,14 @@ namespace PQ.Common
         public override string ToString() => Name;
 
         public FsmState(string name) => Name = name;
-        public abstract void Enter();
-        public abstract void Exit();
+
+        public abstract void OnEnter();
+        public abstract void OnExit();
         
-        public virtual void Update()      { }
-        public virtual void FixedUpdate() { }
-        public virtual void LateUpdate()  { }
+        public virtual void OnUpdate()      { }
+        public virtual void OnFixedUpdate() { }
+        public virtual void OnLateUpdate()  { }
+
 
         public bool Equals(FsmState other) => other is not null && Name == other.Name;
         public override bool Equals(object obj) => Equals(obj as FsmState);

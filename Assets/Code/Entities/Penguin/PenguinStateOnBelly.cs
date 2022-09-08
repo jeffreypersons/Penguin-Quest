@@ -22,7 +22,7 @@ namespace PQ.Entities.Penguin
         }
 
 
-        public override void Enter()
+        public override void OnEnter()
         {
             _eventCenter.standUpCommand      .AddListener(OnStandUpInputReceived);
             _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
@@ -33,7 +33,7 @@ namespace PQ.Entities.Penguin
             _horizontalInput = HorizontalInput.None;
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             _eventCenter.standUpCommand      .RemoveListener(OnStandUpInputReceived);
             _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
@@ -43,7 +43,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             HandleHorizontalMovement();
         }

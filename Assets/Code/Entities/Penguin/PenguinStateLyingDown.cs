@@ -19,7 +19,7 @@ namespace PQ.Entities.Penguin
         }
 
 
-        public override void Enter()
+        public override void OnEnter()
         {
             _blob.Animation.LieDownStarted  += OnLieDownAnimationStarted;
             _blob.Animation.LieDownMidpoint += OnLieDownAnimationMidpoint;
@@ -28,7 +28,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.TriggerParamLieDownParameter();
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             _blob.Animation.LieDownStarted  -= OnLieDownAnimationStarted;
             _blob.Animation.LieDownMidpoint -= OnLieDownAnimationMidpoint;

@@ -21,7 +21,7 @@ namespace PQ.Entities.Penguin
             _eventCenter = eventCenter;
         }
 
-        public override void Enter()
+        public override void OnEnter()
         {
             _blob.Animation.JumpLiftOff += OnJumpLiftOff;
             _eventCenter.jumpCommand         .AddListener(OnJumpInputReceived);
@@ -34,7 +34,7 @@ namespace PQ.Entities.Penguin
             _horizontalInput = HorizontalInput.None;
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             _blob.Animation.JumpLiftOff -= OnJumpLiftOff;
             _eventCenter.jumpCommand         .RemoveListener(OnJumpInputReceived);
@@ -47,7 +47,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             HandleHorizontalMovement();
         }

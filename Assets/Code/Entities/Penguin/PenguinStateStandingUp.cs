@@ -18,7 +18,7 @@ namespace PQ.Entities.Penguin
             _eventCenter = eventCenter;
         }
 
-        public override void Enter()
+        public override void OnEnter()
         {
             _blob.Animation.StandUpStarted += OnStandUpAnimationStarted;
             _blob.Animation.StandUpEnded   += OnStandUpAnimationFinished;
@@ -26,7 +26,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.TriggerParamStandUpParameter();
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             _blob.Animation.StandUpStarted -= OnStandUpAnimationStarted;
             _blob.Animation.StandUpEnded   -= OnStandUpAnimationFinished;

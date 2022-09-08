@@ -69,9 +69,9 @@ namespace PQ.Common
 
             FsmState previous = CurrentState;
 
-            previous.Exit();
+            previous.OnExit();
             OnTransition(previous, _nextScheduledState);
-            _nextScheduledState.Enter();
+            _nextScheduledState.OnEnter();
 
             PreviousState = previous;
             CurrentState = _nextScheduledState;
@@ -94,7 +94,7 @@ namespace PQ.Common
             }
 
             CurrentState = InitialState;
-            CurrentState.Enter();
+            CurrentState.OnEnter();
         }
 
         private void Update()
@@ -102,18 +102,18 @@ namespace PQ.Common
             bool hasEnteredNewStateThisFrame = ExecuteTransitionIfPending();
             if (!hasEnteredNewStateThisFrame)
             {
-                CurrentState.Update();
+                CurrentState.OnUpdate();
             }
         }
 
         private void FixedUpdate()
         {
-            CurrentState.FixedUpdate();
+            CurrentState.OnFixedUpdate();
         }
 
         private void LateUpdate()
         {
-            CurrentState.LateUpdate();
+            CurrentState.OnLateUpdate();
         }
     }
 }
