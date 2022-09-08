@@ -69,9 +69,9 @@ namespace PQ.Common
 
             FsmState previous = CurrentState;
 
-            previous.OnExit();
+            previous.Exit();
             OnTransition(previous, _nextScheduledState);
-            _nextScheduledState.OnEnter();
+            _nextScheduledState.Enter();
 
             PreviousState = previous;
             CurrentState = _nextScheduledState;
@@ -94,7 +94,7 @@ namespace PQ.Common
             }
 
             CurrentState = InitialState;
-            CurrentState.OnEnter();
+            CurrentState.Enter();
         }
 
         private void Update()

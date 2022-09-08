@@ -22,7 +22,7 @@ namespace PQ
         {
             _gameEventCenter = GameEventCenter.Instance;
             _playerPenguin.SetActive(true);
-            _gameEventCenter.startNewGame.AddAutoUnsubscribeListener(StartNewGame);
+            _gameEventCenter.startNewGame.AddOneShotListener(StartNewGame);
         }
 
         void OnEnable()
