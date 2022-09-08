@@ -21,7 +21,7 @@ namespace PQ.Common
         {
             this.rayCount    = rayCount;
             this.hitCount    = hitCount;
-            this.hitRatio    = hitCount > 0? (float)rayCount / hitCount : 0f;
+            this.hitRatio    = hitCount > 0? (float)hitCount / rayCount : 0f;
             this.hitDistanceAverage = hitDistance;
         }
 
