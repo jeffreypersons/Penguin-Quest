@@ -67,7 +67,7 @@ namespace PQ.Entities
             // todo: use a scriptable object or something for these variables
             var groundLayer = LayerMask.GetMask("Platform");
             var groundDistanceToCheck   = 5.00f;
-            var groundDistanceTolerated = 0.25f;
+            var groundDistanceTolerated = 2.00f;
 
             var result = _caster.CheckBelow(groundLayer, groundDistanceToCheck);
             Debug.Log($"Character Ground Check: {result}");
