@@ -11,6 +11,7 @@ namespace PQ.Common
     */
     public sealed class RayCasterBox
     {
+        private bool _boundsAreZero;
         private Vector2 _center;
         private Vector2 _xAxis;
         private Vector2 _yAxis;
@@ -67,15 +68,36 @@ namespace PQ.Common
         private RayHitGroup Cast(RayCasterSegment caster, LayerMask layerMask, float distanceToCast)
         {
             UpdateBoundsIfChanged();
-            return caster.Cast(layerMask, distanceToCast);
+
+            if (_boundsAreZero)
+            {
+                RayHit hit = caster.CastAt(0.50f, layerMask, distanceToCast);
+                return new RayHitGroup(hitCount: hit? 1 : 0, rayCount: 1, hit.distance);
+            }
+
+            return caster.CastAll(layerMask, distanceToCast);
         }
 
         private void UpdateBoundsIfChanged()
         {
-            Vector2 center = _body.Position;
-            Vector2 xAxis  = _body.BoundExtents.x * _body.Forward;
-            Vector2 yAxis  = _body.BoundExtents.y * _body.Up;
-
+            Vector2 center;
+            Vector2 xAxis;
+            Vector2 yAxis;
+            if (_body.BoundExtents == Vector2.zero)
+            {
+                _boundsAreZero = true;
+                center = _body.Position;
+                xAxis  = _body.Forward;
+                yAxis  = _body.Up;
+            }
+            else
+            {
+                _boundsAreZero = false;
+                center = _body.Position;
+                xAxis  = _body.BoundExtents.x * _body.Forward;
+                yAxis  = _body.BoundExtents.y * _body.Up;
+            }
+            
             if (center == _center &&
                 Mathf.Approximately(xAxis.x, _xAxis.x) && Mathf.Approximately(xAxis.y, _xAxis.y) &&
                 Mathf.Approximately(yAxis.x, _yAxis.x) && Mathf.Approximately(yAxis.y, _yAxis.y))

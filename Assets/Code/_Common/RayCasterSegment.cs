@@ -75,8 +75,27 @@ namespace PQ.Common
             _rayDirection = rayDirection.normalized;
         }
 
-        /* In the same direction, cast out rays from each origin along the segment with given options. */
-        public RayHitGroup Cast(LayerMask layerMask, float maxDistance)
+        /* Perform a one off ray cast at given t in range [0,1]. */
+        public RayHit CastAt(float t, LayerMask layerMask, float maxDistance)
+        {
+            if (t < 0f || t > 1f)
+            {
+                Debug.LogWarning($"Given t {t} is outside segment [0,1] - skipping cast");
+                return default;
+            }
+
+            Vector2 rayOrigin = Vector2.Lerp(_segmentStart, _segmentEnd, t);
+            _rayCaster.LayerMask = layerMask;
+            _rayCaster.MaxDistance = maxDistance;
+            return _rayCaster.CastFromPoint(rayOrigin, _rayDirection);
+        }
+
+        /*
+        In the same direction, cast out rays from each origin along the segment with given options.
+        
+        Individual ray hit results can be accessed `RayCastResults`.
+        */
+        public RayHitGroup CastAll(LayerMask layerMask, float maxDistance)
         {
             Vector2 offsetBetweenRays = RaySpacing * SegmentDirection;
             if (offsetBetweenRays == Vector2.zero)
