@@ -17,12 +17,10 @@ namespace PQ.Common
     {
         private readonly string _name;
         private bool _isActive;
-        private bool _isHookedupWithEvents;
-        private GameEventRegistry<object> _eventRegistry = null;
+        private GameEventRegistry<object> _eventRegistry;
 
         public string Name             => _name;
         public bool   IsActive         => _isActive;
-        public bool   IsEventsHookedUp => _isHookedupWithEvents;
 
         public override string ToString() =>
             $"{GetType().Name}:{{" +
@@ -39,7 +37,6 @@ namespace PQ.Common
         public FsmState(string name, in GameEventRegistry<object> eventRegistry)
         {
             _name          = name;
-            _eventRegistry = null;
             _isActive      = false;
             _eventRegistry = eventRegistry;
         }
