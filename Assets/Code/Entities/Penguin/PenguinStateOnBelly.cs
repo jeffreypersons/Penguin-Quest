@@ -14,7 +14,7 @@ namespace PQ.Entities.Penguin
         private HorizontalInput _horizontalInput;
 
         public PenguinStateOnBelly(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
         {
             _blob = blob;
             _driver = driver;

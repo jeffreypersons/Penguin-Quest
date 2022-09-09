@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PQ.Common
 {
-    public class EventRegistry<EventData>
+    public class GameEventRegistry<EventData>
     {
         private string _description;
         private readonly Dictionary<GameEvent<EventData>, Action<EventData>> _eventToHandlerMapping;
@@ -13,7 +13,7 @@ namespace PQ.Common
         public override string ToString() => _description;
 
 
-        public EventRegistry(params (GameEvent<EventData>, Action<EventData>)[] eventCallbacks)
+        public GameEventRegistry(params (GameEvent<EventData>, Action<EventData>)[] eventCallbacks)
         {
             var stringBuilder = new StringBuilder(eventCallbacks.Length);
             _eventToHandlerMapping = new Dictionary<GameEvent<EventData>, Action<EventData>>(eventCallbacks.Length);

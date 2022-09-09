@@ -18,7 +18,7 @@ namespace PQ.Common
         private readonly string _name;
         private bool _isActive;
         private bool _isHookedupWithEvents;
-        private EventRegistry<object> _eventRegistry = null;
+        private GameEventRegistry<object> _eventRegistry = null;
 
         public string Name             => _name;
         public bool   IsActive         => _isActive;
@@ -36,12 +36,12 @@ namespace PQ.Common
         //
         // this determines what events should automatically be
         // registered/unregistered on event enter/exit on state construction
-        public FsmState(string name, params (GameEvent<object>, Action<object>)[] eventCallbacks)
+        public FsmState(string name, in GameEventRegistry<object> eventRegistry)
         {
             _name          = name;
             _eventRegistry = null;
             _isActive      = false;
-            _eventRegistry = new EventRegistry<object>(eventCallbacks);
+            _eventRegistry = eventRegistry;
         }
 
         // Required one time callbacks
@@ -59,7 +59,7 @@ namespace PQ.Common
         {
             _isActive = true;
             OnEnter();
-            _eventRegistry.StartListening();
+            _eventRegistry?.StartListening();
         }
 
         // Exit point for client code utilizing state instances
@@ -67,7 +67,7 @@ namespace PQ.Common
         {
             _isActive = false;
             OnExit();
-            _eventRegistry.StopListening();
+            _eventRegistry?.StopListening();
         }
 
         public bool Equals(FsmState other) => other is not null && Name == other.Name;

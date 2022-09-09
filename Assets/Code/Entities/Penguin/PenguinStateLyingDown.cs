@@ -11,7 +11,7 @@ namespace PQ.Entities.Penguin
         private GameEventCenter _eventCenter;
 
         public PenguinStateLyingDown(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
         {
             _blob = blob;
             _driver = driver;

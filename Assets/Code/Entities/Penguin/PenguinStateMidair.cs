@@ -13,14 +13,17 @@ namespace PQ.Entities.Penguin
 
         public PenguinStateMidair(PenguinStateMachineDriver driver, string name,
             PenguinBlob blob, GameEventCenter eventCenter)
-
-            : base(name)
+            : base(name, MakeEvents())
         {
             _blob = blob;
             _driver = driver;
             _eventCenter = eventCenter;
         }
 
+        private static GameEventRegistry<object> MakeEvents()
+        {
+            return new GameEventRegistry<object>();
+        }
 
         public override void OnEnter()
         {
