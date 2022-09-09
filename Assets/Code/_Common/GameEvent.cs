@@ -4,15 +4,28 @@
 namespace PQ.Common
 {
     /*
-    Lightweight event, as a wrapper over the native c# events, and as an alternative to the much slower UnityEvent.
+    Lightweight event primitive for game wide usage that's used for triggering and receiving event payloads.
+    
 
-    Intended for events that are larger in scope (hence game prefix) that can be triggered outside the defining class,
-    unlike event Action (which still have a place for when that is desired, like say in an input class).
+    Intended to provide a unified 'single source of truth' for any game event, rather than an inconsistent mix
+    of C# delegates, animation events, ui events, input actions, and so forth.
 
-    Notes
-    - Currently only allows single parameter events, which is a non-issue as it's better to use custom objects
-    - Can be passed around and invoked listened to outside of the defining scope, unlike event Action
-    - For cases where events are not so 'global', ie only an animation component can trigger it, event Action is preferable
+    Instead, by triggering a GameEvent when those specific external events occur - eg from an adapter class for
+    processing player input commands - we have a consistent interface for events throughout the rest of the game.
+
+    
+    Features
+
+    - Equality: Equality and hashing are supported out of the box, so unlike actions they can be freely used as dictionary keys
+
+    - Stateless forwarding: Event data is forwarded to subscribers on trigger rather than stored within the instance
+    
+    - Cache friendly: Since data is directly forwarded to subscribers, events only need to be newed up once, relieving the GC
+
+    - Intentionally restricted to a single param data payload made available to any subscribing actions
+
+    - Lightweight: Built on top of native C# event actions, so far more performant than eg UnityEngine.Event as there is
+      no need for reflection, serializing, and constant polling in its implementation
     */
     public sealed class GameEvent<EventData> : IEquatable<GameEvent<EventData>>
     {

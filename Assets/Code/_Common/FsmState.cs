@@ -17,8 +17,8 @@ namespace PQ.Common
         private bool _isActive;
         private GameEventRegistry<object> _eventRegistry;
 
-        public string Name             => _name;
-        public bool   IsActive         => _isActive;
+        public string Name     => _name;
+        public bool   IsActive => _isActive;
 
         public override string ToString() =>
             $"{GetType().Name}:{{" +

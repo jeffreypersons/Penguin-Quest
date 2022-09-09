@@ -33,6 +33,7 @@ namespace PQ.Common
                 event_.AddListener(callback_);
             }
         }
+
         public void StopListening()
         {
             foreach (var (event_, callback_) in _eventToHandlerMapping)
