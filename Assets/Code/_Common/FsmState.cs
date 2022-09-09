@@ -31,7 +31,7 @@ namespace PQ.Common
                 foreach (var (event_, callback_) in eventCallbacks)
                 {
                     _eventToHandlerMapping[event_] = callback_;
-                    stringBuilder.AppendFormat("{0}=>{1};", event_, callback_);
+                    stringBuilder.AppendFormat("{0}=>{1};", event_.Name, callback_.Method.Name);
                 }
 
                 _description = stringBuilder.ToString();

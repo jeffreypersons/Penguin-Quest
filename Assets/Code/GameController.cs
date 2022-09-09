@@ -27,12 +27,10 @@ namespace PQ
 
         void OnEnable()
         {
-            _gameEventCenter.enemyKilled.AddListener(UpdateScore);
             _gameEventCenter.restartGame.AddListener(RestartGame);
         }
         void OnDisable()
         {
-            _gameEventCenter.enemyKilled.RemoveListener(UpdateScore);
             _gameEventCenter.restartGame.RemoveListener(RestartGame);
         }
 

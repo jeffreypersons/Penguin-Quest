@@ -25,8 +25,6 @@ namespace PQ
         public GameEvent<string>                useCommand           = new("command.use");
         public GameEvent<string>                fireCommand          = new("command.fire");
 
-        public GameEvent<string>                enemyHit             = new("enemy.hit");
-        public GameEvent<int>                   enemyKilled          = new("enemy.kill");
         public GameEvent<PlayerProgressionInfo> scoreChange          = new("score.changed");
         
         public GameEvent<PlayerSettingsInfo>    startNewGame         = new("game.new");
