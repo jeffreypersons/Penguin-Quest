@@ -13,7 +13,7 @@ namespace PQ.Entities
         private bool _isGrounded;
         private KinematicBody2D _body;
 
-        public event Action<bool> GroundContactChanged;
+        public GameEvent<bool> GroundContactChanged = new("character2D.groundContact.change");
         public Character2DSettings Settings { get; set; }
 
         public void PlaceAt(Vector2 position, float rotation)
@@ -70,8 +70,6 @@ namespace PQ.Entities
             var groundDistanceTolerated = 2.00f;
 
             var result = _caster.CheckBelow(groundLayer, groundDistanceToCheck);
-            Debug.Log($"Character Ground Check: {result}");
-
             bool isInContactWithGround =
                 result.hitRatio >= 0.50f &&
                 result.hitDistanceAverage <= groundDistanceTolerated;
@@ -79,7 +77,7 @@ namespace PQ.Entities
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;
-                GroundContactChanged?.Invoke(_isGrounded);
+                GroundContactChanged.Trigger(_isGrounded);
             }
         }
 

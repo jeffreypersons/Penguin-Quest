@@ -102,18 +102,18 @@ namespace PQ.Common
             bool hasEnteredNewStateThisFrame = ExecuteTransitionIfPending();
             if (!hasEnteredNewStateThisFrame)
             {
-                CurrentState.Update();
+                CurrentState.OnUpdate();
             }
         }
 
         private void FixedUpdate()
         {
-            CurrentState.FixedUpdate();
+            CurrentState.OnFixedUpdate();
         }
 
         private void LateUpdate()
         {
-            CurrentState.LateUpdate();
+            CurrentState.OnLateUpdate();
         }
     }
 }

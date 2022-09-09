@@ -11,35 +11,35 @@ namespace PQ.Entities.Penguin
         private GameEventCenter _eventCenter;
 
         public PenguinStateStandingUp(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
         {
             _blob = blob;
             _driver = driver;
             _eventCenter = eventCenter;
         }
 
-        public override void Enter()
+        public override void OnEnter()
         {
-            _blob.Animation.StandUpStarted += OnStandUpAnimationStarted;
-            _blob.Animation.StandUpEnded   += OnStandUpAnimationFinished;
+            _blob.Animation.StandUpStarted.AddListener(OnStandUpAnimationStarted);
+            _blob.Animation.StandUpEnded  .AddListener(OnStandUpAnimationFinished);
 
             _blob.Animation.TriggerParamStandUpParameter();
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
-            _blob.Animation.StandUpStarted -= OnStandUpAnimationStarted;
-            _blob.Animation.StandUpEnded   -= OnStandUpAnimationFinished;
+            _blob.Animation.StandUpStarted.RemoveListener(OnStandUpAnimationStarted);
+            _blob.Animation.StandUpEnded.RemoveListener(OnStandUpAnimationFinished);
         }
 
 
-        private void OnStandUpAnimationStarted()
+        private void OnStandUpAnimationStarted(string _)
         {
             // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
             _blob.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         }
 
-        private void OnStandUpAnimationFinished()
+        private void OnStandUpAnimationFinished(string _)
         {
             // enable all colliders as we are now fully onFeet
             _blob.ColliderConstraints = PenguinColliderConstraints.None;

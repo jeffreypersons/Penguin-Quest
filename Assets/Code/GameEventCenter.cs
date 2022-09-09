@@ -11,6 +11,8 @@ namespace PQ
         Right
     }
 
+    // todo: replace this with GameEventRegistries for UI, Commands, etc
+
     /*
     All game events are held here (as static data, so it can be accessed across scenes).
 
@@ -18,23 +20,21 @@ namespace PQ
     */
     public class GameEventCenter
     {
-        public GameEvent<string>                jumpCommand          = new();
-        public GameEvent<HorizontalInput>       movementInputChanged = new();
-        public GameEvent<string>                lieDownCommand       = new();
-        public GameEvent<string>                standUpCommand       = new();
-        public GameEvent<string>                useCommand           = new();
-        public GameEvent<string>                fireCommand          = new();
+        public GameEvent<string>                jumpCommand          = new("command.jump");
+        public GameEvent<HorizontalInput>       movementInputChanged = new("command.movement");
+        public GameEvent<string>                lieDownCommand       = new("command.lieDown");
+        public GameEvent<string>                standUpCommand       = new("command.standUp");
+        public GameEvent<string>                useCommand           = new("command.use");
+        public GameEvent<string>                fireCommand          = new("command.fire");
 
-        public GameEvent<string>                enemyHit             = new();
-        public GameEvent<int>                   enemyKilled          = new();
-        public GameEvent<PlayerProgressionInfo> scoreChange          = new();
+        public GameEvent<PlayerProgressionInfo> scoreChange          = new("score.changed");
         
-        public GameEvent<PlayerSettingsInfo>    startNewGame         = new();
-        public GameEvent<PlayerProgressionInfo> pauseGame            = new();
-        public GameEvent<string>                resumeGame           = new();
-        public GameEvent<string>                gotoMainMenu         = new();
-        public GameEvent<PlayerProgressionInfo> gameOver             = new();
-        public GameEvent<string>                restartGame          = new();
+        public GameEvent<PlayerSettingsInfo>    startNewGame         = new("game.new");
+        public GameEvent<PlayerProgressionInfo> pauseGame            = new("game.pause");
+        public GameEvent<string>                resumeGame           = new("game.resume");
+        public GameEvent<string>                gotoMainMenu         = new("game.openMainMenu");
+        public GameEvent<PlayerProgressionInfo> gameOver             = new("game.over");
+        public GameEvent<string>                restartGame          = new("game.restart");
 
         private static GameEventCenter _instance;
         public static GameEventCenter Instance

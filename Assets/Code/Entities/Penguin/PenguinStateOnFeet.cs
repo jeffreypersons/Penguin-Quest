@@ -14,40 +14,40 @@ namespace PQ.Entities.Penguin
         private HorizontalInput _horizontalInput;
 
         public PenguinStateOnFeet(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
         {
             _blob = blob;
             _driver = driver;
             _eventCenter = eventCenter;
         }
 
-        public override void Enter()
+        public override void OnEnter()
         {
-            _blob.Animation.JumpLiftOff += OnJumpLiftOff;
+            _blob.Animation.JumpLiftOff      .AddListener(OnJumpLiftOff);
             _eventCenter.jumpCommand         .AddListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand      .AddListener(OnLieDownInputReceived);
             _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.AddListener(OnGroundContactChanged);
 
             _blob.CharacterController.Settings = _blob.OnFeetSettings;
             _locomotionBlend = 0.0f;
             _horizontalInput = HorizontalInput.None;
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
-            _blob.Animation.JumpLiftOff -= OnJumpLiftOff;
+            _blob.Animation.JumpLiftOff      .RemoveListener(OnJumpLiftOff);
             _eventCenter.jumpCommand         .RemoveListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand      .RemoveListener(OnLieDownInputReceived);
             _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.RemoveListener(OnGroundContactChanged);
 
             _locomotionBlend = 0.0f;
             _horizontalInput = HorizontalInput.None;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             HandleHorizontalMovement();
         }
@@ -72,7 +72,8 @@ namespace PQ.Entities.Penguin
         {
             _blob.Animation.TriggerParamJumpUpParameter();
         }
-        private void OnJumpLiftOff()
+
+        private void OnJumpLiftOff(string _)
         {
             _blob.CharacterController.Jump();
         }

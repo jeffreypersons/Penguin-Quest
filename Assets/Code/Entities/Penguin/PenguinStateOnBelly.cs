@@ -14,7 +14,7 @@ namespace PQ.Entities.Penguin
         private HorizontalInput _horizontalInput;
 
         public PenguinStateOnBelly(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
         {
             _blob = blob;
             _driver = driver;
@@ -22,28 +22,28 @@ namespace PQ.Entities.Penguin
         }
 
 
-        public override void Enter()
+        public override void OnEnter()
         {
             _eventCenter.standUpCommand      .AddListener(OnStandUpInputReceived);
             _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged += OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.AddListener(OnGroundContactChanged);
 
             _blob.CharacterController.Settings = _blob.OnBellySettings;
             _locomotionBlend = 0.0f;
             _horizontalInput = HorizontalInput.None;
         }
 
-        public override void Exit()
+        public override void OnExit()
         {
             _eventCenter.standUpCommand      .RemoveListener(OnStandUpInputReceived);
             _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged -= OnGroundContactChanged;
+            _blob.CharacterController.GroundContactChanged.RemoveListener(OnGroundContactChanged);
 
             _locomotionBlend = 0.0f;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
-        public override void Update()
+        public override void OnUpdate()
         {
             HandleHorizontalMovement();
         }

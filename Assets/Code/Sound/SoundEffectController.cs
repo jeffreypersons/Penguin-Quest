@@ -34,9 +34,6 @@ namespace PQ.Sound
         void OnEnable()
         {
             _eventCenter.scoreChange .AddListener(PlaySoundOnPlayerScored);
-            _eventCenter.enemyHit    .AddListener(PlaySoundOnEnemyHit);
-            _eventCenter.enemyKilled .AddListener(PlaySoundOnEnemyKilled);
-            
             _eventCenter.startNewGame.AddListener(SetMasterVolume);
             _eventCenter.pauseGame   .AddListener(PauseAnyActiveSoundEffects);
             _eventCenter.resumeGame  .AddListener(ResumeAnyActiveSoundEffects);
@@ -44,10 +41,7 @@ namespace PQ.Sound
         }
         void OnDisable()
         {
-            _eventCenter.scoreChange .RemoveListener(PlaySoundOnPlayerScored);
-            _eventCenter.enemyHit    .RemoveListener(PlaySoundOnEnemyHit);
-            _eventCenter.enemyKilled .RemoveListener(PlaySoundOnEnemyKilled);
-            
+            _eventCenter.scoreChange .RemoveListener(PlaySoundOnPlayerScored);            
             _eventCenter.startNewGame.RemoveListener(SetMasterVolume);
             _eventCenter.pauseGame   .RemoveListener(PauseAnyActiveSoundEffects);
             _eventCenter.resumeGame  .RemoveListener(ResumeAnyActiveSoundEffects);
