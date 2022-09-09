@@ -70,8 +70,6 @@ namespace PQ.Entities
             var groundDistanceTolerated = 2.00f;
 
             var result = _caster.CheckBelow(groundLayer, groundDistanceToCheck);
-            Debug.Log($"Character Ground Check: {result}");
-
             bool isInContactWithGround =
                 result.hitRatio >= 0.50f &&
                 result.hitDistanceAverage <= groundDistanceTolerated;

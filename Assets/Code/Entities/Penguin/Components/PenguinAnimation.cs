@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using PQ.Common;
 
 
 namespace PQ.Entities.Penguin
@@ -46,14 +47,14 @@ namespace PQ.Entities.Penguin
         // rather it's an animation related kept here for relevance
         public float LocomotionBlendStep => _locomotionBlendStep;
 
-        public event Action JumpLiftOff;
-        public event Action LieDownStarted;
-        public event Action LieDownMidpoint;
-        public event Action LieDownEnded;
-        public event Action StandUpStarted;
-        public event Action StandUpEnded;
-        public event Action Fired;
-        public event Action Used;
+        public GameEvent<string> JumpLiftOff     = new("animation.jump.liftoff");
+        public GameEvent<string> LieDownStarted  = new("animation.liedown.start");
+        public GameEvent<string> LieDownMidpoint = new("animation.liedown.mid");
+        public GameEvent<string> LieDownEnded    = new("animation.liedown.end");
+        public GameEvent<string> StandUpStarted  = new("animation.standUp.start");
+        public GameEvent<string> StandUpEnded    = new("animation.standup.end");
+        public GameEvent<string> Fired           = new("animation.fire");
+        public GameEvent<string> Used            = new("animation.use");
 
 
         public void ResetAllTriggers()
@@ -92,14 +93,16 @@ namespace PQ.Entities.Penguin
         private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           Used);
 
 
-        private void ForwardAsEvent(Action animatorEvent, Action customEvent)
+        private void ForwardAsEvent(Action animatorEvent, GameEvent<string> customEvent)
         {
+            // todo: get rid of these dummy string parameters
+            // todo: look into moving event forwarding into GameEvent class
             if (_logEvents)
             {
                 Debug.Log($"[Frame:{Time.frameCount - 1}] " +
-                          $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Method.Name}");
+                          $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Name}");
             }
-            customEvent?.Invoke();
+            customEvent.Trigger(eventData: "");
         }
     }
 }

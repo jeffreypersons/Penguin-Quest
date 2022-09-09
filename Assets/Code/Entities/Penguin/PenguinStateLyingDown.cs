@@ -21,22 +21,22 @@ namespace PQ.Entities.Penguin
 
         public override void OnEnter()
         {
-            _blob.Animation.LieDownStarted  += OnLieDownAnimationStarted;
-            _blob.Animation.LieDownMidpoint += OnLieDownAnimationMidpoint;
-            _blob.Animation.LieDownEnded    += OnLieDownAnimationFinished;
+            _blob.Animation.LieDownStarted .AddListener(OnLieDownAnimationStarted);
+            _blob.Animation.LieDownMidpoint.AddListener(OnLieDownAnimationMidpoint);
+            _blob.Animation.LieDownEnded   .AddListener(OnLieDownAnimationFinished);
 
             _blob.Animation.TriggerParamLieDownParameter();
         }
 
         public override void OnExit()
         {
-            _blob.Animation.LieDownStarted  -= OnLieDownAnimationStarted;
-            _blob.Animation.LieDownMidpoint -= OnLieDownAnimationMidpoint;
-            _blob.Animation.LieDownEnded    -= OnLieDownAnimationFinished;
+            _blob.Animation.LieDownStarted .RemoveListener(OnLieDownAnimationStarted);
+            _blob.Animation.LieDownMidpoint.RemoveListener(OnLieDownAnimationMidpoint);
+            _blob.Animation.LieDownEnded   .RemoveListener(OnLieDownAnimationFinished);
         }
 
 
-        private void OnLieDownAnimationStarted()
+        private void OnLieDownAnimationStarted(string _)
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -44,7 +44,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFeet;
         }
 
-        private void OnLieDownAnimationMidpoint()
+        private void OnLieDownAnimationMidpoint(string _)
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -53,7 +53,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFlippers;
         }
 
-        private void OnLieDownAnimationFinished()
+        private void OnLieDownAnimationFinished(string _)
         {
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box

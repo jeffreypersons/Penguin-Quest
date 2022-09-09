@@ -23,7 +23,7 @@ namespace PQ.Entities.Penguin
 
         public override void OnEnter()
         {
-            _blob.Animation.JumpLiftOff += OnJumpLiftOff;
+            _blob.Animation.JumpLiftOff      .AddListener(OnJumpLiftOff);
             _eventCenter.jumpCommand         .AddListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand      .AddListener(OnLieDownInputReceived);
             _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
@@ -36,7 +36,7 @@ namespace PQ.Entities.Penguin
 
         public override void OnExit()
         {
-            _blob.Animation.JumpLiftOff -= OnJumpLiftOff;
+            _blob.Animation.JumpLiftOff      .RemoveListener(OnJumpLiftOff);
             _eventCenter.jumpCommand         .RemoveListener(OnJumpInputReceived);
             _eventCenter.lieDownCommand      .RemoveListener(OnLieDownInputReceived);
             _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
@@ -72,7 +72,8 @@ namespace PQ.Entities.Penguin
         {
             _blob.Animation.TriggerParamJumpUpParameter();
         }
-        private void OnJumpLiftOff()
+
+        private void OnJumpLiftOff(string _)
         {
             _blob.CharacterController.Jump();
         }
