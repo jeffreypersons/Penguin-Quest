@@ -27,21 +27,22 @@ namespace PQ.Entities.Penguin
 
         public override void OnEnter()
         {
-            _blob.CharacterController.GroundContactChanged.AddListener(OnGroundContactChanged);
+            _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
 
             _blob.Animation.TriggerParamJumpUpParameter();
         }
 
         public override void OnExit()
         {
-            _blob.CharacterController.GroundContactChanged.RemoveListener(OnGroundContactChanged);
+            _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
 
             // reset any triggers such that any pending animation events are cleared out to avoid them
             // from firing automatically on landing
             _blob.Animation.ResetAllTriggers();
         }
 
-        private void OnGroundContactChanged(bool isGrounded)
+
+        private void HandleGroundContactChanged(bool isGrounded)
         {
             _blob.Animation.SetParamIsGrounded(isGrounded);
             if (isGrounded)
