@@ -24,20 +24,20 @@ namespace PQ.Entities.Penguin
 
         public override void OnEnter()
         {
-            _eventCenter.standUpCommand      .AddListener(OnStandUpInputReceived);
-            _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.AddListener(OnGroundContactChanged);
+            _eventCenter.standUpCommand      .AddListener(HandleStandUpInputReceived);
+            _eventCenter.movementInputChanged.AddListener(HandleHorizontalChanged);
+            _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
 
             _blob.CharacterController.Settings = _blob.OnBellySettings;
             _locomotionBlend = 0.0f;
-            _horizontalInput = HorizontalInput.None;
+            _horizontalInput = new(HorizontalInput.Type.None);
         }
 
         public override void OnExit()
         {
-            _eventCenter.standUpCommand      .RemoveListener(OnStandUpInputReceived);
-            _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.RemoveListener(OnGroundContactChanged);
+            _eventCenter.standUpCommand      .RemoveListener(HandleStandUpInputReceived);
+            _eventCenter.movementInputChanged.RemoveListener(HandleHorizontalChanged);
+            _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
 
             _locomotionBlend = 0.0f;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
@@ -50,18 +50,18 @@ namespace PQ.Entities.Penguin
 
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
-        private void OnGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
-        private void OnStandUpInputReceived(string _) => _driver.MoveToState(_driver.StateStandingUp);
+        private void HandleGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
+        private void HandleStandUpInputReceived(IEventPayload.Empty _) => _driver.MoveToState(_driver.StateStandingUp);
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
-        private void OnMoveHorizontalChanged(HorizontalInput state)
+        private void HandleHorizontalChanged(HorizontalInput state)
         {
             _horizontalInput = state;
-            if (_horizontalInput == HorizontalInput.Right)
+            if (_horizontalInput.value == HorizontalInput.Type.Right)
             {
                 _blob.CharacterController.FaceRight();
             }
-            else if (_horizontalInput == HorizontalInput.Left)
+            else if (_horizontalInput.value == HorizontalInput.Type.Left)
             {
                 _blob.CharacterController.FaceLeft();
             }
@@ -69,7 +69,7 @@ namespace PQ.Entities.Penguin
 
         private void HandleHorizontalMovement()
         {
-            if (_horizontalInput == HorizontalInput.None)
+            if (_horizontalInput.value == HorizontalInput.Type.None)
             {
                 _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _blob.Animation.LocomotionBlendStep);
             }

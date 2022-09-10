@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using PQ.Generated;
+using PQ.Common;
 
 
 namespace PQ
@@ -40,7 +41,7 @@ namespace PQ
             _use            = controls.Gameplay.Fire;
             _fire           = controls.Gameplay.Use;
 
-            _horizontalInputState = HorizontalInput.None;
+            _horizontalInputState = new(HorizontalInput.Type.None);
         }
 
 
@@ -70,51 +71,32 @@ namespace PQ
 
         private void OnMoveHorizontalChanged(InputAction.CallbackContext context)
         {
-            HorizontalInput mappedValue;
+            HorizontalInput.Type horizontalInputType;
             float rawValue = context.action.ReadValue<float>();
             if (Mathf.Approximately(rawValue, 0))
             {
-                mappedValue = HorizontalInput.None;
+                horizontalInputType = HorizontalInput.Type.None;
             }
             else if (rawValue < 0)
             {
-                mappedValue = HorizontalInput.Left;
+                horizontalInputType = HorizontalInput.Type.Left;
             }
             else
             {
-                mappedValue = HorizontalInput.Right;
+                horizontalInputType = HorizontalInput.Type.Right;
             }
 
-            if (mappedValue != _horizontalInputState)
+            if (_horizontalInputState.value != horizontalInputType)
             {
-                _eventCenter.movementInputChanged.Trigger(mappedValue);
-                _horizontalInputState = mappedValue;
+                _horizontalInputState = new(horizontalInputType);
+                _eventCenter.movementInputChanged.Trigger(_horizontalInputState);
             }
         }
 
-        private void OnJumpUp(InputAction.CallbackContext _)
-        {
-            _eventCenter.jumpCommand.Trigger("Received jump up input");
-        }
-
-        private void OnStandUp(InputAction.CallbackContext _)
-        {
-            _eventCenter.standUpCommand.Trigger("Received stand up input");
-        }
-
-        private void OnLieDown(InputAction.CallbackContext _)
-        {
-            _eventCenter.lieDownCommand.Trigger("Received lie down input");
-        }
-
-        private void OnUse(InputAction.CallbackContext _)
-        {
-            _eventCenter.useCommand.Trigger("Received use input");
-        }
-
-        private void OnFire(InputAction.CallbackContext _)
-        {
-            _eventCenter.fireCommand.Trigger("Received fire input");
-        }
+        private void OnJumpUp(InputAction.CallbackContext _)  => _eventCenter.jumpCommand   .Trigger(IEventPayload.Empty.Value);
+        private void OnStandUp(InputAction.CallbackContext _) => _eventCenter.standUpCommand.Trigger(IEventPayload.Empty.Value);
+        private void OnLieDown(InputAction.CallbackContext _) => _eventCenter.lieDownCommand.Trigger(IEventPayload.Empty.Value);
+        private void OnUse(InputAction.CallbackContext _)     => _eventCenter.useCommand    .Trigger(IEventPayload.Empty.Value);
+        private void OnFire(InputAction.CallbackContext _)    => _eventCenter.fireCommand   .Trigger(IEventPayload.Empty.Value);
     }
 }

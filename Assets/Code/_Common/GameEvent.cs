@@ -27,19 +27,32 @@ namespace PQ.Common
     - Lightweight: Built on top of native C# event actions, so far more performant than eg UnityEngine.Event as there is
       no need for reflection, serializing, and constant polling in its implementation
     */
-    public sealed class GameEvent<EventData> : IEquatable<GameEvent<EventData>>
+
+    /*
+    Intended to define a readonly game event argument interface for any type.
+
+    Intended to be implemented by readonly structs for performance reasons.
+    */
+    public interface IEventPayload
+    {
+        public struct Empty : IEventPayload
+        {
+            public static readonly Empty Value;
+        }
+    }
+
+    public class GameEvent<T> : IEquatable<GameEvent<T>>
     {
         private readonly string _name;
-        private event Action<EventData> _action;
+        private event Action<T> _action;
 
         public string Name => _name;
-        public Type EventDataType => typeof(EventData);
 
         public int ListenerCount => _action.GetInvocationList().Length;
         public override string ToString() =>
             $"{GetType().Name}:{{" +
                 $"name:{Name}," +
-                $"arg:{EventDataType.FullName}}}";
+                $"arg:{typeof(T).FullName}}}";
 
         public GameEvent(string name)
         {
@@ -47,12 +60,12 @@ namespace PQ.Common
             _action = delegate { };
         }
 
-        public void Trigger(in EventData eventData)
+        public void Trigger(in T payload)
         {
-            _action.Invoke(eventData);
+            _action.Invoke(payload);
         }
 
-        public void AddListener(Action<EventData> listener)
+        public void AddListener(Action<T> listener)
         {
             // to guarantee we never hook a listener up to the same event more than once,
             // we ensure that we always unsubscribe in the case it already is before adding it
@@ -60,38 +73,15 @@ namespace PQ.Common
             _action += listener;
         }
 
-        public void RemoveListener(Action<EventData> listener)
+        public void RemoveListener(Action<T> listener)
         {
             _action -= listener;
         }
 
-
-        /* Add a listener that automatically removes itself just after executing. */
-        public void AddOneShotListener(Action<EventData> oneTimeUseListener)
-        {
-            // note null initialization is required to force nonlocal scope of the handler, see https://stackoverflow.com/a/1362244
-            Action<EventData> handler = null;
-            handler = (data) =>
-            {
-                _action -= handler;
-                oneTimeUseListener.Invoke(data);
-            };
-            _action += handler;
-        }
-
-        public void StopAllListeners()
-        {
-            foreach (Delegate delegate_ in _action.GetInvocationList())
-            {
-                _action -= (Action<EventData>)delegate_;
-            }
-        }
-
-
-        bool IEquatable<GameEvent<EventData>>.Equals(GameEvent<EventData> other) => other is not null && Name == other.Name;
-        public override bool Equals(object obj) => ((IEquatable<GameEvent<EventData>>)this).Equals(obj as GameEvent<EventData>);
+        bool IEquatable<GameEvent<T>>.Equals(GameEvent<T> other) => other is not null && Name == other.Name;
+        public override bool Equals(object obj) => ((IEquatable<GameEvent<T>>)this).Equals(obj as GameEvent<T>);
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), _action.GetHashCode(), _name);
-        public static bool operator ==(GameEvent<EventData> left, GameEvent<EventData> right) =>  Equals(left, right);
-        public static bool operator !=(GameEvent<EventData> left, GameEvent<EventData> right) => !Equals(left, right);
+        public static bool operator ==(GameEvent<T> left, GameEvent<T> right) =>  Equals(left, right);
+        public static bool operator !=(GameEvent<T> left, GameEvent<T> right) => !Equals(left, right);
     }
 }

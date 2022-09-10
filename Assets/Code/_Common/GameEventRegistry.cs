@@ -5,18 +5,18 @@ using System.Text;
 
 namespace PQ.Common
 {
-    public class GameEventRegistry<EventData>
+    public class GameEventRegistry
     {
         private string _description;
-        private readonly Dictionary<GameEvent<EventData>, Action<EventData>> _eventToHandlerMapping;
+        
 
+        private readonly Dictionary<GameEvent<IEventPayload>, Action<IEventPayload>> _eventToHandlerMapping;
         public override string ToString() => _description;
 
-
-        public GameEventRegistry(params (GameEvent<EventData>, Action<EventData>)[] eventCallbacks)
+        public GameEventRegistry(params (GameEvent<IEventPayload>, Action<IEventPayload>)[] eventCallbacks)
         {
             var stringBuilder = new StringBuilder(eventCallbacks.Length);
-            _eventToHandlerMapping = new Dictionary<GameEvent<EventData>, Action<EventData>>(eventCallbacks.Length);
+            _eventToHandlerMapping = new(eventCallbacks.Length);
             foreach (var (event_, callback_) in eventCallbacks)
             {
                 _eventToHandlerMapping[event_] = callback_;

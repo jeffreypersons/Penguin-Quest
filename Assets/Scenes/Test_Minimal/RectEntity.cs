@@ -1,4 +1,5 @@
 using UnityEngine;
+using PQ.Common;
 using PQ.Entities;
 
 
@@ -17,7 +18,7 @@ namespace PQ.TestScenes.Minimal
         {
             _controller = gameObject.GetComponent<RectMovementController>();
             _eventCenter = GameEventCenter.Instance;
-            _horizontalInput = HorizontalInput.None;
+            _horizontalInput = new(HorizontalInput.Type.None);
 
             _controller.Settings = _characterSettings;
         }
@@ -36,7 +37,7 @@ namespace PQ.TestScenes.Minimal
 
         void Update()
         {
-            if (_horizontalInput != HorizontalInput.None)
+            if (_horizontalInput.value != HorizontalInput.Type.None)
             {
                 _controller.MoveForward();
             }
@@ -45,16 +46,16 @@ namespace PQ.TestScenes.Minimal
         private void OnMoveHorizontalChanged(HorizontalInput state)
         {
             _horizontalInput = state;
-            if (_horizontalInput == HorizontalInput.Right)
+            if (_horizontalInput.value == HorizontalInput.Type.Right)
             {
                 _controller.FaceRight();
             }
-            else if (_horizontalInput == HorizontalInput.Left)
+            else if (_horizontalInput.value == HorizontalInput.Type.Left)
             {
                 _controller.FaceLeft();
             }
         }
 
-        private void OnJump(string _) { }
+        private void OnJump(IEventPayload.Empty _) { }
     }
 }

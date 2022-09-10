@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Diagnostics.Contracts;
+using PQ.Common;
 
 
 namespace PQ
 {
-    public class PlayerSettingsInfo
+    public struct PlayerSettingsInfo : IEventPayload
     {
         public int   NumberOfLives   { get; private set; }
         public float DifficultyLevel { get; private set; }
@@ -27,10 +28,17 @@ namespace PQ
                 SoundVolume     = PercentToRatio(soundVolumePercent);
                 MusicVolume     = PercentToRatio(musicVolumePercent);
             }
+            else
+            {
+                NumberOfLives   = default;
+                DifficultyLevel = default;
+                SoundVolume     = default;
+                MusicVolume     = default;
+            }
         }
 
 
-        private bool ValidPositiveInteger(int value)
+        private static bool ValidPositiveInteger(int value)
         {
             if (value < 0)
             {
@@ -40,7 +48,7 @@ namespace PQ
             return true;
         }
 
-        private bool ValidatePercentage(int value)
+        private static bool ValidatePercentage(int value)
         {
             if (value < 0 || value > 100)
             {

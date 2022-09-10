@@ -21,22 +21,22 @@ namespace PQ.Entities.Penguin
 
         public override void OnEnter()
         {
-            _blob.Animation.LieDownStarted .AddListener(OnLieDownAnimationStarted);
-            _blob.Animation.LieDownMidpoint.AddListener(OnLieDownAnimationMidpoint);
-            _blob.Animation.LieDownEnded   .AddListener(OnLieDownAnimationFinished);
+            _blob.Animation.LieDownStarted .AddListener(HandleLieDownAnimationStarted);
+            _blob.Animation.LieDownMidpoint.AddListener(HandleLieDownAnimationMidpoint);
+            _blob.Animation.LieDownEnded   .AddListener(HandleLieDownAnimationFinished);
 
             _blob.Animation.TriggerParamLieDownParameter();
         }
 
         public override void OnExit()
         {
-            _blob.Animation.LieDownStarted .RemoveListener(OnLieDownAnimationStarted);
-            _blob.Animation.LieDownMidpoint.RemoveListener(OnLieDownAnimationMidpoint);
-            _blob.Animation.LieDownEnded   .RemoveListener(OnLieDownAnimationFinished);
+            _blob.Animation.LieDownStarted .RemoveListener(HandleLieDownAnimationStarted);
+            _blob.Animation.LieDownMidpoint.RemoveListener(HandleLieDownAnimationMidpoint);
+            _blob.Animation.LieDownEnded   .RemoveListener(HandleLieDownAnimationFinished);
         }
 
 
-        private void OnLieDownAnimationStarted(string _)
+        private void HandleLieDownAnimationStarted(IEventPayload.Empty _)
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -44,7 +44,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFeet;
         }
 
-        private void OnLieDownAnimationMidpoint(string _)
+        private void HandleLieDownAnimationMidpoint(IEventPayload.Empty _)
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -53,7 +53,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFlippers;
         }
 
-        private void OnLieDownAnimationFinished(string _)
+        private void HandleLieDownAnimationFinished(IEventPayload.Empty _)
         {
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box
