@@ -14,7 +14,8 @@ namespace PQ.Entities.Penguin
         private HorizontalInput _horizontalInput;
 
         public PenguinStateOnFeet(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
+            PenguinBlob blob, GameEventCenter eventCenter)
+            : base(name, new GameEventRegistry())
         {
             _blob = blob;
             _driver = driver;
