@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using PQ.Common;
 
 
 namespace PQ.Sound
@@ -52,7 +53,7 @@ namespace PQ.Sound
         {
             _audioSource.Pause();
         }
-        private void ResumeAnyActiveSoundEffects(string _)
+        private void ResumeAnyActiveSoundEffects(IEventPayload.Empty _)
         {
             _audioSource.UnPause();
         }

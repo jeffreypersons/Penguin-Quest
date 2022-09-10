@@ -15,7 +15,7 @@ namespace PQ.Common
     {
         private readonly string _name;
         private bool _isActive;
-        private GameEventRegistry<object> _eventRegistry;
+        private GameEventRegistry _eventRegistry;
 
         public string Name     => _name;
         public bool   IsActive => _isActive;
@@ -32,7 +32,7 @@ namespace PQ.Common
         //
         // this determines what events should automatically be
         // registered/unregistered on event enter/exit on state construction
-        public FsmState(string name, in GameEventRegistry<object> eventRegistry)
+        public FsmState(string name, in GameEventRegistry eventRegistry)
         {
             _name          = name;
             _isActive      = false;

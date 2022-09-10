@@ -47,14 +47,14 @@ namespace PQ.Entities.Penguin
         // rather it's an animation related kept here for relevance
         public float LocomotionBlendStep => _locomotionBlendStep;
 
-        public GameEvent<string> JumpLiftOff     = new("animation.jump.liftoff");
-        public GameEvent<string> LieDownStarted  = new("animation.liedown.start");
-        public GameEvent<string> LieDownMidpoint = new("animation.liedown.mid");
-        public GameEvent<string> LieDownEnded    = new("animation.liedown.end");
-        public GameEvent<string> StandUpStarted  = new("animation.standUp.start");
-        public GameEvent<string> StandUpEnded    = new("animation.standup.end");
-        public GameEvent<string> Fired           = new("animation.fire");
-        public GameEvent<string> Used            = new("animation.use");
+        public GameEvent<IEventPayload.Empty> JumpLiftOff     = new("animation.jump.liftoff");
+        public GameEvent<IEventPayload.Empty> LieDownStarted  = new("animation.liedown.start");
+        public GameEvent<IEventPayload.Empty> LieDownMidpoint = new("animation.liedown.mid");
+        public GameEvent<IEventPayload.Empty> LieDownEnded    = new("animation.liedown.end");
+        public GameEvent<IEventPayload.Empty> StandUpStarted  = new("animation.standUp.start");
+        public GameEvent<IEventPayload.Empty> StandUpEnded    = new("animation.standup.end");
+        public GameEvent<IEventPayload.Empty> Fired           = new("animation.fire");
+        public GameEvent<IEventPayload.Empty> Used            = new("animation.use");
 
 
         public void ResetAllTriggers()
@@ -74,11 +74,11 @@ namespace PQ.Entities.Penguin
         public void SetParamSlopeIntensity(float ratio)      => _animator.SetFloat(paramSlope,      ratio);
         public void SetParamIsGrounded(bool value)           => _animator.SetBool(paramIsGrounded,  value);
         
-        public void TriggerParamLieDownParameter()        => _animator.SetTrigger(paramLie);
-        public void TriggerParamStandUpParameter()        => _animator.SetTrigger(paramStand);
-        public void TriggerParamJumpUpParameter()         => _animator.SetTrigger(paramJump);
-        public void TriggerParamFireParameter()           => _animator.SetTrigger(paramFire);
-        public void TriggerParamUseParameter()            => _animator.SetTrigger(paramUse);
+        public void TriggerParamLieDownParameter()           => _animator.SetTrigger(paramLie);
+        public void TriggerParamStandUpParameter()           => _animator.SetTrigger(paramStand);
+        public void TriggerParamJumpUpParameter()            => _animator.SetTrigger(paramJump);
+        public void TriggerParamFireParameter()              => _animator.SetTrigger(paramFire);
+        public void TriggerParamUseParameter()               => _animator.SetTrigger(paramUse);
         
         
         private void OnLieDownAnimationEventStart()  => ForwardAsEvent(OnLieDownAnimationEventStart,  LieDownStarted);
@@ -93,16 +93,14 @@ namespace PQ.Entities.Penguin
         private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           Used);
 
 
-        private void ForwardAsEvent(Action animatorEvent, GameEvent<string> customEvent)
+        private void ForwardAsEvent(Action animatorEvent, GameEvent<IEventPayload.Empty> customEvent)
         {
-            // todo: get rid of these dummy string parameters
-            // todo: look into moving event forwarding into GameEvent class
             if (_logEvents)
             {
                 Debug.Log($"[Frame:{Time.frameCount - 1}] " +
                           $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Name}");
             }
-            customEvent.Trigger(eventData: "");
+            customEvent.Trigger(payload: IEventPayload.Empty.Value);
         }
     }
 }

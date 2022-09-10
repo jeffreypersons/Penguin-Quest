@@ -36,7 +36,7 @@ namespace PQ.Entities.Penguin
         }
 
 
-        private void OnLieDownAnimationStarted(string _)
+        private void OnLieDownAnimationStarted(IEventPayload.Empty _)
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -44,7 +44,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFeet;
         }
 
-        private void OnLieDownAnimationMidpoint(string _)
+        private void OnLieDownAnimationMidpoint(IEventPayload.Empty _)
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -53,7 +53,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFlippers;
         }
 
-        private void OnLieDownAnimationFinished(string _)
+        private void OnLieDownAnimationFinished(IEventPayload.Empty _)
         {
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box

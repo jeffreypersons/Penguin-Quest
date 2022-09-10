@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using PQ.Common;
 
 
 namespace PQ.Sound
@@ -42,7 +43,7 @@ namespace PQ.Sound
             _track.volume = gameSettings.MusicVolume / 100.0f;
             _track.Play();
         }
-        private void RestartTrack(string _)
+        private void RestartTrack(IEventPayload.Empty _)
         {
             _track.Stop();
             _track.Play();
@@ -51,7 +52,7 @@ namespace PQ.Sound
         {
             _track.Pause();
         }
-        private void ResumeTrack(string _)
+        private void ResumeTrack(IEventPayload.Empty _)
         {
             _track.UnPause();
         }

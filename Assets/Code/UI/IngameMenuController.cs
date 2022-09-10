@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using PQ.Common;
 using PQ.Common.Extensions;
 
 
@@ -101,20 +102,20 @@ namespace PQ.UI
         private void ResumeGame()
         {
             ToggleMenuVisibility(false);
-            _eventCenter.resumeGame.Trigger("Resuming game");
+            _eventCenter.resumeGame.Trigger(IEventPayload.Empty.Value);
         }
 
         private void MoveToMainMenu()
         {
             Time.timeScale = 1;
-            _eventCenter.gotoMainMenu.Trigger("Opening main menu");
+            _eventCenter.gotoMainMenu.Trigger(IEventPayload.Empty.Value);
             SceneExtensions.LoadScene(_mainMenuSceneName);
         }
 
         private void TriggerRestartGameEvent()
         {
             ToggleMenuVisibility(false);
-            _eventCenter.restartGame.Trigger("Restarting game");
+            _eventCenter.restartGame.Trigger(IEventPayload.Empty.Value);
         }
     }
 }

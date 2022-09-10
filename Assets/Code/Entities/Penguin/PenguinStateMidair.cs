@@ -20,9 +20,9 @@ namespace PQ.Entities.Penguin
             _eventCenter = eventCenter;
         }
 
-        private static GameEventRegistry<object> MakeEvents()
+        private static GameEventRegistry MakeEvents()
         {
-            return new GameEventRegistry<object>();
+            return new GameEventRegistry();
         }
 
         public override void OnEnter()

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using PQ.Common;
 using PQ.Common.Extensions;
 
@@ -13,6 +12,7 @@ namespace PQ.Entities
         private bool _isGrounded;
         private KinematicBody2D _body;
 
+        public bool IsGrounded => _isGrounded;
         public GameEvent<bool> GroundContactChanged = new("character2D.groundContact.change");
         public Character2DSettings Settings { get; set; }
 

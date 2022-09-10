@@ -3,12 +3,15 @@
 
 namespace PQ
 {
-    // todo: find a better spot for this
-    public enum HorizontalInput
+    // todo: find a better place for this
+    public struct HorizontalInput : IEventPayload
     {
-        None,
-        Left,
-        Right
+        public enum Type { None, Left, Right }
+        public readonly Type value;
+        public HorizontalInput(Type value)
+        {
+            this.value = value;
+        }
     }
 
     // todo: replace this with GameEventRegistries for UI, Commands, etc
@@ -20,21 +23,20 @@ namespace PQ
     */
     public class GameEventCenter
     {
-        public GameEvent<string>                jumpCommand          = new("command.jump");
         public GameEvent<HorizontalInput>       movementInputChanged = new("command.movement");
-        public GameEvent<string>                lieDownCommand       = new("command.lieDown");
-        public GameEvent<string>                standUpCommand       = new("command.standUp");
-        public GameEvent<string>                useCommand           = new("command.use");
-        public GameEvent<string>                fireCommand          = new("command.fire");
+        public GameEvent<IEventPayload.Empty>   jumpCommand          = new("command.jump");
+        public GameEvent<IEventPayload.Empty>   lieDownCommand       = new("command.lieDown");
+        public GameEvent<IEventPayload.Empty>   standUpCommand       = new("command.standUp");
+        public GameEvent<IEventPayload.Empty>   useCommand           = new("command.use");
+        public GameEvent<IEventPayload.Empty>   fireCommand          = new("command.fire");
 
         public GameEvent<PlayerProgressionInfo> scoreChange          = new("score.changed");
-        
         public GameEvent<PlayerSettingsInfo>    startNewGame         = new("game.new");
         public GameEvent<PlayerProgressionInfo> pauseGame            = new("game.pause");
-        public GameEvent<string>                resumeGame           = new("game.resume");
-        public GameEvent<string>                gotoMainMenu         = new("game.openMainMenu");
         public GameEvent<PlayerProgressionInfo> gameOver             = new("game.over");
-        public GameEvent<string>                restartGame          = new("game.restart");
+        public GameEvent<IEventPayload.Empty>   resumeGame           = new("game.resume");
+        public GameEvent<IEventPayload.Empty>   gotoMainMenu         = new("game.openMainMenu");
+        public GameEvent<IEventPayload.Empty>   restartGame          = new("game.restart");
 
         private static GameEventCenter _instance;
         public static GameEventCenter Instance

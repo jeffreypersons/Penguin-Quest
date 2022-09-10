@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using PQ.Common;
+using UnityEngine;
 
 
 namespace PQ
 {
-    public class PlayerProgressionInfo
+    public struct PlayerProgressionInfo : IEventPayload
     {
         public static int MIN_SCORE = 0;
         public static int MAX_SCORE = 10000;
@@ -24,17 +25,18 @@ namespace PQ
 
         public PlayerProgressionInfo(int livesGiven)
         {
-            Reset(livesGiven);
-        }
-
-        public void Reset(int livesGiven)
-        {
             LevelName = DEFAULT_LEVEL;
             if (ValidateBounds(livesGiven, MIN_LIVES_GIVEN, MAX_LIVES_GIVEN))
             {
                 Score = MIN_SCORE;
                 Lives = livesGiven;
                 LivesGiven = livesGiven;
+            }
+            else
+            {
+                Score      = default;
+                Lives      = default;
+                LivesGiven = default;
             }
         }
 

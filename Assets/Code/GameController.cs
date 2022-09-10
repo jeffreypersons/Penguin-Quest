@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using PQ.Common;
 
 
 namespace PQ
@@ -22,7 +23,7 @@ namespace PQ
         {
             _gameEventCenter = GameEventCenter.Instance;
             _playerPenguin.SetActive(true);
-            _gameEventCenter.startNewGame.AddOneShotListener(StartNewGame);
+            _gameEventCenter.startNewGame.AddListener(StartNewGame);
         }
 
         void OnEnable()
@@ -41,28 +42,11 @@ namespace PQ
             _gameEventCenter.scoreChange.Trigger(_playerInfo);
         }
 
-        private void RestartGame(string status)
+        private void RestartGame(IEventPayload.Empty _)
         {
             ResetMovingObjects();
             _playerInfo = new PlayerProgressionInfo(_playerInfo.Lives);
             _gameEventCenter.scoreChange.Trigger(_playerInfo);
-        }
-
-        private void UpdateScore(int points)
-        {
-            if (_playerInfo == null)
-            {
-                Debug.LogError($"RecordedScore that is set upon starting a new game {GetType().Name} is missing, " +
-                               $"perhaps the event wasn't fired or listened to? " +
-                               $"...If running from game scene in play mode, try starting from main menu instead");
-            }
-
-            _playerInfo.AddToScore(points);
-            _gameEventCenter.scoreChange.Trigger(_playerInfo);
-            if (LoseConditionMet() || WinConditionMet())
-            {
-                _gameEventCenter.gameOver.Trigger(_playerInfo);
-            }
         }
 
         // placeholders for gameover conditions (will be based on level progression, score etc in future)
@@ -70,6 +54,7 @@ namespace PQ
         {
             return false;
         }
+
         private bool WinConditionMet()
         {
             return false;
