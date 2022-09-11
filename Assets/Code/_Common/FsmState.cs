@@ -7,6 +7,10 @@ namespace PQ.Common
     /*
     Representation of a state in a finite state machine.
 
+    Note that active, initialized etc are not checked everytime - it's up to the machinery
+    of the module that handles the correct ordering of states. If it was done here, there would be tons
+    of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
+
     Intended to fully encapsulate graphics, animation, and physics needed for any specific state.
     State is entered and exited without any transitional checks - that is, it is entirely up to the call site to
     handle when transition is/is-not allowed to occur. Instead, it's up to the state to determine what the
@@ -21,16 +25,15 @@ namespace PQ.Common
 
 
         private readonly string _name;
-        private bool _isActive;
+        private bool _active;
         private EventRegistry<object> _events;
 
         public string Name     => _name;
-        public bool   IsActive => _isActive;
+        public bool   IsActive => _active;
 
         public override string ToString() =>
             $"{GetType().Name}:{{" +
                 $"name:{_name}," +
-                $"active:{_isActive}," +
                 $"eventRegistry:{_events.Data}}}";
 
 
@@ -41,30 +44,30 @@ namespace PQ.Common
         // registered/unregistered on event enter/exit on state construction
         public FsmState(string name)
         {
-            _name     = name;
-            _isActive = false;
-            _events   = new();
+            _name   = name;
+            _active = false;
+            _events = new();
+            OnIntialize();
         }
 
-        public void Initialize(params (GameEvent<IEventPayload>, Action<IEventPayload>)[] eventCallbacks)
-        {
 
-        }
+        /*** Internal Hooks to MonoBehavior ***/
 
         // Required one time callbacks
-        public abstract void OnEnter();
-        public abstract void OnExit();
+        protected abstract void OnIntialize();
+        protected abstract void OnEnter();
+        protected abstract void OnExit();
 
         // Optional recurring callbacks
-        public virtual void OnUpdate()      { }
-        public virtual void OnFixedUpdate() { }
-        public virtual void OnLateUpdate()  { }
+        protected virtual void OnUpdate()      { }
+        protected virtual void OnFixedUpdate() { }
+        protected virtual void OnLateUpdate()  { }
 
 
         // Entry point for client code utilizing state instances
         public void Enter()
         {
-            _isActive = true;
+            _active = true;
             OnEnter();
             foreach (var (event_, callback_) in _events.Data)
             {
@@ -72,16 +75,22 @@ namespace PQ.Common
             }
         }
 
+        public void Update()      => OnUpdate();
+        public void FixedUpdate() => OnFixedUpdate();
+        public void LateUpdate()  => OnLateUpdate();
+
+
         // Exit point for client code utilizing state instances
         public void Exit()
         {
-            _isActive = false;
+            _active = false;
             OnExit();
             foreach (var (event_, callback_) in _events.Data)
             {
                 event_.RemoveListener(callback_);
             }
         }
+
 
         public bool Equals(FsmState other) => other is not null && Name == other.Name;
         public override bool Equals(object obj) => Equals(obj as FsmState);

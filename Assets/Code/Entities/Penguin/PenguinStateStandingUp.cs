@@ -18,7 +18,12 @@ namespace PQ.Entities.Penguin
             _eventCenter = eventCenter;
         }
 
-        public override void OnEnter()
+        protected override void OnIntialize()
+        {
+
+        }
+
+        protected override void OnEnter()
         {
             _blob.Animation.StandUpStarted.AddListener(HandleStandUpAnimationStarted);
             _blob.Animation.StandUpEnded  .AddListener(HandleStandUpAnimationFinished);
@@ -26,7 +31,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.TriggerParamStandUpParameter();
         }
 
-        public override void OnExit()
+        protected override void OnExit()
         {
             _blob.Animation.StandUpStarted.RemoveListener(HandleStandUpAnimationStarted);
             _blob.Animation.StandUpEnded.RemoveListener(HandleStandUpAnimationFinished);

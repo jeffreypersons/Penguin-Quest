@@ -79,8 +79,7 @@ namespace PQ.Common
             return true;
         }
 
-
-        /*** Tnternal Hooks to MonoBehavior ***/
+        /*** Internal Hooks to MonoBehavior ***/
 
         private void Start()
         {
@@ -99,21 +98,18 @@ namespace PQ.Common
 
         private void Update()
         {
-            bool hasEnteredNewStateThisFrame = ExecuteTransitionIfPending();
-            if (!hasEnteredNewStateThisFrame)
-            {
-                CurrentState.OnUpdate();
-            }
+            ExecuteTransitionIfPending();
+            CurrentState.Update();
         }
 
         private void FixedUpdate()
         {
-            CurrentState.OnFixedUpdate();
+            CurrentState.FixedUpdate();
         }
 
         private void LateUpdate()
         {
-            CurrentState.OnLateUpdate();
+            CurrentState.LateUpdate();
         }
     }
 }

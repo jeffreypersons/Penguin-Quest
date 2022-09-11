@@ -18,8 +18,12 @@ namespace PQ.Entities.Penguin
             _eventCenter = eventCenter;
         }
 
+        protected override void OnIntialize()
+        {
 
-        public override void OnEnter()
+        }
+
+        protected override void OnEnter()
         {
             _blob.Animation.LieDownStarted .AddListener(HandleLieDownAnimationStarted);
             _blob.Animation.LieDownMidpoint.AddListener(HandleLieDownAnimationMidpoint);
@@ -28,7 +32,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.TriggerParamLieDownParameter();
         }
 
-        public override void OnExit()
+        protected override void OnExit()
         {
             _blob.Animation.LieDownStarted .RemoveListener(HandleLieDownAnimationStarted);
             _blob.Animation.LieDownMidpoint.RemoveListener(HandleLieDownAnimationMidpoint);

@@ -19,15 +19,19 @@ namespace PQ.Entities.Penguin
             _eventCenter = eventCenter;
         }
 
+        protected override void OnIntialize()
+        {
 
-        public override void OnEnter()
+        }
+
+        protected override void OnEnter()
         {
             _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
 
             _blob.Animation.TriggerParamJumpUpParameter();
         }
 
-        public override void OnExit()
+        protected override void OnExit()
         {
             _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
 
