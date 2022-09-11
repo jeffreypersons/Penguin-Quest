@@ -13,8 +13,8 @@ namespace PQ.Entities.Penguin
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
-        public PenguinStateOnBelly(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
+        public PenguinStateOnBelly(string name, PenguinStateMachineDriver driver,
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
             _driver = driver;

@@ -11,9 +11,8 @@ namespace PQ.Entities.Penguin
         private PenguinBlob _blob;
         private GameEventCenter _eventCenter;
 
-        public PenguinStateMidair(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter)
-            : base(name, eventRegistry: null)
+        public PenguinStateMidair(string name, PenguinStateMachineDriver driver,
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
             _driver = driver;

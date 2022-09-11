@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 
 namespace PQ.Common
@@ -13,9 +14,15 @@ namespace PQ.Common
     */
     public abstract class FsmState : IEquatable<FsmState>
     {
+        private class EventRegistry<T> where T : new()
+        {
+            public Dictionary<GameEvent<T>, Action<T>> Data = new();
+        }
+
+
         private readonly string _name;
         private bool _isActive;
-        private GameEventRegistry _eventRegistry;
+        private EventRegistry<object> _events;
 
         public string Name     => _name;
         public bool   IsActive => _isActive;
@@ -24,7 +31,7 @@ namespace PQ.Common
             $"{GetType().Name}:{{" +
                 $"name:{_name}," +
                 $"active:{_isActive}," +
-                $"eventRegistry:{_eventRegistry}}}";
+                $"eventRegistry:{_events.Data}}}";
 
 
         // Entry point for initializing the state - any event registration or external
@@ -32,11 +39,16 @@ namespace PQ.Common
         //
         // this determines what events should automatically be
         // registered/unregistered on event enter/exit on state construction
-        public FsmState(string name, in GameEventRegistry eventRegistry)
+        public FsmState(string name)
         {
-            _name          = name;
-            _isActive      = false;
-            _eventRegistry = eventRegistry;
+            _name     = name;
+            _isActive = false;
+            _events   = new();
+        }
+
+        public void Initialize(params (GameEvent<IEventPayload>, Action<IEventPayload>)[] eventCallbacks)
+        {
+
         }
 
         // Required one time callbacks
@@ -54,7 +66,10 @@ namespace PQ.Common
         {
             _isActive = true;
             OnEnter();
-            _eventRegistry?.StartListening();
+            foreach (var (event_, callback_) in _events.Data)
+            {
+                event_.AddListener(callback_);
+            }
         }
 
         // Exit point for client code utilizing state instances
@@ -62,7 +77,10 @@ namespace PQ.Common
         {
             _isActive = false;
             OnExit();
-            _eventRegistry?.StopListening();
+            foreach (var (event_, callback_) in _events.Data)
+            {
+                event_.RemoveListener(callback_);
+            }
         }
 
         public bool Equals(FsmState other) => other is not null && Name == other.Name;

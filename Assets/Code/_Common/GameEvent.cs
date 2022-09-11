@@ -41,7 +41,9 @@ namespace PQ.Common
         }
     }
 
-    public class GameEvent<T> : IEquatable<GameEvent<T>>
+    public interface IGameEvent<in T> { }
+
+    public class GameEvent<T> : IGameEvent<T>, IEquatable<GameEvent<T>>
     {
         private readonly string _name;
         private event Action<T> _action;

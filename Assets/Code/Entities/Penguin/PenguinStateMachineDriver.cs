@@ -44,11 +44,11 @@ namespace PQ.Entities.Penguin
             _initialSpawnPosition = _penguinBlob.SkeletalRootPosition;
             ResetPositioning();
 
-            StateFeet       = new PenguinStateOnFeet    (this, "Penguin.State.OnFeet",     _penguinBlob, _eventCenter);
-            StateBelly      = new PenguinStateOnBelly   (this, "Penguin.State.OnBelly",    _penguinBlob, _eventCenter);
-            StateStandingUp = new PenguinStateStandingUp(this, "Penguin.State.StandingUp", _penguinBlob, _eventCenter);
-            StateLyingDown  = new PenguinStateLyingDown (this, "Penguin.State.LyingDown",  _penguinBlob, _eventCenter);
-            StateMidair     = new PenguinStateMidair    (this, "Penguin.State.Midair",     _penguinBlob, _eventCenter);
+            StateFeet       = new PenguinStateOnFeet    ("Penguin.State.OnFeet",     this, _penguinBlob, _eventCenter);
+            StateBelly      = new PenguinStateOnBelly   ("Penguin.State.OnBelly",    this, _penguinBlob, _eventCenter);
+            StateStandingUp = new PenguinStateStandingUp("Penguin.State.StandingUp", this, _penguinBlob, _eventCenter);
+            StateLyingDown  = new PenguinStateLyingDown ("Penguin.State.LyingDown",  this, _penguinBlob, _eventCenter);
+            StateMidair     = new PenguinStateMidair    ("Penguin.State.Midair",     this, _penguinBlob, _eventCenter);
 
             base.Initialize(StateFeet);
         }

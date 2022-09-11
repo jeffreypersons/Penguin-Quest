@@ -26,6 +26,15 @@ namespace PQ.Common
             _description = stringBuilder.ToString();
         }
 
+        public void Add(GameEvent<IEventPayload> event_, Action<IEventPayload> callback_)
+        {
+            if (_eventToHandlerMapping.TryAdd(event_, callback_))
+            {
+                throw new ArgumentException("Event ");
+            }
+            _eventToHandlerMapping[event_] = callback_;
+        }
+
         public void StartListening()
         {
             foreach (var (event_, callback_) in _eventToHandlerMapping)
