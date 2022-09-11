@@ -52,7 +52,7 @@ namespace PQ.Common
             string eventName  = event_.Name;
             string handerName = handler_.Method.Name;
             if (!_eventHandlers.TryAdd(
-                key:   event_    as GameEvent<IEventPayload>,
+                key:   event_   as GameEvent<IEventPayload>,
                 value: handler_ as Action<IEventPayload>))
             {
                 throw new ArgumentException($"{eventName} is already in registry can only be added once - skipping");

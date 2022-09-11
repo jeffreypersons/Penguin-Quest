@@ -40,10 +40,16 @@ namespace PQ.Common
             _name = name;
             _active = false;
             _eventRegistry = new();
-
             _initialized = false;
+        }
+
+        // Entry point for client code initializing state instances
+        // Any 'startup' code such as hooking up handlers to events is done here
+        public void Initialize()
+        {
             OnIntialize();
             _initialized = true;
+            _eventRegistry.UnsubscribeToAllRegisteredEvents();
         }
 
         // Entry point for client code utilizing state instances
@@ -87,11 +93,7 @@ namespace PQ.Common
         // Can only be invoked in OnInitialize.
         protected void RegisterEvent<T>(GameEvent<T> event_, Action<T> handler_) where T : struct, IEventPayload
         {
-            if (_initialized)
-            {
-                throw new InvalidOperationException("Cannot register any events outside of OnInitialize - skipping");
-            }
-            _eventRegistry.Add<T>(event_, handler_);
+            _eventRegistry.Add(event_, handler_);
         }
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)

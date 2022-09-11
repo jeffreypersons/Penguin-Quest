@@ -36,10 +36,9 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {previous} to {next}");
         }
 
-        protected override void Initialize(FsmState initialState)
+        protected override void OnInitialize()
         {
             _eventCenter = GameEventCenter.Instance;
-
             _penguinBlob = gameObject.GetComponent<PenguinBlob>();
             _initialSpawnPosition = _penguinBlob.SkeletalRootPosition;
             ResetPositioning();
@@ -50,7 +49,7 @@ namespace PQ.Entities.Penguin
             StateLyingDown  = new PenguinStateLyingDown ("Penguin.State.LyingDown",  this, _penguinBlob, _eventCenter);
             StateMidair     = new PenguinStateMidair    ("Penguin.State.Midair",     this, _penguinBlob, _eventCenter);
 
-            base.Initialize(StateFeet);
+            InitializeStates(initialState: StateFeet, StateBelly, StateStandingUp, StateLyingDown, StateMidair);
         }
     }
 }
