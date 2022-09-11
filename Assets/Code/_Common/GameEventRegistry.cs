@@ -5,49 +5,71 @@ using System.Text;
 
 namespace PQ.Common
 {
+    /*
+    Provides a way to manage the lifetime of events and their corresponding handler.
+
+    Note that intentionally the only exposed manipulation of events is on an all or nothing basis.
+    The idea is providing a mechanism to hook up existing events with existing handlers that
+    can be periodically be turned on and off as a group.
+
+    Assumptions
+    - Events and callbacks are available for entire life time of the registry
+    - Order registered (as of now) is not significant in any way
+    */
     public class GameEventRegistry
     {
+        private bool _active;
         private string _description;
-        
+        public Dictionary<GameEvent<IEventPayload>, Action<IEventPayload>> _eventHandlers;
 
-        private readonly Dictionary<GameEvent<IEventPayload>, Action<IEventPayload>> _eventToHandlerMapping;
-        public override string ToString() => _description;
+        public bool IsActive => _active;
+        public override string ToString() => _description == ""? "<empty>" : _description;
 
-        public GameEventRegistry(params (GameEvent<IEventPayload>, Action<IEventPayload>)[] eventCallbacks)
+        public GameEventRegistry()
         {
-            var stringBuilder = new StringBuilder(eventCallbacks.Length);
-            _eventToHandlerMapping = new(eventCallbacks.Length);
-            foreach (var (event_, callback_) in eventCallbacks)
-            {
-                _eventToHandlerMapping[event_] = callback_;
-                stringBuilder.AppendFormat("{0}=>{1};", event_.Name, callback_.Method.Name);
-            }
-
-            _description = stringBuilder.ToString();
+            _active = false;
+            _description = "";
+            _eventHandlers = new();
         }
 
-        public void Add(GameEvent<IEventPayload> event_, Action<IEventPayload> callback_)
+        public void SubscribeToAllRegisteredEvents()
         {
-            if (_eventToHandlerMapping.TryAdd(event_, callback_))
-            {
-                throw new ArgumentException("Event ");
-            }
-            _eventToHandlerMapping[event_] = callback_;
-        }
-
-        public void StartListening()
-        {
-            foreach (var (event_, callback_) in _eventToHandlerMapping)
+            foreach (var (event_, callback_) in _eventHandlers)
             {
                 event_.AddListener(callback_);
             }
         }
 
-        public void StopListening()
+        public void UnsubscribeToAllRegisteredEvents()
         {
-            foreach (var (event_, callback_) in _eventToHandlerMapping)
+            foreach (var (event_, callback_) in _eventHandlers)
             {
                 event_.RemoveListener(callback_);
+            }
+        }
+
+        public void Add<T>(GameEvent<T> event_, Action<T> handler_) where T : struct, IEventPayload
+        {
+            string eventName  = event_.Name;
+            string handerName = handler_.Method.Name;
+            if (!_eventHandlers.TryAdd(
+                key:   event_    as GameEvent<IEventPayload>,
+                value: handler_ as Action<IEventPayload>))
+            {
+                throw new ArgumentException($"{eventName} is already in registry can only be added once - skipping");
+            }
+
+            _description += $"{eventName}=>{handerName};";
+
+            // explicitly enforce that any new event-handler pairs have a subscription state matching the
+            // rest of the event-handler pairs in the registry
+            if (_active)
+            {
+                event_.AddListener(handler_);
+            }
+            else
+            {
+                event_.RemoveListener(handler_);
             }
         }
     }

@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace PQ.Common
 {
+    //
+    // todo: look into exposing a state machine context that can have a reference given to each state
+    //       rather than the current method of passing the entire state machine instance to state instances
+    //       so that they can signal MoveToState() more indirectly
+    //
+
     /*
     Driver for state machine that hooks up state callbacks to MonoBehaviour.
 
@@ -78,6 +84,7 @@ namespace PQ.Common
             _nextScheduledState = null;
             return true;
         }
+
 
         /*** Internal Hooks to MonoBehavior ***/
 

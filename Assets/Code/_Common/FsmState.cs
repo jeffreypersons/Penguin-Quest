@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 
 namespace PQ.Common
@@ -18,15 +17,10 @@ namespace PQ.Common
     */
     public abstract class FsmState : IEquatable<FsmState>
     {
-        private class EventRegistry<T> where T : new()
-        {
-            public Dictionary<GameEvent<T>, Action<T>> Data = new();
-        }
-
-
         private readonly string _name;
         private bool _active;
-        private EventRegistry<object> _events;
+        private bool _initialized;
+        private GameEventRegistry _eventRegistry;
 
         public string Name     => _name;
         public bool   IsActive => _active;
@@ -34,7 +28,7 @@ namespace PQ.Common
         public override string ToString() =>
             $"{GetType().Name}:{{" +
                 $"name:{_name}," +
-                $"eventRegistry:{_events.Data}}}";
+                $"eventRegistry:{_eventRegistry}}}";
 
 
         // Entry point for initializing the state - any event registration or external
@@ -44,17 +38,37 @@ namespace PQ.Common
         // registered/unregistered on event enter/exit on state construction
         public FsmState(string name)
         {
-            _name   = name;
+            _name = name;
             _active = false;
-            _events = new();
+            _eventRegistry = null;
+
             OnIntialize();
+            _initialized = true;
+            _eventRegistry = new();
         }
 
 
-        /*** Internal Hooks to MonoBehavior ***/
+        /*** Internal Hooks for Defining State Specific Logic ***/
 
-        // Required one time callbacks
+        // 
+        protected void RegisterEvent<T>(GameEvent<T> event_, Action<T> handler_) where T : struct, IEventPayload
+        {
+            if (_initialized)
+            {
+                throw new InvalidOperationException("Cannot register any events outside of OnInitialize - skipping");
+            }
+
+            if (_eventRegistry == null)
+            {
+                _eventRegistry = new();
+            }
+            _eventRegistry.Add<T>(event_, handler_);
+        }
+
+        // Required one time callback where long living data can be hooked up (eg events/handlers)
         protected abstract void OnIntialize();
+
+        // Required entry/exit point callbacks
         protected abstract void OnEnter();
         protected abstract void OnExit();
 
@@ -67,12 +81,9 @@ namespace PQ.Common
         // Entry point for client code utilizing state instances
         public void Enter()
         {
-            _active = true;
             OnEnter();
-            foreach (var (event_, callback_) in _events.Data)
-            {
-                event_.AddListener(callback_);
-            }
+            _active = true;
+            _eventRegistry.SubscribeToAllRegisteredEvents();
         }
 
         public void Update()      => OnUpdate();
@@ -83,12 +94,9 @@ namespace PQ.Common
         // Exit point for client code utilizing state instances
         public void Exit()
         {
-            _active = false;
             OnExit();
-            foreach (var (event_, callback_) in _events.Data)
-            {
-                event_.RemoveListener(callback_);
-            }
+            _active = false;
+            _eventRegistry.UnsubscribeToAllRegisteredEvents();
         }
 
 
