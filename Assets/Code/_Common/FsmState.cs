@@ -31,36 +31,65 @@ namespace PQ.Common
                 $"eventRegistry:{_eventRegistry}}}";
 
 
-        // Entry point for initializing the state - any event registration or external
-        // class dependencies should be hooked up via an override of this base constructor
-        //
-        // this determines what events should automatically be
-        // registered/unregistered on event enter/exit on state construction
+        /*** External Facing Methods for Driving State Logic ***/
+
+        // External entry point for initializing the state
+        // Note that any sub class dependencies should be hooked up via an override of this base constructor
         public FsmState(string name)
         {
             _name = name;
             _active = false;
-            _eventRegistry = null;
+            _eventRegistry = new();
 
+            _initialized = false;
             OnIntialize();
             _initialized = true;
-            _eventRegistry = new();
         }
+
+        // Entry point for client code utilizing state instances
+        public void Enter()
+        {
+            OnEnter();
+            _active = true;
+            _eventRegistry.SubscribeToAllRegisteredEvents();
+        }
+
+        // Exit point for client code utilizing state instances
+        public void Exit()
+        {
+            OnExit();
+            _active = false;
+            _eventRegistry.UnsubscribeToAllRegisteredEvents();
+        }
+
+        // Execute logic intended for early in a frame such as processing input
+        public void Update()      => OnUpdate();
+
+        // Execute logic intended for mid way through a frame such as fixed duration physics calculations
+        public void FixedUpdate() => OnFixedUpdate();
+
+        // Execute logic intended for later on in a frame such as programmatic visual effects
+        public void LateUpdate()  => OnLateUpdate();
+
+        
+        public bool Equals(FsmState other) => other is not null && Name == other.Name;
+        public override bool Equals(object obj) => Equals(obj as FsmState);
+        public override int GetHashCode() => HashCode.Combine(Name);
+        public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
+        public static bool operator !=(FsmState left, FsmState right) => !Equals(left, right);
+
 
 
         /*** Internal Hooks for Defining State Specific Logic ***/
 
-        // 
+        // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
+        // and unsubscribed on state exit.
+        // Can only be invoked in OnInitialize.
         protected void RegisterEvent<T>(GameEvent<T> event_, Action<T> handler_) where T : struct, IEventPayload
         {
             if (_initialized)
             {
                 throw new InvalidOperationException("Cannot register any events outside of OnInitialize - skipping");
-            }
-
-            if (_eventRegistry == null)
-            {
-                _eventRegistry = new();
             }
             _eventRegistry.Add<T>(event_, handler_);
         }
@@ -76,34 +105,5 @@ namespace PQ.Common
         protected virtual void OnUpdate()      { }
         protected virtual void OnFixedUpdate() { }
         protected virtual void OnLateUpdate()  { }
-
-
-        // Entry point for client code utilizing state instances
-        public void Enter()
-        {
-            OnEnter();
-            _active = true;
-            _eventRegistry.SubscribeToAllRegisteredEvents();
-        }
-
-        public void Update()      => OnUpdate();
-        public void FixedUpdate() => OnFixedUpdate();
-        public void LateUpdate()  => OnLateUpdate();
-
-
-        // Exit point for client code utilizing state instances
-        public void Exit()
-        {
-            OnExit();
-            _active = false;
-            _eventRegistry.UnsubscribeToAllRegisteredEvents();
-        }
-
-
-        public bool Equals(FsmState other) => other is not null && Name == other.Name;
-        public override bool Equals(object obj) => Equals(obj as FsmState);
-        public override int GetHashCode() => HashCode.Combine(Name);
-        public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
-        public static bool operator !=(FsmState left, FsmState right) => !Equals(left, right);
     }
 }
