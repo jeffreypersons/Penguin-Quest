@@ -20,7 +20,7 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            //RegisterEvent<IEventPayload.Empty>(_blob.Animation.LieDownStarted, HandleLieDownAnimationStarted);
+            RegisterEvent(_blob.Animation.LieDownStarted, HandleLieDownAnimationStarted);
         }
 
         protected override void OnEnter()

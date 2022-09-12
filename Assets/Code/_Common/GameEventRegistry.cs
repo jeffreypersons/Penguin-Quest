@@ -19,15 +19,32 @@ namespace PQ.Common
     public class GameEventRegistry
     {
         private class Entry<T>
+            where T : IEventPayload
         {
-            public Action<T> Event   { get; set; }
-            public Action<T> Handler { get; set; }
-            public Entry(Action<T> event_, Action<T> handler_)
+            public string    EventName   { get; set; }
+            public string    HandlerName { get; set; }
+            public Action<T> Event       { get; set; }
+            public Action<T> Handler     { get; set; }
+
+            public void Subscribe()   => Event += Handler;
+            public void Unsubscribe() => Event -= Handler;
+            public override string ToString() => $"{EventName}=>{HandlerName};";
+
+            private Entry(string eventName_, Action<T> event_, string handlerName_, Action<T> handler_)
             {
+
+                EventName = eventName_;
                 Event = event_;
+                HandlerName = handlerName_;
                 Handler = handler_;
             }
+
+            public static Entry<T> From(GameEvent<T> event_, Action<T> handler_)
+            {
+                return new Entry<T>(event_.Name, event_.AsAction, handler_.Method.Name, handler_);
+            }
         }
+
 
         private bool _active;
         private string _description;
@@ -59,31 +76,27 @@ namespace PQ.Common
             }
         }
 
-        public void Add(GameEvent<IEventPayload> event_, Action<IEventPayload> handler_)
+        public void Add<T>(GameEvent<T> event_, Action<T> handler_) where T : IEventPayload
         {
-            if (IsEventAlreadyInRegistry(event_))
+            var newEntry = Entry<T>.From(event_, handler_);
+            if (IsEventAlreadyInRegistry(newEntry))
             {
                 throw new ArgumentException($"{event_.Name} is already in registry");
             }
 
-            string eventName = event_.Name;
-            string handlerName = handler_.Method.Name;
-            Debug.Log($"{eventName}=>{handlerName}");
+            _description += newEntry.ToString();
 
-            _description += $"{eventName}=>{handlerName};";
-
-            _eventHandlers.Add(new Entry<IEventPayload>(event_.AsAction, handler_));
+            _eventHandlers.Add(newEntry as Entry<IEventPayload>);
 
             // explicitly enforce that any new event-handler pairs have a subscription state matching the
             // rest of the event-handler pairs in the registry
         }
 
-        private bool IsEventAlreadyInRegistry(GameEvent<IEventPayload> event_)
+        private bool IsEventAlreadyInRegistry<T>(Entry<T> entry) where T : IEventPayload
         {
-            var key = event_.AsAction;
             for (int i = 0; i < _eventHandlers.Count; i++)
             {
-                if (_eventHandlers[i].Event == key)
+                if (_eventHandlers[i].EventName == entry.EventName)
                 {
                     return true;
                 }

@@ -92,9 +92,9 @@ namespace PQ.Common
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void RegisterEvent<T>(GameEvent<IEventPayload> event_, Action<IEventPayload> handler_)
+        protected void RegisterEvent<T>(GameEvent<T> event_, Action<T> handler_) where T : IEventPayload
         {
-            _eventRegistry.Add(event_, handler_);
+            _eventRegistry.Add<T>(event_, handler_);
         }
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
