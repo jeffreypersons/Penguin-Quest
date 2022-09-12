@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace PQ.Common
 {
     /*
-    Provides a way to manage the lifetime of events and their corresponding handler.
+    Provides a way to subscribe/unsubscribe an event and their corresponding handler.
 
     Note that intentionally the only exposed manipulation of events is on an all or nothing basis.
     The idea is providing a mechanism to hook up existing events with existing handlers that
@@ -17,9 +18,20 @@ namespace PQ.Common
     */
     public class GameEventRegistry
     {
+        private class Entry<T>
+        {
+            public Action<T> Event   { get; set; }
+            public Action<T> Handler { get; set; }
+            public Entry(Action<T> event_, Action<T> handler_)
+            {
+                Event = event_;
+                Handler = handler_;
+            }
+        }
+
         private bool _active;
         private string _description;
-        public Dictionary<GameEvent<IEventPayload>, Action<IEventPayload>> _eventHandlers;
+        private List<Entry<IEventPayload>> _eventHandlers;
 
         public bool IsActive => _active;
         public override string ToString() => _description == ""? "<empty>" : _description;
@@ -33,43 +45,50 @@ namespace PQ.Common
 
         public void SubscribeToAllRegisteredEvents()
         {
-            foreach (var (event_, callback_) in _eventHandlers)
+            for (int i = 0; i < _eventHandlers.Count; i++)
             {
-                event_.AddListener(callback_);
+                _eventHandlers[i].Event += _eventHandlers[i].Handler;
             }
         }
 
         public void UnsubscribeToAllRegisteredEvents()
         {
-            foreach (var (event_, callback_) in _eventHandlers)
+            for (int i = 0; i < _eventHandlers.Count; i++)
             {
-                event_.RemoveListener(callback_);
+                _eventHandlers[i].Event -= _eventHandlers[i].Handler;
             }
         }
 
-        public void Add<T>(GameEvent<T> event_, Action<T> handler_) where T : struct, IEventPayload
+        public void Add(GameEvent<IEventPayload> event_, Action<IEventPayload> handler_)
         {
-            string eventName  = event_.Name;
-            string handerName = handler_.Method.Name;
-            if (!_eventHandlers.TryAdd(
-                key:   event_   as GameEvent<IEventPayload>,
-                value: handler_ as Action<IEventPayload>))
+            if (IsEventAlreadyInRegistry(event_))
             {
-                throw new ArgumentException($"{eventName} is already in registry can only be added once - skipping");
+                throw new ArgumentException($"{event_.Name} is already in registry");
             }
 
-            _description += $"{eventName}=>{handerName};";
+            string eventName = event_.Name;
+            string handlerName = handler_.Method.Name;
+            Debug.Log($"{eventName}=>{handlerName}");
+
+            _description += $"{eventName}=>{handlerName};";
+
+            _eventHandlers.Add(new Entry<IEventPayload>(event_.AsAction, handler_));
 
             // explicitly enforce that any new event-handler pairs have a subscription state matching the
             // rest of the event-handler pairs in the registry
-            if (_active)
+        }
+
+        private bool IsEventAlreadyInRegistry(GameEvent<IEventPayload> event_)
+        {
+            var key = event_.AsAction;
+            for (int i = 0; i < _eventHandlers.Count; i++)
             {
-                event_.AddListener(handler_);
+                if (_eventHandlers[i].Event == key)
+                {
+                    return true;
+                }
             }
-            else
-            {
-                event_.RemoveListener(handler_);
-            }
+            return false;
         }
     }
 }

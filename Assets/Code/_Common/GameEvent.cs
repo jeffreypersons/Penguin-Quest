@@ -41,14 +41,17 @@ namespace PQ.Common
         }
     }
 
-    public interface IGameEvent<in T> { }
 
-    public class GameEvent<T> : IGameEvent<T>, IEquatable<GameEvent<T>>
+    public class GameEvent<T> : IEquatable<GameEvent<T>>
+        where T : IEventPayload
     {
         private readonly string _name;
         private event Action<T> _action;
 
         public string Name => _name;
+        public Delegate AsDelegate => _action;
+        public Action<T> AsAction => _action;
+
 
         public int ListenerCount => _action.GetInvocationList().Length;
         public override string ToString() =>

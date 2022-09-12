@@ -24,6 +24,7 @@ namespace PQ.Common
 
         public string Name     => _name;
         public bool   IsActive => _active;
+        public bool   IsInitialized => _active;
 
         public override string ToString() =>
             $"{GetType().Name}:{{" +
@@ -91,7 +92,7 @@ namespace PQ.Common
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void RegisterEvent<T>(GameEvent<T> event_, Action<T> handler_) where T : struct, IEventPayload
+        protected void RegisterEvent<T>(GameEvent<IEventPayload> event_, Action<IEventPayload> handler_)
         {
             _eventRegistry.Add(event_, handler_);
         }
