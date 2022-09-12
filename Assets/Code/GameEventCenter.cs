@@ -4,7 +4,7 @@
 namespace PQ
 {
     // todo: find a better place for this
-    public struct HorizontalInput : IEventPayload
+    public struct HorizontalInput
     {
         public enum Type { None, Left, Right }
         public readonly Type value;

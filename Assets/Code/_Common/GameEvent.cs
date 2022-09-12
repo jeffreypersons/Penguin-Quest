@@ -33,6 +33,7 @@ namespace PQ.Common
 
     Intended to be implemented by readonly structs for performance reasons.
     */
+
     public interface IEventPayload
     {
         public struct Empty : IEventPayload
@@ -41,17 +42,12 @@ namespace PQ.Common
         }
     }
 
-
-    public class GameEvent<T> : IEquatable<GameEvent<T>>
-        where T : IEventPayload
+    public sealed class GameEvent<T> : IEquatable<GameEvent<T>>
     {
         private readonly string _name;
         private event Action<T> _action;
 
         public string Name => _name;
-        public Delegate AsDelegate => _action;
-        public Action<T> AsAction => _action;
-
 
         public int ListenerCount => _action.GetInvocationList().Length;
         public override string ToString() =>
@@ -86,6 +82,8 @@ namespace PQ.Common
         bool IEquatable<GameEvent<T>>.Equals(GameEvent<T> other) => other is not null && Name == other.Name;
         public override bool Equals(object obj) => ((IEquatable<GameEvent<T>>)this).Equals(obj as GameEvent<T>);
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), _action.GetHashCode(), _name);
+
+
         public static bool operator ==(GameEvent<T> left, GameEvent<T> right) =>  Equals(left, right);
         public static bool operator !=(GameEvent<T> left, GameEvent<T> right) => !Equals(left, right);
     }

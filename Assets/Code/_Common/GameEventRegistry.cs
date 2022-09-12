@@ -18,37 +18,33 @@ namespace PQ.Common
     */
     public class GameEventRegistry
     {
-        private class Entry<T>
-            where T : IEventPayload
+        private interface IEntry
         {
-            public string    EventName   { get; set; }
-            public string    HandlerName { get; set; }
-            public Action<T> Event       { get; set; }
-            public Action<T> Handler     { get; set; }
+            public string Key { get; }
+            public void Subscribe();
+            public void Unsubscribe();
+        }
+        private class Entry<T> : IEntry
+        {
+            public string Key => Event.Name;
+            public GameEvent<T> Event   { get; set; }
+            public Action<T>    Handler { get; set; }
 
-            public void Subscribe()   => Event += Handler;
-            public void Unsubscribe() => Event -= Handler;
-            public override string ToString() => $"{EventName}=>{HandlerName};";
+            public void Subscribe()   => Event.AddListener(Handler);
+            public void Unsubscribe() => Event.RemoveListener(Handler);
+            public override string ToString() => $"{Event.Name}=>{Handler.Method.Name};";
 
-            private Entry(string eventName_, Action<T> event_, string handlerName_, Action<T> handler_)
+            public Entry(GameEvent<T> event_, Action<T> handler_)
             {
-
-                EventName = eventName_;
                 Event = event_;
-                HandlerName = handlerName_;
                 Handler = handler_;
-            }
-
-            public static Entry<T> From(GameEvent<T> event_, Action<T> handler_)
-            {
-                return new Entry<T>(event_.Name, event_.AsAction, handler_.Method.Name, handler_);
             }
         }
 
 
         private bool _active;
         private string _description;
-        private List<Entry<IEventPayload>> _eventHandlers;
+        private List<IEntry> _eventHandlers;
 
         public bool IsActive => _active;
         public override string ToString() => _description == ""? "<empty>" : _description;
@@ -64,7 +60,7 @@ namespace PQ.Common
         {
             for (int i = 0; i < _eventHandlers.Count; i++)
             {
-                _eventHandlers[i].Event += _eventHandlers[i].Handler;
+                _eventHandlers[i].Subscribe();
             }
         }
 
@@ -72,31 +68,38 @@ namespace PQ.Common
         {
             for (int i = 0; i < _eventHandlers.Count; i++)
             {
-                _eventHandlers[i].Event -= _eventHandlers[i].Handler;
+                _eventHandlers[i].Unsubscribe();
             }
         }
 
-        public void Add<T>(GameEvent<T> event_, Action<T> handler_) where T : IEventPayload
+        public void Add<T>(GameEvent<T> event_, Action<T> handler_)
         {
-            var newEntry = Entry<T>.From(event_, handler_);
+            var newEntry = new Entry<T>(event_, handler_);
             if (IsEventAlreadyInRegistry(newEntry))
             {
                 throw new ArgumentException($"{event_.Name} is already in registry");
             }
 
-            _description += newEntry.ToString();
-
-            _eventHandlers.Add(newEntry as Entry<IEventPayload>);
-
             // explicitly enforce that any new event-handler pairs have a subscription state matching the
             // rest of the event-handler pairs in the registry
+            if (_active)
+            {
+                newEntry.Subscribe();
+            }
+            else
+            {
+                newEntry.Unsubscribe();
+            }
+
+            _description += newEntry.ToString();
+            _eventHandlers.Add(newEntry);
         }
 
-        private bool IsEventAlreadyInRegistry<T>(Entry<T> entry) where T : IEventPayload
+        private bool IsEventAlreadyInRegistry<T>(Entry<T> entry)
         {
             for (int i = 0; i < _eventHandlers.Count; i++)
             {
-                if (_eventHandlers[i].EventName == entry.EventName)
+                if (_eventHandlers[i].Key == entry.Event.Name)
                 {
                     return true;
                 }
