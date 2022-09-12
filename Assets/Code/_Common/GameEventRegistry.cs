@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 
 namespace PQ.Common
@@ -18,64 +17,69 @@ namespace PQ.Common
     */
     public class GameEventRegistry
     {
+        // note that interface is required for contraviant storage of event/handler pairs
         private interface IEntry
         {
-            public string Key { get; }
+            public string EventName { get; }
+            public string HandlerName { get; }
             public void Subscribe();
             public void Unsubscribe();
         }
-        private class Entry<T> : IEntry
+
+        private class EventActionEntry<T> : IEntry
         {
-            public string Key => Event.Name;
-            public GameEvent<T> Event   { get; set; }
-            public Action<T>    Handler { get; set; }
+            private GameEvent<T> _event;
+            private Action<T> _handler;
 
-            public void Subscribe()   => Event.AddListener(Handler);
-            public void Unsubscribe() => Event.RemoveListener(Handler);
-            public override string ToString() => $"{Event.Name}=>{Handler.Method.Name};";
+            string IEntry.EventName     => _event.Name;
+            string IEntry.HandlerName   => _handler.Method.Name;
+            void   IEntry.Subscribe()   => _event.AddListener(_handler);
+            void   IEntry.Unsubscribe() => _event.RemoveListener(_handler);
 
-            public Entry(GameEvent<T> event_, Action<T> handler_)
+            public EventActionEntry(GameEvent<T> event_, Action<T> handler_)
             {
-                Event = event_;
-                Handler = handler_;
+                _event = event_;
+                _handler = handler_;
             }
         }
 
 
         private bool _active;
         private string _description;
-        private List<IEntry> _eventHandlers;
+        private List<IEntry> _eventActionEntries;
 
         public bool IsActive => _active;
-        public override string ToString() => _description == ""? "<empty>" : _description;
+        public override string ToString() => _description == "" ? "<empty>" : _description;
 
         public GameEventRegistry()
         {
             _active = false;
             _description = "";
-            _eventHandlers = new();
+            _eventActionEntries = new();
         }
 
         public void SubscribeToAllRegisteredEvents()
         {
-            for (int i = 0; i < _eventHandlers.Count; i++)
+            _active = true;
+            for (int i = 0; i < _eventActionEntries.Count; i++)
             {
-                _eventHandlers[i].Subscribe();
+                _eventActionEntries[i].Subscribe();
             }
         }
 
         public void UnsubscribeToAllRegisteredEvents()
         {
-            for (int i = 0; i < _eventHandlers.Count; i++)
+            _active = false;
+            for (int i = 0; i < _eventActionEntries.Count; i++)
             {
-                _eventHandlers[i].Unsubscribe();
+                _eventActionEntries[i].Unsubscribe();
             }
         }
 
         public void Add<T>(GameEvent<T> event_, Action<T> handler_)
         {
-            var newEntry = new Entry<T>(event_, handler_);
-            if (IsEventAlreadyInRegistry(newEntry))
+            IEntry entry = new EventActionEntry<T>(event_, handler_);
+            if (_eventActionEntries.Exists(e => e.EventName == entry.EventName))
             {
                 throw new ArgumentException($"{event_.Name} is already in registry");
             }
@@ -84,27 +88,15 @@ namespace PQ.Common
             // rest of the event-handler pairs in the registry
             if (_active)
             {
-                newEntry.Subscribe();
+                entry.Subscribe();
             }
             else
             {
-                newEntry.Unsubscribe();
+                entry.Unsubscribe();
             }
 
-            _description += newEntry.ToString();
-            _eventHandlers.Add(newEntry);
-        }
-
-        private bool IsEventAlreadyInRegistry<T>(Entry<T> entry)
-        {
-            for (int i = 0; i < _eventHandlers.Count; i++)
-            {
-                if (_eventHandlers[i].Key == entry.Event.Name)
-                {
-                    return true;
-                }
-            }
-            return false;
+            _description += $"{entry.EventName}=>{entry.HandlerName};";
+            _eventActionEntries.Add(entry);
         }
     }
 }
