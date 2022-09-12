@@ -33,7 +33,6 @@ namespace PQ.Common
 
     Intended to be implemented by readonly structs for performance reasons.
     */
-
     public interface IEventPayload
     {
         public struct Empty : IEventPayload
