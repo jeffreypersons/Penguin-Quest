@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Common.Casts
 {
     /*
     Provides a streamlined interface for casting rays from a series of line casters along a segment.

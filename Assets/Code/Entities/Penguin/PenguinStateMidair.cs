@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.Extensions;
+using PQ.Common.Events;
+using PQ.Common.Casts;
+using PQ.Common.Physics;
+using PQ.Common.States;
 
 
 namespace PQ.Entities.Penguin

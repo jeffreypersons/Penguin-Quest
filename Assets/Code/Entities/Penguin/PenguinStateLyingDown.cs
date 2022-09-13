@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.States;
 
 
 namespace PQ.Entities.Penguin

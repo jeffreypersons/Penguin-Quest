@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace PQ.Common
+namespace PQ.Common.Events
 {
     public interface IEventHandler
     {

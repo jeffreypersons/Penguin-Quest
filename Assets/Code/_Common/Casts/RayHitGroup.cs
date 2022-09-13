@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Common.Casts
 {
     /* Results of multiple ray intersections. */
     public struct RayHitGroup

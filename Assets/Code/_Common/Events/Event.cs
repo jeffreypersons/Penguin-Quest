@@ -25,7 +25,7 @@ Features
 using System;
 
 
-namespace PQ.Common
+namespace PQ.Common.Events
 {
     //
     // Yes, there is duplication here, but it's kept to a minimum and is intentional as a solution

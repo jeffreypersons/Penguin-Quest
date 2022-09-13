@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Common.Casts
 {
     /*
     Provides a streamlined interface for casting lines from specific points or colliders.

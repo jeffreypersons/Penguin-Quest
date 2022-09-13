@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace PQ.Common
+namespace PQ.Common.Events
 {
     /*
     Provides a way to subscribe/unsubscribe an event and their corresponding handler.

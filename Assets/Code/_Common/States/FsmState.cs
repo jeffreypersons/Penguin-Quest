@@ -1,7 +1,8 @@
 ﻿using System;
+using PQ.Common.Events;
 
 
-namespace PQ.Common
+namespace PQ.Common.States
 {
     /*
     Representation of a state in a finite state machine.

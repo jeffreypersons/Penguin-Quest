@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Common.States
 {
     //
     // todo: look into exposing a state machine context that can have a reference given to each state

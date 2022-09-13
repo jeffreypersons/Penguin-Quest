@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Common.Physics
 {
     /*
     Wrapper over rigidbody, colliders, and transforms to form a single source of truth for 2D movement.
