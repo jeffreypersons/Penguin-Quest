@@ -5,7 +5,7 @@ using PQ.Common;
 
 namespace PQ
 {
-    public struct PlayerSettingsInfo : IEventPayload
+    public struct PlayerSettingsInfo
     {
         public int   NumberOfLives   { get; private set; }
         public float DifficultyLevel { get; private set; }

@@ -23,19 +23,19 @@ namespace PQ.Sound
 
         void OnEnable()
         {
-            _eventCenter.startNewGame.AddListener(StartTrack);
-            _eventCenter.restartGame .AddListener(RestartTrack);
-            _eventCenter.pauseGame   .AddListener(PauseTrack);
-            _eventCenter.resumeGame  .AddListener(ResumeTrack);
-            _eventCenter.gameOver    .AddListener(EndTrack);
+            _eventCenter.startNewGame.AddHandler(StartTrack);
+            _eventCenter.restartGame .AddHandler(RestartTrack);
+            _eventCenter.pauseGame   .AddHandler(PauseTrack);
+            _eventCenter.resumeGame  .AddHandler(ResumeTrack);
+            _eventCenter.gameOver    .AddHandler(EndTrack);
         }
         void OnDisable()
         {
-            _eventCenter.startNewGame.RemoveListener(StartTrack);
-            _eventCenter.restartGame .RemoveListener(RestartTrack);
-            _eventCenter.pauseGame   .RemoveListener(PauseTrack);
-            _eventCenter.resumeGame  .RemoveListener(ResumeTrack);
-            _eventCenter.gameOver    .RemoveListener(EndTrack);
+            _eventCenter.startNewGame.RemoveHandler(StartTrack);
+            _eventCenter.restartGame .RemoveHandler(RestartTrack);
+            _eventCenter.pauseGame   .RemoveHandler(PauseTrack);
+            _eventCenter.resumeGame  .RemoveHandler(ResumeTrack);
+            _eventCenter.gameOver    .RemoveHandler(EndTrack);
         }
 
         private void StartTrack(PlayerSettingsInfo gameSettings)
@@ -43,7 +43,7 @@ namespace PQ.Sound
             _track.volume = gameSettings.MusicVolume / 100.0f;
             _track.Play();
         }
-        private void RestartTrack(IEventPayload.Empty _)
+        private void RestartTrack()
         {
             _track.Stop();
             _track.Play();
@@ -52,7 +52,7 @@ namespace PQ.Sound
         {
             _track.Pause();
         }
-        private void ResumeTrack(IEventPayload.Empty _)
+        private void ResumeTrack()
         {
             _track.UnPause();
         }

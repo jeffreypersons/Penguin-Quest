@@ -89,14 +89,14 @@ namespace PQ
             if (_horizontalInputState.value != horizontalInputType)
             {
                 _horizontalInputState = new(horizontalInputType);
-                _eventCenter.movementInputChanged.Trigger(_horizontalInputState);
+                _eventCenter.movementInputChanged.Raise(_horizontalInputState);
             }
         }
 
-        private void OnJumpUp(InputAction.CallbackContext _)  => _eventCenter.jumpCommand   .Trigger(IEventPayload.Empty.Value);
-        private void OnStandUp(InputAction.CallbackContext _) => _eventCenter.standUpCommand.Trigger(IEventPayload.Empty.Value);
-        private void OnLieDown(InputAction.CallbackContext _) => _eventCenter.lieDownCommand.Trigger(IEventPayload.Empty.Value);
-        private void OnUse(InputAction.CallbackContext _)     => _eventCenter.useCommand    .Trigger(IEventPayload.Empty.Value);
-        private void OnFire(InputAction.CallbackContext _)    => _eventCenter.fireCommand   .Trigger(IEventPayload.Empty.Value);
+        private void OnJumpUp(InputAction.CallbackContext _)  => _eventCenter.jumpCommand.Raise();
+        private void OnStandUp(InputAction.CallbackContext _) => _eventCenter.standUpCommand.Raise();
+        private void OnLieDown(InputAction.CallbackContext _) => _eventCenter.lieDownCommand.Raise();
+        private void OnUse(InputAction.CallbackContext _)     => _eventCenter.useCommand.Raise();
+        private void OnFire(InputAction.CallbackContext _)    => _eventCenter.fireCommand.Raise();
     }
 }

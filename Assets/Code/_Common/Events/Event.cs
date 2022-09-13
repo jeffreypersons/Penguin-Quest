@@ -43,10 +43,10 @@ namespace PQ.Common
         public string Name => _name;
         public PqEvent(string name) => _name = name;
 
-        void IEventRaiser.Raise()                          => _action.Invoke();
-        void IEventHandler.AddHandler(Action onTrigger)    => _action += onTrigger;
-        void IEventHandler.RemoveHandler(Action onTrigger) => _action -= onTrigger;
-        bool IEquatable<PqEvent>.Equals(PqEvent other)     => other is not null && Name == other.Name;
+        public void Raise()                            => _action.Invoke();
+        public void AddHandler(Action onTrigger)       => _action += onTrigger;
+        public void RemoveHandler(Action onTrigger)    => _action -= onTrigger;
+        bool IEquatable<PqEvent>.Equals(PqEvent other) => other is not null && Name == other.Name;
 
         public override string ToString()       => $"Event({_name})";
         public override bool Equals(object obj) => ((IEquatable<PqEvent>)this).Equals(obj as PqEvent);
@@ -66,10 +66,10 @@ namespace PQ.Common
         public string Name => _name;
         public PqEvent(string name) => _name = name;
 
-        void IEventRaiser<T> .Raise(T args)                      => _action.Invoke(args);
-        void IEventHandler<T>.AddHandler(Action<T> onTrigger)    => _action += onTrigger;
-        void IEventHandler<T>.RemoveHandler(Action<T> onTrigger) => _action -= onTrigger;
-        bool IEquatable<PqEvent<T>>.Equals(PqEvent<T> other)     => other is not null && Name == other.Name;
+        public void Raise(T args)                            => _action.Invoke(args);
+        public void AddHandler(Action<T> onTrigger)          => _action += onTrigger;
+        public void RemoveHandler(Action<T> onTrigger)       => _action -= onTrigger;
+        bool IEquatable<PqEvent<T>>.Equals(PqEvent<T> other) => other is not null && Name == other.Name;
 
         public override string ToString()       => $"Event<{typeof(T).FullName}>({_name})";
         public override bool Equals(object obj) => ((IEquatable<PqEvent<T>>)this).Equals(obj as PqEvent<T>);

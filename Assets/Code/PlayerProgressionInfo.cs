@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PQ
 {
-    public struct PlayerProgressionInfo : IEventPayload
+    public struct PlayerProgressionInfo
     {
         public static int MIN_SCORE = 0;
         public static int MAX_SCORE = 10000;

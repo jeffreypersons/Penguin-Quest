@@ -23,30 +23,30 @@ namespace PQ
         {
             _gameEventCenter = GameEventCenter.Instance;
             _playerPenguin.SetActive(true);
-            _gameEventCenter.startNewGame.AddListener(StartNewGame);
+            _gameEventCenter.startNewGame.AddHandler(StartNewGame);
         }
 
         void OnEnable()
         {
-            _gameEventCenter.restartGame.AddListener(RestartGame);
+            _gameEventCenter.restartGame.AddHandler(RestartGame);
         }
         void OnDisable()
         {
-            _gameEventCenter.restartGame.RemoveListener(RestartGame);
+            _gameEventCenter.restartGame.RemoveHandler(RestartGame);
         }
 
 
         private void StartNewGame(PlayerSettingsInfo gameSettings)
         {
             _playerInfo = new PlayerProgressionInfo(gameSettings.NumberOfLives);
-            _gameEventCenter.scoreChange.Trigger(_playerInfo);
+            _gameEventCenter.scoreChange.Raise(_playerInfo);
         }
 
-        private void RestartGame(IEventPayload.Empty _)
+        private void RestartGame()
         {
             ResetMovingObjects();
             _playerInfo = new PlayerProgressionInfo(_playerInfo.Lives);
-            _gameEventCenter.scoreChange.Trigger(_playerInfo);
+            _gameEventCenter.scoreChange.Raise(_playerInfo);
         }
 
         // placeholders for gameover conditions (will be based on level progression, score etc in future)

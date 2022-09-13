@@ -20,7 +20,7 @@ namespace PQ.Common
         private readonly string _name;
         private bool _active;
         private bool _initialized;
-        private GameEventRegistry _eventRegistry;
+        private EventRegistry _eventRegistry;
 
         public string Name => _name;
         public bool IsActive => _active;
@@ -92,10 +92,8 @@ namespace PQ.Common
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void RegisterEvent<T>(GameEvent<T> event_, Action<T> handler_)
-        {
-            _eventRegistry.Add<T>(event_, handler_);
-        }
+        protected void RegisterEvent(PqEvent event_, Action handler_) => _eventRegistry.Add(event_, handler_);
+        protected void RegisterEvent<T>(PqEvent<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
         protected abstract void OnIntialize();

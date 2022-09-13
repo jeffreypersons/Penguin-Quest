@@ -26,14 +26,14 @@ namespace PQ.Entities.Penguin
 
         protected override void OnEnter()
         {
-            _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
+            _blob.CharacterController.GroundContactChanged.AddHandler(HandleGroundContactChanged);
 
             _blob.Animation.TriggerParamJumpUpParameter();
         }
 
         protected override void OnExit()
         {
-            _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
+            _blob.CharacterController.GroundContactChanged.RemoveHandler(HandleGroundContactChanged);
 
             // reset any triggers such that any pending animation events are cleared out to avoid them
             // from firing automatically on landing

@@ -28,9 +28,9 @@ namespace PQ.Entities.Penguin
 
         protected override void OnEnter()
         {
-            _eventCenter.standUpCommand      .AddListener(HandleStandUpInputReceived);
-            _eventCenter.movementInputChanged.AddListener(HandleHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
+            _eventCenter.standUpCommand      .AddHandler(HandleStandUpInputReceived);
+            _eventCenter.movementInputChanged.AddHandler(HandleHorizontalChanged);
+            _blob.CharacterController.GroundContactChanged.AddHandler(HandleGroundContactChanged);
 
             _blob.CharacterController.Settings = _blob.OnBellySettings;
             _locomotionBlend = 0.0f;
@@ -39,9 +39,9 @@ namespace PQ.Entities.Penguin
 
         protected override void OnExit()
         {
-            _eventCenter.standUpCommand      .RemoveListener(HandleStandUpInputReceived);
-            _eventCenter.movementInputChanged.RemoveListener(HandleHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
+            _eventCenter.standUpCommand      .RemoveHandler(HandleStandUpInputReceived);
+            _eventCenter.movementInputChanged.RemoveHandler(HandleHorizontalChanged);
+            _blob.CharacterController.GroundContactChanged.RemoveHandler(HandleGroundContactChanged);
 
             _locomotionBlend = 0.0f;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
@@ -56,7 +56,7 @@ namespace PQ.Entities.Penguin
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void HandleGroundContactChanged(Character2D.GroundContactInfo groundContactInfo) =>
             _blob.Animation.SetParamIsGrounded(groundContactInfo.isGrounded);
-        private void HandleStandUpInputReceived(IEventPayload.Empty _) => _driver.MoveToState(_driver.StateStandingUp);
+        private void HandleStandUpInputReceived() => _driver.MoveToState(_driver.StateStandingUp);
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void HandleHorizontalChanged(HorizontalInput state)

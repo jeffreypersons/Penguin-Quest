@@ -8,7 +8,7 @@ namespace PQ.Entities
     public class Character2D : MonoBehaviour
     {
         // todo: this probably should go somewhere else...
-        public struct GroundContactInfo : IEventPayload
+        public struct GroundContactInfo
         {
             public readonly bool isGrounded;
             public GroundContactInfo(bool isGrounded)
@@ -22,7 +22,7 @@ namespace PQ.Entities
         private GroundContactInfo _groundContactInfo;
         private KinematicBody2D _body;
 
-        public GameEvent<GroundContactInfo> GroundContactChanged = new("character2D.groundContact.change");
+        public PqEvent<GroundContactInfo> GroundContactChanged = new("character2D.groundContact.change");
         public Character2DSettings Settings { get; set; }
 
         public void PlaceAt(Vector2 position, float rotation)
@@ -86,7 +86,7 @@ namespace PQ.Entities
             if (_groundContactInfo.isGrounded != isInContactWithGround || force)
             {
                 _groundContactInfo = new GroundContactInfo(isInContactWithGround);
-                GroundContactChanged.Trigger(_groundContactInfo);
+                GroundContactChanged.Raise(_groundContactInfo);
             }
         }
 

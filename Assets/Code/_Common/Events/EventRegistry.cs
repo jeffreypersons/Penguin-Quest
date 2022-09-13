@@ -15,7 +15,7 @@ namespace PQ.Common
     - Events and callbacks are available for entire life time of the registry
     - Order registered (as of now) is not significant in any way
     */
-    public class GameEventRegistry
+    public class EventRegistry
     {
         // note that interface is required for contraviant storage of event/handler pairs
         private interface IEntry
@@ -26,23 +26,38 @@ namespace PQ.Common
             public void Unsubscribe();
         }
 
-        private class EventActionEntry<T> : IEntry
+        private class EventActionEntry : IEntry
         {
-            private GameEvent<T> _event;
-            private Action<T> _handler;
+            private PqEvent _event;
+            private Action _handler;
 
             string IEntry.EventName     => _event.Name;
             string IEntry.HandlerName   => _handler.Method.Name;
-            void   IEntry.Subscribe()   => _event.AddListener(_handler);
-            void   IEntry.Unsubscribe() => _event.RemoveListener(_handler);
+            void   IEntry.Subscribe()   => _event.AddHandler(_handler);
+            void   IEntry.Unsubscribe() => _event.RemoveHandler(_handler);
 
-            public EventActionEntry(GameEvent<T> event_, Action<T> handler_)
+            public EventActionEntry(PqEvent event_, Action handler_)
             {
                 _event = event_;
                 _handler = handler_;
             }
         }
+        private class EventActionEntry<T> : IEntry
+        {
+            private PqEvent<T> _event;
+            private Action<T> _handler;
 
+            string IEntry.EventName     => _event.Name;
+            string IEntry.HandlerName   => _handler.Method.Name;
+            void   IEntry.Subscribe()   => _event.AddHandler(_handler);
+            void   IEntry.Unsubscribe() => _event.RemoveHandler(_handler);
+
+            public EventActionEntry(PqEvent<T> event_, Action<T> handler_)
+            {
+                _event = event_;
+                _handler = handler_;
+            }
+        }
 
         private bool _active;
         private string _description;
@@ -51,7 +66,7 @@ namespace PQ.Common
         public bool IsActive => _active;
         public override string ToString() => _description == "" ? "<empty>" : _description;
 
-        public GameEventRegistry()
+        public EventRegistry()
         {
             _active = false;
             _description = "";
@@ -76,7 +91,29 @@ namespace PQ.Common
             }
         }
 
-        public void Add<T>(GameEvent<T> event_, Action<T> handler_)
+        public void Add(PqEvent event_, Action handler_)
+        {
+            IEntry entry = new EventActionEntry(event_, handler_);
+            if (_eventActionEntries.Exists(e => e.EventName == entry.EventName))
+            {
+                throw new ArgumentException($"{event_.Name} is already in registry");
+            }
+
+            // explicitly enforce that any new event-handler pairs have a subscription state matching the
+            // rest of the event-handler pairs in the registry
+            if (_active)
+            {
+                entry.Subscribe();
+            }
+            else
+            {
+                entry.Unsubscribe();
+            }
+
+            _description += $"{entry.EventName}=>{entry.HandlerName};";
+            _eventActionEntries.Add(entry);
+        }
+        public void Add<T>(PqEvent<T> event_, Action<T> handler_)
         {
             IEntry entry = new EventActionEntry<T>(event_, handler_);
             if (_eventActionEntries.Exists(e => e.EventName == entry.EventName))

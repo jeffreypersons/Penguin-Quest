@@ -23,20 +23,20 @@ namespace PQ
     */
     public class GameEventCenter
     {
-        public GameEvent<HorizontalInput>       movementInputChanged = new("command.movement");
-        public GameEvent<IEventPayload.Empty>   jumpCommand          = new("command.jump");
-        public GameEvent<IEventPayload.Empty>   lieDownCommand       = new("command.lieDown");
-        public GameEvent<IEventPayload.Empty>   standUpCommand       = new("command.standUp");
-        public GameEvent<IEventPayload.Empty>   useCommand           = new("command.use");
-        public GameEvent<IEventPayload.Empty>   fireCommand          = new("command.fire");
+        public PqEvent<HorizontalInput>       movementInputChanged = new("command.movement");
+        public PqEvent                        jumpCommand          = new("command.jump");
+        public PqEvent                        lieDownCommand       = new("command.lieDown");
+        public PqEvent                        standUpCommand       = new("command.standUp");
+        public PqEvent                        useCommand           = new("command.use");
+        public PqEvent                        fireCommand          = new("command.fire");
 
-        public GameEvent<PlayerProgressionInfo> scoreChange          = new("score.changed");
-        public GameEvent<PlayerSettingsInfo>    startNewGame         = new("game.new");
-        public GameEvent<PlayerProgressionInfo> pauseGame            = new("game.pause");
-        public GameEvent<PlayerProgressionInfo> gameOver             = new("game.over");
-        public GameEvent<IEventPayload.Empty>   resumeGame           = new("game.resume");
-        public GameEvent<IEventPayload.Empty>   gotoMainMenu         = new("game.openMainMenu");
-        public GameEvent<IEventPayload.Empty>   restartGame          = new("game.restart");
+        public PqEvent<PlayerProgressionInfo> scoreChange          = new("score.changed");
+        public PqEvent<PlayerSettingsInfo>    startNewGame         = new("game.new");
+        public PqEvent<PlayerProgressionInfo> pauseGame            = new("game.pause");
+        public PqEvent<PlayerProgressionInfo> gameOver             = new("game.over");
+        public PqEvent                        resumeGame           = new("game.resume");
+        public PqEvent                        gotoMainMenu         = new("game.openMainMenu");
+        public PqEvent                        restartGame          = new("game.restart");
 
         private static GameEventCenter _instance;
         public static GameEventCenter Instance

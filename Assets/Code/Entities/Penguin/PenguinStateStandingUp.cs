@@ -25,26 +25,26 @@ namespace PQ.Entities.Penguin
 
         protected override void OnEnter()
         {
-            _blob.Animation.StandUpStarted.AddListener(HandleStandUpAnimationStarted);
-            _blob.Animation.StandUpEnded  .AddListener(HandleStandUpAnimationFinished);
+            _blob.Animation.StandUpStarted.AddHandler(HandleStandUpAnimationStarted);
+            _blob.Animation.StandUpEnded  .AddHandler(HandleStandUpAnimationFinished);
 
             _blob.Animation.TriggerParamStandUpParameter();
         }
 
         protected override void OnExit()
         {
-            _blob.Animation.StandUpStarted.RemoveListener(HandleStandUpAnimationStarted);
-            _blob.Animation.StandUpEnded.RemoveListener(HandleStandUpAnimationFinished);
+            _blob.Animation.StandUpStarted.RemoveHandler(HandleStandUpAnimationStarted);
+            _blob.Animation.StandUpEnded  .RemoveHandler(HandleStandUpAnimationFinished);
         }
 
 
-        private void HandleStandUpAnimationStarted(IEventPayload.Empty _)
+        private void HandleStandUpAnimationStarted()
         {
             // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
             _blob.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         }
 
-        private void HandleStandUpAnimationFinished(IEventPayload.Empty _)
+        private void HandleStandUpAnimationFinished()
         {
             // enable all colliders as we are now fully onFeet
             _blob.ColliderConstraints = PenguinColliderConstraints.None;

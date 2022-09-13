@@ -29,11 +29,11 @@ namespace PQ.Entities.Penguin
 
         protected override void OnEnter()
         {
-            _blob.Animation.JumpLiftOff      .AddListener(HandleJumpLiftOff);
-            _eventCenter.jumpCommand         .AddListener(HandleJumpInputReceived);
-            _eventCenter.lieDownCommand      .AddListener(HandleLieDownInputReceived);
-            _eventCenter.movementInputChanged.AddListener(HandleMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
+            _blob.Animation.JumpLiftOff      .AddHandler(HandleJumpLiftOff);
+            _eventCenter.jumpCommand         .AddHandler(HandleJumpInputReceived);
+            _eventCenter.lieDownCommand      .AddHandler(HandleLieDownInputReceived);
+            _eventCenter.movementInputChanged.AddHandler(HandleMoveHorizontalChanged);
+            _blob.CharacterController.GroundContactChanged.AddHandler(HandleGroundContactChanged);
 
             _blob.CharacterController.Settings = _blob.OnFeetSettings;
             _locomotionBlend = 0.0f;
@@ -42,11 +42,11 @@ namespace PQ.Entities.Penguin
 
         protected override void OnExit()
         {
-            _blob.Animation.JumpLiftOff      .RemoveListener(HandleJumpLiftOff);
-            _eventCenter.jumpCommand         .RemoveListener(HandleJumpInputReceived);
-            _eventCenter.lieDownCommand      .RemoveListener(HandleLieDownInputReceived);
-            _eventCenter.movementInputChanged.RemoveListener(HandleMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
+            _blob.Animation.JumpLiftOff      .RemoveHandler(HandleJumpLiftOff);
+            _eventCenter.jumpCommand         .RemoveHandler(HandleJumpInputReceived);
+            _eventCenter.lieDownCommand      .RemoveHandler(HandleLieDownInputReceived);
+            _eventCenter.movementInputChanged.RemoveHandler(HandleMoveHorizontalChanged);
+            _blob.CharacterController.GroundContactChanged.RemoveHandler(HandleGroundContactChanged);
 
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
@@ -60,7 +60,7 @@ namespace PQ.Entities.Penguin
 
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
-        private void HandleLieDownInputReceived(IEventPayload.Empty _)
+        private void HandleLieDownInputReceived()
         {
             _driver.MoveToState(_driver.StateLyingDown);
         }
@@ -75,12 +75,12 @@ namespace PQ.Entities.Penguin
         }
 
 
-        private void HandleJumpInputReceived(IEventPayload.Empty _)
+        private void HandleJumpInputReceived()
         {
             _blob.Animation.TriggerParamJumpUpParameter();
         }
 
-        private void HandleJumpLiftOff(IEventPayload.Empty _)
+        private void HandleJumpLiftOff()
         {
             _blob.CharacterController.Jump();
         }
