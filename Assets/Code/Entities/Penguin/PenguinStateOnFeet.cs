@@ -65,10 +65,10 @@ namespace PQ.Entities.Penguin
             _driver.MoveToState(_driver.StateLyingDown);
         }
 
-        private void HandleGroundContactChanged(Character2D.GroundContactInfo groundContactInfo)
+        private void HandleGroundContactChanged(bool isGrounded)
         {
-            _blob.Animation.SetParamIsGrounded(groundContactInfo.isGrounded);
-            if (!groundContactInfo.isGrounded)
+            _blob.Animation.SetParamIsGrounded(isGrounded);
+            if (!isGrounded)
             {
                 _driver.MoveToState(_driver.StateMidair);
             }

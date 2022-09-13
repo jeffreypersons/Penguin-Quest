@@ -54,8 +54,7 @@ namespace PQ.Entities.Penguin
 
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
-        private void HandleGroundContactChanged(Character2D.GroundContactInfo groundContactInfo) =>
-            _blob.Animation.SetParamIsGrounded(groundContactInfo.isGrounded);
+        private void HandleGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
         private void HandleStandUpInputReceived() => _driver.MoveToState(_driver.StateStandingUp);
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
