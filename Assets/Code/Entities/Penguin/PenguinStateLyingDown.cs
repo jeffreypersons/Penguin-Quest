@@ -20,23 +20,20 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_blob.Animation.LieDownStarted, HandleLieDownAnimationStarted);
+            RegisterEvent(_blob.Animation.LieDownStarted,  HandleLieDownAnimationStarted);
+            RegisterEvent(_blob.Animation.LieDownMidpoint, HandleLieDownAnimationMidpoint);
+            RegisterEvent(_blob.Animation.LieDownEnded,    HandleLieDownAnimationFinished);
         }
 
         protected override void OnEnter()
         {
-            _blob.Animation.LieDownStarted .AddHandler(HandleLieDownAnimationStarted);
-            _blob.Animation.LieDownMidpoint.AddHandler(HandleLieDownAnimationMidpoint);
-            _blob.Animation.LieDownEnded   .AddHandler(HandleLieDownAnimationFinished);
-
+            _blob.Animation.ResetAllTriggers();
             _blob.Animation.TriggerParamLieDownParameter();
         }
 
         protected override void OnExit()
         {
-            _blob.Animation.LieDownStarted .RemoveHandler(HandleLieDownAnimationStarted);
-            _blob.Animation.LieDownMidpoint.RemoveHandler(HandleLieDownAnimationMidpoint);
-            _blob.Animation.LieDownEnded   .RemoveHandler(HandleLieDownAnimationFinished);
+            _blob.Animation.ResetAllTriggers();
         }
 
 

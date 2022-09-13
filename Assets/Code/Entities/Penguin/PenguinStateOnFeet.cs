@@ -24,17 +24,15 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-
+            RegisterEvent(_blob.Animation.JumpLiftOff,                    HandleJumpLiftOff);
+            RegisterEvent(_eventCenter.jumpCommand,                       HandleJumpInputReceived);
+            RegisterEvent(_eventCenter.lieDownCommand,                    HandleLieDownInputReceived);
+            RegisterEvent(_eventCenter.movementInputChanged,              HandleMoveHorizontalChanged);
+            RegisterEvent(_blob.CharacterController.GroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()
         {
-            _blob.Animation.JumpLiftOff      .AddHandler(HandleJumpLiftOff);
-            _eventCenter.jumpCommand         .AddHandler(HandleJumpInputReceived);
-            _eventCenter.lieDownCommand      .AddHandler(HandleLieDownInputReceived);
-            _eventCenter.movementInputChanged.AddHandler(HandleMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.AddHandler(HandleGroundContactChanged);
-
             _blob.CharacterController.Settings = _blob.OnFeetSettings;
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
@@ -42,12 +40,6 @@ namespace PQ.Entities.Penguin
 
         protected override void OnExit()
         {
-            _blob.Animation.JumpLiftOff      .RemoveHandler(HandleJumpLiftOff);
-            _eventCenter.jumpCommand         .RemoveHandler(HandleJumpInputReceived);
-            _eventCenter.lieDownCommand      .RemoveHandler(HandleLieDownInputReceived);
-            _eventCenter.movementInputChanged.RemoveHandler(HandleMoveHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.RemoveHandler(HandleGroundContactChanged);
-
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);

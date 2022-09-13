@@ -1,8 +1,4 @@
 ﻿using UnityEngine;
-using PQ.Common.Extensions;
-using PQ.Common.Events;
-using PQ.Common.Casts;
-using PQ.Common.Physics;
 using PQ.Common.States;
 
 
@@ -25,20 +21,16 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-
+            RegisterEvent(_blob.CharacterController.GroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()
         {
-            _blob.CharacterController.GroundContactChanged.AddHandler(HandleGroundContactChanged);
-
             _blob.Animation.TriggerParamJumpUpParameter();
         }
 
         protected override void OnExit()
         {
-            _blob.CharacterController.GroundContactChanged.RemoveHandler(HandleGroundContactChanged);
-
             // reset any triggers such that any pending animation events are cleared out to avoid them
             // from firing automatically on landing
             _blob.Animation.ResetAllTriggers();

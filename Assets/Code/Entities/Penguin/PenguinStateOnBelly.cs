@@ -23,15 +23,13 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-
+            RegisterEvent(_eventCenter.standUpCommand,                    HandleStandUpInputReceived);
+            RegisterEvent(_eventCenter.movementInputChanged,              HandleHorizontalChanged);
+            RegisterEvent(_blob.CharacterController.GroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()
         {
-            _eventCenter.standUpCommand      .AddHandler(HandleStandUpInputReceived);
-            _eventCenter.movementInputChanged.AddHandler(HandleHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.AddHandler(HandleGroundContactChanged);
-
             _blob.CharacterController.Settings = _blob.OnBellySettings;
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
@@ -39,10 +37,6 @@ namespace PQ.Entities.Penguin
 
         protected override void OnExit()
         {
-            _eventCenter.standUpCommand      .RemoveHandler(HandleStandUpInputReceived);
-            _eventCenter.movementInputChanged.RemoveHandler(HandleHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.RemoveHandler(HandleGroundContactChanged);
-
             _locomotionBlend = 0.0f;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }

@@ -20,21 +20,19 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-
+            RegisterEvent(_blob.Animation.StandUpStarted, HandleStandUpAnimationStarted);
+            RegisterEvent(_blob.Animation.StandUpEnded,   HandleStandUpAnimationFinished);
         }
 
         protected override void OnEnter()
         {
-            _blob.Animation.StandUpStarted.AddHandler(HandleStandUpAnimationStarted);
-            _blob.Animation.StandUpEnded  .AddHandler(HandleStandUpAnimationFinished);
-
+            _blob.Animation.ResetAllTriggers();
             _blob.Animation.TriggerParamStandUpParameter();
         }
 
         protected override void OnExit()
         {
-            _blob.Animation.StandUpStarted.RemoveHandler(HandleStandUpAnimationStarted);
-            _blob.Animation.StandUpEnded  .RemoveHandler(HandleStandUpAnimationFinished);
+            _blob.Animation.ResetAllTriggers();
         }
 
 
