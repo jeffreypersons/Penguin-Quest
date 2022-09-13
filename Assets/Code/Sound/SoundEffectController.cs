@@ -34,26 +34,26 @@ namespace PQ.Sound
 
         void OnEnable()
         {
-            _eventCenter.scoreChange .AddListener(PlaySoundOnPlayerScored);
-            _eventCenter.startNewGame.AddListener(SetMasterVolume);
-            _eventCenter.pauseGame   .AddListener(PauseAnyActiveSoundEffects);
-            _eventCenter.resumeGame  .AddListener(ResumeAnyActiveSoundEffects);
-            _eventCenter.gameOver    .AddListener(PlaySoundOnGameOver);
+            _eventCenter.scoreChange .AddHandler(PlaySoundOnPlayerScored);
+            _eventCenter.startNewGame.AddHandler(SetMasterVolume);
+            _eventCenter.pauseGame   .AddHandler(PauseAnyActiveSoundEffects);
+            _eventCenter.resumeGame  .AddHandler(ResumeAnyActiveSoundEffects);
+            _eventCenter.gameOver    .AddHandler(PlaySoundOnGameOver);
         }
         void OnDisable()
         {
-            _eventCenter.scoreChange .RemoveListener(PlaySoundOnPlayerScored);            
-            _eventCenter.startNewGame.RemoveListener(SetMasterVolume);
-            _eventCenter.pauseGame   .RemoveListener(PauseAnyActiveSoundEffects);
-            _eventCenter.resumeGame  .RemoveListener(ResumeAnyActiveSoundEffects);
-            _eventCenter.gameOver    .RemoveListener(PlaySoundOnGameOver);
+            _eventCenter.scoreChange .RemoveHandler(PlaySoundOnPlayerScored);
+            _eventCenter.startNewGame.RemoveHandler(SetMasterVolume);
+            _eventCenter.pauseGame   .RemoveHandler(PauseAnyActiveSoundEffects);
+            _eventCenter.resumeGame  .RemoveHandler(ResumeAnyActiveSoundEffects);
+            _eventCenter.gameOver    .RemoveHandler(PlaySoundOnGameOver);
         }
 
         private void PauseAnyActiveSoundEffects(PlayerProgressionInfo _)
         {
             _audioSource.Pause();
         }
-        private void ResumeAnyActiveSoundEffects(IEventPayload.Empty _)
+        private void ResumeAnyActiveSoundEffects()
         {
             _audioSource.UnPause();
         }

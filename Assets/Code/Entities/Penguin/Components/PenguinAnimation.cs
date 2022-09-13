@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using PQ.Common;
+using PQ.Common.Events;
 
 
 namespace PQ.Entities.Penguin
@@ -47,14 +47,14 @@ namespace PQ.Entities.Penguin
         // rather it's an animation related kept here for relevance
         public float LocomotionBlendStep => _locomotionBlendStep;
 
-        public GameEvent<IEventPayload.Empty> JumpLiftOff     = new("animation.jump.liftoff");
-        public GameEvent<IEventPayload.Empty> LieDownStarted  = new("animation.liedown.start");
-        public GameEvent<IEventPayload.Empty> LieDownMidpoint = new("animation.liedown.mid");
-        public GameEvent<IEventPayload.Empty> LieDownEnded    = new("animation.liedown.end");
-        public GameEvent<IEventPayload.Empty> StandUpStarted  = new("animation.standUp.start");
-        public GameEvent<IEventPayload.Empty> StandUpEnded    = new("animation.standup.end");
-        public GameEvent<IEventPayload.Empty> Fired           = new("animation.fire");
-        public GameEvent<IEventPayload.Empty> Used            = new("animation.use");
+        public PqEvent JumpLiftOff     = new("animation.jump.liftoff");
+        public PqEvent LieDownStarted  = new("animation.liedown.start");
+        public PqEvent LieDownMidpoint = new("animation.liedown.mid");
+        public PqEvent LieDownEnded    = new("animation.liedown.end");
+        public PqEvent StandUpStarted  = new("animation.standUp.start");
+        public PqEvent StandUpEnded    = new("animation.standup.end");
+        public PqEvent Fired           = new("animation.fire");
+        public PqEvent Used            = new("animation.use");
 
 
         public void ResetAllTriggers()
@@ -93,14 +93,15 @@ namespace PQ.Entities.Penguin
         private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           Used);
 
 
-        private void ForwardAsEvent(Action animatorEvent, GameEvent<IEventPayload.Empty> customEvent)
+        private void ForwardAsEvent(Action animatorEvent, PqEvent customEvent)
         {
             if (_logEvents)
             {
                 Debug.Log($"[Frame:{Time.frameCount - 1}] " +
                           $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Name}");
             }
-            customEvent.Trigger(payload: IEventPayload.Empty.Value);
+
+            customEvent.Raise();
         }
     }
 }

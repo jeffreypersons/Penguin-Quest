@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.States;
 
 
 namespace PQ.Entities.Penguin
@@ -11,27 +11,26 @@ namespace PQ.Entities.Penguin
         private PenguinBlob _blob;
         private GameEventCenter _eventCenter;
 
-        public PenguinStateMidair(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter)
-            : base(name, eventRegistry: null)
+        public PenguinStateMidair(string name, PenguinStateMachineDriver driver,
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
             _driver = driver;
             _eventCenter = eventCenter;
         }
 
-
-        public override void OnEnter()
+        protected override void OnIntialize()
         {
-            _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
+            RegisterEvent(_blob.CharacterController.GroundContactChanged, HandleGroundContactChanged);
+        }
 
+        protected override void OnEnter()
+        {
             _blob.Animation.TriggerParamJumpUpParameter();
         }
 
-        public override void OnExit()
+        protected override void OnExit()
         {
-            _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
-
             // reset any triggers such that any pending animation events are cleared out to avoid them
             // from firing automatically on landing
             _blob.Animation.ResetAllTriggers();

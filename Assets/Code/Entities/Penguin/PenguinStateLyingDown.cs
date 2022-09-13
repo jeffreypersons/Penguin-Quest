@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.States;
 
 
 namespace PQ.Entities.Penguin
@@ -10,33 +10,34 @@ namespace PQ.Entities.Penguin
         private PenguinBlob _blob;
         private GameEventCenter _eventCenter;
 
-        public PenguinStateLyingDown(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
+        public PenguinStateLyingDown(string name, PenguinStateMachineDriver driver,
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
             _driver = driver;
             _eventCenter = eventCenter;
         }
 
-
-        public override void OnEnter()
+        protected override void OnIntialize()
         {
-            _blob.Animation.LieDownStarted .AddListener(HandleLieDownAnimationStarted);
-            _blob.Animation.LieDownMidpoint.AddListener(HandleLieDownAnimationMidpoint);
-            _blob.Animation.LieDownEnded   .AddListener(HandleLieDownAnimationFinished);
+            RegisterEvent(_blob.Animation.LieDownStarted,  HandleLieDownAnimationStarted);
+            RegisterEvent(_blob.Animation.LieDownMidpoint, HandleLieDownAnimationMidpoint);
+            RegisterEvent(_blob.Animation.LieDownEnded,    HandleLieDownAnimationFinished);
+        }
 
+        protected override void OnEnter()
+        {
+            _blob.Animation.ResetAllTriggers();
             _blob.Animation.TriggerParamLieDownParameter();
         }
 
-        public override void OnExit()
+        protected override void OnExit()
         {
-            _blob.Animation.LieDownStarted .RemoveListener(HandleLieDownAnimationStarted);
-            _blob.Animation.LieDownMidpoint.RemoveListener(HandleLieDownAnimationMidpoint);
-            _blob.Animation.LieDownEnded   .RemoveListener(HandleLieDownAnimationFinished);
+            _blob.Animation.ResetAllTriggers();
         }
 
 
-        private void HandleLieDownAnimationStarted(IEventPayload.Empty _)
+        private void HandleLieDownAnimationStarted()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -44,7 +45,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFeet;
         }
 
-        private void HandleLieDownAnimationMidpoint(IEventPayload.Empty _)
+        private void HandleLieDownAnimationMidpoint()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
@@ -53,7 +54,7 @@ namespace PQ.Entities.Penguin
                 PenguinColliderConstraints.DisableFlippers;
         }
 
-        private void HandleLieDownAnimationFinished(IEventPayload.Empty _)
+        private void HandleLieDownAnimationFinished()
         {
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Common.Casts
 {
     /* Result info of a single ray-surface intersection. */
     public struct RayHit

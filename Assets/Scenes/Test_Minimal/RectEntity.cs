@@ -25,14 +25,14 @@ namespace PQ.TestScenes.Minimal
 
         void OnEnable()
         {
-            _eventCenter.jumpCommand.AddListener(OnJump);
-            _eventCenter.movementInputChanged.AddListener(OnMoveHorizontalChanged);
+            _eventCenter.jumpCommand.AddHandler(OnJump);
+            _eventCenter.movementInputChanged.AddHandler(OnMoveHorizontalChanged);
         }
 
         void OnDisable()
         {
-            _eventCenter.jumpCommand.RemoveListener(OnJump);
-            _eventCenter.movementInputChanged.RemoveListener(OnMoveHorizontalChanged);
+            _eventCenter.jumpCommand.RemoveHandler(OnJump);
+            _eventCenter.movementInputChanged.RemoveHandler(OnMoveHorizontalChanged);
         }
 
         void Update()
@@ -56,6 +56,6 @@ namespace PQ.TestScenes.Minimal
             }
         }
 
-        private void OnJump(IEventPayload.Empty _) { }
+        private void OnJump() { }
     }
 }

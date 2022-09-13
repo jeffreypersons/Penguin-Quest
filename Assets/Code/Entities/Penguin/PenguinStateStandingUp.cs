@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.States;
 
 
 namespace PQ.Entities.Penguin
@@ -10,36 +10,39 @@ namespace PQ.Entities.Penguin
         private PenguinBlob _blob;
         private GameEventCenter _eventCenter;
 
-        public PenguinStateStandingUp(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
+        public PenguinStateStandingUp(string name, PenguinStateMachineDriver driver,
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
             _driver = driver;
             _eventCenter = eventCenter;
         }
 
-        public override void OnEnter()
+        protected override void OnIntialize()
         {
-            _blob.Animation.StandUpStarted.AddListener(HandleStandUpAnimationStarted);
-            _blob.Animation.StandUpEnded  .AddListener(HandleStandUpAnimationFinished);
+            RegisterEvent(_blob.Animation.StandUpStarted, HandleStandUpAnimationStarted);
+            RegisterEvent(_blob.Animation.StandUpEnded,   HandleStandUpAnimationFinished);
+        }
 
+        protected override void OnEnter()
+        {
+            _blob.Animation.ResetAllTriggers();
             _blob.Animation.TriggerParamStandUpParameter();
         }
 
-        public override void OnExit()
+        protected override void OnExit()
         {
-            _blob.Animation.StandUpStarted.RemoveListener(HandleStandUpAnimationStarted);
-            _blob.Animation.StandUpEnded.RemoveListener(HandleStandUpAnimationFinished);
+            _blob.Animation.ResetAllTriggers();
         }
 
 
-        private void HandleStandUpAnimationStarted(IEventPayload.Empty _)
+        private void HandleStandUpAnimationStarted()
         {
             // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
             _blob.ColliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
         }
 
-        private void HandleStandUpAnimationFinished(IEventPayload.Empty _)
+        private void HandleStandUpAnimationFinished()
         {
             // enable all colliders as we are now fully onFeet
             _blob.ColliderConstraints = PenguinColliderConstraints.None;

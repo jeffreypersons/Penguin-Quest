@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
-using PQ.Common;
 using PQ.Common.Extensions;
+using PQ.Common.Events;
+using PQ.Common.Casts;
+using PQ.Common.Physics;
 
 
 namespace PQ.Entities
@@ -12,8 +14,7 @@ namespace PQ.Entities
         private bool _isGrounded;
         private KinematicBody2D _body;
 
-        public bool IsGrounded => _isGrounded;
-        public GameEvent<bool> GroundContactChanged = new("character2D.groundContact.change");
+        public PqEvent<bool> GroundContactChanged = new("character2D.groundContact.change");
         public Character2DSettings Settings { get; set; }
 
         public void PlaceAt(Vector2 position, float rotation)
@@ -77,7 +78,7 @@ namespace PQ.Entities
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;
-                GroundContactChanged.Trigger(_isGrounded);
+                GroundContactChanged.Raise(_isGrounded);
             }
         }
 

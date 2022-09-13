@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using PQ.Common.Physics;
 
 
-namespace PQ.Common
+namespace PQ.Common.Casts
 {
     /*
     Provides functionality querying the surrounding of a bounding box.

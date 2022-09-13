@@ -2,8 +2,14 @@
 using UnityEngine;
 
 
-namespace PQ.Common
+namespace PQ.Common.States
 {
+    //
+    // todo: look into exposing a state machine context that can have a reference given to each state
+    //       rather than the current method of passing the entire state machine instance to state instances
+    //       so that they can signal MoveToState() more indirectly
+    //
+
     /*
     Driver for state machine that hooks up state callbacks to MonoBehaviour.
 
@@ -12,7 +18,8 @@ namespace PQ.Common
     */
     public abstract class FsmStateMachineDriver : MonoBehaviour
     {
-        private FsmState _nextScheduledState;
+        private bool _statesInitialized = false;
+        private FsmState _nextScheduledState = null;
         public FsmState InitialState  { get; private set; }
         public FsmState CurrentState  { get; private set; }
         public FsmState PreviousState { get; private set; }
@@ -24,22 +31,34 @@ namespace PQ.Common
                 $"previousState:{PreviousState}}}";
 
         // Initialization method that MUST be overridden in subclasses; don't forget base.Initialize(initialState)
-        protected virtual void Initialize(FsmState initialState)
+        protected virtual void InitializeStates(FsmState initialState, params FsmState[] otherStates)
         {
+            if (initialState == null)
+            {
+                throw new ArgumentNullException($"State 0 received is null");
+            }
+
+            initialState.Initialize();
+            for (int i = 0; i < otherStates.Length; i++)
+            {
+                if (InitialState == otherStates[i])
+                {
+                    throw new ArgumentNullException($"State {i+1} received is null");
+                }
+                otherStates[i].Initialize();
+            }
+
             InitialState = initialState;
             CurrentState = null;
             PreviousState = null;
             _nextScheduledState = null;
+            _statesInitialized = true;
         }
+
+        protected abstract void OnInitialize();
 
         // Optional overridable callback for state transitions
         protected virtual void OnTransition(FsmState previous, FsmState next) { }
-
-        // Is this our current state in the FSM?
-        protected bool IsCurrently(FsmState state)
-        {
-            return state == CurrentState;
-        }
 
         // Update our current state provided that it is distinct from the next
         public void MoveToState(FsmState next)
@@ -80,17 +99,17 @@ namespace PQ.Common
         }
 
 
-        /*** Tnternal Hooks to MonoBehavior ***/
+        /*** Internal Hooks to MonoBehavior ***/
 
         private void Start()
         {
             // since states may have may game object dependencies, we explicitly want to
             // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
-            Initialize(InitialState);
-            if (InitialState == null)
+            OnInitialize();
+            if (!_statesInitialized)
             {
-                throw new InvalidOperationException("InitialState is null - " +
-                    "base initialize must be called within subclass initialize");
+                throw new InvalidOperationException("States were not initialized - " +
+                    "InitializeStates must be called within subclass OnInitialize");
             }
 
             CurrentState = InitialState;
@@ -99,21 +118,18 @@ namespace PQ.Common
 
         private void Update()
         {
-            bool hasEnteredNewStateThisFrame = ExecuteTransitionIfPending();
-            if (!hasEnteredNewStateThisFrame)
-            {
-                CurrentState.OnUpdate();
-            }
+            ExecuteTransitionIfPending();
+            CurrentState.Update();
         }
 
         private void FixedUpdate()
         {
-            CurrentState.OnFixedUpdate();
+            CurrentState.FixedUpdate();
         }
 
         private void LateUpdate()
         {
-            CurrentState.OnLateUpdate();
+            CurrentState.LateUpdate();
         }
     }
 }

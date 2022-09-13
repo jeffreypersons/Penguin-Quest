@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.States;
 
 
 namespace PQ.Entities.Penguin
@@ -13,37 +13,35 @@ namespace PQ.Entities.Penguin
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
-        public PenguinStateOnBelly(PenguinStateMachineDriver driver, string name,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name, eventRegistry: null)
+        public PenguinStateOnBelly(string name, PenguinStateMachineDriver driver,
+            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
             _driver = driver;
             _eventCenter = eventCenter;
         }
 
-
-        public override void OnEnter()
+        protected override void OnIntialize()
         {
-            _eventCenter.standUpCommand      .AddListener(HandleStandUpInputReceived);
-            _eventCenter.movementInputChanged.AddListener(HandleHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.AddListener(HandleGroundContactChanged);
+            RegisterEvent(_eventCenter.standUpCommand,                    HandleStandUpInputReceived);
+            RegisterEvent(_eventCenter.movementInputChanged,              HandleHorizontalChanged);
+            RegisterEvent(_blob.CharacterController.GroundContactChanged, HandleGroundContactChanged);
+        }
 
+        protected override void OnEnter()
+        {
             _blob.CharacterController.Settings = _blob.OnBellySettings;
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
         }
 
-        public override void OnExit()
+        protected override void OnExit()
         {
-            _eventCenter.standUpCommand      .RemoveListener(HandleStandUpInputReceived);
-            _eventCenter.movementInputChanged.RemoveListener(HandleHorizontalChanged);
-            _blob.CharacterController.GroundContactChanged.RemoveListener(HandleGroundContactChanged);
-
             _locomotionBlend = 0.0f;
             _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
-        public override void OnUpdate()
+        protected override void OnUpdate()
         {
             HandleHorizontalMovement();
         }
@@ -51,7 +49,7 @@ namespace PQ.Entities.Penguin
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void HandleGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
-        private void HandleStandUpInputReceived(IEventPayload.Empty _) => _driver.MoveToState(_driver.StateStandingUp);
+        private void HandleStandUpInputReceived() => _driver.MoveToState(_driver.StateStandingUp);
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void HandleHorizontalChanged(HorizontalInput state)
