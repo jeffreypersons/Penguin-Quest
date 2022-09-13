@@ -1,5 +1,5 @@
 ﻿/*
-Lightweight event primitive for game wide usage that's used for triggering and receiving event payloads.
+Lightweight event primitives for game wide usage that's used for triggering and receiving event payloads.
 
 
 Intended to provide a unified 'single source of truth' for any game event, rather than an inconsistent mix
@@ -27,48 +27,55 @@ using System;
 
 namespace PQ.Common
 {
+    //
+    // Yes, there is duplication here, but it's kept to a minimum and is intentional as a solution
+    // for supporting parameter-less events as well as events with args - eg an instance of a struct.
+    // Since these events are called heavily, they implement the interfaces directly rather than through
+    // a polymorphic base class to avoid the overhead of virtual calls
+    // 
+
     /* Lightweight event primitive for game wide usage used for triggering parameter-less events. */
-    public class Event : IEventRaiser, IEventHandler, IEquatable<Event>
+    public sealed class PqEvent : IEventRaiser, IEventHandler, IEquatable<PqEvent>
     {
         private readonly string _name;
         private event Action _action = delegate { };
 
         public string Name => _name;
-        public Event(string name) => _name = name;
+        public PqEvent(string name) => _name = name;
 
         void IEventRaiser.Raise()                          => _action.Invoke();
         void IEventHandler.AddHandler(Action onTrigger)    => _action += onTrigger;
         void IEventHandler.RemoveHandler(Action onTrigger) => _action -= onTrigger;
-        bool IEquatable<Event>.Equals(Event other)         => other is not null && Name == other.Name;
+        bool IEquatable<PqEvent>.Equals(PqEvent other)     => other is not null && Name == other.Name;
 
         public override string ToString()       => $"Event({_name})";
-        public override bool Equals(object obj) => ((IEquatable<Event>)this).Equals(obj as Event);
+        public override bool Equals(object obj) => ((IEquatable<PqEvent>)this).Equals(obj as PqEvent);
         public override int GetHashCode()       => HashCode.Combine(base.GetHashCode(), _action.GetHashCode(), Name);
 
-        public static bool operator ==(Event left, Event right) =>  Equals(left, right);
-        public static bool operator !=(Event left, Event right) => !Equals(left, right);
+        public static bool operator ==(PqEvent left, PqEvent right) =>  Equals(left, right);
+        public static bool operator !=(PqEvent left, PqEvent right) => !Equals(left, right);
     }
 
 
     /* Lightweight event primitive for game wide usage used for triggering parameter inclusive events. */
-    public class Event<T> : IEventRaiser<T>, IEventHandler<T>, IEquatable<Event<T>>
+    public sealed class PqEvent<T> : IEventRaiser<T>, IEventHandler<T>, IEquatable<PqEvent<T>>
     {
         private readonly string _name;
         private event Action<T> _action = delegate { };
 
         public string Name => _name;
-        public Event(string name) => _name = name;
+        public PqEvent(string name) => _name = name;
 
         void IEventRaiser<T> .Raise(T args)                      => _action.Invoke(args);
         void IEventHandler<T>.AddHandler(Action<T> onTrigger)    => _action += onTrigger;
         void IEventHandler<T>.RemoveHandler(Action<T> onTrigger) => _action -= onTrigger;
-        bool IEquatable<Event<T>>.Equals(Event<T> other)         => other is not null && Name == other.Name;
+        bool IEquatable<PqEvent<T>>.Equals(PqEvent<T> other)     => other is not null && Name == other.Name;
 
         public override string ToString()       => $"Event<{typeof(T).FullName}>({_name})";
-        public override bool Equals(object obj) => ((IEquatable<Event<T>>)this).Equals(obj as Event<T>);
+        public override bool Equals(object obj) => ((IEquatable<PqEvent<T>>)this).Equals(obj as PqEvent<T>);
         public override int GetHashCode()       => HashCode.Combine(base.GetHashCode(), _action.GetHashCode(), Name);
 
-        public static bool operator ==(Event<T> left, Event<T> right) =>  Equals(left, right);
-        public static bool operator !=(Event<T> left, Event<T> right) => !Equals(left, right);
+        public static bool operator ==(PqEvent<T> left, PqEvent<T> right) =>  Equals(left, right);
+        public static bool operator !=(PqEvent<T> left, PqEvent<T> right) => !Equals(left, right);
     }
 }
