@@ -3,14 +3,16 @@
 
 namespace PQ.Common.Events
 {
-    public interface IEventHandler
+    public interface IPqEventReceiver
     {
+        public string Name { get; }
         public void AddHandler(Action onRaise);
         public void RemoveHandler(Action onRaise);
     }
 
-    public interface IEventHandler<out T>
+    public interface IPqEventReceiver<out T>
     {
+        public string Name { get; }
         public void AddHandler(Action<T> onRaise);
         public void RemoveHandler(Action<T> onRaise);
     }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using PQ.Common;
 
 
 namespace PQ
@@ -28,6 +27,7 @@ namespace PQ
 
         void OnEnable()
         {
+            _gameEventCenter.startNewGame.AddHandler(StartNewGame);
             _gameEventCenter.restartGame.AddHandler(RestartGame);
         }
         void OnDisable()

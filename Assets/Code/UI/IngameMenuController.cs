@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using PQ.Common;
 using PQ.Common.Extensions;
 
 
@@ -60,6 +59,7 @@ namespace PQ.UI
                 UiExtensions.SetButtonActiveAndEnabled(_quitButton, false);
             #endif
         }
+
         void OnDestroy()
         {
             _eventCenter.pauseGame.RemoveHandler(OpenAsPauseMenu);

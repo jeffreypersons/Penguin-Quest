@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.Events;
 
 
 namespace PQ.Sound
@@ -10,6 +10,7 @@ namespace PQ.Sound
 
         private AudioSource _track;
         private GameEventCenter _eventCenter;
+        private PqEventRegistry _soundTrackEventRegistry;
 
         void Awake()
         {
@@ -19,24 +20,25 @@ namespace PQ.Sound
             _track.loop        = true;
             _track.playOnAwake = false;
             _track.volume      = DefaultMasterVolume;
+            
+            _soundTrackEventRegistry = new PqEventRegistry();
+            _soundTrackEventRegistry.Add(_eventCenter.startNewGame, StartTrack);
+            _soundTrackEventRegistry.Add(_eventCenter.restartGame,  RestartTrack);
+            _soundTrackEventRegistry.Add(_eventCenter.pauseGame,    PauseTrack);
+            _soundTrackEventRegistry.Add(_eventCenter.resumeGame,   ResumeTrack);
+            _soundTrackEventRegistry.Add(_eventCenter.gameOver,     EndTrack);
         }
 
         void OnEnable()
         {
-            _eventCenter.startNewGame.AddHandler(StartTrack);
-            _eventCenter.restartGame .AddHandler(RestartTrack);
-            _eventCenter.pauseGame   .AddHandler(PauseTrack);
-            _eventCenter.resumeGame  .AddHandler(ResumeTrack);
-            _eventCenter.gameOver    .AddHandler(EndTrack);
+            _soundTrackEventRegistry.SubscribeToAllRegisteredEvents();
         }
+
         void OnDisable()
         {
-            _eventCenter.startNewGame.RemoveHandler(StartTrack);
-            _eventCenter.restartGame .RemoveHandler(RestartTrack);
-            _eventCenter.pauseGame   .RemoveHandler(PauseTrack);
-            _eventCenter.resumeGame  .RemoveHandler(ResumeTrack);
-            _eventCenter.gameOver    .RemoveHandler(EndTrack);
+            _soundTrackEventRegistry.UnsubscribeToAllRegisteredEvents();
         }
+
 
         private void StartTrack(PlayerSettingsInfo gameSettings)
         {
@@ -48,17 +50,8 @@ namespace PQ.Sound
             _track.Stop();
             _track.Play();
         }
-        private void PauseTrack(PlayerProgressionInfo _)
-        {
-            _track.Pause();
-        }
-        private void ResumeTrack()
-        {
-            _track.UnPause();
-        }
-        private void EndTrack(PlayerProgressionInfo _)
-        {
-            _track.Stop();
-        }
+        private void PauseTrack(PlayerProgressionInfo _) => _track.Pause();
+        private void ResumeTrack()                       => _track.UnPause();
+        private void EndTrack(PlayerProgressionInfo _)   => _track.Stop();
     }
 }
