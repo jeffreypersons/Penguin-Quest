@@ -1,5 +1,4 @@
 using UnityEngine;
-using PQ.Common;
 using PQ.Entities;
 
 
@@ -25,14 +24,14 @@ namespace PQ.TestScenes.Minimal
 
         void OnEnable()
         {
-            _eventCenter.jumpCommand.AddHandler(OnJump);
-            _eventCenter.movementInputChanged.AddHandler(OnMoveHorizontalChanged);
+            _eventCenter.jumpCommand += OnJump;
+            _eventCenter.movementInputChanged += OnMoveHorizontalChanged;
         }
 
         void OnDisable()
         {
-            _eventCenter.jumpCommand.RemoveHandler(OnJump);
-            _eventCenter.movementInputChanged.RemoveHandler(OnMoveHorizontalChanged);
+            _eventCenter.jumpCommand -= OnJump;
+            _eventCenter.movementInputChanged -= OnMoveHorizontalChanged;
         }
 
         void Update()

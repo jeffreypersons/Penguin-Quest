@@ -47,15 +47,14 @@ namespace PQ.Entities.Penguin
         // rather it's an animation related kept here for relevance
         public float LocomotionBlendStep => _locomotionBlendStep;
 
-        public PqEvent JumpLiftOff     = new("animation.jump.liftoff");
-        public PqEvent LieDownStarted  = new("animation.liedown.start");
-        public PqEvent LieDownMidpoint = new("animation.liedown.mid");
-        public PqEvent LieDownEnded    = new("animation.liedown.end");
-        public PqEvent StandUpStarted  = new("animation.standUp.start");
-        public PqEvent StandUpEnded    = new("animation.standup.end");
-        public PqEvent Fired           = new("animation.fire");
-        public PqEvent Used            = new("animation.use");
-
+        public PqEvent JumpLiftOff     = delegate { };
+        public PqEvent LieDownStarted  = delegate { };
+        public PqEvent LieDownMidpoint = delegate { };
+        public PqEvent LieDownEnded    = delegate { };
+        public PqEvent StandUpStarted  = delegate { };
+        public PqEvent StandUpEnded    = delegate { };
+        public PqEvent Fired           = delegate { };
+        public PqEvent Used            = delegate { };
 
         public void ResetAllTriggers()
         {
@@ -98,10 +97,10 @@ namespace PQ.Entities.Penguin
             if (_logEvents)
             {
                 Debug.Log($"[Frame:{Time.frameCount - 1}] " +
-                          $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Name}");
+                          $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Method.Name}");
             }
 
-            customEvent.Raise();
+            customEvent?.Invoke();
         }
     }
 }

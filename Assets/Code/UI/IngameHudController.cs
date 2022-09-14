@@ -31,12 +31,12 @@ namespace PQ.UI
 
         void OnEnable()
         {
-            _eventCenter.scoreChange.AddHandler(UpdateScore);
+            _eventCenter.scoreChange += UpdateScore;
             _pauseButton.onClick.AddListener(TriggerPauseGameEvent);
         }
         void OnDisable()
         {
-            _eventCenter.scoreChange.RemoveHandler(UpdateScore);
+            _eventCenter.scoreChange -= UpdateScore;
             _pauseButton.onClick.RemoveListener(TriggerPauseGameEvent);
         }
 
@@ -48,7 +48,7 @@ namespace PQ.UI
         }
         private void TriggerPauseGameEvent()
         {
-            _eventCenter.pauseGame.Raise(_lastRecordedPlayerInfo);
+            _eventCenter.pauseGame.Invoke(_lastRecordedPlayerInfo);
         }
     }
 }

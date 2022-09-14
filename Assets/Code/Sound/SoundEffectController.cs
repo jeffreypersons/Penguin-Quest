@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using PQ.Common;
+using PQ.Common.Events;
 
 
 namespace PQ.Sound
@@ -21,6 +21,7 @@ namespace PQ.Sound
 
         private AudioSource _audioSource;
         private GameEventCenter _eventCenter;
+        private PqEventRegistry _soundEffectEventRegistry;
 
         void Awake()
         {
@@ -30,24 +31,24 @@ namespace PQ.Sound
             _audioSource.loop        = false;
             _audioSource.playOnAwake = false;
             _audioSource.volume      = DefaultMasterVolume;
+
+            _soundEffectEventRegistry = new PqEventRegistry();
+            _soundEffectEventRegistry.Add(_eventCenter.scoreChange,  PlaySoundOnPlayerScored);
+            _soundEffectEventRegistry.Add(_eventCenter.startNewGame, SetMasterVolume);
+            _soundEffectEventRegistry.Add(_eventCenter.pauseGame,    PauseAnyActiveSoundEffects);
+            _soundEffectEventRegistry.Add(_eventCenter.resumeGame,   ResumeAnyActiveSoundEffects);
+            _soundEffectEventRegistry.Add(_eventCenter.gameOver,     PlaySoundOnGameOver);
         }
 
         void OnEnable()
         {
-            _eventCenter.scoreChange .AddHandler(PlaySoundOnPlayerScored);
-            _eventCenter.startNewGame.AddHandler(SetMasterVolume);
-            _eventCenter.pauseGame   .AddHandler(PauseAnyActiveSoundEffects);
-            _eventCenter.resumeGame  .AddHandler(ResumeAnyActiveSoundEffects);
-            _eventCenter.gameOver    .AddHandler(PlaySoundOnGameOver);
+            _soundEffectEventRegistry.SubscribeToAllRegisteredEvents();
         }
         void OnDisable()
         {
-            _eventCenter.scoreChange .RemoveHandler(PlaySoundOnPlayerScored);
-            _eventCenter.startNewGame.RemoveHandler(SetMasterVolume);
-            _eventCenter.pauseGame   .RemoveHandler(PauseAnyActiveSoundEffects);
-            _eventCenter.resumeGame  .RemoveHandler(ResumeAnyActiveSoundEffects);
-            _eventCenter.gameOver    .RemoveHandler(PlaySoundOnGameOver);
+            _soundEffectEventRegistry.UnsubscribeToAllRegisteredEvents();
         }
+
 
         private void PauseAnyActiveSoundEffects(PlayerProgressionInfo _)
         {
@@ -65,16 +66,6 @@ namespace PQ.Sound
         private void PlaySoundOnPlayerScored(PlayerProgressionInfo playerInfo)
         {
             _audioSource.PlayOneShot(_playerScored, _volumeScalePlayerScored);
-        }
-
-        private void PlaySoundOnEnemyHit(string _)
-        {
-            _audioSource.PlayOneShot(_playerHit, _volumeScalePlayerHit);
-        }
-
-        private void PlaySoundOnEnemyKilled(int numPoints)
-        {
-            _audioSource.PlayOneShot(_enemyHit, _volumeScaleEnemyHit);
         }
 
         private void PlaySoundOnGameOver(PlayerProgressionInfo playerInfo)

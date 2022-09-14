@@ -53,17 +53,18 @@ namespace PQ.UI
             _eventCenter = GameEventCenter.Instance;
 
             _ingameMenu.SetActive(false);
-            _eventCenter.pauseGame.AddHandler(OpenAsPauseMenu);
-            _eventCenter.gameOver .AddHandler(OpenAsEndGameMenu);
+            _eventCenter.pauseGame += OpenAsPauseMenu;
+            _eventCenter.gameOver  += OpenAsEndGameMenu;
 
             #if UNITY_WEBGL
                 UiExtensions.SetButtonActiveAndEnabled(_quitButton, false);
             #endif
         }
+
         void OnDestroy()
         {
-            _eventCenter.pauseGame.RemoveHandler(OpenAsPauseMenu);
-            _eventCenter.gameOver .RemoveHandler(OpenAsEndGameMenu);
+            _eventCenter.pauseGame -= OpenAsPauseMenu;
+            _eventCenter.gameOver  -= OpenAsEndGameMenu;
         }
 
         void OnEnable()
@@ -102,20 +103,20 @@ namespace PQ.UI
         private void ResumeGame()
         {
             ToggleMenuVisibility(false);
-            _eventCenter.resumeGame.Raise();
+            _eventCenter.resumeGame.Invoke();
         }
 
         private void MoveToMainMenu()
         {
             Time.timeScale = 1;
-            _eventCenter.gotoMainMenu.Raise();
+            _eventCenter.gotoMainMenu.Invoke();
             SceneExtensions.LoadScene(_mainMenuSceneName);
         }
 
         private void TriggerRestartGameEvent()
         {
             ToggleMenuVisibility(false);
-            _eventCenter.restartGame.Raise();
+            _eventCenter.restartGame.Invoke();
         }
     }
 }
