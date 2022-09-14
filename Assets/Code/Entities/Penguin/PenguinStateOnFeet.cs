@@ -24,11 +24,11 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_blob.Animation.JumpLiftOff,                    HandleJumpLiftOff);
-            RegisterEvent(_eventCenter.jumpCommand,                       HandleJumpInputReceived);
-            RegisterEvent(_eventCenter.lieDownCommand,                    HandleLieDownInputReceived);
-            RegisterEvent(_eventCenter.movementInputChanged,              HandleMoveHorizontalChanged);
-            RegisterEvent(_blob.CharacterController.GroundContactChanged, HandleGroundContactChanged);
+            RegisterEvent(_blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
+            RegisterEvent(_eventCenter.jumpCommand,                         HandleJumpInputReceived);
+            RegisterEvent(_eventCenter.lieDownCommand,                      HandleLieDownInputReceived);
+            RegisterEvent(_eventCenter.movementInputChange,                HandleMoveHorizontalChanged);
+            RegisterEvent(_blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()

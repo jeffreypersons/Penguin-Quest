@@ -88,7 +88,7 @@ namespace PQ
             if (_horizontalInputState.value != horizontalInputType)
             {
                 _horizontalInputState = new(horizontalInputType);
-                _eventCenter.movementInputChanged.Raise(_horizontalInputState);
+                _eventCenter.movementInputChange.Raise(_horizontalInputState);
             }
         }
 

@@ -18,7 +18,7 @@ namespace PQ.Common.Events
     public sealed class PqEventRegistry : IDisposable
     {
         // note that interface is required for contraviant storage of event/handler pairs
-        private interface IPqEventHandlerEntry
+        private interface IEntry
         {
             public string EventName { get; }
             public string HandlerName { get; }
@@ -26,33 +26,34 @@ namespace PQ.Common.Events
             public void Unsubscribe();
         }
 
-        private class PqEventHandlerEntry : IPqEventHandlerEntry
+        private class Entry : IEntry
         {
-            private PqEvent _event;
+            private IPqEventReceiver _event;
             private Action _handler;
 
-            string IPqEventHandlerEntry.EventName     => _event.Name;
-            string IPqEventHandlerEntry.HandlerName   => _handler.Method.Name;
-            void   IPqEventHandlerEntry.Subscribe()   => _event.AddHandler(_handler);
-            void   IPqEventHandlerEntry.Unsubscribe() => _event.RemoveHandler(_handler);
+            string IEntry.EventName     => _event.Name;
+            string IEntry.HandlerName   => _handler.Method.Name;
+            void   IEntry.Subscribe()   => _event.AddHandler(_handler);
+            void   IEntry.Unsubscribe() => _event.RemoveHandler(_handler);
 
-            public PqEventHandlerEntry(PqEvent event_, Action handler_)
+            public Entry(IPqEventReceiver event_, Action handler_)
             {
                 _event = event_;
                 _handler = handler_;
             }
         }
-        private class PqEventHandlerEntry<T> : IPqEventHandlerEntry
+
+        private class Entry<T> : IEntry
         {
-            private PqEvent<T> _event;
+            private IPqEventReceiver<T> _event;
             private Action<T> _handler;
 
-            string IPqEventHandlerEntry.EventName     => _event.Name;
-            string IPqEventHandlerEntry.HandlerName   => _handler.Method.Name;
-            void   IPqEventHandlerEntry.Subscribe()   => _event.AddHandler(_handler);
-            void   IPqEventHandlerEntry.Unsubscribe() => _event.RemoveHandler(_handler);
+            string IEntry.EventName     => _event.Name;
+            string IEntry.HandlerName   => _handler.Method.Name;
+            void   IEntry.Subscribe()   => _event.AddHandler(_handler);
+            void   IEntry.Unsubscribe() => _event.RemoveHandler(_handler);
 
-            public PqEventHandlerEntry(PqEvent<T> event_, Action<T> handler_)
+            public Entry(IPqEventReceiver<T> event_, Action<T> handler_)
             {
                 _event = event_;
                 _handler = handler_;
@@ -62,7 +63,7 @@ namespace PQ.Common.Events
 
         private bool _active;
         private string _description;
-        private List<IPqEventHandlerEntry> _eventActionEntries;
+        private List<IEntry> _eventActionEntries;
 
         public PqEventRegistry()
         {
@@ -74,12 +75,13 @@ namespace PQ.Common.Events
         public bool IsActive => _active;
         public override string ToString() => _description == "" ? "<empty>" : _description;
 
-        public void Add(PqEvent event_, Action handler_)          => AppendEntry(new PqEventHandlerEntry(event_, handler_));
-        public void Add<T>(PqEvent<T> event_, Action<T> handler_) => AppendEntry(new PqEventHandlerEntry<T>(event_, handler_));
+        public void Add(IPqEventReceiver event_, Action handler_)          => AppendEntry(new Entry(event_, handler_));
+        public void Add<T>(IPqEventReceiver<T> event_, Action<T> handler_) => AppendEntry(new Entry<T>(event_, handler_));
 
         public void SubscribeToAllRegisteredEvents()   => SetSubscriptionState(true);
         public void UnsubscribeToAllRegisteredEvents() => SetSubscriptionState(false);
         void IDisposable.Dispose() => SetSubscriptionState(false);
+
 
         private void SetSubscriptionState(bool state)
         {
@@ -98,7 +100,7 @@ namespace PQ.Common.Events
             }
         }
 
-        private void AppendEntry(IPqEventHandlerEntry newEntry)
+        private void AppendEntry(IEntry newEntry)
         {
             if (_eventActionEntries.Exists(entry => entry.EventName == newEntry.EventName))
             {

@@ -47,14 +47,23 @@ namespace PQ.Entities.Penguin
         // rather it's an animation related kept here for relevance
         public float LocomotionBlendStep => _locomotionBlendStep;
 
-        public PqEvent JumpLiftOff     = new("penguin.animation.jump.liftoff");
-        public PqEvent LieDownStarted  = new("penguin.animation.liedown.start");
-        public PqEvent LieDownMidpoint = new("penguin.animation.liedown.mid");
-        public PqEvent LieDownEnded    = new("penguin.animation.liedown.end");
-        public PqEvent StandUpStarted  = new("penguin.animation.standup.start");
-        public PqEvent StandUpEnded    = new("penguin.animation.standup.end");
-        public PqEvent Fired           = new("penguin.animation.fire");
-        public PqEvent Used            = new("penguin.animation.use");
+        private PqEvent _jumpLiftOff     = new("penguin.animation.jump.liftoff");
+        private PqEvent _lieDownStarted  = new("penguin.animation.liedown.start");
+        private PqEvent _lieDownMidpoint = new("penguin.animation.liedown.mid");
+        private PqEvent _lieDownEnded    = new("penguin.animation.liedown.end");
+        private PqEvent _standUpStarted  = new("penguin.animation.standup.start");
+        private PqEvent _standUpEnded    = new("penguin.animation.standup.end");
+        private PqEvent _fired           = new("penguin.animation.fire");
+        private PqEvent _used            = new("penguin.animation.use");
+
+        public IPqEventReceiver JumpLiftOff     => _jumpLiftOff;
+        public IPqEventReceiver LieDownStarted  => _lieDownStarted;
+        public IPqEventReceiver LieDownMidpoint => _lieDownMidpoint;
+        public IPqEventReceiver LieDownEnded    => _lieDownEnded;
+        public IPqEventReceiver StandUpStarted  => _standUpStarted;
+        public IPqEventReceiver StandUpEnded    => _standUpEnded;
+        public IPqEventReceiver Fired           => _fired;
+        public IPqEventReceiver Used            => _used;
 
         public void ResetAllTriggers()
         {
@@ -80,16 +89,16 @@ namespace PQ.Entities.Penguin
         public void TriggerParamUseParameter()               => _animator.SetTrigger(paramUse);
         
         
-        private void OnLieDownAnimationEventStart()  => ForwardAsEvent(OnLieDownAnimationEventStart,  LieDownStarted);
-        private void OnLieDownAnimationEventMid()    => ForwardAsEvent(OnLieDownAnimationEventMid,    LieDownMidpoint);
-        private void OnLieDownAnimationEventEnd()    => ForwardAsEvent(OnLieDownAnimationEventEnd,    LieDownEnded);
+        private void OnLieDownAnimationEventStart()  => ForwardAsEvent(OnLieDownAnimationEventStart,  _lieDownStarted);
+        private void OnLieDownAnimationEventMid()    => ForwardAsEvent(OnLieDownAnimationEventMid,    _lieDownMidpoint);
+        private void OnLieDownAnimationEventEnd()    => ForwardAsEvent(OnLieDownAnimationEventEnd,    _lieDownEnded);
         
-        private void OnStandUpAnimationEventStart()  => ForwardAsEvent(OnStandUpAnimationEventStart,  StandUpStarted);
-        private void OnStandUpAnimationEventEnd()    => ForwardAsEvent(OnStandUpAnimationEventEnd,    StandUpEnded);
+        private void OnStandUpAnimationEventStart()  => ForwardAsEvent(OnStandUpAnimationEventStart,  _standUpStarted);
+        private void OnStandUpAnimationEventEnd()    => ForwardAsEvent(OnStandUpAnimationEventEnd,    _standUpEnded);
 
-        private void OnJumpUpAnimationEventImpulse() => ForwardAsEvent(OnJumpUpAnimationEventImpulse, JumpLiftOff);
-        private void OnFireAnimationEvent()          => ForwardAsEvent(OnFireAnimationEvent,          Fired);
-        private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           Used);
+        private void OnJumpUpAnimationEventImpulse() => ForwardAsEvent(OnJumpUpAnimationEventImpulse, _jumpLiftOff);
+        private void OnFireAnimationEvent()          => ForwardAsEvent(OnFireAnimationEvent,          _fired);
+        private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           _used);
 
 
         private void ForwardAsEvent(Action animatorEvent, PqEvent customEvent)

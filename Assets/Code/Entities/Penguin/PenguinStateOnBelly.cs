@@ -23,9 +23,9 @@ namespace PQ.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_eventCenter.standUpCommand,                    HandleStandUpInputReceived);
-            RegisterEvent(_eventCenter.movementInputChanged,              HandleHorizontalChanged);
-            RegisterEvent(_blob.CharacterController.GroundContactChanged, HandleGroundContactChanged);
+            RegisterEvent(_eventCenter.standUpCommand,                      HandleStandUpInputReceived);
+            RegisterEvent(_eventCenter.movementInputChange,                HandleHorizontalChanged);
+            RegisterEvent(_blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()
