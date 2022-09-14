@@ -61,7 +61,7 @@ namespace PQ.UI
         {
             SceneExtensions.LoadScene(_sceneName, () =>
             {
-                _eventCenter.startNewGame.Invoke(_mainMenuPanelController.GetGameSettings());
+                _eventCenter.startNewGame.Raise(_mainMenuPanelController.GetGameSettings());
             });
         }
 

@@ -29,14 +29,14 @@ namespace PQ.Common.Events
         private class PqEventHandlerEntry : IPqEventHandlerEntry
         {
             private PqEvent _event;
-            private readonly PqEvent _handler;
+            private Action _handler;
 
-            string IPqEventHandlerEntry.EventName     => _event.Method.Name;
+            string IPqEventHandlerEntry.EventName     => _event.Name;
             string IPqEventHandlerEntry.HandlerName   => _handler.Method.Name;
-            void   IPqEventHandlerEntry.Subscribe()   => _event += _handler;
-            void   IPqEventHandlerEntry.Unsubscribe() => _event -= _handler;
+            void   IPqEventHandlerEntry.Subscribe()   => _event.AddHandler(_handler);
+            void   IPqEventHandlerEntry.Unsubscribe() => _event.RemoveHandler(_handler);
 
-            public PqEventHandlerEntry(PqEvent event_, PqEvent handler_)
+            public PqEventHandlerEntry(PqEvent event_, Action handler_)
             {
                 _event = event_;
                 _handler = handler_;
@@ -45,14 +45,14 @@ namespace PQ.Common.Events
         private class PqEventHandlerEntry<T> : IPqEventHandlerEntry
         {
             private PqEvent<T> _event;
-            private readonly PqEvent<T> _handler;
+            private Action<T> _handler;
 
-            string IPqEventHandlerEntry.EventName     => _event.Method.Name;
+            string IPqEventHandlerEntry.EventName     => _event.Name;
             string IPqEventHandlerEntry.HandlerName   => _handler.Method.Name;
-            void   IPqEventHandlerEntry.Subscribe()   => _event += _handler;
-            void   IPqEventHandlerEntry.Unsubscribe() => _event -= _handler;
+            void   IPqEventHandlerEntry.Subscribe()   => _event.AddHandler(_handler);
+            void   IPqEventHandlerEntry.Unsubscribe() => _event.RemoveHandler(_handler);
 
-            public PqEventHandlerEntry(PqEvent<T> event_, PqEvent<T> handler_)
+            public PqEventHandlerEntry(PqEvent<T> event_, Action<T> handler_)
             {
                 _event = event_;
                 _handler = handler_;
@@ -74,8 +74,8 @@ namespace PQ.Common.Events
         public bool IsActive => _active;
         public override string ToString() => _description == "" ? "<empty>" : _description;
 
-        public void Add(PqEvent event_, PqEvent handler_)          => AppendEntry(new PqEventHandlerEntry(event_, handler_));
-        public void Add<T>(PqEvent<T> event_, PqEvent<T> handler_) => AppendEntry(new PqEventHandlerEntry<T>(event_, handler_));
+        public void Add(PqEvent event_, Action handler_)          => AppendEntry(new PqEventHandlerEntry(event_, handler_));
+        public void Add<T>(PqEvent<T> event_, Action<T> handler_) => AppendEntry(new PqEventHandlerEntry<T>(event_, handler_));
 
         public void SubscribeToAllRegisteredEvents()   => SetSubscriptionState(true);
         public void UnsubscribeToAllRegisteredEvents() => SetSubscriptionState(false);

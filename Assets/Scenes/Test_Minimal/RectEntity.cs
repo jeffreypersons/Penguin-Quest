@@ -24,14 +24,14 @@ namespace PQ.TestScenes.Minimal
 
         void OnEnable()
         {
-            _eventCenter.jumpCommand += OnJump;
-            _eventCenter.movementInputChanged += OnMoveHorizontalChanged;
+            _eventCenter.jumpCommand.AddHandler(OnJump);
+            _eventCenter.movementInputChanged.AddHandler(OnMoveHorizontalChanged);
         }
 
         void OnDisable()
         {
-            _eventCenter.jumpCommand -= OnJump;
-            _eventCenter.movementInputChanged -= OnMoveHorizontalChanged;
+            _eventCenter.jumpCommand.RemoveHandler(OnJump);
+            _eventCenter.movementInputChanged.RemoveHandler(OnMoveHorizontalChanged);
         }
 
         void Update()

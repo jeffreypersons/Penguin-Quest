@@ -14,7 +14,7 @@ namespace PQ.Entities
         private bool _isGrounded;
         private KinematicBody2D _body;
 
-        public PqEvent<bool> GroundContactChanged = delegate { };
+        public PqEvent<bool> GroundContactChanged = new("character2D.groundContact.changed");
         public Character2DSettings Settings { get; set; }
 
         public void PlaceAt(Vector2 position, float rotation)
@@ -78,7 +78,7 @@ namespace PQ.Entities
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;
-                GroundContactChanged?.Invoke(_isGrounded);
+                GroundContactChanged.Raise(_isGrounded);
             }
         }
 
