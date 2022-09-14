@@ -3,7 +3,7 @@
 
 namespace PQ.Common.Events
 {
-    public interface IEventHandler
+    public interface IpqEventHandler
     {
         public void AddHandler(Action onRaise);
         public void RemoveHandler(Action onRaise);

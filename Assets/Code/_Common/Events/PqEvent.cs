@@ -39,7 +39,7 @@ namespace PQ.Common.Events
     // 
 
     /* Lightweight event primitive for game wide usage used for triggering parameter-less events. */
-    public sealed class PqEvent : IPqEventRaiser, IEventHandler, IEquatable<PqEvent>
+    public sealed class PqEvent : IPqEventRaiser, IpqEventHandler, IEquatable<PqEvent>
     {
         private readonly string _name;
         private event Action _action = delegate { };
