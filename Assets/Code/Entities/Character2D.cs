@@ -14,7 +14,7 @@ namespace PQ.Entities
         private bool _isGrounded;
         private KinematicBody2D _body;
 
-        public PqEvent<bool> GroundContactChanged;
+        public PqEvent<bool> GroundContactChanged = delegate { };
         public Character2DSettings Settings { get; set; }
 
         public void PlaceAt(Vector2 position, float rotation)
