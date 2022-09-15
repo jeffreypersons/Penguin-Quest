@@ -23,7 +23,7 @@ namespace PQ.Entities.Penguin
     public class PenguinBlob : MonoBehaviour
     {
         [Header("Body Part Collider Constraints")]
-        [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
+        [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableOuter;
         
         [Header("Setting Bundles")]
         [SerializeField] private Character2DSettings _penguinOnFeetSettings;
@@ -77,9 +77,9 @@ namespace PQ.Entities.Penguin
 
         public void ReadjustBoundingBox(Vector2 offset, Vector2 size, float edgeRadius)
         {
-            bool wasPreviouslyEnabled  = _outerCollider.enabled;
-            Vector2 previousOffset     = _outerCollider.offset;
-            Vector2 previousSize       = _outerCollider.size;
+            bool wasPreviouslyEnabled = _outerCollider.enabled;
+            Vector2 previousOffset    = _outerCollider.offset;
+            Vector2 previousSize      = _outerCollider.size;
 
             _outerCollider.enabled = true;
             _outerCollider.offset  = offset;
@@ -156,7 +156,7 @@ namespace PQ.Entities.Penguin
             _frontFlipperLowerCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
             _frontFootCollider        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
             _backFootCollider         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            _outerCollider      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
+            _outerCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableOuter);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
@@ -181,7 +181,7 @@ namespace PQ.Entities.Penguin
             }
             if (IsDisabled(_outerCollider))
             {
-                constraints |= PenguinColliderConstraints.DisableBoundingBox;
+                constraints |= PenguinColliderConstraints.DisableOuter;
             }
             return constraints;
         }

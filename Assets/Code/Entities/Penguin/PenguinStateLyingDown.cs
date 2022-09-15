@@ -41,7 +41,6 @@ namespace PQ.Entities.Penguin
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
-                PenguinColliderConstraints.DisableBoundingBox |
                 PenguinColliderConstraints.DisableFeet;
         }
 
@@ -49,8 +48,7 @@ namespace PQ.Entities.Penguin
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
             _blob.ColliderConstraints =
-                PenguinColliderConstraints.DisableBoundingBox |
-                PenguinColliderConstraints.DisableFeet        |
+                PenguinColliderConstraints.DisableFeet  |
                 PenguinColliderConstraints.DisableFlippers;
         }
 
@@ -70,14 +68,6 @@ namespace PQ.Entities.Penguin
             );
 
             _driver.MoveToState(_driver.StateBelly);
-
-            // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
-            //       and those values can be adjusted, perhaps in their own scriptable objects?
-            //
-            // todo: configure bounding box for onbelly mode, and enable the collider back here,
-            //       after disabling in animation start, and then update in the following way...
-            //       penguinBlob.ColliderBoundingBox.bounds such that offset(x=0, y=5), size(x=25, y=10), edge-radius(1.25)
-            //
         }
     }
 }

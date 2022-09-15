@@ -27,7 +27,7 @@ namespace PQ.Entities.Penguin
             RegisterEvent(_blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
             RegisterEvent(_eventCenter.jumpCommand,                         HandleJumpInputReceived);
             RegisterEvent(_eventCenter.lieDownCommand,                      HandleLieDownInputReceived);
-            RegisterEvent(_eventCenter.movementInputChange,                HandleMoveHorizontalChanged);
+            RegisterEvent(_eventCenter.movementInputChange,                 HandleMoveHorizontalChanged);
             RegisterEvent(_blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 

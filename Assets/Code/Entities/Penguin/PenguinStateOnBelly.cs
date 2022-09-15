@@ -24,7 +24,7 @@ namespace PQ.Entities.Penguin
         protected override void OnIntialize()
         {
             RegisterEvent(_eventCenter.standUpCommand,                      HandleStandUpInputReceived);
-            RegisterEvent(_eventCenter.movementInputChange,                HandleHorizontalChanged);
+            RegisterEvent(_eventCenter.movementInputChange,                 HandleMoveHorizontalChanged);
             RegisterEvent(_blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
@@ -52,7 +52,7 @@ namespace PQ.Entities.Penguin
         private void HandleStandUpInputReceived() => _driver.MoveToState(_driver.StateStandingUp);
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
-        private void HandleHorizontalChanged(HorizontalInput state)
+        private void HandleMoveHorizontalChanged(HorizontalInput state)
         {
             _horizontalInput = state;
             if (_horizontalInput.value == HorizontalInput.Type.Right)
