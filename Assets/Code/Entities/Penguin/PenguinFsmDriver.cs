@@ -11,12 +11,10 @@ namespace PQ.Entities.Penguin
         belly  [standup signal] -> standup
         stand  [finish  signal] -> feet
     */
-    public class PenguinStateMachineDriver : FsmStateMachineDriver
+    public class PenguinFsmDriver : FsmDriver
     {
         private GameEventCenter _eventCenter;
-
         private PenguinBlob _penguinBlob;
-
         private Vector2 _initialSpawnPosition;
 
         public FsmState StateFeet       { get; private set; }
@@ -24,7 +22,6 @@ namespace PQ.Entities.Penguin
         public FsmState StateStandingUp { get; private set; }
         public FsmState StateLyingDown  { get; private set; }
         public FsmState StateMidair     { get; private set; }
-
 
         public void ResetPositioning()
         {
@@ -36,6 +33,24 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {previous} to {next}");
         }
 
+        public record PenguinStateIds
+        {
+            string keyStateOnFeet     = "Penguin.State.OnFeet";
+            string keyStateOnBelly    = "Penguin.State.OnBelly";
+            string keyStateStandingUp = "Penguin.State.StandingUp";
+            string keyStateLyingDown  = "Penguin.State.LyingDown";
+            string keyStateMidair     = "Penguin.State.Midair";
+        }
+
+        public enum PenguinStateId
+        {
+            Feet,
+            Belly,
+            StandingUp,
+            LyingDown,
+            Midair
+        }
+
         protected override void OnInitialize()
         {
             _eventCenter = GameEventCenter.Instance;
@@ -43,11 +58,11 @@ namespace PQ.Entities.Penguin
             _initialSpawnPosition = _penguinBlob.SkeletalRootPosition;
             ResetPositioning();
 
-            StateFeet       = new PenguinStateOnFeet    ("Penguin.State.OnFeet",     this, _penguinBlob, _eventCenter);
-            StateBelly      = new PenguinStateOnBelly   ("Penguin.State.OnBelly",    this, _penguinBlob, _eventCenter);
-            StateStandingUp = new PenguinStateStandingUp("Penguin.State.StandingUp", this, _penguinBlob, _eventCenter);
-            StateLyingDown  = new PenguinStateLyingDown ("Penguin.State.LyingDown",  this, _penguinBlob, _eventCenter);
-            StateMidair     = new PenguinStateMidair    ("Penguin.State.Midair",     this, _penguinBlob, _eventCenter);
+            StateFeet       = new PenguinStateOnFeet    (keyStateOnFeet,     this, _penguinBlob, _eventCenter);
+            StateBelly      = new PenguinStateOnBelly   (keyStateOnBelly,    this, _penguinBlob, _eventCenter);
+            StateStandingUp = new PenguinStateStandingUp(keyStateStandingUp, this, _penguinBlob, _eventCenter);
+            StateLyingDown  = new PenguinStateLyingDown (keyStateStandingUp, this, _penguinBlob, _eventCenter);
+            StateMidair     = new PenguinStateMidair    (keyStateMidair,     this, _penguinBlob, _eventCenter);
 
             InitializeStates(initialState: StateFeet, StateBelly, StateStandingUp, StateLyingDown, StateMidair);
         }

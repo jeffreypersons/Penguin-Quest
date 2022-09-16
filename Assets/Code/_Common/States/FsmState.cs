@@ -28,9 +28,11 @@ namespace PQ.Common.States
         public bool IsInitialized => _initialized;
 
         public override string ToString() =>
-            $"{GetType().Name}:{{" +
+            $"FsmState:{{" +
                 $"name:{_name}," +
-                $"eventRegistry:{_eventRegistry}}}";
+                $"eventRegistry:{_eventRegistry}" +
+            $"}}";
+
 
 
         /*** External Facing Methods for Driving State Logic ***/
