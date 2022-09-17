@@ -28,10 +28,10 @@ namespace PQ.Common.States
         public bool IsInitialized => _initialized;
 
         public override string ToString() =>
-            $"FsmState:{{" +
+            $"FsmState(" +
                 $"name:{_name}," +
                 $"eventRegistry:{_eventRegistry}" +
-            $"}}";
+            $")";
 
 
 

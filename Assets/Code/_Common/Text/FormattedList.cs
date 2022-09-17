@@ -1,4 +1,5 @@
 using System.Text;
+using System.Collections.Generic;
 
 
 namespace PQ.Common.Text
@@ -22,18 +23,20 @@ namespace PQ.Common.Text
         public const string DefaultStart     = "[";
         public const string DefaultEnd       = "]";
         public const string DefaultSeperator = ",";
+        public static readonly string[] EmptyItems = System.Array.Empty<string>();
+
         public string Format => _start;
         public string Seperator => _seperator;
         public override string ToString() => _text;
 
 
-        public FormattedList() : this(DefaultStart, DefaultEnd, DefaultSeperator)
-        {
-            _text = string.Empty;
-            _builder = new StringBuilder();
-        }
+        public FormattedList() :
+            this(DefaultStart, DefaultEnd, DefaultSeperator, EmptyItems) { }
 
-        public FormattedList(string start, string end, string sep)
+        public FormattedList(string start, string end, string sep) :
+            this(start, end, sep, EmptyItems) { }
+
+        public FormattedList(string start, string end, string sep, in IEnumerable<string> items)
         {
             string empty = start + end;
             _start     = start;
@@ -41,8 +44,11 @@ namespace PQ.Common.Text
             _seperator = sep;
             _text      = empty;
             _builder   = new StringBuilder(empty);
+            foreach (string item in items)
+            {
+                Append(item);
+            }
         }
-
 
         public void Append(string item)
         {
@@ -52,6 +58,7 @@ namespace PQ.Common.Text
             }
 
             _builder.Remove(_text.Length - _end.Length, _end.Length);
+            _builder.Append(_seperator);
             _builder.Append(item);
             _builder.Append(_end);
             _text = _builder.ToString();
