@@ -13,6 +13,7 @@ namespace PQ.Common.States
     public abstract class FsmDriver : MonoBehaviour
     {
         private FsmGraph _fsmGraph = null;
+        private FsmContext _fsmContext = null;
 
         public override string ToString() =>
             $"FsmDriver:{{" +
@@ -46,7 +47,6 @@ namespace PQ.Common.States
                 throw new InvalidOperationException("States were not initialized - " +
                     "InitializeStates must be called within subclass OnInitialize");
             }
-
 
             CurrentState = InitialState;
             CurrentState.Enter();
