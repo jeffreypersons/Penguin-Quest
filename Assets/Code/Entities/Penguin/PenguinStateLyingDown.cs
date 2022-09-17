@@ -6,11 +6,11 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateLyingDown : FsmState
     {
-        private PenguinStateMachineDriver _driver;
+        private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
         private GameEventCenter _eventCenter;
 
-        public PenguinStateLyingDown(string name, PenguinStateMachineDriver driver,
+        public PenguinStateLyingDown(string name, PenguinFsmDriver driver,
             PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;

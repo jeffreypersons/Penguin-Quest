@@ -6,14 +6,14 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateOnBelly : FsmState
     {
-        private PenguinStateMachineDriver _driver;
+        private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
         private GameEventCenter _eventCenter;
 
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
-        public PenguinStateOnBelly(string name, PenguinStateMachineDriver driver,
+        public PenguinStateOnBelly(string name, PenguinFsmDriver driver,
             PenguinBlob blob, GameEventCenter eventCenter) : base(name)
         {
             _blob = blob;
