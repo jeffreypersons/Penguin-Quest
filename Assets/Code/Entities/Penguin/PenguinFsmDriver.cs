@@ -33,23 +33,11 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {previous} to {next}");
         }
 
-        public record PenguinStateIds
-        {
-            string keyStateOnFeet     = "Penguin.State.OnFeet";
-            string keyStateOnBelly    = "Penguin.State.OnBelly";
-            string keyStateStandingUp = "Penguin.State.StandingUp";
-            string keyStateLyingDown  = "Penguin.State.LyingDown";
-            string keyStateMidair     = "Penguin.State.Midair";
-        }
-
-        public enum PenguinStateId
-        {
-            Feet,
-            Belly,
-            StandingUp,
-            LyingDown,
-            Midair
-        }
+        private const string keyStateOnFeet     = "Penguin.State.OnFeet";
+        private const string keyStateOnBelly    = "Penguin.State.OnBelly";
+        private const string keyStateStandingUp = "Penguin.State.StandingUp";
+        private const string keyStateLyingDown  = "Penguin.State.LyingDown";
+        private const string keyStateMidair     = "Penguin.State.Midair";
 
         protected override void OnInitialize()
         {
@@ -61,10 +49,10 @@ namespace PQ.Entities.Penguin
             StateFeet       = new PenguinStateOnFeet    (keyStateOnFeet,     this, _penguinBlob, _eventCenter);
             StateBelly      = new PenguinStateOnBelly   (keyStateOnBelly,    this, _penguinBlob, _eventCenter);
             StateStandingUp = new PenguinStateStandingUp(keyStateStandingUp, this, _penguinBlob, _eventCenter);
-            StateLyingDown  = new PenguinStateLyingDown (keyStateStandingUp, this, _penguinBlob, _eventCenter);
+            StateLyingDown  = new PenguinStateLyingDown (keyStateLyingDown,  this, _penguinBlob, _eventCenter);
             StateMidair     = new PenguinStateMidair    (keyStateMidair,     this, _penguinBlob, _eventCenter);
 
-            InitializeStates(initialState: StateFeet, StateBelly, StateStandingUp, StateLyingDown, StateMidair);
+            InitializeStates(StateFeet, StateBelly, StateStandingUp, StateLyingDown, StateMidair);
         }
     }
 }
