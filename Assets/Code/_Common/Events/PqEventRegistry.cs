@@ -68,6 +68,7 @@ namespace PQ.Common.Events
         private List<IEntry> _entries;
         private FormattedList _formattedList;
 
+
         public PqEventRegistry()
         {
             _active = false;
@@ -90,9 +91,6 @@ namespace PQ.Common.Events
 
         private void SetSubscriptionState(bool state)
         {
-            // just an fyi if you ever return here looking to optimize - list enumerators use
-            // value types contrary to most the rest of C#,
-            // so that for each creates zero garbage collection pressure! :)
             if (state)
             {
                 _active = true;
@@ -100,7 +98,7 @@ namespace PQ.Common.Events
             }
             else
             {
-                _active = true;
+                _active = false;
                 _entries.ForEach(entry => entry.Unsubscribe());
             }
         }
