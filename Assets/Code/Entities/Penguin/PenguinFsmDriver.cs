@@ -4,13 +4,6 @@ using PQ.Common.States;
 
 namespace PQ.Entities.Penguin
 {
-    /*
-    switch state
-        feet   [liedown signal] -> liedown
-        lie    [finish  signal] -> belly
-        belly  [standup signal] -> standup
-        stand  [finish  signal] -> feet
-    */
     public class PenguinFsmDriver : FsmDriver
     {
         private GameEventCenter _eventCenter;
@@ -28,9 +21,9 @@ namespace PQ.Entities.Penguin
             _penguinBlob.CharacterController.PlaceAt(_initialSpawnPosition, rotation: 0);
         }
 
-        protected override void OnTransition(FsmState previous, FsmState next)
+        protected override void OnTransition(FsmState last, FsmState next)
         {
-            Debug.Log($"Transitioning Penguin from {previous} to {next}");
+            Debug.Log($"Transitioning Penguin from {last.Name} to {next.Name}");
         }
 
         private const string keyStateOnFeet     = "Penguin.State.OnFeet";
@@ -51,8 +44,17 @@ namespace PQ.Entities.Penguin
             StateStandingUp = new PenguinStateStandingUp(keyStateStandingUp, this, _penguinBlob, _eventCenter);
             StateLyingDown  = new PenguinStateLyingDown (keyStateLyingDown,  this, _penguinBlob, _eventCenter);
             StateMidair     = new PenguinStateMidair    (keyStateMidair,     this, _penguinBlob, _eventCenter);
-
             InitializeStates(StateFeet, StateBelly, StateStandingUp, StateLyingDown, StateMidair);
+
+
+            RegisterTransition(StateFeet,       StateLyingDown);
+            RegisterTransition(StateLyingDown,  StateBelly);
+
+            RegisterTransition(StateBelly,      StateStandingUp);
+            RegisterTransition(StateStandingUp, StateFeet);
+
+            RegisterTransition(StateFeet,       StateMidair);
+            RegisterTransition(StateBelly,      StateMidair);
         }
     }
 }

@@ -96,7 +96,7 @@ namespace PQ.Common.States
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void RegisterEvent(IPqEventReceiver event_, Action handler_) => _eventRegistry.Add(event_, handler_);
+        protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)

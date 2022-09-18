@@ -12,6 +12,7 @@ namespace PQ.Common.States
     */
     public abstract class FsmDriver : MonoBehaviour
     {
+        private bool _initialized = false;
         private FsmState _initial;
         private FsmState _current;
         private FsmState _last;
@@ -67,8 +68,16 @@ namespace PQ.Common.States
             {
                 states[i].Initialize();
             }
+
+            _initialized = true;
         }
 
+        // Mechanism for hooking up transitions use for validation when MoveToState is called by client
+        // Can only be invoked in OnInitialize
+        protected void RegisterTransition(FsmState source, FsmState destination)
+        {
+            _fsmGraph.AddTransition(source.Name, destination.Name);
+        }
 
         // Required callback for initializing
         protected abstract void OnInitialize();
@@ -85,7 +94,7 @@ namespace PQ.Common.States
             // since states may have may game object dependencies, we explicitly want to
             // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
             OnInitialize();
-            if (_fsmGraph == null)
+            if (!_initialized)
             {
                 throw new InvalidOperationException("States were not initialized - " +
                     "InitializeStates must be called within subclass OnInitialize");
