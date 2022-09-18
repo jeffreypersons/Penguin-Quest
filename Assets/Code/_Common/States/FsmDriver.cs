@@ -12,27 +12,69 @@ namespace PQ.Common.States
     */
     public abstract class FsmDriver : MonoBehaviour
     {
-        private FsmGraph _fsmGraph = null;
-        private FsmContext _fsmContext = null;
+        private FsmGraph _fsmGraph;
+
+        private FsmState _initial;
+        private FsmState _current;
+        private FsmState _last;
+        private FsmState _next;
+
+        public FsmState InitialState => _initial;
+        public FsmState CurrentState => _current;
+        public FsmState LastState    => _last;
+        public FsmState NextState    => _next;
 
         public override string ToString() =>
             $"FsmDriver:{{" +
-                $"graph:{_fsmGraph}" +
+                $"\nFsmHistory(" +
+                    $"initial:{InitialState.Name}," +
+                    $"current:{CurrentState.Name}," +
+                    $"last:{LastState.Name}," +
+                    $"next:{NextState.Name})" +
+                $"{_fsmGraph}" +
             $"}}";
+
 
 
         /*** External Facing Methods for Driving State Logic ***/
 
-        // Initialization method that MUST be overridden in subclasses; don't forget base.Initialize(initialState)
+        // Update our current state if transition was previously registered during initialization
+        public void MoveToState(FsmState next)
+        {
+            if (_next != null)
+            {
+                throw new InvalidOperationException($"Cannot move to {next} - transition {_current}=>{_next} is already queued");
+            }
+            if (!_fsmGraph.HasTransition(_current.Name, next.Name))
+            {
+                throw new InvalidOperationException($"Cannot move to {next} - transition {CurrentState}=>{next} was not found");
+            }
+
+            _next = next;
+        }
+
+
+
+        /*** Internal Hooks for Defining State Specific Logic ***/
+
+        // Initialization method that MUST be called in OnInitialize in subclasses
         protected virtual void InitializeStates(params FsmState[] states)
         {
             _fsmGraph = new FsmGraph(states);
+
+            _initial = states[0];
+            for (int i = 0; i < states.Length; i++)
+            {
+                states[i].Initialize();
+            }
         }
 
+        // Required callback for initializing
         protected abstract void OnInitialize();
 
         // Optional overridable callback for state transitions
         protected virtual void OnTransition(FsmState previous, FsmState next) { }
+
 
 
         /*** Internal Hooks to MonoBehavior ***/
@@ -48,50 +90,42 @@ namespace PQ.Common.States
                     "InitializeStates must be called within subclass OnInitialize");
             }
 
-            CurrentState = InitialState;
-            CurrentState.Enter();
+            _current = InitialState;
+            _current.Enter();
         }
 
         private void Update()
         {
             ExecuteTransitionIfPending();
-            CurrentState.Update();
+            _current.Update();
         }
 
         private void FixedUpdate()
         {
-            CurrentState.FixedUpdate();
+            _current.FixedUpdate();
         }
 
         private void LateUpdate()
         {
-            CurrentState.LateUpdate();
+            _current.LateUpdate();
         }
 
 
         // Update our current state provided that it is distinct from the next
         private bool ExecuteTransitionIfPending()
         {
-            if (_nextScheduledState == null)
+            if (_next == null)
             {
                 return false;
             }
-            if (_nextScheduledState == CurrentState)
-            {
-                throw new ArgumentException(
-                    $"Transition from {CurrentState} to {_nextScheduledState} is invalid -" +
-                    $" cannot loop to the same state");
-            }
 
-            FsmState previous = CurrentState;
+            _last    = _current;
+            _current = _next;
+            _next    = null;
 
-            previous.Exit();
-            OnTransition(previous, _nextScheduledState);
-            _nextScheduledState.Enter();
-
-            PreviousState = previous;
-            CurrentState = _nextScheduledState;
-            _nextScheduledState = null;
+            _last.Exit();
+            OnTransition(_last, _next);
+            _current.Enter();
             return true;
         }
     }
