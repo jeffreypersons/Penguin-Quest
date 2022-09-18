@@ -260,7 +260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4753795910216235723}
   - component: {fileID: 4753795910216235720}
-  - component: {fileID: 4753795910216235721}
+  - component: {fileID: 4183406586119580578}
   - component: {fileID: 7859832108952071242}
   - component: {fileID: 2138608317391900897}
   - component: {fileID: 331518940653301218}
@@ -311,32 +311,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!61 &4753795910216235721
-BoxCollider2D:
+--- !u!70 &4183406586119580578
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4753795910216235740}
   m_Enabled: 1
-  m_Density: 100
+  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.39834356, y: 14.6024685}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 13.176364, y: 28.28143}
-  m_EdgeRadius: 0.68
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.5, y: 1}
+  m_Direction: 0
 --- !u!95 &7859832108952071242
 Animator:
   serializedVersion: 4
@@ -415,7 +405,7 @@ MonoBehaviour:
     type: 2}
   _penguinAnimation: {fileID: 1728887597599890734}
   _characterController: {fileID: 331518940653301218}
-  _boundingBoxCollider: {fileID: 4753795910216235721}
+  _outerCollider: {fileID: 4183406586119580578}
   _headCollider: {fileID: 4753795911533567600}
   _torsoCollider: {fileID: 4753795910448514483}
   _frontFlipperUpperCollider: {fileID: 4753795910921302243}
@@ -3145,12 +3135,12 @@ PrefabInstance:
     - target: {fileID: -3794450590055754063, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.x
-      value: -0.040602088
+      value: -0.04060197
       objectReference: {fileID: 0}
     - target: {fileID: -3794450590055754063, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.y
-      value: -0.00027227402
+      value: -0.00027132034
       objectReference: {fileID: 0}
     - target: {fileID: -3794450590055754063, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -3165,7 +3155,7 @@ PrefabInstance:
     - target: {fileID: -3794450590055754063, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Extent.y
-      value: 6.518941
+      value: 6.518942
       objectReference: {fileID: 0}
     - target: {fileID: -3794450590055754063, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -3180,7 +3170,7 @@ PrefabInstance:
     - target: {fileID: -3747871290231385253, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.y
-      value: 0.00033214688
+      value: 0.00033405423
       objectReference: {fileID: 0}
     - target: {fileID: -3747871290231385253, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -3570,7 +3560,7 @@ PrefabInstance:
     - target: {fileID: -1635405638250097474, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.y
-      value: 0.008960009
+      value: 0.008960485
       objectReference: {fileID: 0}
     - target: {fileID: -1635405638250097474, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -3585,7 +3575,7 @@ PrefabInstance:
     - target: {fileID: -1635405638250097474, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Extent.y
-      value: 3.0099926
+      value: 3.0099928
       objectReference: {fileID: 0}
     - target: {fileID: -1635405638250097474, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -3700,7 +3690,7 @@ PrefabInstance:
     - target: {fileID: -367189196566187402, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.x
-      value: -0.01026845
+      value: -0.010268211
       objectReference: {fileID: 0}
     - target: {fileID: -367189196566187402, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -3745,7 +3735,7 @@ PrefabInstance:
     - target: {fileID: -135927049809428613, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.y
-      value: -0.01439333
+      value: -0.014393806
       objectReference: {fileID: 0}
     - target: {fileID: -135927049809428613, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -3760,7 +3750,7 @@ PrefabInstance:
     - target: {fileID: -135927049809428613, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Extent.y
-      value: 5.669561
+      value: 5.6695604
       objectReference: {fileID: 0}
     - target: {fileID: -135927049809428613, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -4095,7 +4085,7 @@ PrefabInstance:
     - target: {fileID: 2968873228828792482, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.y
-      value: 0.08893728
+      value: 0.08893752
       objectReference: {fileID: 0}
     - target: {fileID: 2968873228828792482, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -4110,7 +4100,7 @@ PrefabInstance:
     - target: {fileID: 2968873228828792482, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Extent.y
-      value: 2.9305835
+      value: 2.9305832
       objectReference: {fileID: 0}
     - target: {fileID: 2968873228828792482, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
@@ -4230,7 +4220,7 @@ PrefabInstance:
     - target: {fileID: 3318685223035392496, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}
       propertyPath: m_Bounds.m_Center.x
-      value: -0.0031123161
+      value: -0.0031120777
       objectReference: {fileID: 0}
     - target: {fileID: 3318685223035392496, guid: c9587e548613a564c81ba23ebf263460,
         type: 3}

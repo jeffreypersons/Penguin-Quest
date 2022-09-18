@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PQ.Common.Text;
 
 
 namespace PQ.Common.Events
@@ -20,7 +21,8 @@ namespace PQ.Common.Events
         // note that interface is required for contraviant storage of event/handler pairs
         private interface IEntry
         {
-            public string EventName { get; }
+            public string Description { get; }
+            public string EventName   { get; }
             public string HandlerName { get; }
             public void Subscribe();
             public void Unsubscribe();
@@ -31,6 +33,7 @@ namespace PQ.Common.Events
             private IPqEventReceiver _event;
             private Action _handler;
 
+            string IEntry.Description   => $"{_event.Name}=>{_handler.Method.Name}";
             string IEntry.EventName     => _event.Name;
             string IEntry.HandlerName   => _handler.Method.Name;
             void   IEntry.Subscribe()   => _event.AddHandler(_handler);
@@ -48,6 +51,7 @@ namespace PQ.Common.Events
             private IPqEventReceiver<T> _event;
             private Action<T> _handler;
 
+            string IEntry.Description => $"{_event.Name}=>{_handler.Method.Name}";
             string IEntry.EventName     => _event.Name;
             string IEntry.HandlerName   => _handler.Method.Name;
             void   IEntry.Subscribe()   => _event.AddHandler(_handler);
@@ -60,23 +64,25 @@ namespace PQ.Common.Events
             }
         }
 
-
         private bool _active;
-        private string _description;
-        private List<IEntry> _eventActionEntries;
+        private List<IEntry> _entries;
+        private FormattedList _formattedList;
+
 
         public PqEventRegistry()
         {
             _active = false;
-            _description = "";
-            _eventActionEntries = new();
+            _entries = new();
+            _formattedList = new FormattedList();
         }
 
         public bool IsActive => _active;
-        public override string ToString() => _description == "" ? "<empty>" : _description;
+        public override string ToString() => _formattedList.ToString();
 
-        public void Add(IPqEventReceiver event_, Action handler_)          => AppendEntry(new Entry(event_, handler_));
-        public void Add<T>(IPqEventReceiver<T> event_, Action<T> handler_) => AppendEntry(new Entry<T>(event_, handler_));
+        public void Add(IPqEventReceiver event_, Action handler_) =>
+            AppendEntryIfEventNotTaken(new Entry(event_, handler_));
+        public void Add<T>(IPqEventReceiver<T> event_, Action<T> handler_) =>
+            AppendEntryIfEventNotTaken(new Entry<T>(event_, handler_));
 
         public void SubscribeToAllRegisteredEvents()   => SetSubscriptionState(true);
         public void UnsubscribeToAllRegisteredEvents() => SetSubscriptionState(false);
@@ -85,41 +91,38 @@ namespace PQ.Common.Events
 
         private void SetSubscriptionState(bool state)
         {
-            // just an fyi if you ever return here looking to optimize - list enumerators use
-            // value types contrary to most the rest of C#,
-            // so that for each creates zero garbage collection pressure! :)
             if (state)
             {
                 _active = true;
-                _eventActionEntries.ForEach(entry => entry.Subscribe());
+                _entries.ForEach(entry => entry.Subscribe());
             }
             else
             {
-                _active = true;
-                _eventActionEntries.ForEach(entry => entry.Unsubscribe());
+                _active = false;
+                _entries.ForEach(entry => entry.Unsubscribe());
             }
         }
 
-        private void AppendEntry(IEntry newEntry)
+        private void AppendEntryIfEventNotTaken(IEntry entry)
         {
-            if (_eventActionEntries.Exists(entry => entry.EventName == newEntry.EventName))
+            if (_entries.Exists(e => e.EventName == entry.EventName))
             {
-                throw new ArgumentException($"{newEntry.EventName} is already in registry");
+                throw new ArgumentException($"{entry.EventName} is already in registry");
             }
 
             // explicitly enforce that any new event-handler pairs have a subscription state matching the
             // rest of the event-handler pairs in the registry
             if (_active)
             {
-                newEntry.Subscribe();
+                entry.Subscribe();
             }
             else
             {
-                newEntry.Unsubscribe();
+                entry.Unsubscribe();
             }
 
-            _description += $"{newEntry.EventName}=>{newEntry.HandlerName};";
-            _eventActionEntries.Add(newEntry);
+            _formattedList.Append(entry.Description);
+            _entries.Add(entry);
         }
     }
 }

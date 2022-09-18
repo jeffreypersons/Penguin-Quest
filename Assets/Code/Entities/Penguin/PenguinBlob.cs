@@ -23,7 +23,7 @@ namespace PQ.Entities.Penguin
     public class PenguinBlob : MonoBehaviour
     {
         [Header("Body Part Collider Constraints")]
-        [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableBoundingBox;
+        [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableOuter;
         
         [Header("Setting Bundles")]
         [SerializeField] private Character2DSettings _penguinOnFeetSettings;
@@ -34,7 +34,7 @@ namespace PQ.Entities.Penguin
         [SerializeField] private Character2D      _characterController;
 
         [Header("Collider References")]
-        [SerializeField] private BoxCollider2D     _boundingBoxCollider;
+        [SerializeField] private CapsuleCollider2D _outerCollider;
         [SerializeField] private CapsuleCollider2D _headCollider;
         [SerializeField] private CapsuleCollider2D _torsoCollider;
         [SerializeField] private CapsuleCollider2D _frontFlipperUpperCollider;
@@ -50,13 +50,13 @@ namespace PQ.Entities.Penguin
         public Character2D      CharacterController  => _characterController;
         public Vector2          SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
-        public BoxCollider2D ColliderBoundingBox       => _boundingBoxCollider;
-        public Collider2D    ColliderHead              => _headCollider;
-        public Collider2D    ColliderTorso             => _torsoCollider;
-        public Collider2D    ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
-        public Collider2D    ColliderFrontFlipperLower => _frontFlipperLowerCollider;
-        public Collider2D    ColliderFrontFoot         => _frontFootCollider;
-        public Collider2D    ColliderBackFoot          => _backFootCollider;
+        public CapsuleCollider2D OuterCollider             => _outerCollider;
+        public Collider2D        ColliderHead              => _headCollider;
+        public Collider2D        ColliderTorso             => _torsoCollider;
+        public Collider2D        ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
+        public Collider2D        ColliderFrontFlipperLower => _frontFlipperLowerCollider;
+        public Collider2D        ColliderFrontFoot         => _frontFootCollider;
+        public Collider2D        ColliderBackFoot          => _backFootCollider;
 
         public PenguinColliderConstraints ColliderConstraints
         {
@@ -77,21 +77,19 @@ namespace PQ.Entities.Penguin
 
         public void ReadjustBoundingBox(Vector2 offset, Vector2 size, float edgeRadius)
         {
-            bool wasPreviouslyEnabled  = _boundingBoxCollider.enabled;
-            Vector2 previousOffset     = _boundingBoxCollider.offset;
-            Vector2 previousSize       = _boundingBoxCollider.size;
-            float   previousEdgeRadius = _boundingBoxCollider.edgeRadius;
+            bool wasPreviouslyEnabled = _outerCollider.enabled;
+            Vector2 previousOffset    = _outerCollider.offset;
+            Vector2 previousSize      = _outerCollider.size;
 
-            _boundingBoxCollider.enabled    = true;
-            _boundingBoxCollider.offset     = offset;
-            _boundingBoxCollider.size       = size;
-            _boundingBoxCollider.edgeRadius = edgeRadius;
+            _outerCollider.enabled = true;
+            _outerCollider.offset  = offset;
+            _outerCollider.size    = size;
 
             Debug.Log($"ReadjustBoundingBox : Changed bounding box " +
-                      $"from {{offset={previousOffset}, size={previousSize}, edge_radius={previousEdgeRadius}}} " +
+                      $"from {{offset={previousOffset}, size={previousSize}}} " +
                       $"to {{offset={offset}, size={size}, edge_radius={edgeRadius}}}");
 
-            _boundingBoxCollider.enabled = wasPreviouslyEnabled;
+            _outerCollider.enabled = wasPreviouslyEnabled;
         }
 
         void Start()
@@ -158,7 +156,7 @@ namespace PQ.Entities.Penguin
             _frontFlipperLowerCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
             _frontFootCollider        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
             _backFootCollider         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            _boundingBoxCollider      .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableBoundingBox);
+            _outerCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableOuter);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
@@ -181,9 +179,9 @@ namespace PQ.Entities.Penguin
             {
                 constraints |= PenguinColliderConstraints.DisableFeet;
             }
-            if (IsDisabled(_boundingBoxCollider))
+            if (IsDisabled(_outerCollider))
             {
-                constraints |= PenguinColliderConstraints.DisableBoundingBox;
+                constraints |= PenguinColliderConstraints.DisableOuter;
             }
             return constraints;
         }
