@@ -55,6 +55,9 @@ namespace PQ.Entities.Penguin
 
             RegisterTransition(StateFeet,       StateMidair);
             RegisterTransition(StateBelly,      StateMidair);
+            
+            RegisterTransition(StateMidair,     StateFeet);
+            RegisterTransition(StateMidair,     StateBelly);
         }
     }
 }

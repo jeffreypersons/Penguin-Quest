@@ -44,11 +44,11 @@ namespace PQ.Common.States
         {
             if (_next != null)
             {
-                throw new InvalidOperationException($"Cannot move to {next} - transition {_current}=>{_next} is already queued");
+                throw new InvalidOperationException($"Cannot move to {next.Name} - a transition {_current.Name}=>{_next.Name} is already queued");
             }
             if (!_fsmGraph.HasTransition(_current.Name, next.Name))
             {
-                throw new InvalidOperationException($"Cannot move to {next} - transition {CurrentState}=>{next} was not found");
+                throw new InvalidOperationException($"Cannot move to {next.Name} - transition {_current.Name}=>{next.Name} was not found");
             }
 
             _next = next;
@@ -129,13 +129,13 @@ namespace PQ.Common.States
                 return false;
             }
 
-            _last    = _current;
-            _current = _next;
-            _next    = null;
+            _current.Exit();
+            OnTransition(_current, _next);
+            _next.Enter();
 
-            _last.Exit();
-            OnTransition(_last, _next);
-            _current.Enter();
+            _last = _current;
+            _current = _next;
+            _next = null;
             return true;
         }
     }
