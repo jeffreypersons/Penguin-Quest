@@ -12,12 +12,15 @@ namespace PQ.Common.States
     */
     public abstract class FsmDriver : MonoBehaviour
     {
-        private FsmGraph _fsmGraph;
-
         private FsmState _initial;
         private FsmState _current;
         private FsmState _last;
         private FsmState _next;
+
+        private FsmGraph _fsmGraph;
+
+
+        /*** External Facing Methods Used to Drive Transitions ***/
 
         public FsmState InitialState => _initial;
         public FsmState CurrentState => _current;
@@ -34,9 +37,6 @@ namespace PQ.Common.States
                 $"{_fsmGraph}" +
             $"}}";
 
-
-
-        /*** External Facing Methods for Driving State Logic ***/
 
         // Update our current state if transition was previously registered during initialization
         public void MoveToState(FsmState next)
@@ -58,7 +58,7 @@ namespace PQ.Common.States
         /*** Internal Hooks for Defining State Specific Logic ***/
 
         // Initialization method that MUST be called in OnInitialize in subclasses
-        protected virtual void InitializeStates(params FsmState[] states)
+        protected void InitializeStates(params FsmState[] states)
         {
             _fsmGraph = new FsmGraph(states);
 
@@ -68,6 +68,7 @@ namespace PQ.Common.States
                 states[i].Initialize();
             }
         }
+
 
         // Required callback for initializing
         protected abstract void OnInitialize();

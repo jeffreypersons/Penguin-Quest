@@ -7,14 +7,15 @@ namespace PQ.Common.States
     /*
     Representation of a state in a finite state machine.
 
-    Note that active, initialized etc are not checked everytime - it's up to the machinery
-    of the module that handles the correct ordering of states. If it was done here, there would be tons
-    of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
-
     Intended to fully encapsulate graphics, animation, and physics needed for any specific state.
     State is entered and exited without any transitional checks - that is, it is entirely up to the call site to
     handle when transition is/is-not allowed to occur. Instead, it's up to the state to determine what the
     per-frame behavior is (or isn't) as callbacks are provided for regular, fixed, and late updates.
+
+    
+    Note that active, initialized etc are not checked everytime - it's up to the machinery
+    of the module that handles the correct ordering of states. If it was done here, there would be tons
+    of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
     public abstract class FsmState : IEquatable<FsmState>
     {
