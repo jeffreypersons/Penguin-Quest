@@ -17,7 +17,7 @@ namespace PQ.Common.States
     of the module that handles the correct ordering of states. If it was done here, there would be tons
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
-    public abstract class FsmState : IEquatable<FsmState>
+    public abstract class FsmState : IEquatable<FsmState>, IComparable<FsmState>
     {
         private readonly string _name;
         private bool _active;
@@ -82,9 +82,10 @@ namespace PQ.Common.States
         // Execute logic intended for later on in a frame such as programmatic visual effects
         public void LateUpdate()  => OnLateUpdate();
 
-        
-        public bool Equals(FsmState other) => other is not null && Name == other.Name;
-        public override bool Equals(object obj) => Equals(obj as FsmState);
+
+        int IComparable<FsmState>.CompareTo(FsmState other) => Name.CompareTo(other.Name);
+        bool IEquatable<FsmState>.Equals(FsmState other) => other is not null && Name == other.Name;
+        public override bool Equals(object obj) => ((IEquatable<FsmState>)this).Equals(obj as FsmState);
         public override int GetHashCode() => HashCode.Combine(Name);
         public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
         public static bool operator !=(FsmState left, FsmState right) => !Equals(left, right);
