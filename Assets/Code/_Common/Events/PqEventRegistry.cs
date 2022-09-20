@@ -66,14 +66,14 @@ namespace PQ.Common.Events
 
         private bool _active;
         private List<IEntry> _entries;
-        private FormattedList _formattedList;
+        private FormattedList<string> _formattedList;
 
 
         public PqEventRegistry()
         {
             _active = false;
             _entries = new();
-            _formattedList = new FormattedList();
+            _formattedList = new FormattedList<string>();
         }
 
         public bool IsActive => _active;

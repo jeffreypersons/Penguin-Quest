@@ -12,7 +12,6 @@ namespace PQ.Common.States
     */
     public abstract class FsmDriver : MonoBehaviour
     {
-        private bool _initialized = false;
         private FsmState _initial;
         private FsmState _current;
         private FsmState _last;
@@ -23,32 +22,36 @@ namespace PQ.Common.States
 
         /*** External Facing Methods Used to Drive Transitions ***/
 
-        public FsmState InitialState => _initial;
-        public FsmState CurrentState => _current;
-        public FsmState LastState    => _last;
-        public FsmState NextState    => _next;
+        public string InitialState => _initial.Id;
+        public string CurrentState => _current.Id;
+        public string LastState    => _last.Id;
+        public string NextState    => _next.Id;
 
         public override string ToString() =>
             $"FsmDriver:{{" +
                 $"\nFsmHistory(" +
-                    $"initial:{InitialState.Name}," +
-                    $"current:{CurrentState.Name}," +
-                    $"last:{LastState.Name}," +
-                    $"next:{NextState.Name})" +
+                    $"initial:{InitialState}," +
+                    $"current:{CurrentState}," +
+                    $"last:{LastState}," +
+                    $"next:{NextState})" +
                 $"{_fsmGraph}" +
             $"}}";
 
 
         // Update our current state if transition was previously registered during initialization
-        public void MoveToState(FsmState next)
+        public void MoveToState(string stateId)
         {
             if (_next != null)
             {
-                throw new InvalidOperationException($"Cannot move to {next.Name} - a transition {_current.Name}=>{_next.Name} is already queued");
+                throw new InvalidOperationException($"Cannot move to {stateId} - a transition {_current.Id}=>{_next.Id} is already queued");
             }
-            if (!_fsmGraph.HasTransition(_current.Name, next.Name))
+            if (!_fsmGraph.TryGetState(stateId, out FsmState next))
             {
-                throw new InvalidOperationException($"Cannot move to {next.Name} - transition {_current.Name}=>{next.Name} was not found");
+                throw new InvalidOperationException($"Cannot move to {stateId} - state {next.Id} was not found");
+            }
+            if (!_fsmGraph.HasTransition(_current.Id, stateId))
+            {
+                throw new InvalidOperationException($"Cannot move to {stateId} - transition {_current.Id}=>{stateId} was not found");
             }
 
             _next = next;
@@ -59,31 +62,39 @@ namespace PQ.Common.States
         /*** Internal Hooks for Defining State Specific Logic ***/
 
         // Initialization method that MUST be called in OnInitialize in subclasses
-        protected void InitializeStates(params FsmState[] states)
-        {
-            _fsmGraph = new FsmGraph(states);
-
-            _initial = states[0];
-            for (int i = 0; i < states.Length; i++)
-            {
-                states[i].Initialize();
-            }
-
-            _initialized = true;
-        }
 
         // Mechanism for hooking up transitions use for validation when MoveToState is called by client
         // Can only be invoked in OnInitialize
-        protected void RegisterTransition(FsmState source, FsmState destination)
+        protected void InitializeGraph(params (FsmState, string[])[] states)
         {
-            _fsmGraph.AddTransition(source.Name, destination.Name);
+            if (_fsmGraph != null)
+            {
+                throw new InvalidOperationException($"Cannot initialize graph - fsm graph already initialized");
+            }
+
+            _fsmGraph = new(states);
+            SetInitialState(states[0].Item1.Id);
+        }
+        
+        // Override the initial state
+        protected void SetInitialState(string stateId)
+        {
+            if (_fsmGraph == null)
+            {
+                throw new InvalidOperationException($"Cannot set initial state to {stateId} - graph not yet initialized");
+            }
+            if (!_fsmGraph.TryGetState(stateId, out FsmState initialState))
+            {
+                throw new InvalidOperationException($"Cannot set initial state to {stateId} -  was not found");
+            }
+            _initial = initialState;
         }
 
         // Required callback for initializing
         protected abstract void OnInitialize();
 
         // Optional overridable callback for state transitions
-        protected virtual void OnTransition(FsmState previous, FsmState next) { }
+        protected virtual void OnTransition(string sourceId, string destinationId) { }
 
 
 
@@ -94,13 +105,13 @@ namespace PQ.Common.States
             // since states may have may game object dependencies, we explicitly want to
             // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
             OnInitialize();
-            if (!_initialized)
+            if (_fsmGraph == null)
             {
-                throw new InvalidOperationException("States were not initialized - " +
-                    "InitializeStates must be called within subclass OnInitialize");
+                throw new InvalidOperationException("Graph was not initialized - " +
+                    "InitializeGraph must be called within subclass OnInitialize");
             }
 
-            _current = InitialState;
+            _current = _initial;
             _current.Enter();
         }
 
@@ -130,12 +141,12 @@ namespace PQ.Common.States
             }
 
             _current.Exit();
-            OnTransition(_current, _next);
+            OnTransition(_current.Id, _next.Id);
             _next.Enter();
 
-            _last = _current;
+            _last    = _current;
             _current = _next;
-            _next = null;
+            _next    = null;
             return true;
         }
     }

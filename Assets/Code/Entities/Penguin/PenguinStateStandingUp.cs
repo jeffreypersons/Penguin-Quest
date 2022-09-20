@@ -54,7 +54,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 0.68f
             );
 
-            _driver.MoveToState(_driver.StateFeet);
+            _driver.MoveToState(PenguinBlob.StateIdFeet);
 
             // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?

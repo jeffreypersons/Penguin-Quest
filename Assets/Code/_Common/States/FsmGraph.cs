@@ -1,108 +1,109 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
-using PQ.Common.Text;
 
 
 namespace PQ.Common.States
 {
     /*
-    Provides info about the state machine - the states, history.
-    */
-    public class FsmGraph
-    {
-        private bool _isDirty;
-        private string _description;
-        private readonly FsmState[] _states;
-        private Dictionary<string, HashSet<string>> _adjacencies;
+    Representation of the states and transitions in a finite state machine.
 
-        public FsmGraph(params FsmState[] states)
+    Note that it's effectively readonly - no new states or transitions after construction.
+
+    Also, states cannot have edges that loop directly back to itself.
+    */
+    internal sealed class FsmGraph
+    {
+        private sealed class Node
         {
-            int stateCount = states.Length;
-            if (stateCount == 0)
+            public readonly FsmState state;
+            public readonly HashSet<string> neighbors;
+
+            public Node(FsmState state, HashSet<string> neighbors)
+            {
+                this.state = state;
+                this.neighbors = neighbors;
+            }
+        }
+
+        private readonly int _nodeCount;
+        private readonly int _edgeCount;
+        private readonly string _description;
+        private readonly Dictionary<string, Node> _nodes;
+        
+        public override string ToString() => _description;
+
+        /* Fill the graph with states, initialize them, and add their neighbors. */
+        public FsmGraph(params (FsmState, string[])[] states)
+        {
+            if (states == null || states.Length == 0)
             {
                 throw new ArgumentException("Fsm must have at least one state - received none");
             }
 
-            _isDirty = true;
-            _description = string.Empty;
-            _states = new FsmState[states.Length];
-            _adjacencies = new Dictionary<string, HashSet<string>>(stateCount);
-            for (int i = 0; i < stateCount; i++)
+            // fill in the state ids first, so we can use for validating the rest of the input
+            // when populating the graph states and transitions
+            _nodes = new Dictionary<string, Node>(states.Length);
+            foreach ((FsmState state, string[] _) in states)
             {
-                FsmState state = states[i];
-                if (state == null || string.IsNullOrEmpty(state.Name))
+                string stateId = state?.Id;
+                if (string.IsNullOrEmpty(stateId) || _nodes.ContainsKey(stateId))
                 {
-                    throw new ArgumentNullException($"Cannot add null or empty named state to graph");
+                    throw new ArgumentException($"Cannot add {stateId} state to graph - expected non null unique key");
                 }
-                if (_adjacencies.ContainsKey(state.Name))
+                _nodes.Add(key: stateId, value: null);
+            }
+            
+            _nodeCount = 0;
+            _edgeCount = 0;
+            StringBuilder nodesInfo = new($" states");
+            StringBuilder edgesInfo = new($" transitions");
+            foreach ((FsmState state, string[] destinations) in states)
+            {
+                string source = state.Id;
+                HashSet<string> neighbors = new(destinations.Length);
+                foreach (string dest in destinations)
                 {
-                    throw new ArgumentException($"Cannot add {state.Name} state to graph - already exists");
+                    if (source == dest || neighbors.Contains(dest) || !_nodes.ContainsKey(dest))
+                    {
+                        throw new ArgumentException($"Cannot add transition {source}=>{dest} to graph - expected unique existing key");
+                    }
+                    neighbors.Add(dest);
                 }
 
-                _states[i] = state;
-                _adjacencies[state.Name] = new HashSet<string>(stateCount);
+                state.Initialize();
+                nodesInfo.Append($"   ").AppendLine(state.ToString());
+                edgesInfo.Append($"   {source} => {{").AppendJoin(",", neighbors).Append($"}}").AppendLine();
+
+                _nodeCount++;
+                _edgeCount += neighbors.Count;
+                _nodes[source] = new(state, neighbors);
             }
+
+            _description = $"FsmGraph({_nodeCount} states, {_edgeCount} transitions) \n{nodesInfo} \n{edgesInfo}";
         }
 
-        public FsmState LookupState(string name)
+        public bool TryGetState(string id, out FsmState state)
         {
-            // todo: replace with more efficient lookup
-            return Array.Find(_states, state => state.Name == name);
+            if (!_nodes.ContainsKey(id))
+            {
+                state = null;
+                return false;
+            }
+
+            state = _nodes[id].state;
+            return true;
+        }
+
+        public bool HasState(string id)
+        {
+            return _nodes.ContainsKey(id);
         }
 
         public bool HasTransition(string source, string destination)
         {
-            return _adjacencies.ContainsKey(source) &&
-                   _adjacencies[source].Contains(destination);
-        }
-
-        public void AddTransition(string source, string destination)
-        {
-            if (!_adjacencies.ContainsKey(source) || !_adjacencies.ContainsKey(destination))
-            {
-                throw new ArgumentException($"Cannot add transition {source}=>{destination} to graph - both states must exist");
-            }
-            if (source == destination)
-            {
-                throw new ArgumentException($"Cannot add transition {source}=>{destination} to graph - cannot loop to state");
-            }
-            if (_adjacencies[source].Contains(destination))
-            {
-                throw new ArgumentException($"Cannot add transition {source}=>{destination} to graph - already exists");
-            }
-
-            _adjacencies[source].Add(destination);
-        }
-
-
-        private const string Indent1 = "\n  ";
-        private const string Indent2 = "\n    ";
-
-        public override string ToString()
-        {
-            if (!_isDirty)
-            {
-                return _description;
-            }
-
-            FormattedList statesList      = new(start: $"{Indent1}states:",      end: "\n", sep: Indent2);
-            FormattedList transitionsList = new(start: $"{Indent1}transitions:", end: "\n", sep: Indent2);
-            for (int stateIndex = 0; stateIndex < _states.Length; stateIndex++)
-            {
-                FsmState state = _states[stateIndex];
-                FormattedList stateTransitions = new($"{state.Name}:[", "]", ",", _adjacencies[state.Name]);
-
-                statesList.Append(state.ToString());
-                transitionsList.Append(stateTransitions.ToString());
-            }
-
-            _isDirty = false;
-            _description =
-                $"FsmGraph(" +
-                    $"{statesList}" +
-                    $"{transitionsList}" +
-                $")";
-            return _description;
+            return _nodes.ContainsKey(source) &&
+                   _nodes[source].neighbors.Contains(destination);
         }
     }
 }

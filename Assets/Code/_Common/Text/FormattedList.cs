@@ -11,7 +11,7 @@ namespace PQ.Common.Text
     a streamlined way to create append-only formatted lists - which is a very common use case for logging
     in this game.
     */
-    public sealed class FormattedList
+    public sealed class FormattedList<T>
     {
         private readonly string _start;
         private readonly string _end;
@@ -23,7 +23,7 @@ namespace PQ.Common.Text
         public const string DefaultStart     = "[";
         public const string DefaultEnd       = "]";
         public const string DefaultSeperator = ",";
-        public static readonly string[] EmptyItems = System.Array.Empty<string>();
+        public static readonly T[] EmptyItems = System.Array.Empty<T>();
 
         public string Format => _start;
         public string Seperator => _seperator;
@@ -36,7 +36,7 @@ namespace PQ.Common.Text
         public FormattedList(string start, string end, string sep) :
             this(start, end, sep, EmptyItems) { }
 
-        public FormattedList(string start, string end, string sep, in IEnumerable<string> items)
+        public FormattedList(string start, string end, string sep, in IEnumerable<T> items)
         {
             string empty = start + end;
             _start     = start;
@@ -44,24 +44,32 @@ namespace PQ.Common.Text
             _seperator = sep;
             _text      = empty;
             _builder   = new StringBuilder(empty);
-            foreach (string item in items)
-            {
-                Append(item);
-            }
+
+            AppendAll(items);
+        }
+        
+        public void Reset()
+        {
+            _builder.Clear();
+            _builder.Append(_start);
+            _builder.Append(_end);
         }
 
-        public void Append(string item)
+        public void Append(T item)
         {
-            if (string.IsNullOrEmpty(item))
-            {
-                return;
-            }
-
             _builder.Remove(_text.Length - _end.Length, _end.Length);
             _builder.Append(_seperator);
             _builder.Append(item);
             _builder.Append(_end);
             _text = _builder.ToString();
+        }
+
+        public void AppendAll(in IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
+                Append(item);
+            }
         }
     }
 }

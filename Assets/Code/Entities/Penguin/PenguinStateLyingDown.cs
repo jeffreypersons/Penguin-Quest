@@ -67,7 +67,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 1.25f
             );
 
-            _driver.MoveToState(_driver.StateBelly);
+            _driver.MoveToState(PenguinBlob.StateIdBelly);
         }
     }
 }
