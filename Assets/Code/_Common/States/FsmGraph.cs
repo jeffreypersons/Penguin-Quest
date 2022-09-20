@@ -6,9 +6,13 @@ using System.Collections.Generic;
 namespace PQ.Common.States
 {
     /*
-    Provides info about the state machine - the states, history.
+    Representation of the states and transitions in a finite state machine.
+
+    Note that it's effectively readonly - no new states or transitions after construction.
+
+    Also, states cannot have edges that loop directly back to itself.
     */
-    internal class FsmGraph
+    internal sealed class FsmGraph
     {
         private sealed class Node
         {

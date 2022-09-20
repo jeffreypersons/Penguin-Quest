@@ -12,7 +12,6 @@ namespace PQ.Common.States
     */
     public abstract class FsmDriver : MonoBehaviour
     {
-        private bool _initialized = false;
         private FsmState _initial;
         private FsmState _current;
         private FsmState _last;
@@ -68,7 +67,27 @@ namespace PQ.Common.States
         // Can only be invoked in OnInitialize
         protected void InitializeGraph(params (FsmState, string[])[] states)
         {
+            if (_fsmGraph != null)
+            {
+                throw new InvalidOperationException($"Cannot initialize graph - fsm graph already initialized");
+            }
+
             _fsmGraph = new(states);
+            SetInitialState(states[0].Item1.Id);
+        }
+        
+        // Override the initial state
+        protected void SetInitialState(string stateId)
+        {
+            if (_fsmGraph == null)
+            {
+                throw new InvalidOperationException($"Cannot set initial state to {stateId} - graph not yet initialized");
+            }
+            if (!_fsmGraph.TryGetState(stateId, out FsmState initialState))
+            {
+                throw new InvalidOperationException($"Cannot set initial state to {stateId} -  was not found");
+            }
+            _initial = initialState;
         }
 
         // Required callback for initializing
@@ -86,10 +105,10 @@ namespace PQ.Common.States
             // since states may have may game object dependencies, we explicitly want to
             // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
             OnInitialize();
-            if (!_initialized)
+            if (_fsmGraph == null)
             {
-                throw new InvalidOperationException("States were not initialized - " +
-                    "InitializeStates must be called within subclass OnInitialize");
+                throw new InvalidOperationException("Graph was not initialized - " +
+                    "InitializeGraph must be called within subclass OnInitialize");
             }
 
             _current = _initial;
