@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using PQ.Common.Text;
+using System.Text;
 
 
 namespace PQ.Common.Events
@@ -66,18 +66,19 @@ namespace PQ.Common.Events
 
         private bool _active;
         private List<IEntry> _entries;
-        private FormattedList<string> _formattedList;
-
+        private StringBuilder _stringBuilder;
+        private string _description;
 
         public PqEventRegistry()
         {
             _active = false;
             _entries = new();
-            _formattedList = new FormattedList<string>();
+            _stringBuilder = new StringBuilder();
+            _description = string.Empty;
         }
 
         public bool IsActive => _active;
-        public override string ToString() => _formattedList.ToString();
+        public override string ToString() => _description;
 
         public void Add(IPqEventReceiver event_, Action handler_) =>
             AppendEntryIfEventNotTaken(new Entry(event_, handler_));
@@ -110,6 +111,7 @@ namespace PQ.Common.Events
                 throw new ArgumentException($"{entry.EventName} is already in registry");
             }
 
+
             // explicitly enforce that any new event-handler pairs have a subscription state matching the
             // rest of the event-handler pairs in the registry
             if (_active)
@@ -121,7 +123,17 @@ namespace PQ.Common.Events
                 entry.Unsubscribe();
             }
 
-            _formattedList.Append(entry.Description);
+            if (_entries.Count > 0)
+            {
+
+                _stringBuilder.Append(entry.Description);
+            }
+            else
+            {
+                _stringBuilder.Append(',').Append(entry.Description);
+            }
+
+            _description = _stringBuilder.ToString();
             _entries.Add(entry);
         }
     }

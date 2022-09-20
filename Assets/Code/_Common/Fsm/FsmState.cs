@@ -34,7 +34,7 @@ namespace PQ.Common.Fsm
         public override string ToString() =>
             $"FsmState(" +
                 $"id:{_id}," +
-                $"eventRegistry:{_eventRegistry}" +
+                $"eventRegistry:[{_eventRegistry}]" +
             $")";
 
 
