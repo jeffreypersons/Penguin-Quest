@@ -54,7 +54,7 @@ namespace PQ.Entities.Penguin
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void HandleLieDownInputReceived()
         {
-            _driver.MoveToState(_driver.StateLyingDown);
+            _driver.MoveToState(PenguinBlob.StateIdLyingDown);
         }
 
         private void HandleGroundContactChanged(bool isGrounded)
@@ -62,7 +62,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.SetParamIsGrounded(isGrounded);
             if (!isGrounded)
             {
-                _driver.MoveToState(_driver.StateMidair);
+                _driver.MoveToState(PenguinBlob.StateIdMidair);
             }
         }
 

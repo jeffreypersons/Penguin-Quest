@@ -22,6 +22,13 @@ namespace PQ.Entities.Penguin
     [AddComponentMenu("PenguinBlob")]
     public class PenguinBlob : MonoBehaviour
     {
+        [Header("Penguin State Ids")]
+        public const string StateIdFeet       = "Penguin.State.OnFeet";
+        public const string StateIdBelly      = "Penguin.State.OnBelly";
+        public const string StateIdStandingUp = "Penguin.State.StandingUp";
+        public const string StateIdLyingDown  = "Penguin.State.LyingDown";
+        public const string StateIdMidair     = "Penguin.State.Midair";
+
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableOuter;
         

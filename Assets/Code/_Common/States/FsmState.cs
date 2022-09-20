@@ -19,18 +19,21 @@ namespace PQ.Common.States
     */
     public abstract class FsmState : IEquatable<FsmState>, IComparable<FsmState>
     {
-        private readonly string _name;
+        private readonly string _id;
         private bool _active;
         private bool _initialized;
         private PqEventRegistry _eventRegistry;
 
-        public string Name => _name;
+        private PqEvent<string>           _moveToLastStateRequest = new("fsm.state.move.last");
+        private PqEvent<(string, string)> _moveToNextStateRequest = new("fsm.state.move.next");
+
+        public string Id;
         public bool IsActive => _active;
         public bool IsInitialized => _initialized;
 
         public override string ToString() =>
             $"FsmState(" +
-                $"name:{_name}," +
+                $"id:{_id}," +
                 $"eventRegistry:{_eventRegistry}" +
             $")";
 
@@ -40,13 +43,16 @@ namespace PQ.Common.States
 
         // External entry point for initializing the state
         // Note that any sub class dependencies should be hooked up via an override of this base constructor
-        public FsmState(string name)
+        public FsmState(string id)
         {
-            _name = name;
+            Id = id;
             _active = false;
-            _eventRegistry = new();
             _initialized = false;
+            _eventRegistry = new();
         }
+
+        public void OnMoveToLastStateSignaled(Action<string> onTrigger)           => _moveToLastStateRequest.AddHandler(onTrigger);
+        public void OnMoveToNextStateSignaled(Action<(string, string)> onTrigger) => _moveToNextStateRequest.AddHandler(onTrigger);
 
         // Entry point for client code initializing state instances
         // Any 'startup' code such as hooking up handlers to events is done here
@@ -83,10 +89,10 @@ namespace PQ.Common.States
         public void LateUpdate()  => OnLateUpdate();
 
 
-        int IComparable<FsmState>.CompareTo(FsmState other) => Name.CompareTo(other.Name);
-        bool IEquatable<FsmState>.Equals(FsmState other) => other is not null && Name == other.Name;
+        int IComparable<FsmState>.CompareTo(FsmState other) => Id.CompareTo(other.Id);
+        bool IEquatable<FsmState>.Equals(FsmState other) => other is not null && Id == other.Id;
         public override bool Equals(object obj) => ((IEquatable<FsmState>)this).Equals(obj as FsmState);
-        public override int GetHashCode() => HashCode.Combine(Name);
+        public override int GetHashCode() => HashCode.Combine(Id);
         public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
         public static bool operator !=(FsmState left, FsmState right) => !Equals(left, right);
 
@@ -97,6 +103,8 @@ namespace PQ.Common.States
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
+        protected void SignalMoveToLastState() => _moveToLastStateRequest.Raise(_id);
+        protected void SignalMoveToNextState(string destinationStateId) => _moveToNextStateRequest.Raise((_id, destinationStateId));
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
