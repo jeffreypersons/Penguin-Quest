@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 
 
-namespace PQ.Common.States
+namespace PQ.Common.Fsm
 {
     /*
     Representation of the states and transitions in a finite state machine.

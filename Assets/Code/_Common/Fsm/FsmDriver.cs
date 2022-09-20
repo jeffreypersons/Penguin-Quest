@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PQ.Common.States
+namespace PQ.Common.Fsm
 {
     /*
     Driver for state machine that hooks up state callbacks to MonoBehaviour.

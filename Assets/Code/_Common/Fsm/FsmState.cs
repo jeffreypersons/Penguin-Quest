@@ -2,7 +2,7 @@
 using PQ.Common.Events;
 
 
-namespace PQ.Common.States
+namespace PQ.Common.Fsm
 {
     /*
     Representation of a state in a finite state machine.
