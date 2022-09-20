@@ -49,6 +49,7 @@ namespace PQ.Entities.Penguin
                     PenguinBlob.StateIdBelly
                 })
             );
+            SetInitialState(PenguinBlob.StateIdFeet);
         }
     }
 }
