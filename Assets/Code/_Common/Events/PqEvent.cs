@@ -48,8 +48,8 @@ namespace PQ.Common.Events
         public PqEvent(string name) => _name = name;
 
         public void Raise()                            => _action.Invoke();
-        public void AddHandler(Action onTrigger)       => _action += onTrigger;
-        public void RemoveHandler(Action onTrigger)    => _action -= onTrigger;
+        public void AddHandler(Action onRaise)         => _action += onRaise;
+        public void RemoveHandler(Action onRaise)      => _action -= onRaise;
         bool IEquatable<PqEvent>.Equals(PqEvent other) => other is not null && Name == other.Name;
 
         public override string ToString()         => $"Event({_name})";
@@ -71,8 +71,8 @@ namespace PQ.Common.Events
         public PqEvent(string name) => _name = name;
 
         public void Raise(T args)                            => _action.Invoke(args);
-        public void AddHandler(Action<T> onTrigger)          => _action += onTrigger;
-        public void RemoveHandler(Action<T> onTrigger)       => _action -= onTrigger;
+        public void AddHandler(Action<T> onRaise)            => _action += onRaise;
+        public void RemoveHandler(Action<T> onRaise)         => _action -= onRaise;
         bool IEquatable<PqEvent<T>>.Equals(PqEvent<T> other) => other is not null && Name == other.Name;
 
         public override string ToString()         => $"Event<{typeof(T).FullName}>({_name})";
