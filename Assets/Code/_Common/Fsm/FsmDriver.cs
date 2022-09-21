@@ -9,6 +9,14 @@ namespace PQ.Common.Fsm
 
     Note that while there is transition validation, the conditions that trigger those
     state changes are up to the specific fsm state implementation.
+
+
+    Note that exceptions are thrown EARLY for invalid driver setup, meaning that if it made it past start
+    with no exceptions, we have unique keys, no nulls in the graph, non empty graphs, explicitly set initial state,
+    and other invariants.
+
+    By doing so as early as Start() being called, this means that we can catch a multitude of developer errors
+    effectively on game load, rather than much later on during game execution.
     */
     public abstract class FsmDriver : MonoBehaviour
     {
