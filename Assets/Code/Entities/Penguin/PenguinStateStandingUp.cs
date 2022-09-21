@@ -6,13 +6,11 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateStandingUp : FsmState
     {
-        private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
 
-        public PenguinStateStandingUp(string name, PenguinFsmDriver driver, PenguinBlob blob) : base(name)
+        public PenguinStateStandingUp(string name, PenguinBlob blob) : base(name)
         {
             _blob = blob;
-            _driver = driver;
         }
 
         protected override void OnIntialize()
@@ -51,7 +49,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 0.68f
             );
 
-            _driver.MoveToState(PenguinBlob.StateIdFeet);
+            base.SignalMoveToNextState(PenguinBlob.StateIdFeet);
 
             // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?

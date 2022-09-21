@@ -112,6 +112,8 @@ namespace PQ.Common.Fsm
             }
 
             _current = _initial;
+            _current.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
+            _current.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
             _current.Enter();
         }
 
@@ -132,6 +134,9 @@ namespace PQ.Common.Fsm
         }
 
 
+        private void HandleOnMoveToLastStateSignaled()            => MoveToState(_last.Id);
+        private void HandleOnMoveToNextStateSignaled(string dest) => MoveToState(dest);
+
         // Update our current state provided that it is distinct from the next
         private bool ExecuteTransitionIfPending()
         {
@@ -140,9 +145,13 @@ namespace PQ.Common.Fsm
                 return false;
             }
 
+            _current.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
+            _current.OnMoveToNextStateSignaled.RemoveHandler(HandleOnMoveToNextStateSignaled);
             _current.Exit();
             OnTransition(_current.Id, _next.Id);
             _next.Enter();
+            _current.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
+            _current.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
 
             _last    = _current;
             _current = _next;

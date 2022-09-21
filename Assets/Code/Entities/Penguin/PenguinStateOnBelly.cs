@@ -6,16 +6,14 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateOnBelly : FsmState
     {
-        private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
 
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
-        public PenguinStateOnBelly(string name, PenguinFsmDriver driver, PenguinBlob blob) : base(name)
+        public PenguinStateOnBelly(string name, PenguinBlob blob) : base(name)
         {
             _blob = blob;
-            _driver = driver;
         }
 
         protected override void OnIntialize()
@@ -46,7 +44,7 @@ namespace PQ.Entities.Penguin
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void HandleGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
-        private void HandleStandUpInputReceived() => _driver.MoveToState(PenguinBlob.StateIdStandingUp);
+        private void HandleStandUpInputReceived() => base.SignalMoveToNextState(PenguinBlob.StateIdStandingUp);
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void HandleMoveHorizontalChanged(HorizontalInput state)
