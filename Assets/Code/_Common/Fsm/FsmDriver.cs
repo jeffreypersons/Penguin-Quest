@@ -87,6 +87,7 @@ namespace PQ.Common.Fsm
             {
                 throw new InvalidOperationException($"Cannot set initial state to {id} -  was not found");
             }
+
             _initial = initialState;
         }
 
@@ -145,13 +146,13 @@ namespace PQ.Common.Fsm
                 return false;
             }
 
+            _current.Exit();
             _current.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
             _current.OnMoveToNextStateSignaled.RemoveHandler(HandleOnMoveToNextStateSignaled);
-            _current.Exit();
             OnTransition(_current.Id, _next.Id);
             _next.Enter();
-            _current.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
-            _current.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
+            _next.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
+            _next.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
 
             _last    = _current;
             _current = _next;
