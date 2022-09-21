@@ -39,19 +39,19 @@ namespace PQ.Common.Fsm
 
 
         // Update our current state if transition was previously registered during initialization
-        public void MoveToState(string stateId)
+        public void MoveToState(string id)
         {
             if (_next != null)
             {
-                throw new InvalidOperationException($"Cannot move to {stateId} - a transition {_current.Id}=>{_next.Id} is already queued");
+                throw new InvalidOperationException($"Cannot move to {id} - a transition {_current.Id}=>{_next.Id} is already queued");
             }
-            if (!_fsmGraph.TryGetState(stateId, out FsmState next))
+            if (!_fsmGraph.TryGetState(id, out FsmState next))
             {
-                throw new InvalidOperationException($"Cannot move to {stateId} - state {next.Id} was not found");
+                throw new InvalidOperationException($"Cannot move to {id} - state {next.Id} was not found");
             }
-            if (!_fsmGraph.HasTransition(_current.Id, stateId))
+            if (!_fsmGraph.HasTransition(_current.Id, id))
             {
-                throw new InvalidOperationException($"Cannot move to {stateId} - transition {_current.Id}=>{stateId} was not found");
+                throw new InvalidOperationException($"Cannot move to {id} - transition {_current.Id}=>{id} was not found");
             }
 
             _next = next;
@@ -77,15 +77,15 @@ namespace PQ.Common.Fsm
         }
         
         // Override the initial state
-        protected void SetInitialState(string stateId)
+        protected void SetInitialState(string id)
         {
             if (_fsmGraph == null)
             {
-                throw new InvalidOperationException($"Cannot set initial state to {stateId} - graph not yet initialized");
+                throw new InvalidOperationException($"Cannot set initial state to {id} - graph not yet initialized");
             }
-            if (!_fsmGraph.TryGetState(stateId, out FsmState initialState))
+            if (!_fsmGraph.TryGetState(id, out FsmState initialState))
             {
-                throw new InvalidOperationException($"Cannot set initial state to {stateId} -  was not found");
+                throw new InvalidOperationException($"Cannot set initial state to {id} -  was not found");
             }
             _initial = initialState;
         }
@@ -94,7 +94,7 @@ namespace PQ.Common.Fsm
         protected abstract void OnInitialize();
 
         // Optional overridable callback for state transitions
-        protected virtual void OnTransition(string sourceId, string destinationId) { }
+        protected virtual void OnTransition(string source, string dest) { }
 
 
 

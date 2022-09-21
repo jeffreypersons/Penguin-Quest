@@ -14,9 +14,9 @@ namespace PQ.Entities.Penguin
             _penguinBlob.CharacterController.PlaceAt(_initialSpawnPosition, rotation: 0);
         }
 
-        protected override void OnTransition(string sourceId, string destinationId)
+        protected override void OnTransition(string source, string dest)
         {
-            Debug.Log($"Transitioning Penguin from {sourceId} to {destinationId}");
+            Debug.Log($"Transitioning Penguin from {source} to {dest}");
         }
 
 
