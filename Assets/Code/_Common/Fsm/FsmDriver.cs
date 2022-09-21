@@ -7,8 +7,8 @@ namespace PQ.Common.Fsm
     /*
     Driver for state machine that hooks up state callbacks to MonoBehaviour.
 
-    Note that there are no transitional checks - it's entirely up to the specific implementation to
-    determine when and how transitions should occur.
+    Note that while there is transition validation, the conditions that trigger those
+    state changes are up to the specific fsm state implementation.
     */
     public abstract class FsmDriver : MonoBehaviour
     {
@@ -38,50 +38,31 @@ namespace PQ.Common.Fsm
             $"}}";
 
 
-        // Update our current state if transition was previously registered during initialization
-        public void MoveToState(string id)
-        {
-            if (_next != null)
-            {
-                throw new InvalidOperationException($"Cannot move to {id} - a transition {_current.Id}=>{_next.Id} is already queued");
-            }
-            if (!_fsmGraph.TryGetState(id, out FsmState next))
-            {
-                throw new InvalidOperationException($"Cannot move to {id} - state {next.Id} was not found");
-            }
-            if (!_fsmGraph.HasTransition(_current.Id, id))
-            {
-                throw new InvalidOperationException($"Cannot move to {id} - transition {_current.Id}=>{id} was not found");
-            }
-
-            _next = next;
-        }
-
-
-
         /*** Internal Hooks for Defining State Specific Logic ***/
 
-        // Initialization method that MUST be called in OnInitialize in subclasses
-
-        // Mechanism for hooking up transitions use for validation when MoveToState is called by client
-        // Can only be invoked in OnInitialize
+        // Sole source of truth for specifying the fsm states and their possible transitions
+        // Strictly required to be invoked only once and only in OnInitialize()
         protected void InitializeGraph(params (FsmState, string[])[] states)
         {
             if (_fsmGraph != null)
             {
-                throw new InvalidOperationException($"Cannot initialize graph - fsm graph already initialized");
+                throw new InvalidOperationException($"Cannot override graph - fsm graph already initialized");
             }
 
             _fsmGraph = new(states);
-            SetInitialState(states[0].Item1.Id);
         }
-        
-        // Override the initial state
+
+        // Sole source of truth for specifying the initial state
+        // Strictly required to be invoked only once and only in OnInitialize()
         protected void SetInitialState(string id)
         {
             if (_fsmGraph == null)
             {
                 throw new InvalidOperationException($"Cannot set initial state to {id} - graph not yet initialized");
+            }
+            if (_initial != null)
+            {
+                throw new InvalidOperationException($"Cannot override initial state to {id} -  initial state already set");
             }
             if (!_fsmGraph.TryGetState(id, out FsmState initialState))
             {
@@ -108,19 +89,23 @@ namespace PQ.Common.Fsm
             OnInitialize();
             if (_fsmGraph == null)
             {
-                throw new InvalidOperationException("Graph was not initialized - " +
-                    "InitializeGraph must be called within subclass OnInitialize");
+                throw new InvalidOperationException("Cannot start driver - graph must be populated in OnInitialize()");
+            }
+            if (_initial == null)
+            {
+                throw new InvalidOperationException("Cannot start driver - initial state must be set in OnInitialize()");
+            }
+            if (_next != null)
+            {
+                throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active");
             }
 
-            _current = _initial;
-            _current.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
-            _current.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
-            _current.Enter();
+            Enter(_initial);
         }
 
         private void Update()
         {
-            ExecuteTransitionIfPending();
+            ProcessTransitionIfScheduled();
             _current.Update();
         }
 
@@ -135,29 +120,65 @@ namespace PQ.Common.Fsm
         }
 
 
-        private void HandleOnMoveToLastStateSignaled()            => MoveToState(_last.Id);
-        private void HandleOnMoveToNextStateSignaled(string dest) => MoveToState(dest);
+
+        /*** Internal 'Machinery' ***/
+
+        private void HandleOnMoveToLastStateSignaled()            => ScheduleTransition(_last.Id);
+        private void HandleOnMoveToNextStateSignaled(string dest) => ScheduleTransition(dest);
+
+        // Update our current state if transition was previously registered during initialization
+        private void ScheduleTransition(string dest)
+        {
+            if (_next != null)
+            {
+                throw new InvalidOperationException($"Cannot move to {dest} - a transition {_current.Id}=>{_next.Id} is already queued");
+            }
+
+            if (!_fsmGraph.TryGetState(dest, out FsmState next))
+            {
+                throw new InvalidOperationException($"Cannot move to {dest} - state {next.Id} was not found");
+            }
+            if (!_fsmGraph.HasTransition(_current?.Id, dest))
+            {
+                throw new InvalidOperationException($"Cannot move to {dest} - transition {_current.Id}=>{dest} was not found");
+            }
+
+            _next = next;
+        }
 
         // Update our current state provided that it is distinct from the next
-        private bool ExecuteTransitionIfPending()
+        private bool ProcessTransitionIfScheduled()
         {
-            if (_next == null)
+            string source = _current?.Id;
+            string dest   = _next?.Id;
+            if (string.IsNullOrEmpty(dest))
             {
                 return false;
             }
 
-            _current.Exit();
-            _current.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
-            _current.OnMoveToNextStateSignaled.RemoveHandler(HandleOnMoveToNextStateSignaled);
-            OnTransition(_current.Id, _next.Id);
-            _next.Enter();
-            _next.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
-            _next.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
-
-            _last    = _current;
-            _current = _next;
-            _next    = null;
+            Exit(_current);
+            OnTransition(source, dest);
+            Enter(_next);
             return true;
+        }
+
+
+        private void Exit(FsmState state)
+        {
+            state.Exit();
+            state.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
+            state.OnMoveToNextStateSignaled.RemoveHandler(HandleOnMoveToNextStateSignaled);
+            _last    = state;
+            _current = null;
+        }
+
+        private void Enter(FsmState state)
+        {
+            state.Enter();
+            state.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
+            state.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
+            _current = state;
+            _next    = null;
         }
     }
 }

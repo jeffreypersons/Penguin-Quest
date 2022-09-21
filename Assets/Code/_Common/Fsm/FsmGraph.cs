@@ -49,7 +49,7 @@ namespace PQ.Common.Fsm
                 string id = state?.Id;
                 if (string.IsNullOrEmpty(id) || _nodes.ContainsKey(id))
                 {
-                    throw new ArgumentException($"Cannot add {id} state to graph - expected non null unique key");
+                    throw new ArgumentException($"Cannot add state {id} to graph - expected non null unique key");
                 }
                 _nodes.Add(id, null);
             }
