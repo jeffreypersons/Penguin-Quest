@@ -9,14 +9,11 @@ namespace PQ.Entities.Penguin
     {
         private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
-        private GameEventCenter _eventCenter;
 
-        public PenguinStateMidair(string name, PenguinFsmDriver driver,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+        public PenguinStateMidair(string name, PenguinFsmDriver driver, PenguinBlob blob) : base(name)
         {
             _blob = blob;
             _driver = driver;
-            _eventCenter = eventCenter;
         }
 
         protected override void OnIntialize()

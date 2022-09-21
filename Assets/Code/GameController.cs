@@ -15,7 +15,6 @@ namespace PQ
         private GameEventCenter _gameEventCenter;
         private PlayerProgressionInfo _playerInfo;
 
-        // todo: use spawner
         [SerializeField] private GameObject _playerPenguin;
 
         void Awake()
@@ -23,6 +22,8 @@ namespace PQ
             _gameEventCenter = GameEventCenter.Instance;
             _playerPenguin.SetActive(true);
             _gameEventCenter.startNewGame.AddHandler(StartNewGame);
+
+            _playerPenguin.GetComponent<Entities.Penguin.PenguinBlob>().EventBus = _gameEventCenter;
         }
 
         void OnEnable()

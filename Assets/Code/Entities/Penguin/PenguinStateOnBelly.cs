@@ -8,23 +8,20 @@ namespace PQ.Entities.Penguin
     {
         private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
-        private GameEventCenter _eventCenter;
 
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
-        public PenguinStateOnBelly(string name, PenguinFsmDriver driver,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+        public PenguinStateOnBelly(string name, PenguinFsmDriver driver, PenguinBlob blob) : base(name)
         {
             _blob = blob;
             _driver = driver;
-            _eventCenter = eventCenter;
         }
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_eventCenter.standUpCommand,                      HandleStandUpInputReceived);
-            RegisterEvent(_eventCenter.movementInputChange,                 HandleMoveHorizontalChanged);
+            RegisterEvent(_blob.EventBus.standUpCommand,                    HandleStandUpInputReceived);
+            RegisterEvent(_blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
             RegisterEvent(_blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
