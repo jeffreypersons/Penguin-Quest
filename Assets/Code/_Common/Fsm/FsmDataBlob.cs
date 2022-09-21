@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace PQ.Entities
+namespace PQ.Common.Fsm
 {
     /*
     Generic, persistent blob of components that can be used by state machine.

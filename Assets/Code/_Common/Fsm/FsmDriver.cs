@@ -19,15 +19,16 @@ namespace PQ.Common.Fsm
     By doing so as early as Start() being called, this means that we can catch a multitude of developer errors
     effectively on game load, rather than much later on during game execution.
     */
-    public abstract class FsmDriver : MonoBehaviour
+    public abstract class FsmDriver<T> : MonoBehaviour
+        where T : FsmDataBlob
     {
-        private FsmState _initial;
-        private FsmState _current;
-        private FsmState _last;
-        private FsmState _next;
+        private FsmState<T> _initial;
+        private FsmState<T> _current;
+        private FsmState<T> _last;
+        private FsmState<T> _next;
 
-        private FsmGraph    _fsmGraph;
-        private FsmDataBlob _fsmData;
+        private FsmGraph<T> _fsmGraph;
+        private T _blob;
 
 
         /*** External Facing Methods Used to Drive Transitions ***/
@@ -39,7 +40,7 @@ namespace PQ.Common.Fsm
 
         public override string ToString() =>
             $"FsmDriver:{{" +
-                $"\nFsmDataBlob({_fsmData.name}), " +
+                $"\nFsmDataBlob({_blob.name}), " +
                 $"\nFsmHistory(" +
                     $"initial:{InitialState}," +
                     $"current:{CurrentState}," +
@@ -53,14 +54,14 @@ namespace PQ.Common.Fsm
 
         // Sole source of truth for specifying the fsm states and their possible transitions
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void InitializeGraph(params (FsmState, string[])[] states)
+        protected void InitializeGraph(params (FsmState<T>, string[])[] states)
         {
             if (_fsmGraph != null)
             {
                 throw new InvalidOperationException($"Cannot override graph - fsm graph already initialized");
             }
 
-            _fsmGraph = new FsmGraph(states);
+            _fsmGraph = new FsmGraph<T>(states);
         }
 
         // Sole source of truth for specifying the initial state
@@ -75,7 +76,7 @@ namespace PQ.Common.Fsm
             {
                 throw new InvalidOperationException($"Cannot override initial state to {id} - initial state already set");
             }
-            if (!_fsmGraph.TryGetState(id, out FsmState initialState))
+            if (!_fsmGraph.TryGetState(id, out FsmState<T> initialState))
             {
                 throw new InvalidOperationException($"Cannot set initial state to {id} - was not found");
             }
@@ -85,14 +86,14 @@ namespace PQ.Common.Fsm
 
         // Sole source of truth for specifying the access point for our data, sort of like a blackboard
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void SetBlob(FsmDataBlob fsmData)
+        protected void SetBlob(T blob)
         {
-            if (_fsmData != null)
+            if (_blob != null)
             {
-                throw new InvalidOperationException($"Cannot override fsm data to {fsmData} - data already set");
+                throw new InvalidOperationException($"Cannot override fsm data to {blob} - data already set");
             }
 
-            _fsmData = fsmData;
+            _blob = blob;
         }
 
 
@@ -123,7 +124,7 @@ namespace PQ.Common.Fsm
             {
                 throw new InvalidOperationException("Cannot start driver - graph must be populated in OnInitialize()");
             }
-            if (_fsmData == null)
+            if (_blob == null)
             {
                 throw new InvalidOperationException("Cannot start driver - reference to fsm data must be set in OnInitialize()");
             }
@@ -171,7 +172,7 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException($"Cannot move to {dest} - a transition {_current.Id}=>{_next.Id} is already queued");
             }
 
-            if (!_fsmGraph.TryGetState(dest, out FsmState next))
+            if (!_fsmGraph.TryGetState(dest, out FsmState<T> next))
             {
                 throw new InvalidOperationException($"Cannot move to {dest} - state {next.Id} was not found");
             }
@@ -200,7 +201,7 @@ namespace PQ.Common.Fsm
         }
 
 
-        private void Exit(FsmState state)
+        private void Exit(FsmState<T> state)
         {
             state.Exit();
             state.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
@@ -209,7 +210,7 @@ namespace PQ.Common.Fsm
             _current = null;
         }
 
-        private void Enter(FsmState state)
+        private void Enter(FsmState<T> state)
         {
             state.Enter();
             state.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);

@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public sealed class PenguinFsmDriver : FsmDriver
+    public sealed class PenguinFsmDriver : FsmDriver<PenguinBlob>
     {
         protected override void OnInitialStateEntered(string initial)
         {
@@ -18,30 +18,30 @@ namespace PQ.Entities.Penguin
 
         protected override void OnInitialize()
         {
-            PenguinBlob _penguinBlob = gameObject.GetComponent<PenguinBlob>();
+            PenguinBlob blob = gameObject.GetComponent<PenguinBlob>();
 
             InitializeGraph(
-                (new PenguinStateOnFeet(PenguinBlob.StateIdFeet, _penguinBlob), new[] {
+                (new PenguinStateOnFeet(PenguinBlob.StateIdFeet, blob), new[] {
                     PenguinBlob.StateIdLyingDown,
                     PenguinBlob.StateIdMidair
                 }),
-                (new PenguinStateOnBelly(PenguinBlob.StateIdBelly, _penguinBlob), new[] {
+                (new PenguinStateOnBelly(PenguinBlob.StateIdBelly, blob), new[] {
                     PenguinBlob.StateIdStandingUp,
                     PenguinBlob.StateIdMidair
                 }),
-                (new PenguinStateStandingUp(PenguinBlob.StateIdStandingUp, _penguinBlob), new[] {
+                (new PenguinStateStandingUp(PenguinBlob.StateIdStandingUp, blob), new[] {
                     PenguinBlob.StateIdFeet,
                 }),
-                (new PenguinStateLyingDown(PenguinBlob.StateIdLyingDown, _penguinBlob), new[] {
+                (new PenguinStateLyingDown(PenguinBlob.StateIdLyingDown, blob), new[] {
                     PenguinBlob.StateIdBelly
                 }),
-                (new PenguinStateMidair(PenguinBlob.StateIdMidair, _penguinBlob), new[] {
+                (new PenguinStateMidair(PenguinBlob.StateIdMidair, blob), new[] {
                     PenguinBlob.StateIdFeet,
                     PenguinBlob.StateIdBelly
                 })
             );
             SetInitialState(PenguinBlob.StateIdFeet);
-            SetBlob(_penguinBlob);
+            SetBlob(blob);
         }
     }
 }

@@ -4,28 +4,24 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateOnBelly : FsmState
+    public class PenguinStateOnBelly : FsmState<PenguinBlob>
     {
-        private PenguinBlob _blob;
-
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
-        public PenguinStateOnBelly(string name, PenguinBlob blob) : base(name)
-        {
-            _blob = blob;
-        }
+        public PenguinStateOnBelly(string name, PenguinBlob blob) : base(name, blob) { }
+
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_blob.EventBus.standUpCommand,                    HandleStandUpInputReceived);
-            RegisterEvent(_blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
-            RegisterEvent(_blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
+            RegisterEvent(Blob.EventBus.standUpCommand,                    HandleStandUpInputReceived);
+            RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
+            RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()
         {
-            _blob.CharacterController.Settings = _blob.OnBellySettings;
+            Blob.CharacterController.Settings = Blob.OnBellySettings;
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
         }
@@ -33,7 +29,7 @@ namespace PQ.Entities.Penguin
         protected override void OnExit()
         {
             _locomotionBlend = 0.0f;
-            _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
         protected override void OnUpdate()
@@ -43,7 +39,7 @@ namespace PQ.Entities.Penguin
 
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
-        private void HandleGroundContactChanged(bool isGrounded) => _blob.Animation.SetParamIsGrounded(isGrounded);
+        private void HandleGroundContactChanged(bool isGrounded) => Blob.Animation.SetParamIsGrounded(isGrounded);
         private void HandleStandUpInputReceived() => base.SignalMoveToNextState(PenguinBlob.StateIdStandingUp);
 
         // todo: find a flexible solution for all this duplicated movement code in multiple states
@@ -52,11 +48,11 @@ namespace PQ.Entities.Penguin
             _horizontalInput = state;
             if (_horizontalInput.value == HorizontalInput.Type.Right)
             {
-                _blob.CharacterController.FaceRight();
+                Blob.CharacterController.FaceRight();
             }
             else if (_horizontalInput.value == HorizontalInput.Type.Left)
             {
-                _blob.CharacterController.FaceLeft();
+                Blob.CharacterController.FaceLeft();
             }
         }
 
@@ -64,11 +60,11 @@ namespace PQ.Entities.Penguin
         {
             if (_horizontalInput.value == HorizontalInput.Type.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.Animation.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.Animation.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
@@ -79,7 +75,7 @@ namespace PQ.Entities.Penguin
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
             }
 
-            _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
     }
 }

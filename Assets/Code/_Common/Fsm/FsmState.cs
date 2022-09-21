@@ -17,12 +17,14 @@ namespace PQ.Common.Fsm
     of the module that handles the correct ordering of states. If it was done here, there would be tons
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
-    public abstract class FsmState : IEquatable<FsmState>, IComparable<FsmState>
+    public abstract class FsmState<T> : IEquatable<FsmState<T>>, IComparable<FsmState<T>>
+        where T : FsmDataBlob
     {
         private readonly string _id;
         private bool _active;
         private bool _initialized;
-        private PqEventRegistry _eventRegistry;
+        private readonly T _blob;
+        private readonly PqEventRegistry _eventRegistry;
 
         private PqEvent         _moveToLastStateRequest = new("fsm.state.move.last");
         private PqEvent<string> _moveToNextStateRequest = new("fsm.state.move.next");
@@ -30,10 +32,12 @@ namespace PQ.Common.Fsm
         public string Id;
         public bool IsActive => _active;
         public bool IsInitialized => _initialized;
+        protected T Blob => _blob;
 
         public override string ToString() =>
             $"FsmState(" +
                 $"id:{_id}," +
+                $"blob:{_blob}" +
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
 
@@ -43,12 +47,13 @@ namespace PQ.Common.Fsm
 
         // External entry point for initializing the state
         // Note that any sub class dependencies should be hooked up via an override of this base constructor
-        public FsmState(string id)
+        public FsmState(string id, T blob)
         {
             Id = id;
             _active = false;
             _initialized = false;
             _eventRegistry = new();
+            _blob = blob;
         }
 
         public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateRequest;
@@ -89,12 +94,12 @@ namespace PQ.Common.Fsm
         public void LateUpdate()  => OnLateUpdate();
 
 
-        int IComparable<FsmState>.CompareTo(FsmState other) => Id.CompareTo(other.Id);
-        bool IEquatable<FsmState>.Equals(FsmState other) => other is not null && Id == other.Id;
-        public override bool Equals(object obj) => ((IEquatable<FsmState>)this).Equals(obj as FsmState);
+        int IComparable<FsmState<T>>.CompareTo(FsmState<T> other) => Id.CompareTo(other.Id);
+        bool IEquatable<FsmState<T>>.Equals(FsmState<T> other) => other is not null && Id == other.Id;
+        public override bool Equals(object obj) => ((IEquatable<FsmState<T>>)this).Equals(obj as FsmState<T>);
         public override int GetHashCode() => HashCode.Combine(Id);
-        public static bool operator ==(FsmState left, FsmState right) =>  Equals(left, right);
-        public static bool operator !=(FsmState left, FsmState right) => !Equals(left, right);
+        public static bool operator ==(FsmState<T> left, FsmState<T> right) =>  Equals(left, right);
+        public static bool operator !=(FsmState<T> left, FsmState<T> right) => !Equals(left, right);
 
 
 
@@ -106,7 +111,7 @@ namespace PQ.Common.Fsm
         protected void SignalMoveToLastState()            => _moveToLastStateRequest.Raise();
         protected void SignalMoveToNextState(string dest) => _moveToNextStateRequest.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
-        protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
+        protected void RegisterEvent<D>(IPqEventReceiver<D> event_, Action<D> handler_) => _eventRegistry.Add(event_, handler_);
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
         protected abstract void OnIntialize();

@@ -4,30 +4,26 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateOnFeet : FsmState
+    public class PenguinStateOnFeet : FsmState<PenguinBlob>
     {
-        private PenguinBlob _blob;
-
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
-        public PenguinStateOnFeet(string name, PenguinBlob blob) : base(name)
-        {
-            _blob = blob;
-        }
+        public PenguinStateOnFeet(string name, PenguinBlob blob) : base(name, blob) { }
+
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
-            RegisterEvent(_blob.EventBus.jumpCommand,                       HandleJumpInputReceived);
-            RegisterEvent(_blob.EventBus.lieDownCommand,                    HandleLieDownInputReceived);
-            RegisterEvent(_blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
-            RegisterEvent(_blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
+            RegisterEvent(Blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
+            RegisterEvent(Blob.EventBus.jumpCommand,                       HandleJumpInputReceived);
+            RegisterEvent(Blob.EventBus.lieDownCommand,                    HandleLieDownInputReceived);
+            RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
+            RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()
         {
-            _blob.CharacterController.Settings = _blob.OnFeetSettings;
+            Blob.CharacterController.Settings = Blob.OnFeetSettings;
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
         }
@@ -36,7 +32,7 @@ namespace PQ.Entities.Penguin
         {
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
-            _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
 
         protected override void OnUpdate()
@@ -53,7 +49,7 @@ namespace PQ.Entities.Penguin
 
         private void HandleGroundContactChanged(bool isGrounded)
         {
-            _blob.Animation.SetParamIsGrounded(isGrounded);
+            Blob.Animation.SetParamIsGrounded(isGrounded);
             if (!isGrounded)
             {
                 base.SignalMoveToNextState(PenguinBlob.StateIdMidair);
@@ -63,12 +59,12 @@ namespace PQ.Entities.Penguin
 
         private void HandleJumpInputReceived()
         {
-            _blob.Animation.TriggerParamJumpUpParameter();
+            Blob.Animation.TriggerParamJumpUpParameter();
         }
 
         private void HandleJumpLiftOff()
         {
-            _blob.CharacterController.Jump();
+            Blob.CharacterController.Jump();
         }
 
 
@@ -78,11 +74,11 @@ namespace PQ.Entities.Penguin
             _horizontalInput = state;
             if (_horizontalInput.value == HorizontalInput.Type.Right)
             {
-                _blob.CharacterController.FaceRight();
+                Blob.CharacterController.FaceRight();
             }
             else if (_horizontalInput.value == HorizontalInput.Type.Left)
             {
-                _blob.CharacterController.FaceLeft();
+                Blob.CharacterController.FaceLeft();
             }
         }
 
@@ -90,11 +86,11 @@ namespace PQ.Entities.Penguin
         {
             if (_horizontalInput.value == HorizontalInput.Type.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.Animation.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + _blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.Animation.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
@@ -105,7 +101,7 @@ namespace PQ.Entities.Penguin
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
             }
 
-            _blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
         }
     }
 }

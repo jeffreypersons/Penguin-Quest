@@ -12,14 +12,15 @@ namespace PQ.Common.Fsm
 
     Also, states cannot have edges that loop directly back to itself.
     */
-    internal sealed class FsmGraph
+    internal sealed class FsmGraph<T>
+        where T : FsmDataBlob
     {
         private sealed class Node
         {
-            public readonly FsmState state;
+            public readonly FsmState<T> state;
             public readonly HashSet<string> neighbors;
 
-            public Node(FsmState state, HashSet<string> neighbors)
+            public Node(FsmState<T> state, HashSet<string> neighbors)
             {
                 this.state = state;
                 this.neighbors = neighbors;
@@ -34,7 +35,7 @@ namespace PQ.Common.Fsm
         public override string ToString() => _description;
 
         /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(params (FsmState, string[])[] states)
+        public FsmGraph(params (FsmState<T>, string[])[] states)
         {
             if (states == null || states.Length == 0)
             {
@@ -44,7 +45,7 @@ namespace PQ.Common.Fsm
             // fill in the state ids first, so we can use for validating the rest of the input
             // when populating the graph states and transitions
             _nodes = new Dictionary<string, Node>(states.Length);
-            foreach ((FsmState state, string[] _) in states)
+            foreach ((FsmState<T> state, string[] _) in states)
             {
                 string id = state?.Id;
                 if (string.IsNullOrEmpty(id) || _nodes.ContainsKey(id))
@@ -58,7 +59,7 @@ namespace PQ.Common.Fsm
             _edgeCount = 0;
             StringBuilder nodesInfo = new($" states");
             StringBuilder edgesInfo = new($" transitions");
-            foreach ((FsmState state, string[] destinations) in states)
+            foreach ((FsmState<T> state, string[] destinations) in states)
             {
                 string source = state.Id;
                 HashSet<string> neighbors = new(destinations.Length);
@@ -83,7 +84,7 @@ namespace PQ.Common.Fsm
             _description = $"FsmGraph({_nodeCount} states, {_edgeCount} transitions) \n{nodesInfo} \n{edgesInfo}";
         }
 
-        public bool TryGetState(string id, out FsmState state)
+        public bool TryGetState(string id, out FsmState<T> state)
         {
             if (!_nodes.ContainsKey(id))
             {

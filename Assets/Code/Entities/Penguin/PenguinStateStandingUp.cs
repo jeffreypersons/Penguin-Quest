@@ -4,46 +4,41 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateStandingUp : FsmState
+    public class PenguinStateStandingUp : FsmState<PenguinBlob>
     {
-        private PenguinBlob _blob;
-
-        public PenguinStateStandingUp(string name, PenguinBlob blob) : base(name)
-        {
-            _blob = blob;
-        }
+        public PenguinStateStandingUp(string name, PenguinBlob blob) : base(name, blob) { }
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_blob.Animation.StandUpStarted, HandleStandUpAnimationStarted);
-            RegisterEvent(_blob.Animation.StandUpEnded,   HandleStandUpAnimationFinished);
+            RegisterEvent(Blob.Animation.StandUpStarted, HandleStandUpAnimationStarted);
+            RegisterEvent(Blob.Animation.StandUpEnded,   HandleStandUpAnimationFinished);
         }
 
         protected override void OnEnter()
         {
-            _blob.Animation.ResetAllTriggers();
-            _blob.Animation.TriggerParamStandUpParameter();
+            Blob.Animation.ResetAllTriggers();
+            Blob.Animation.TriggerParamStandUpParameter();
         }
 
         protected override void OnExit()
         {
-            _blob.Animation.ResetAllTriggers();
+            Blob.Animation.ResetAllTriggers();
         }
 
 
         private void HandleStandUpAnimationStarted()
         {
             // keep all colliders on _except_ for the bounding box, to prevent catching on edges during posture change
-            _blob.ColliderConstraints = PenguinColliderConstraints.DisableOuter;
+            Blob.ColliderConstraints = PenguinColliderConstraints.DisableOuter;
         }
 
         private void HandleStandUpAnimationFinished()
         {
             // enable all colliders as we are now fully onFeet
-            _blob.ColliderConstraints = PenguinColliderConstraints.None;
+            Blob.ColliderConstraints = PenguinColliderConstraints.None;
 
-            _blob.CharacterController.Settings = _blob.OnFeetSettings;
-            _blob.ReadjustBoundingBox(
+            Blob.CharacterController.Settings = Blob.OnFeetSettings;
+            Blob.ReadjustBoundingBox(
                 offset: new Vector2(-0.3983436f, 14.60247f),
                 size:   new Vector2(13.17636f,   28.28143f),
                 edgeRadius: 0.68f
