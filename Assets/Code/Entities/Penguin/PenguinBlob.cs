@@ -107,10 +107,13 @@ namespace PQ.Entities.Penguin
         void Start()
         {
             _colliderConstraints = GetConstraintsAccordingToDisabledColliders();
-            if (EventBus == null)
+            
+            #if UNITY_EDITOR
+            if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
             {
                 throw new NullReferenceException("Caution: Event bus of penguin blob is disconnected");
             }
+            #endif
         }
 
         void Update()
