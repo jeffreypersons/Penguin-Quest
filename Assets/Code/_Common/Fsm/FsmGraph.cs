@@ -46,12 +46,12 @@ namespace PQ.Common.Fsm
             _nodes = new Dictionary<string, Node>(states.Length);
             foreach ((FsmState state, string[] _) in states)
             {
-                string stateId = state?.Id;
-                if (string.IsNullOrEmpty(stateId) || _nodes.ContainsKey(stateId))
+                string id = state?.Id;
+                if (string.IsNullOrEmpty(id) || _nodes.ContainsKey(id))
                 {
-                    throw new ArgumentException($"Cannot add {stateId} state to graph - expected non null unique key");
+                    throw new ArgumentException($"Cannot add state {id} to graph - expected non null unique key");
                 }
-                _nodes.Add(key: stateId, value: null);
+                _nodes.Add(id, null);
             }
             
             _nodeCount = 0;
@@ -100,10 +100,10 @@ namespace PQ.Common.Fsm
             return _nodes.ContainsKey(id);
         }
 
-        public bool HasTransition(string source, string destination)
+        public bool HasTransition(string source, string dest)
         {
             return _nodes.ContainsKey(source) &&
-                   _nodes[source].neighbors.Contains(destination);
+                   _nodes[source].neighbors.Contains(dest);
         }
     }
 }

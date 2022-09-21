@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
 
@@ -20,14 +21,18 @@ namespace PQ.Entities.Penguin
     [ExecuteAlways]
     [System.Serializable]
     [AddComponentMenu("PenguinBlob")]
-    public class PenguinBlob : MonoBehaviour
+    public class PenguinBlob : GenericBlob
     {
+        // todo: think of a better way of doing this hooking up..
+        public GameEventCenter EventBus { get; set; }
+
         [Header("Penguin State Ids")]
         public const string StateIdFeet       = "Penguin.State.OnFeet";
         public const string StateIdBelly      = "Penguin.State.OnBelly";
         public const string StateIdStandingUp = "Penguin.State.StandingUp";
         public const string StateIdLyingDown  = "Penguin.State.LyingDown";
         public const string StateIdMidair     = "Penguin.State.Midair";
+
 
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableOuter;
@@ -102,6 +107,13 @@ namespace PQ.Entities.Penguin
         void Start()
         {
             _colliderConstraints = GetConstraintsAccordingToDisabledColliders();
+            
+            #if UNITY_EDITOR
+            if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
+            {
+                throw new NullReferenceException("Caution: Event bus of penguin blob is disconnected");
+            }
+            #endif
         }
 
         void Update()

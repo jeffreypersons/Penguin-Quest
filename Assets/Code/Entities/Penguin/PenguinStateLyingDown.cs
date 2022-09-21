@@ -6,16 +6,11 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateLyingDown : FsmState
     {
-        private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
-        private GameEventCenter _eventCenter;
 
-        public PenguinStateLyingDown(string name, PenguinFsmDriver driver,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+        public PenguinStateLyingDown(string name, PenguinBlob blob) : base(name)
         {
             _blob = blob;
-            _driver = driver;
-            _eventCenter = eventCenter;
         }
 
         protected override void OnIntialize()
@@ -67,7 +62,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 1.25f
             );
 
-            _driver.MoveToState(PenguinBlob.StateIdBelly);
+            base.SignalMoveToNextState(PenguinBlob.StateIdBelly);
         }
     }
 }

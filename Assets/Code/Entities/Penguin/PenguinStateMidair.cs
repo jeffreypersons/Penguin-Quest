@@ -7,16 +7,11 @@ namespace PQ.Entities.Penguin
     // todo: add some sort of free fall check that forces a respawn/death
     public class PenguinStateMidair : FsmState
     {
-        private PenguinFsmDriver _driver;
         private PenguinBlob _blob;
-        private GameEventCenter _eventCenter;
 
-        public PenguinStateMidair(string name, PenguinFsmDriver driver,
-            PenguinBlob blob, GameEventCenter eventCenter) : base(name)
+        public PenguinStateMidair(string name, PenguinBlob blob) : base(name)
         {
             _blob = blob;
-            _driver = driver;
-            _eventCenter = eventCenter;
         }
 
         protected override void OnIntialize()
@@ -42,7 +37,7 @@ namespace PQ.Entities.Penguin
             _blob.Animation.SetParamIsGrounded(isGrounded);
             if (isGrounded)
             {
-                _driver.MoveToState(_driver.LastState);
+                base.SignalMoveToLastState();
             }
         }
     }

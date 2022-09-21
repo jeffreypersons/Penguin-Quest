@@ -24,8 +24,8 @@ namespace PQ.Common.Fsm
         private bool _initialized;
         private PqEventRegistry _eventRegistry;
 
-        private PqEvent<string>           _moveToLastStateRequest = new("fsm.state.move.last");
-        private PqEvent<(string, string)> _moveToNextStateRequest = new("fsm.state.move.next");
+        private PqEvent         _moveToLastStateRequest = new("fsm.state.move.last");
+        private PqEvent<string> _moveToNextStateRequest = new("fsm.state.move.next");
 
         public string Id;
         public bool IsActive => _active;
@@ -51,8 +51,8 @@ namespace PQ.Common.Fsm
             _eventRegistry = new();
         }
 
-        public void OnMoveToLastStateSignaled(Action<string> onTrigger)           => _moveToLastStateRequest.AddHandler(onTrigger);
-        public void OnMoveToNextStateSignaled(Action<(string, string)> onTrigger) => _moveToNextStateRequest.AddHandler(onTrigger);
+        public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateRequest;
+        public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateRequest;
 
         // Entry point for client code initializing state instances
         // Any 'startup' code such as hooking up handlers to events is done here
@@ -103,8 +103,8 @@ namespace PQ.Common.Fsm
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void SignalMoveToLastState() => _moveToLastStateRequest.Raise(_id);
-        protected void SignalMoveToNextState(string destinationStateId) => _moveToNextStateRequest.Raise((_id, destinationStateId));
+        protected void SignalMoveToLastState()            => _moveToLastStateRequest.Raise();
+        protected void SignalMoveToNextState(string dest) => _moveToNextStateRequest.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
