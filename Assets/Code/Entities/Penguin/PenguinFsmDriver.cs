@@ -4,14 +4,11 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinFsmDriver : FsmDriver
+    public sealed class PenguinFsmDriver : FsmDriver
     {
-        private PenguinBlob _penguinBlob;
-        private Vector2 _initialSpawnPosition;
-
-        public void ResetPositioning()
+        protected override void OnInitialStateEntered(string initial)
         {
-            _penguinBlob.CharacterController.PlaceAt(_initialSpawnPosition, rotation: 0);
+            Debug.Log($"Entered initial state...here's what things look like:\n{this}");
         }
 
         protected override void OnTransition(string source, string dest)
@@ -19,13 +16,9 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {source} to {dest}");
         }
 
-
         protected override void OnInitialize()
         {
-            _penguinBlob = gameObject.GetComponent<PenguinBlob>();
-
-            _initialSpawnPosition = _penguinBlob.SkeletalRootPosition;
-            ResetPositioning();
+            PenguinBlob _penguinBlob = gameObject.GetComponent<PenguinBlob>();
 
             InitializeGraph(
                 (new PenguinStateOnFeet(PenguinBlob.StateIdFeet, _penguinBlob), new[] {
@@ -48,6 +41,7 @@ namespace PQ.Entities.Penguin
                 })
             );
             SetInitialState(PenguinBlob.StateIdFeet);
+            SetBlob(_penguinBlob);
         }
     }
 }

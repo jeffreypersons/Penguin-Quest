@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PQ.Entities;
+using System;
 using UnityEngine;
 
 
@@ -25,7 +26,8 @@ namespace PQ.Common.Fsm
         private FsmState _last;
         private FsmState _next;
 
-        private FsmGraph _fsmGraph;
+        private FsmGraph    _fsmGraph;
+        private FsmDataBlob _fsmData;
 
 
         /*** External Facing Methods Used to Drive Transitions ***/
@@ -37,6 +39,7 @@ namespace PQ.Common.Fsm
 
         public override string ToString() =>
             $"FsmDriver:{{" +
+                $"\nFsmDataBlob({_fsmData.name}), " +
                 $"\nFsmHistory(" +
                     $"initial:{InitialState}," +
                     $"current:{CurrentState}," +
@@ -57,7 +60,7 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException($"Cannot override graph - fsm graph already initialized");
             }
 
-            _fsmGraph = new(states);
+            _fsmGraph = new FsmGraph(states);
         }
 
         // Sole source of truth for specifying the initial state
@@ -70,18 +73,34 @@ namespace PQ.Common.Fsm
             }
             if (_initial != null)
             {
-                throw new InvalidOperationException($"Cannot override initial state to {id} -  initial state already set");
+                throw new InvalidOperationException($"Cannot override initial state to {id} - initial state already set");
             }
             if (!_fsmGraph.TryGetState(id, out FsmState initialState))
             {
-                throw new InvalidOperationException($"Cannot set initial state to {id} -  was not found");
+                throw new InvalidOperationException($"Cannot set initial state to {id} - was not found");
             }
 
             _initial = initialState;
         }
 
+        // Sole source of truth for specifying the access point for our data, sort of like a blackboard
+        // Strictly required to be invoked only once and only in OnInitialize()
+        protected void SetBlob(FsmDataBlob fsmData)
+        {
+            if (_fsmData != null)
+            {
+                throw new InvalidOperationException($"Cannot override fsm data to {fsmData} - data already set");
+            }
+
+            _fsmData = fsmData;
+        }
+
+
         // Required callback for initializing
         protected abstract void OnInitialize();
+
+        // Optional overridable callback for after initializing and entering first state
+        protected virtual void OnInitialStateEntered(string initial) { }
 
         // Optional overridable callback for state transitions
         protected virtual void OnTransition(string source, string dest) { }
@@ -94,18 +113,28 @@ namespace PQ.Common.Fsm
         {
             // since states may have may game object dependencies, we explicitly want to
             // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
+            //
+            // note that post initialize we strictly enforce variants that should of been adhered to by
+            // subclass implementation of OnInitialize()
+            //
             OnInitialize();
+
             if (_fsmGraph == null)
             {
                 throw new InvalidOperationException("Cannot start driver - graph must be populated in OnInitialize()");
+            }
+            if (_fsmData == null)
+            {
+                throw new InvalidOperationException("Cannot start driver - reference to fsm data must be set in OnInitialize()");
             }
             if (_initial == null)
             {
                 throw new InvalidOperationException("Cannot start driver - initial state must be set in OnInitialize()");
             }
+
             if (_next != null)
             {
-                throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active");
+                throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active!");
             }
 
             Enter(_initial);

@@ -21,7 +21,7 @@ namespace PQ.Entities.Penguin
     [ExecuteAlways]
     [System.Serializable]
     [AddComponentMenu("PenguinBlob")]
-    public class PenguinBlob : GenericBlob
+    public class PenguinBlob : FsmDataBlob
     {
         // todo: think of a better way of doing this hooking up..
         public GameEventCenter EventBus { get; set; }
