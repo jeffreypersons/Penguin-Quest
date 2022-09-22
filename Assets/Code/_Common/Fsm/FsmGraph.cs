@@ -13,7 +13,7 @@ namespace PQ.Common.Fsm
     Also, states cannot have edges that loop directly back to itself.
     */
     internal sealed class FsmGraph<T>
-        where T : FsmDataBlob
+        where T : FsmBlackboardData
     {
         private sealed class Node
         {

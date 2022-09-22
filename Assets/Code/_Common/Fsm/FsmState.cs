@@ -18,7 +18,7 @@ namespace PQ.Common.Fsm
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
     public abstract class FsmState<T> : IEquatable<FsmState<T>>, IComparable<FsmState<T>>
-        where T : FsmDataBlob
+        where T : FsmBlackboardData
     {
         private readonly string _id;
         private bool _active;

@@ -20,7 +20,7 @@ namespace PQ.Common.Fsm
     effectively on game load, rather than much later on during game execution.
     */
     public abstract class FsmDriver<T> : MonoBehaviour
-        where T : FsmDataBlob
+        where T : FsmBlackboardData
     {
         private FsmState<T> _initial;
         private FsmState<T> _current;
@@ -28,8 +28,7 @@ namespace PQ.Common.Fsm
         private FsmState<T> _next;
 
         private FsmGraph<T> _fsmGraph;
-        private T _blob;
-
+        private FsmBlackboard<T> _blackboard;
 
         /*** External Facing Methods Used to Drive Transitions ***/
 
@@ -40,7 +39,7 @@ namespace PQ.Common.Fsm
 
         public override string ToString() =>
             $"FsmDriver:{{" +
-                $"\nFsmDataBlob({_blob.name}), " +
+                $"\nFsmData({_blackboard}), " +
                 $"\nFsmHistory(" +
                     $"initial:{InitialState}," +
                     $"current:{CurrentState}," +
@@ -86,14 +85,15 @@ namespace PQ.Common.Fsm
 
         // Sole source of truth for specifying the access point for our data, sort of like a blackboard
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void SetBlob(T blob)
+        protected void SetBlackboardData(T blackboardData)
         {
-            if (_blob != null)
+            if (_blackboard != null)
             {
-                throw new InvalidOperationException($"Cannot override fsm data to {blob} - data already set");
+                throw new InvalidOperationException($"Cannot override fsm blackboard data to" +
+                    $"{blackboardData.name} - data already set");
             }
 
-            _blob = blob;
+            _blackboard = new FsmBlackboard<T>(blackboardData);
         }
 
 
@@ -124,7 +124,7 @@ namespace PQ.Common.Fsm
             {
                 throw new InvalidOperationException("Cannot start driver - graph must be populated in OnInitialize()");
             }
-            if (_blob == null)
+            if (_blackboard == null)
             {
                 throw new InvalidOperationException("Cannot start driver - reference to fsm data must be set in OnInitialize()");
             }

@@ -41,7 +41,7 @@ namespace PQ.Entities.Penguin
                 })
             );
             SetInitialState(PenguinBlob.StateIdFeet);
-            SetBlob(blob);
+            SetBlackboardData(blob);
         }
     }
 }
