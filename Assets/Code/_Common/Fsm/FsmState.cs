@@ -59,8 +59,9 @@ namespace PQ.Common.Fsm
         public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateRequest;
         public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateRequest;
 
+
         // Factory for constructing states such that the data resolves to correct instance of FsmData
-        public abstract FsmState<T> Create(string id, T data);
+        public FsmState<T> Create(string id, T data) => OnCreate(id, data);
 
         // Entry point for client code initializing state instances
         // Any 'startup' code such as hooking up handlers to events is done here
@@ -115,6 +116,10 @@ namespace PQ.Common.Fsm
         protected void SignalMoveToNextState(string dest) => _moveToNextStateRequest.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<D>(IPqEventReceiver<D> event_, Action<D> handler_) => _eventRegistry.Add(event_, handler_);
+
+
+        // Factory for constructing states such that the data resolves to correct instance of FsmData
+        protected abstract FsmState<T> OnCreate(string id, T data);
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
         protected abstract void OnIntialize();

@@ -8,7 +8,7 @@ namespace PQ.Entities.Penguin
     public class PenguinStateMidair : FsmState<PenguinBlob>
     {
         public PenguinStateMidair(string id, PenguinBlob blob) : base(id, blob) { }
-        public override FsmState<PenguinBlob> Create(string id, PenguinBlob data) => new PenguinStateMidair(id, data);
+        protected override FsmState<PenguinBlob> OnCreate(string id, PenguinBlob data) => new PenguinStateMidair(id, data);
 
         protected override void OnIntialize()
         {
