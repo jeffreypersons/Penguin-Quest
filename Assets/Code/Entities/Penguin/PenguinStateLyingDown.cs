@@ -6,7 +6,8 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateLyingDown : FsmState<PenguinBlob>
     {
-        public PenguinStateLyingDown(string name, PenguinBlob blob) : base(name, blob) { }
+        public PenguinStateLyingDown(string id, PenguinBlob blob) : base(id, blob) { }
+        public override FsmState<PenguinBlob> Create(string id, PenguinBlob data) => new PenguinStateLyingDown(id, data);
 
         protected override void OnIntialize()
         {

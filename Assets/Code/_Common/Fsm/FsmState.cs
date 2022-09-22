@@ -47,7 +47,7 @@ namespace PQ.Common.Fsm
 
         // External entry point for initializing the state
         // Note that any sub class dependencies should be hooked up via an override of this base constructor
-        public FsmState(string id, T blob)
+        protected FsmState(string id, T blob)
         {
             Id = id;
             _active = false;
@@ -58,6 +58,9 @@ namespace PQ.Common.Fsm
 
         public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateRequest;
         public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateRequest;
+
+        // Factory for constructing states such that the data resolves to correct instance of FsmData
+        public abstract FsmState<T> Create(string id, T data);
 
         // Entry point for client code initializing state instances
         // Any 'startup' code such as hooking up handlers to events is done here

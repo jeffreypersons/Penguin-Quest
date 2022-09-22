@@ -6,6 +6,8 @@ namespace PQ.Entities.Penguin
 {
     public sealed class PenguinFsmDriver : FsmDriver<PenguinBlob>
     {
+        protected override PenguinBlob Data { get; set; }
+
         protected override void OnInitialStateEntered(string initial)
         {
             Debug.Log($"Entered initial state...here's what things look like:\n{this}");
@@ -19,6 +21,7 @@ namespace PQ.Entities.Penguin
         protected override void OnInitialize()
         {
             PenguinBlob blob = gameObject.GetComponent<PenguinBlob>();
+            Data = blob;
 
             InitializeGraph(
                 (new PenguinStateOnFeet(PenguinBlob.StateIdFeet, blob), new[] {

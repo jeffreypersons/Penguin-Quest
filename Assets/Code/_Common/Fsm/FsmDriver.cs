@@ -1,4 +1,4 @@
-﻿using PQ.Entities;
+﻿using PQ.Entities.Penguin;
 using System;
 using UnityEngine;
 
@@ -29,6 +29,8 @@ namespace PQ.Common.Fsm
 
         private FsmGraph<T> _fsmGraph;
         private FsmBlackboard<T> _blackboard;
+        protected abstract T Data { get; set; }
+
 
         /*** External Facing Methods Used to Drive Transitions ***/
 
