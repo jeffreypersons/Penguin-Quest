@@ -1,5 +1,5 @@
-﻿using PQ.Entities.Penguin;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -30,7 +30,6 @@ namespace PQ.Common.Fsm
         private FsmState<T> _current;
         private FsmState<T> _last;
         private FsmState<T> _next;
-        protected T Blob { get; set; }
 
         public override string ToString() =>
             $"FsmDriver:{{" +
@@ -47,34 +46,48 @@ namespace PQ.Common.Fsm
 
         /*** Internal Hooks for Setting up a Specific State Machine Instance ***/
 
-        protected Instance CreateState<Instance>(string id)
-            where Instance : FsmState<T>, new()
+        public sealed class Builder
         {
-            return FsmState<T>.Create<Instance>(id, Blob);
+            public readonly T blob;
+            public readonly string initial;
+            public readonly List<(FsmState<T>, string[])> nodes;
+
+            public Builder(T persistentData, string initial)
+            {
+                this.blob = persistentData;
+                this.initial = initial;
+                this.nodes = new List<(FsmState<T>, string[])>();
+            }
+
+            public Builder AddNode<StateImpl>(string id, string[] transitions)
+                where StateImpl : FsmState<T>, new()
+            {
+                nodes.Add((FsmState<T>.Create<StateImpl>(id, blob), transitions));
+                return this;
+            }
         }
 
         // Sole source of truth for specifying blackboard data, initial state, and allowed transitions
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void Initialize(T blob, string startAt, params (FsmState<T>, string[])[] states)
+        protected void Initialize(Builder builder)
         {
             if (_initialized)
             {
                 throw new InvalidOperationException($"Cannot initialize - blob and graph were already set");
             }
-
-            var graph = new FsmGraph<T>(states);
-            var initial = graph.GetState(startAt);
-            var blackboard = new FsmBlackboard<T>(blob);
-            if (initial == null)
+            if (builder == null)
             {
-                throw new InvalidOperationException($"Cannot initialize - initial state {startAt} was not found");
+                throw new InvalidOperationException($"Cannot initialize - builder cannot be null");
             }
 
-            Blob = blob;
-            _initial = initial;
-            _fsmGraph = graph;
-            _fsmBlackboard = blackboard;
-            _initialized = true;
+            _initialized   = true;
+            _fsmGraph      = new FsmGraph<T>(builder.nodes);
+            _fsmBlackboard = new FsmBlackboard<T>(builder.blob);
+            _initial       = _fsmGraph.GetState(builder.initial);
+            if (_initial == null)
+            {
+                throw new InvalidOperationException($"Cannot initialize - initial state {_initial.Id} was not found");
+            }
         }
 
 

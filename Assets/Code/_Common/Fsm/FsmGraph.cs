@@ -35,16 +35,16 @@ namespace PQ.Common.Fsm
         public override string ToString() => _description;
 
         /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(params (FsmState<T>, string[])[] states)
+        public FsmGraph(List<(FsmState<T>, string[])> states)
         {
-            if (states == null || states.Length == 0)
+            if (states == null || states.Count == 0)
             {
                 throw new ArgumentException("Fsm must have at least one state - received none");
             }
 
             // fill in the state ids first, so we can use for validating the rest of the input
             // when populating the graph states and transitions
-            _nodes = new Dictionary<string, Node>(states.Length);
+            _nodes = new Dictionary<string, Node>(states.Count);
             foreach ((FsmState<T> state, string[] _) in states)
             {
                 string id = state?.Id;
