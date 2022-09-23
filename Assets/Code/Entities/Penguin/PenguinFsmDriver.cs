@@ -18,10 +18,10 @@ namespace PQ.Entities.Penguin
 
         protected override void OnInitialize()
         {
-            Data = gameObject.GetComponent<PenguinBlob>();
+            Blob = gameObject.GetComponent<PenguinBlob>();
             Initialize(
-                data:    Data,
-                initial: PenguinBlob.StateIdFeet,
+                blob: Blob,
+                startAt: PenguinBlob.StateIdFeet,
                 (CreateState<PenguinStateOnFeet>(PenguinBlob.StateIdFeet), new[] {
                     PenguinBlob.StateIdLyingDown,
                     PenguinBlob.StateIdMidair

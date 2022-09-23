@@ -84,27 +84,11 @@ namespace PQ.Common.Fsm
             _description = $"FsmGraph({_nodeCount} states, {_edgeCount} transitions) \n{nodesInfo} \n{edgesInfo}";
         }
 
-        public bool TryGetState(string id, out FsmState<T> state)
-        {
-            if (!_nodes.ContainsKey(id))
-            {
-                state = null;
-                return false;
-            }
+        public bool HasState(string id) =>
+            _nodes.ContainsKey(id);
+        public bool HasTransition(string source, string dest) =>
+            _nodes.ContainsKey(source) && _nodes[source].neighbors.Contains(dest);
 
-            state = _nodes[id].state;
-            return true;
-        }
-
-        public bool HasState(string id)
-        {
-            return _nodes.ContainsKey(id);
-        }
-
-        public bool HasTransition(string source, string dest)
-        {
-            return _nodes.ContainsKey(source) &&
-                   _nodes[source].neighbors.Contains(dest);
-        }
+        public FsmState<T> GetState(string id) => _nodes.ContainsKey(id) ? _nodes[id].state : null;
     }
 }

@@ -22,31 +22,24 @@ namespace PQ.Common.Fsm
     public abstract class FsmDriver<T> : MonoBehaviour
         where T : FsmBlackboardData
     {
+        private bool _initialized;
+        private FsmGraph<T> _fsmGraph;
+        private FsmBlackboard<T> _fsmBlackboard;
+
         private FsmState<T> _initial;
         private FsmState<T> _current;
         private FsmState<T> _last;
         private FsmState<T> _next;
-
-        private FsmGraph<T> _fsmGraph;
-        private FsmBlackboard<T> _blackboard;
-        protected T Data { get; set; }
-
-
-        /*** External Facing Methods Used to Drive Transitions ***/
-
-        public string InitialState => _initial.Id;
-        public string CurrentState => _current.Id;
-        public string LastState    => _last.Id;
-        public string NextState    => _next.Id;
+        protected T Blob { get; set; }
 
         public override string ToString() =>
             $"FsmDriver:{{" +
-                $"\nFsmData({_blackboard}), " +
+                $"\nFsmData({_fsmBlackboard}), " +
                 $"\nFsmHistory(" +
-                    $"initial:{InitialState}," +
-                    $"current:{CurrentState}," +
-                    $"last:{LastState}," +
-                    $"next:{NextState})" +
+                    $"initial:{_initial.Id}," +
+                    $"current:{_current.Id}," +
+                    $"last:{_last.Id}," +
+                    $"next:{_next.Id})" +
                 $"{_fsmGraph}" +
             $"}}";
 
@@ -57,35 +50,32 @@ namespace PQ.Common.Fsm
         protected Instance CreateState<Instance>(string id)
             where Instance : FsmState<T>, new()
         {
-            return FsmState<T>.Create<Instance>(id, Data);
+            return FsmState<T>.Create<Instance>(id, Blob);
         }
 
         // Sole source of truth for specifying blackboard data, initial state, and allowed transitions
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void Initialize(T data, string initial, params (FsmState<T>, string[])[] states)
+        protected void Initialize(T blob, string startAt, params (FsmState<T>, string[])[] states)
         {
-            if (_initial != null)
+            if (_initialized)
             {
-                throw new InvalidOperationException($"Cannot override initial state to {initial} - initial state already set");
-            }
-            if (_blackboard != null)
-            {
-                throw new InvalidOperationException($"Cannot override fsm blackboard data to {data.name} - data already set");
-            }
-            if (_fsmGraph != null)
-            {
-                throw new InvalidOperationException($"Cannot override graph - fsm graph already initialized");
+                throw new InvalidOperationException($"Cannot initialize - blob and graph were already set");
             }
 
-            _fsmGraph = new FsmGraph<T>(states);
-            if (!_fsmGraph.TryGetState(initial, out FsmState<T> initialState))
+            var graph = new FsmGraph<T>(states);
+            var initial = graph.GetState(startAt);
+            var blackboard = new FsmBlackboard<T>(blob);
+            if (initial == null)
             {
-                throw new InvalidOperationException($"Cannot set initial state to {initial} - was not found");
+                throw new InvalidOperationException($"Cannot initialize - initial state {startAt} was not found");
             }
-            Data = data;
-            _initial = initialState;
-            _blackboard = new FsmBlackboard<T>(data);
-        }        
+
+            Blob = blob;
+            _initial = initial;
+            _fsmGraph = graph;
+            _fsmBlackboard = blackboard;
+            _initialized = true;
+        }
 
 
         // Required callback for initializing
@@ -104,31 +94,16 @@ namespace PQ.Common.Fsm
         private void Start()
         {
             // since states may have may game object dependencies, we explicitly want to
-            // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
-            //
-            // note that post initialize we strictly enforce variants that should of been adhered to by
-            // subclass implementation of OnInitialize()
-            //
+            // initialize our fsm on start, rather in awake, where those objects may not be fully initialized
             OnInitialize();
-
-            if (_fsmGraph == null)
+            if (!_initialized)
             {
-                throw new InvalidOperationException("Cannot start driver - graph must be populated in OnInitialize()");
+                throw new InvalidOperationException("Cannot start driver - blob and graph must be provided in OnInitialize()");
             }
-            if (_blackboard == null)
-            {
-                throw new InvalidOperationException("Cannot start driver - reference to fsm data must be set in OnInitialize()");
-            }
-            if (_initial == null)
-            {
-                throw new InvalidOperationException("Cannot start driver - initial state must be set in OnInitialize()");
-            }
-
             if (_next != null)
             {
                 throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active!");
             }
-
             Enter(_initial);
         }
 
@@ -163,7 +138,8 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException($"Cannot move to {dest} - a transition {_current.Id}=>{_next.Id} is already queued");
             }
 
-            if (!_fsmGraph.TryGetState(dest, out FsmState<T> next))
+            FsmState<T> next = _fsmGraph.GetState(dest);
+            if (next == null)
             {
                 throw new InvalidOperationException($"Cannot move to {dest} - state {next.Id} was not found");
             }
