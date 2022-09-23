@@ -130,7 +130,6 @@ namespace PQ.Common.Fsm
         private void HandleOnMoveToLastStateSignaled()            => ScheduleTransition(_last.Id);
         private void HandleOnMoveToNextStateSignaled(string dest) => ScheduleTransition(dest);
 
-        // Update our current state if transition was previously registered during initialization
         private void ScheduleTransition(string dest)
         {
             if (_next != null)
@@ -151,7 +150,6 @@ namespace PQ.Common.Fsm
             _next = next;
         }
 
-        // Update our current state provided that it is distinct from the next
         private bool ProcessTransitionIfScheduled()
         {
             string source = _current?.Id;
