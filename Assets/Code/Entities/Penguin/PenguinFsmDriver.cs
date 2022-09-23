@@ -18,9 +18,15 @@ namespace PQ.Entities.Penguin
 
         protected override void OnInitialize()
         {
-            Blob = gameObject.GetComponent<PenguinBlob>();
+            if (!gameObject.TryGetComponent<PenguinBlob>(out var blob))
+            {
+                throw new System.InvalidOperationException(
+                    $"PenguinBlob not found - driver must be attached to same gameObject as PenguinFsmDriver");
+            }
+
+            Blob = blob;
             Initialize(
-                blob: Blob,
+                blob: blob,
                 startAt: PenguinBlob.StateIdFeet,
                 (CreateState<PenguinStateOnFeet>(PenguinBlob.StateIdFeet), new[] {
                     PenguinBlob.StateIdLyingDown,
