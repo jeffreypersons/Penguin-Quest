@@ -105,6 +105,7 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active!");
             }
             Enter(_initial);
+            OnInitialStateEntered(_initial.Id);
         }
 
         private void Update()
