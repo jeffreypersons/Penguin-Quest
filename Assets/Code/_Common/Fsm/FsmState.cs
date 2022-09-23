@@ -17,26 +17,34 @@ namespace PQ.Common.Fsm
     of the module that handles the correct ordering of states. If it was done here, there would be tons
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
-    public abstract class FsmState<T> : IEquatable<FsmState<T>>, IComparable<FsmState<T>>
-        where T : FsmBlackboardData
+    public abstract class FsmState<DataBlob> : IEquatable<FsmState<DataBlob>>, IComparable<FsmState<DataBlob>>
+        where DataBlob : FsmBlackboardData
     {
-        private string _id;
-        private bool _active;
-        private bool _initialized;
-        private T _blob;
-        private PqEventRegistry _eventRegistry;
+        public enum Status
+        {
+            Unintialized,
+            Inactive,
+            Active
+        }
 
+        private string          _id;
+        private DataBlob        _blob;
+        private Status          _status;
+        private PqEventRegistry _eventRegistry;
         private PqEvent         _moveToLastStateRequest = new("fsm.state.move.last");
         private PqEvent<string> _moveToNextStateRequest = new("fsm.state.move.next");
 
-        public string Id            => _id;
-        public bool   IsActive      => _active;
-        public bool   IsInitialized => _initialized;
-        protected T   Blob          => _blob;
+        public    string   Id            => _id;
+        protected DataBlob Blob          => _blob;
+        public    Status   CurrentStatus => _status;
+
+        public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateRequest;
+        public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateRequest;
 
         public override string ToString() =>
             $"FsmState(" +
                 $"id:{_id}," +
+                $"status:{_status}" +
                 $"blob:{_blob}" +
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
@@ -45,32 +53,19 @@ namespace PQ.Common.Fsm
 
         /*** External Facing Methods for Driving State Logic ***/
 
-        // External entry point for initializing the state
-        // Note that any sub class dependencies should be hooked up via an override of this base constructor
-        public FsmState() : this(string.Empty, null) { }
-        private FsmState(string id, T blob)
-        {
-            _id = id;
-            _active = false;
-            _initialized = false;
-            _eventRegistry = new();
-            _blob = blob;
-        }
-
-        public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateRequest;
-        public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateRequest;
+        // Public dummy state constructor so that we can constrain generics to new(), for use in factories
+        public FsmState() { }
 
 
         // External entry point factory for constructing the state
         // Note that this is our uniform single access point for creating the state, no public constructors
-        public static StateSubclass Create<StateSubclass>(string id, T blob)
-            where StateSubclass : FsmState<T>, new()
+        public static StateSubclass Create<StateSubclass>(string id, DataBlob blob)
+            where StateSubclass : FsmState<DataBlob>, new()
         {
             return new()
             {
                 _id            = id,
-                _active        = false,
-                _initialized   = false,
+                _status        = Status.Unintialized,
                 _eventRegistry = new(),
                 _blob          = blob,
             };
@@ -81,7 +76,7 @@ namespace PQ.Common.Fsm
         public void Initialize()
         {
             OnIntialize();
-            _initialized = true;
+            _status = Status.Inactive;
             _eventRegistry.UnsubscribeToAllRegisteredEvents();
         }
 
@@ -89,7 +84,7 @@ namespace PQ.Common.Fsm
         public void Enter()
         {
             OnEnter();
-            _active = true;
+            _status = Status.Active;
             _eventRegistry.SubscribeToAllRegisteredEvents();
         }
 
@@ -97,7 +92,7 @@ namespace PQ.Common.Fsm
         public void Exit()
         {
             OnExit();
-            _active = false;
+            _status = Status.Inactive;
             _eventRegistry.UnsubscribeToAllRegisteredEvents();
         }
 
@@ -111,12 +106,12 @@ namespace PQ.Common.Fsm
         public void LateUpdate()  => OnLateUpdate();
 
 
-        int IComparable<FsmState<T>>.CompareTo(FsmState<T> other) => Id.CompareTo(other.Id);
-        bool IEquatable<FsmState<T>>.Equals(FsmState<T> other) => other is not null && Id == other.Id;
-        public override bool Equals(object obj) => ((IEquatable<FsmState<T>>)this).Equals(obj as FsmState<T>);
+        int IComparable<FsmState<DataBlob>>.CompareTo(FsmState<DataBlob> other) => Id.CompareTo(other.Id);
+        bool IEquatable<FsmState<DataBlob>>.Equals(FsmState<DataBlob> other) => other is not null && Id == other.Id;
+        public override bool Equals(object obj) => ((IEquatable<FsmState<DataBlob>>)this).Equals(obj as FsmState<DataBlob>);
         public override int GetHashCode() => HashCode.Combine(Id);
-        public static bool operator ==(FsmState<T> left, FsmState<T> right) =>  Equals(left, right);
-        public static bool operator !=(FsmState<T> left, FsmState<T> right) => !Equals(left, right);
+        public static bool operator ==(FsmState<DataBlob> left, FsmState<DataBlob> right) =>  Equals(left, right);
+        public static bool operator !=(FsmState<DataBlob> left, FsmState<DataBlob> right) => !Equals(left, right);
 
 
 

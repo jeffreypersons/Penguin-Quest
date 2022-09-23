@@ -82,6 +82,7 @@ namespace PQ.Common.Fsm
             {
                 throw new InvalidOperationException($"Cannot set initial state to {initial} - was not found");
             }
+            Data = data;
             _initial = initialState;
             _blackboard = new FsmBlackboard<T>(data);
         }        
