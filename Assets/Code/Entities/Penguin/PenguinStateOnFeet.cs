@@ -6,11 +6,10 @@ namespace PQ.Entities.Penguin
 {
     public class PenguinStateOnFeet : FsmState<PenguinBlob>
     {
+        public PenguinStateOnFeet() : base() { }
+
         private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
-
-        public PenguinStateOnFeet(string id, PenguinBlob blob) : base(id, blob) { }
-        protected override FsmState<PenguinBlob> OnCreate(string id, PenguinBlob data) => new PenguinStateOnFeet(id, data);
 
         protected override void OnIntialize()
         {

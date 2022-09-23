@@ -18,33 +18,34 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {source} to {dest}");
         }
 
+
         protected override void OnInitialize()
         {
             PenguinBlob blob = gameObject.GetComponent<PenguinBlob>();
             Data = blob;
+            SetBlackboardData(blob);
 
             InitializeGraph(
-                (new PenguinStateOnFeet(PenguinBlob.StateIdFeet, blob), new[] {
+                (CreateState<PenguinStateOnFeet>(PenguinBlob.StateIdFeet), new[] {
                     PenguinBlob.StateIdLyingDown,
                     PenguinBlob.StateIdMidair
                 }),
-                (new PenguinStateOnBelly(PenguinBlob.StateIdBelly, blob), new[] {
+                (CreateState<PenguinStateOnBelly>(PenguinBlob.StateIdBelly), new[] {
                     PenguinBlob.StateIdStandingUp,
                     PenguinBlob.StateIdMidair
                 }),
-                (new PenguinStateStandingUp(PenguinBlob.StateIdStandingUp, blob), new[] {
+                (CreateState<PenguinStateStandingUp>(PenguinBlob.StateIdStandingUp), new[] {
                     PenguinBlob.StateIdFeet,
                 }),
-                (new PenguinStateLyingDown(PenguinBlob.StateIdLyingDown, blob), new[] {
+                (CreateState<PenguinStateLyingDown>(PenguinBlob.StateIdLyingDown), new[] {
                     PenguinBlob.StateIdBelly
                 }),
-                (new PenguinStateMidair(PenguinBlob.StateIdMidair, blob), new[] {
+                (CreateState<PenguinStateMidair>(PenguinBlob.StateIdMidair), new[] {
                     PenguinBlob.StateIdFeet,
                     PenguinBlob.StateIdBelly
                 })
             );
             SetInitialState(PenguinBlob.StateIdFeet);
-            SetBlackboardData(blob);
         }
     }
 }

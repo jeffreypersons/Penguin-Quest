@@ -51,7 +51,13 @@ namespace PQ.Common.Fsm
             $"}}";
 
 
-        /*** Internal Hooks for Defining State Specific Logic ***/
+        /*** Internal Hooks for Setting up a Specific State Machine Instance ***/
+
+        protected Instance CreateState<Instance>(string id)
+            where Instance : FsmState<T>, new()
+        {
+            return FsmState<T>.Create<Instance>(id, Data);
+        }
 
         // Sole source of truth for specifying the fsm states and their possible transitions
         // Strictly required to be invoked only once and only in OnInitialize()

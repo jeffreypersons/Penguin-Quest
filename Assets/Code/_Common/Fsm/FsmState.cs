@@ -20,19 +20,19 @@ namespace PQ.Common.Fsm
     public abstract class FsmState<T> : IEquatable<FsmState<T>>, IComparable<FsmState<T>>
         where T : FsmBlackboardData
     {
-        private readonly string _id;
+        private string _id;
         private bool _active;
         private bool _initialized;
-        private readonly T _blob;
-        private readonly PqEventRegistry _eventRegistry;
+        private T _blob;
+        private PqEventRegistry _eventRegistry;
 
         private PqEvent         _moveToLastStateRequest = new("fsm.state.move.last");
         private PqEvent<string> _moveToNextStateRequest = new("fsm.state.move.next");
 
-        public string Id;
-        public bool IsActive => _active;
-        public bool IsInitialized => _initialized;
-        protected T Blob => _blob;
+        public string Id            => _id;
+        public bool   IsActive      => _active;
+        public bool   IsInitialized => _initialized;
+        protected T   Blob          => _blob;
 
         public override string ToString() =>
             $"FsmState(" +
@@ -47,9 +47,10 @@ namespace PQ.Common.Fsm
 
         // External entry point for initializing the state
         // Note that any sub class dependencies should be hooked up via an override of this base constructor
-        protected FsmState(string id, T blob)
+        public FsmState() : this(string.Empty, null) { }
+        private FsmState(string id, T blob)
         {
-            Id = id;
+            _id = id;
             _active = false;
             _initialized = false;
             _eventRegistry = new();
@@ -60,8 +61,20 @@ namespace PQ.Common.Fsm
         public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateRequest;
 
 
-        // Factory for constructing states such that the data resolves to correct instance of FsmData
-        public FsmState<T> Create(string id, T data) => OnCreate(id, data);
+        // External entry point factory for constructing the state
+        // Note that this is our uniform single access point for creating the state, no public constructors
+        public static StateSubclass Create<StateSubclass>(string id, T blob)
+            where StateSubclass : FsmState<T>, new()
+        {
+            return new()
+            {
+                _id            = id,
+                _active        = false,
+                _initialized   = false,
+                _eventRegistry = new(),
+                _blob          = blob,
+            };
+        }
 
         // Entry point for client code initializing state instances
         // Any 'startup' code such as hooking up handlers to events is done here
@@ -117,9 +130,6 @@ namespace PQ.Common.Fsm
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<D>(IPqEventReceiver<D> event_, Action<D> handler_) => _eventRegistry.Add(event_, handler_);
 
-
-        // Factory for constructing states such that the data resolves to correct instance of FsmData
-        protected abstract FsmState<T> OnCreate(string id, T data);
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
         protected abstract void OnIntialize();

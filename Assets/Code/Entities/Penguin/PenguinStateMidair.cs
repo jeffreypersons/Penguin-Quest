@@ -7,8 +7,7 @@ namespace PQ.Entities.Penguin
     // todo: add some sort of free fall check that forces a respawn/death
     public class PenguinStateMidair : FsmState<PenguinBlob>
     {
-        public PenguinStateMidair(string id, PenguinBlob blob) : base(id, blob) { }
-        protected override FsmState<PenguinBlob> OnCreate(string id, PenguinBlob data) => new PenguinStateMidair(id, data);
+        public PenguinStateMidair() : base() { }
 
         protected override void OnIntialize()
         {
