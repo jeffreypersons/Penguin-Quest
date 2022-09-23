@@ -59,35 +59,20 @@ namespace PQ.Common.Fsm
             return FsmState<T>.Create<Instance>(id, Data);
         }
 
-        // Sole source of truth for specifying the fsm states and their possible transitions
+        // Sole source of truth for specifying the fsm states, initial state, and their possible transitions
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void InitializeGraph(params (FsmState<T>, string[])[] states)
+        protected void InitializeGraph(string initial, params (FsmState<T>, string[])[] states)
         {
             if (_fsmGraph != null)
             {
                 throw new InvalidOperationException($"Cannot override graph - fsm graph already initialized");
             }
-
             _fsmGraph = new FsmGraph<T>(states);
-        }
 
-        // Sole source of truth for specifying the initial state
-        // Strictly required to be invoked only once and only in OnInitialize()
-        protected void SetInitialState(string id)
-        {
-            if (_fsmGraph == null)
+            if (!_fsmGraph.TryGetState(initial, out FsmState<T> initialState))
             {
-                throw new InvalidOperationException($"Cannot set initial state to {id} - graph not yet initialized");
+                throw new InvalidOperationException($"Cannot set initial state to {initial} - was not found");
             }
-            if (_initial != null)
-            {
-                throw new InvalidOperationException($"Cannot override initial state to {id} - initial state already set");
-            }
-            if (!_fsmGraph.TryGetState(id, out FsmState<T> initialState))
-            {
-                throw new InvalidOperationException($"Cannot set initial state to {id} - was not found");
-            }
-
             _initial = initialState;
         }
 

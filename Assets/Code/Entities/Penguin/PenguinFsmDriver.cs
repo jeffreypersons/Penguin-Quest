@@ -26,6 +26,7 @@ namespace PQ.Entities.Penguin
             SetBlackboardData(blob);
 
             InitializeGraph(
+                initial: PenguinBlob.StateIdFeet,
                 (CreateState<PenguinStateOnFeet>(PenguinBlob.StateIdFeet), new[] {
                     PenguinBlob.StateIdLyingDown,
                     PenguinBlob.StateIdMidair
@@ -45,7 +46,6 @@ namespace PQ.Entities.Penguin
                     PenguinBlob.StateIdBelly
                 })
             );
-            SetInitialState(PenguinBlob.StateIdFeet);
         }
     }
 }
