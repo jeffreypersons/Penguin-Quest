@@ -12,14 +12,15 @@ namespace PQ.Common.Fsm
 
     Also, states cannot have edges that loop directly back to itself.
     */
-    internal sealed class FsmGraph
+    internal sealed class FsmGraph<T>
+        where T : FsmBlackboardData
     {
         private sealed class Node
         {
-            public readonly FsmState state;
+            public readonly FsmState<T> state;
             public readonly HashSet<string> neighbors;
 
-            public Node(FsmState state, HashSet<string> neighbors)
+            public Node(FsmState<T> state, HashSet<string> neighbors)
             {
                 this.state = state;
                 this.neighbors = neighbors;
@@ -34,17 +35,17 @@ namespace PQ.Common.Fsm
         public override string ToString() => _description;
 
         /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(params (FsmState, string[])[] states)
+        public FsmGraph(List<(FsmState<T>, string[])> states)
         {
-            if (states == null || states.Length == 0)
+            if (states == null || states.Count == 0)
             {
                 throw new ArgumentException("Fsm must have at least one state - received none");
             }
 
             // fill in the state ids first, so we can use for validating the rest of the input
             // when populating the graph states and transitions
-            _nodes = new Dictionary<string, Node>(states.Length);
-            foreach ((FsmState state, string[] _) in states)
+            _nodes = new Dictionary<string, Node>(states.Count);
+            foreach ((FsmState<T> state, string[] _) in states)
             {
                 string id = state?.Id;
                 if (string.IsNullOrEmpty(id) || _nodes.ContainsKey(id))
@@ -58,7 +59,7 @@ namespace PQ.Common.Fsm
             _edgeCount = 0;
             StringBuilder nodesInfo = new($" states");
             StringBuilder edgesInfo = new($" transitions");
-            foreach ((FsmState state, string[] destinations) in states)
+            foreach ((FsmState<T> state, string[] destinations) in states)
             {
                 string source = state.Id;
                 HashSet<string> neighbors = new(destinations.Length);
@@ -83,27 +84,11 @@ namespace PQ.Common.Fsm
             _description = $"FsmGraph({_nodeCount} states, {_edgeCount} transitions) \n{nodesInfo} \n{edgesInfo}";
         }
 
-        public bool TryGetState(string id, out FsmState state)
-        {
-            if (!_nodes.ContainsKey(id))
-            {
-                state = null;
-                return false;
-            }
+        public bool HasState(string id) =>
+            _nodes.ContainsKey(id);
+        public bool HasTransition(string source, string dest) =>
+            _nodes.ContainsKey(source) && _nodes[source].neighbors.Contains(dest);
 
-            state = _nodes[id].state;
-            return true;
-        }
-
-        public bool HasState(string id)
-        {
-            return _nodes.ContainsKey(id);
-        }
-
-        public bool HasTransition(string source, string dest)
-        {
-            return _nodes.ContainsKey(source) &&
-                   _nodes[source].neighbors.Contains(dest);
-        }
+        public FsmState<T> GetState(string id) => _nodes.ContainsKey(id) ? _nodes[id].state : null;
     }
 }

@@ -4,14 +4,11 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinFsmDriver : FsmDriver
+    public sealed class PenguinFsmDriver : FsmDriver<PenguinBlob>
     {
-        private PenguinBlob _penguinBlob;
-        private Vector2 _initialSpawnPosition;
-
-        public void ResetPositioning()
+        protected override void OnInitialStateEntered(string initial)
         {
-            _penguinBlob.CharacterController.PlaceAt(_initialSpawnPosition, rotation: 0);
+            Debug.Log($"Entered initial state");
         }
 
         protected override void OnTransition(string source, string dest)
@@ -19,35 +16,36 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {source} to {dest}");
         }
 
-
         protected override void OnInitialize()
         {
-            _penguinBlob = gameObject.GetComponent<PenguinBlob>();
+            if (!gameObject.TryGetComponent<PenguinBlob>(out var penguinBlob))
+            {
+                throw new System.InvalidOperationException(
+                    $"PenguinBlob not found - driver must be attached to same gameObject as PenguinFsmDriver");
+            }
 
-            _initialSpawnPosition = _penguinBlob.SkeletalRootPosition;
-            ResetPositioning();
 
-            InitializeGraph(
-                (new PenguinStateOnFeet(PenguinBlob.StateIdFeet, _penguinBlob), new[] {
+            Initialize(new Builder(persistentData: penguinBlob, initial: PenguinBlob.StateIdFeet)
+
+                .AddNode<PenguinStateOnFeet>(PenguinBlob.StateIdFeet, new[] {
                     PenguinBlob.StateIdLyingDown,
-                    PenguinBlob.StateIdMidair
-                }),
-                (new PenguinStateOnBelly(PenguinBlob.StateIdBelly, _penguinBlob), new[] {
+                    PenguinBlob.StateIdMidair,
+                })
+                .AddNode<PenguinStateOnBelly>(PenguinBlob.StateIdBelly, new[] {
                     PenguinBlob.StateIdStandingUp,
-                    PenguinBlob.StateIdMidair
-                }),
-                (new PenguinStateStandingUp(PenguinBlob.StateIdStandingUp, _penguinBlob), new[] {
+                    PenguinBlob.StateIdMidair,
+                })
+                .AddNode<PenguinStateStandingUp>(PenguinBlob.StateIdStandingUp, new[] {
                     PenguinBlob.StateIdFeet,
-                }),
-                (new PenguinStateLyingDown(PenguinBlob.StateIdLyingDown, _penguinBlob), new[] {
-                    PenguinBlob.StateIdBelly
-                }),
-                (new PenguinStateMidair(PenguinBlob.StateIdMidair, _penguinBlob), new[] {
+                })
+                .AddNode<PenguinStateLyingDown>(PenguinBlob.StateIdLyingDown, new[] {
+                    PenguinBlob.StateIdBelly,
+                })
+                .AddNode<PenguinStateMidair>(PenguinBlob.StateIdMidair, new[] {
                     PenguinBlob.StateIdFeet,
-                    PenguinBlob.StateIdBelly
+                    PenguinBlob.StateIdBelly,
                 })
             );
-            SetInitialState(PenguinBlob.StateIdFeet);
         }
     }
 }

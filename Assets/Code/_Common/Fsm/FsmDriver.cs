@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -18,70 +19,83 @@ namespace PQ.Common.Fsm
     By doing so as early as Start() being called, this means that we can catch a multitude of developer errors
     effectively on game load, rather than much later on during game execution.
     */
-    public abstract class FsmDriver : MonoBehaviour
+    public abstract class FsmDriver<T> : MonoBehaviour
+        where T : FsmBlackboardData
     {
-        private FsmState _initial;
-        private FsmState _current;
-        private FsmState _last;
-        private FsmState _next;
+        private bool _initialized;
+        private FsmGraph<T> _fsmGraph;
+        private FsmBlackboard<T> _fsmBlackboard;
 
-        private FsmGraph _fsmGraph;
-
-
-        /*** External Facing Methods Used to Drive Transitions ***/
-
-        public string InitialState => _initial.Id;
-        public string CurrentState => _current.Id;
-        public string LastState    => _last.Id;
-        public string NextState    => _next.Id;
+        private FsmState<T> _initial;
+        private FsmState<T> _current;
+        private FsmState<T> _last;
+        private FsmState<T> _next;
 
         public override string ToString() =>
             $"FsmDriver:{{" +
+                $"\nFsmData({_fsmBlackboard}), " +
                 $"\nFsmHistory(" +
-                    $"initial:{InitialState}," +
-                    $"current:{CurrentState}," +
-                    $"last:{LastState}," +
-                    $"next:{NextState})" +
+                    $"initial:{_initial.Id}," +
+                    $"current:{_current.Id}," +
+                    $"last:{_last.Id}," +
+                    $"next:{_next.Id})" +
                 $"{_fsmGraph}" +
             $"}}";
 
 
-        /*** Internal Hooks for Defining State Specific Logic ***/
 
-        // Sole source of truth for specifying the fsm states and their possible transitions
-        // Strictly required to be invoked only once and only in OnInitialize()
-        protected void InitializeGraph(params (FsmState, string[])[] states)
+        /*** Internal Hooks for Setting up a Specific State Machine Instance ***/
+
+        public sealed class Builder
         {
-            if (_fsmGraph != null)
+            public readonly T blob;
+            public readonly string initial;
+            public readonly List<(FsmState<T>, string[])> nodes;
+
+            public Builder(T persistentData, string initial)
             {
-                throw new InvalidOperationException($"Cannot override graph - fsm graph already initialized");
+                this.blob = persistentData;
+                this.initial = initial;
+                this.nodes = new List<(FsmState<T>, string[])>();
             }
 
-            _fsmGraph = new(states);
+            public Builder AddNode<StateImpl>(string id, string[] transitions)
+                where StateImpl : FsmState<T>, new()
+            {
+                nodes.Add((FsmState<T>.Create<StateImpl>(id, blob), transitions));
+                return this;
+            }
         }
 
-        // Sole source of truth for specifying the initial state
+        // Sole source of truth for specifying blackboard data, initial state, and allowed transitions
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void SetInitialState(string id)
+        protected void Initialize(Builder builder)
         {
-            if (_fsmGraph == null)
+            if (_initialized)
             {
-                throw new InvalidOperationException($"Cannot set initial state to {id} - graph not yet initialized");
+                throw new InvalidOperationException($"Cannot initialize - blob and graph were already set");
             }
-            if (_initial != null)
+            if (builder == null)
             {
-                throw new InvalidOperationException($"Cannot override initial state to {id} -  initial state already set");
-            }
-            if (!_fsmGraph.TryGetState(id, out FsmState initialState))
-            {
-                throw new InvalidOperationException($"Cannot set initial state to {id} -  was not found");
+                throw new InvalidOperationException($"Cannot initialize - builder cannot be null");
             }
 
-            _initial = initialState;
+            _initialized   = true;
+            _fsmGraph      = new FsmGraph<T>(builder.nodes);
+            _fsmBlackboard = new FsmBlackboard<T>(builder.blob);
+            _initial       = _fsmGraph.GetState(builder.initial);
+            if (_initial == null)
+            {
+                throw new InvalidOperationException($"Cannot initialize - initial state {_initial.Id} was not found");
+            }
         }
+
 
         // Required callback for initializing
         protected abstract void OnInitialize();
+
+        // Optional overridable callback for after initializing and entering first state
+        protected virtual void OnInitialStateEntered(string initial) { }
 
         // Optional overridable callback for state transitions
         protected virtual void OnTransition(string source, string dest) { }
@@ -93,22 +107,18 @@ namespace PQ.Common.Fsm
         private void Start()
         {
             // since states may have may game object dependencies, we explicitly want to
-            // initialize our fsm on start, rather in awake, where those objects may not fully initialized.
+            // initialize our fsm on start, rather in awake, where those objects may not be fully initialized
             OnInitialize();
-            if (_fsmGraph == null)
+            if (!_initialized)
             {
-                throw new InvalidOperationException("Cannot start driver - graph must be populated in OnInitialize()");
-            }
-            if (_initial == null)
-            {
-                throw new InvalidOperationException("Cannot start driver - initial state must be set in OnInitialize()");
+                throw new InvalidOperationException("Cannot start driver - blob and graph must be provided in OnInitialize()");
             }
             if (_next != null)
             {
-                throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active");
+                throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active!");
             }
-
             Enter(_initial);
+            OnInitialStateEntered(_initial.Id);
         }
 
         private void Update()
@@ -134,7 +144,6 @@ namespace PQ.Common.Fsm
         private void HandleOnMoveToLastStateSignaled()            => ScheduleTransition(_last.Id);
         private void HandleOnMoveToNextStateSignaled(string dest) => ScheduleTransition(dest);
 
-        // Update our current state if transition was previously registered during initialization
         private void ScheduleTransition(string dest)
         {
             if (_next != null)
@@ -142,7 +151,8 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException($"Cannot move to {dest} - a transition {_current.Id}=>{_next.Id} is already queued");
             }
 
-            if (!_fsmGraph.TryGetState(dest, out FsmState next))
+            FsmState<T> next = _fsmGraph.GetState(dest);
+            if (next == null)
             {
                 throw new InvalidOperationException($"Cannot move to {dest} - state {next.Id} was not found");
             }
@@ -154,7 +164,6 @@ namespace PQ.Common.Fsm
             _next = next;
         }
 
-        // Update our current state provided that it is distinct from the next
         private bool ProcessTransitionIfScheduled()
         {
             string source = _current?.Id;
@@ -171,7 +180,7 @@ namespace PQ.Common.Fsm
         }
 
 
-        private void Exit(FsmState state)
+        private void Exit(FsmState<T> state)
         {
             state.Exit();
             state.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
@@ -180,7 +189,7 @@ namespace PQ.Common.Fsm
             _current = null;
         }
 
-        private void Enter(FsmState state)
+        private void Enter(FsmState<T> state)
         {
             state.Enter();
             state.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);

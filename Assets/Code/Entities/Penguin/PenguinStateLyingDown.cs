@@ -4,45 +4,40 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateLyingDown : FsmState
+    public class PenguinStateLyingDown : FsmState<PenguinBlob>
     {
-        private PenguinBlob _blob;
-
-        public PenguinStateLyingDown(string name, PenguinBlob blob) : base(name)
-        {
-            _blob = blob;
-        }
+        public PenguinStateLyingDown() : base() { }
 
         protected override void OnIntialize()
         {
-            RegisterEvent(_blob.Animation.LieDownStarted,  HandleLieDownAnimationStarted);
-            RegisterEvent(_blob.Animation.LieDownMidpoint, HandleLieDownAnimationMidpoint);
-            RegisterEvent(_blob.Animation.LieDownEnded,    HandleLieDownAnimationFinished);
+            RegisterEvent(Blob.Animation.LieDownStarted,  HandleLieDownAnimationStarted);
+            RegisterEvent(Blob.Animation.LieDownMidpoint, HandleLieDownAnimationMidpoint);
+            RegisterEvent(Blob.Animation.LieDownEnded,    HandleLieDownAnimationFinished);
         }
 
         protected override void OnEnter()
         {
-            _blob.Animation.ResetAllTriggers();
-            _blob.Animation.TriggerParamLieDownParameter();
+            Blob.Animation.ResetAllTriggers();
+            Blob.Animation.TriggerParamLieDownParameter();
         }
 
         protected override void OnExit()
         {
-            _blob.Animation.ResetAllTriggers();
+            Blob.Animation.ResetAllTriggers();
         }
 
 
         private void HandleLieDownAnimationStarted()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            _blob.ColliderConstraints =
+            Blob.ColliderConstraints =
                 PenguinColliderConstraints.DisableFeet;
         }
 
         private void HandleLieDownAnimationMidpoint()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            _blob.ColliderConstraints =
+            Blob.ColliderConstraints =
                 PenguinColliderConstraints.DisableFeet  |
                 PenguinColliderConstraints.DisableFlippers;
         }
@@ -51,12 +46,12 @@ namespace PQ.Entities.Penguin
         {
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box
-            _blob.ColliderConstraints =
+            Blob.ColliderConstraints =
                  PenguinColliderConstraints.DisableFeet |
                  PenguinColliderConstraints.DisableFlippers;
 
-            _blob.CharacterController.Settings = _blob.OnBellySettings;
-            _blob.ReadjustBoundingBox(
+            Blob.CharacterController.Settings = Blob.OnBellySettings;
+            Blob.ReadjustBoundingBox(
                 offset:     new Vector2( 0,  5),
                 size:       new Vector2(25, 10),
                 edgeRadius: 1.25f

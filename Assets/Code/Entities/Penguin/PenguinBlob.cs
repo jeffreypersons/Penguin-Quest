@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
+using PQ.Common.Fsm;
 
 
 namespace PQ.Entities.Penguin
@@ -21,7 +22,7 @@ namespace PQ.Entities.Penguin
     [ExecuteAlways]
     [System.Serializable]
     [AddComponentMenu("PenguinBlob")]
-    public class PenguinBlob : GenericBlob
+    public class PenguinBlob : FsmBlackboardData
     {
         // todo: think of a better way of doing this hooking up..
         public GameEventCenter EventBus { get; set; }
