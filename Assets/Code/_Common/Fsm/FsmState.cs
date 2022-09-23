@@ -20,32 +20,27 @@ namespace PQ.Common.Fsm
     public abstract class FsmState<DataBlob> : IEquatable<FsmState<DataBlob>>, IComparable<FsmState<DataBlob>>
         where DataBlob : FsmBlackboardData
     {
-        public enum Status
-        {
-            Unintialized,
-            Inactive,
-            Active
-        }
-
         private string          _id;
         private DataBlob        _blob;
-        private Status          _status;
+        private bool            _active;
         private PqEventRegistry _eventRegistry;
-        private PqEvent         _moveToLastStateRequest = new("fsm.state.move.last");
-        private PqEvent<string> _moveToNextStateRequest = new("fsm.state.move.next");
 
-        public    string   Id            => _id;
-        protected DataBlob Blob          => _blob;
-        public    Status   CurrentStatus => _status;
+        private PqEvent         _moveToLastStateSignal = new("fsm.state.move.last");
+        private PqEvent<string> _moveToNextStateSignal = new("fsm.state.move.next");
 
-        public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateRequest;
-        public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateRequest;
+
+        public    string   Id     => _id;
+        protected DataBlob Blob   => _blob;
+        public    bool     Active => _active;
+
+        public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateSignal;
+        public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateSignal;
 
         public override string ToString() =>
             $"FsmState(" +
-                $"id:{_id}," +
-                $"status:{_status}" +
-                $"blob:{_blob}" +
+                $"id:{_id}, " +
+                $"active:{_active}, " +
+                $"blob:{_blob}, " +
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
 
@@ -64,10 +59,10 @@ namespace PQ.Common.Fsm
         {
             return new()
             {
-                _id            = id,
-                _status        = Status.Unintialized,
+                _id = id,
+                _blob = blob,
+                _active = false,
                 _eventRegistry = new(),
-                _blob          = blob,
             };
         }
 
@@ -76,7 +71,6 @@ namespace PQ.Common.Fsm
         public void Initialize()
         {
             OnIntialize();
-            _status = Status.Inactive;
             _eventRegistry.UnsubscribeToAllRegisteredEvents();
         }
 
@@ -84,7 +78,7 @@ namespace PQ.Common.Fsm
         public void Enter()
         {
             OnEnter();
-            _status = Status.Active;
+            _active = true;
             _eventRegistry.SubscribeToAllRegisteredEvents();
         }
 
@@ -92,7 +86,7 @@ namespace PQ.Common.Fsm
         public void Exit()
         {
             OnExit();
-            _status = Status.Inactive;
+            _active = false;
             _eventRegistry.UnsubscribeToAllRegisteredEvents();
         }
 
@@ -120,8 +114,8 @@ namespace PQ.Common.Fsm
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void SignalMoveToLastState()            => _moveToLastStateRequest.Raise();
-        protected void SignalMoveToNextState(string dest) => _moveToNextStateRequest.Raise(dest);
+        protected void SignalMoveToLastState()            => _moveToLastStateSignal.Raise();
+        protected void SignalMoveToNextState(string dest) => _moveToNextStateSignal.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<D>(IPqEventReceiver<D> event_, Action<D> handler_) => _eventRegistry.Add(event_, handler_);
 

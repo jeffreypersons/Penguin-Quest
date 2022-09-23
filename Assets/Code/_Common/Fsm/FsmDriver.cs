@@ -29,7 +29,7 @@ namespace PQ.Common.Fsm
 
         private FsmGraph<T> _fsmGraph;
         private FsmBlackboard<T> _blackboard;
-        protected abstract T Data { get; set; }
+        protected T Data { get; set; }
 
 
         /*** External Facing Methods Used to Drive Transitions ***/
@@ -51,6 +51,7 @@ namespace PQ.Common.Fsm
             $"}}";
 
 
+
         /*** Internal Hooks for Setting up a Specific State Machine Instance ***/
 
         protected Instance CreateState<Instance>(string id)
@@ -59,8 +60,7 @@ namespace PQ.Common.Fsm
             return FsmState<T>.Create<Instance>(id, Data);
         }
 
-        // Sole source of truth for specifying the fsm states, blackboard data,
-        // initial state, and their possible transitions
+        // Sole source of truth for specifying blackboard data, initial state, and allowed transitions
         // Strictly required to be invoked only once and only in OnInitialize()
         protected void Initialize(T data, string initial, params (FsmState<T>, string[])[] states)
         {

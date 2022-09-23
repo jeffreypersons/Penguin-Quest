@@ -16,16 +16,11 @@ namespace PQ.Entities.Penguin
             Debug.Log($"Transitioning Penguin from {source} to {dest}");
         }
 
-        protected override PenguinBlob Data { get; set; }
-
         protected override void OnInitialize()
         {
-            PenguinBlob penguinBlob = gameObject.GetComponent<PenguinBlob>();
-
-            Data = penguinBlob;
-
+            Data = gameObject.GetComponent<PenguinBlob>();
             Initialize(
-                data: penguinBlob,
+                data:    Data,
                 initial: PenguinBlob.StateIdFeet,
                 (CreateState<PenguinStateOnFeet>(PenguinBlob.StateIdFeet), new[] {
                     PenguinBlob.StateIdLyingDown,
