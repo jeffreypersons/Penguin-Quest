@@ -59,35 +59,32 @@ namespace PQ.Common.Fsm
             return FsmState<T>.Create<Instance>(id, Data);
         }
 
-        // Sole source of truth for specifying the fsm states, initial state, and their possible transitions
+        // Sole source of truth for specifying the fsm states, blackboard data,
+        // initial state, and their possible transitions
         // Strictly required to be invoked only once and only in OnInitialize()
-        protected void InitializeGraph(string initial, params (FsmState<T>, string[])[] states)
+        protected void Initialize(T data, string initial, params (FsmState<T>, string[])[] states)
         {
+            if (_initial != null)
+            {
+                throw new InvalidOperationException($"Cannot override initial state to {initial} - initial state already set");
+            }
+            if (_blackboard != null)
+            {
+                throw new InvalidOperationException($"Cannot override fsm blackboard data to {data.name} - data already set");
+            }
             if (_fsmGraph != null)
             {
                 throw new InvalidOperationException($"Cannot override graph - fsm graph already initialized");
             }
-            _fsmGraph = new FsmGraph<T>(states);
 
+            _fsmGraph = new FsmGraph<T>(states);
             if (!_fsmGraph.TryGetState(initial, out FsmState<T> initialState))
             {
                 throw new InvalidOperationException($"Cannot set initial state to {initial} - was not found");
             }
             _initial = initialState;
-        }
-
-        // Sole source of truth for specifying the access point for our data, sort of like a blackboard
-        // Strictly required to be invoked only once and only in OnInitialize()
-        protected void SetBlackboardData(T blackboardData)
-        {
-            if (_blackboard != null)
-            {
-                throw new InvalidOperationException($"Cannot override fsm blackboard data to" +
-                    $"{blackboardData.name} - data already set");
-            }
-
-            _blackboard = new FsmBlackboard<T>(blackboardData);
-        }
+            _blackboard = new FsmBlackboard<T>(data);
+        }        
 
 
         // Required callback for initializing
