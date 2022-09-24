@@ -57,7 +57,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 1.25f
             );
 
-            base.SignalMoveToNextState(PenguinBlob.StateIdBelly);
+            base.SignalMoveToNextState(PenguinBlob.StateId.Belly);
         }
     }
 }

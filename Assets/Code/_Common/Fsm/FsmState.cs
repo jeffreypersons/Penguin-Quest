@@ -17,11 +17,11 @@ namespace PQ.Common.Fsm
     of the module that handles the correct ordering of states. If it was done here, there would be tons
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
-    public abstract class FsmState<DataBlob> : IEquatable<FsmState<DataBlob>>, IComparable<FsmState<DataBlob>>
-        where DataBlob : FsmBlackboardData
+    public abstract class FsmState<SharedData> : IEquatable<FsmState<SharedData>>, IComparable<FsmState<SharedData>>
+        where SharedData : FsmSharedData
     {
         private string          _id;
-        private DataBlob        _blob;
+        private SharedData      _data;
         private bool            _active;
         private PqEventRegistry _eventRegistry;
 
@@ -29,9 +29,9 @@ namespace PQ.Common.Fsm
         private PqEvent<string> _moveToNextStateSignal = new("fsm.state.move.next");
 
 
-        public    string   Id     => _id;
-        protected DataBlob Blob   => _blob;
-        public    bool     Active => _active;
+        public    string     Id     => _id;
+        protected SharedData Blob   => _data;
+        public    bool       Active => _active;
 
         public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateSignal;
         public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateSignal;
@@ -40,7 +40,7 @@ namespace PQ.Common.Fsm
             $"FsmState(" +
                 $"id:{_id}, " +
                 $"active:{_active}, " +
-                $"blob:{_blob}, " +
+                $"blob:{_data}, " +
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
 
@@ -54,13 +54,13 @@ namespace PQ.Common.Fsm
 
         // External entry point factory for constructing the state
         // Note that this is our uniform single access point for creating the state, no public constructors
-        public static StateSubclass Create<StateSubclass>(string id, DataBlob blob)
-            where StateSubclass : FsmState<DataBlob>, new()
+        public static StateSubclassInstance Create<StateSubclassInstance>(string id, SharedData blob)
+            where StateSubclassInstance : FsmState<SharedData>, new()
         {
             return new()
             {
                 _id = id,
-                _blob = blob,
+                _data = blob,
                 _active = false,
                 _eventRegistry = new(),
             };
@@ -100,12 +100,12 @@ namespace PQ.Common.Fsm
         public void LateUpdate()  => OnLateUpdate();
 
 
-        int IComparable<FsmState<DataBlob>>.CompareTo(FsmState<DataBlob> other) => Id.CompareTo(other.Id);
-        bool IEquatable<FsmState<DataBlob>>.Equals(FsmState<DataBlob> other) => other is not null && Id == other.Id;
-        public override bool Equals(object obj) => ((IEquatable<FsmState<DataBlob>>)this).Equals(obj as FsmState<DataBlob>);
+        int IComparable<FsmState<SharedData>>.CompareTo(FsmState<SharedData> other) => Id.CompareTo(other.Id);
+        bool IEquatable<FsmState<SharedData>>.Equals(FsmState<SharedData> other) => other is not null && Id == other.Id;
+        public override bool Equals(object obj) => ((IEquatable<FsmState<SharedData>>)this).Equals(obj as FsmState<SharedData>);
         public override int GetHashCode() => HashCode.Combine(Id);
-        public static bool operator ==(FsmState<DataBlob> left, FsmState<DataBlob> right) =>  Equals(left, right);
-        public static bool operator !=(FsmState<DataBlob> left, FsmState<DataBlob> right) => !Equals(left, right);
+        public static bool operator ==(FsmState<SharedData> left, FsmState<SharedData> right) =>  Equals(left, right);
+        public static bool operator !=(FsmState<SharedData> left, FsmState<SharedData> right) => !Equals(left, right);
 
 
 
@@ -117,7 +117,7 @@ namespace PQ.Common.Fsm
         protected void SignalMoveToLastState()            => _moveToLastStateSignal.Raise();
         protected void SignalMoveToNextState(string dest) => _moveToNextStateSignal.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
-        protected void RegisterEvent<D>(IPqEventReceiver<D> event_, Action<D> handler_) => _eventRegistry.Add(event_, handler_);
+        protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)

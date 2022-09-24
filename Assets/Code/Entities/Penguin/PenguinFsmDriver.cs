@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using PQ.Common.Fsm;
+using StateId = PQ.Entities.Penguin.PenguinBlob.StateId;
 
 
 namespace PQ.Entities.Penguin
@@ -24,26 +26,25 @@ namespace PQ.Entities.Penguin
                     $"PenguinBlob not found - driver must be attached to same gameObject as PenguinFsmDriver");
             }
 
+            Initialize(new Builder(persistentData: penguinBlob, initial: StateId.Feet)
 
-            Initialize(new Builder(persistentData: penguinBlob, initial: PenguinBlob.StateIdFeet)
-
-                .AddNode<PenguinStateOnFeet>(PenguinBlob.StateIdFeet, new[] {
-                    PenguinBlob.StateIdLyingDown,
-                    PenguinBlob.StateIdMidair,
+                .AddNode<PenguinStateOnFeet>(StateId.Feet, new[] {
+                    StateId.LyingDown,
+                    StateId.Midair,
                 })
-                .AddNode<PenguinStateOnBelly>(PenguinBlob.StateIdBelly, new[] {
-                    PenguinBlob.StateIdStandingUp,
-                    PenguinBlob.StateIdMidair,
+                .AddNode<PenguinStateOnBelly>(StateId.Belly, new[] {
+                    StateId.StandingUp,
+                    StateId.Midair,
                 })
-                .AddNode<PenguinStateStandingUp>(PenguinBlob.StateIdStandingUp, new[] {
-                    PenguinBlob.StateIdFeet,
+                .AddNode<PenguinStateStandingUp>(StateId.StandingUp, new[] {
+                    StateId.Feet,
                 })
-                .AddNode<PenguinStateLyingDown>(PenguinBlob.StateIdLyingDown, new[] {
-                    PenguinBlob.StateIdBelly,
+                .AddNode<PenguinStateLyingDown>(StateId.LyingDown, new[] {
+                    StateId.Belly,
                 })
-                .AddNode<PenguinStateMidair>(PenguinBlob.StateIdMidair, new[] {
-                    PenguinBlob.StateIdFeet,
-                    PenguinBlob.StateIdBelly,
+                .AddNode<PenguinStateMidair>(StateId.Midair, new[] {
+                    StateId.Feet,
+                    StateId.Belly,
                 })
             );
         }

@@ -19,27 +19,27 @@ namespace PQ.Common.Fsm
     By doing so as early as Start() being called, this means that we can catch a multitude of developer errors
     effectively on game load, rather than much later on during game execution.
     */
-    public abstract class FsmDriver<T> : MonoBehaviour
-        where T : FsmBlackboardData
+    public abstract class FsmDriver<SharedData> : MonoBehaviour
+        where SharedData : FsmSharedData
     {
         private bool _initialized;
-        private FsmGraph<T> _fsmGraph;
-        private FsmBlackboard<T> _fsmBlackboard;
+        private SharedData _sharedData;
+        private FsmGraph<SharedData> _graph;
 
-        private FsmState<T> _initial;
-        private FsmState<T> _current;
-        private FsmState<T> _last;
-        private FsmState<T> _next;
+        private FsmState<SharedData> _initial;
+        private FsmState<SharedData> _current;
+        private FsmState<SharedData> _last;
+        private FsmState<SharedData> _next;
 
         public override string ToString() =>
             $"FsmDriver:{{" +
-                $"\nFsmData({_fsmBlackboard}), " +
+                $"\nFsmData({_sharedData}), " +
                 $"\nFsmHistory(" +
                     $"initial:{_initial.Id}," +
                     $"current:{_current.Id}," +
                     $"last:{_last.Id}," +
                     $"next:{_next.Id})" +
-                $"{_fsmGraph}" +
+                $"{_graph}" +
             $"}}";
 
 
@@ -48,21 +48,21 @@ namespace PQ.Common.Fsm
 
         public sealed class Builder
         {
-            public readonly T blob;
+            public readonly SharedData data;
             public readonly string initial;
-            public readonly List<(FsmState<T>, string[])> nodes;
+            public readonly List<(FsmState<SharedData>, string[])> nodes;
 
-            public Builder(T persistentData, string initial)
+            public Builder(SharedData persistentData, string initial)
             {
-                this.blob = persistentData;
+                this.data = persistentData;
                 this.initial = initial;
-                this.nodes = new List<(FsmState<T>, string[])>();
+                this.nodes = new List<(FsmState<SharedData>, string[])>();
             }
 
-            public Builder AddNode<StateImpl>(string id, string[] transitions)
-                where StateImpl : FsmState<T>, new()
+            public Builder AddNode<StateSubclass>(string id, string[] transitions)
+                where StateSubclass : FsmState<SharedData>, new()
             {
-                nodes.Add((FsmState<T>.Create<StateImpl>(id, blob), transitions));
+                nodes.Add((FsmState<SharedData>.Create<StateSubclass>(id, data), transitions));
                 return this;
             }
         }
@@ -80,10 +80,10 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException($"Cannot initialize - builder cannot be null");
             }
 
-            _initialized   = true;
-            _fsmGraph      = new FsmGraph<T>(builder.nodes);
-            _fsmBlackboard = new FsmBlackboard<T>(builder.blob);
-            _initial       = _fsmGraph.GetState(builder.initial);
+            _initialized = true;
+            _graph       = new FsmGraph<SharedData>(builder.nodes);
+            _sharedData  = builder.data;
+            _initial     = _graph.GetState(builder.initial);
             if (_initial == null)
             {
                 throw new InvalidOperationException($"Cannot initialize - initial state {_initial.Id} was not found");
@@ -141,7 +141,7 @@ namespace PQ.Common.Fsm
 
         /*** Internal 'Machinery' ***/
 
-        private void HandleOnMoveToLastStateSignaled()            => ScheduleTransition(_last.Id);
+        private void HandleOnMoveToLastStateSignaled()          => ScheduleTransition(_last.Id);
         private void HandleOnMoveToNextStateSignaled(string dest) => ScheduleTransition(dest);
 
         private void ScheduleTransition(string dest)
@@ -151,12 +151,12 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException($"Cannot move to {dest} - a transition {_current.Id}=>{_next.Id} is already queued");
             }
 
-            FsmState<T> next = _fsmGraph.GetState(dest);
+            FsmState<SharedData> next = _graph.GetState(dest);
             if (next == null)
             {
                 throw new InvalidOperationException($"Cannot move to {dest} - state {next.Id} was not found");
             }
-            if (!_fsmGraph.HasTransition(_current?.Id, dest))
+            if (!_graph.HasTransition(_current?.Id, dest))
             {
                 throw new InvalidOperationException($"Cannot move to {dest} - transition {_current.Id}=>{dest} was not found");
             }
@@ -180,7 +180,7 @@ namespace PQ.Common.Fsm
         }
 
 
-        private void Exit(FsmState<T> state)
+        private void Exit(FsmState<SharedData> state)
         {
             state.Exit();
             state.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
@@ -189,7 +189,7 @@ namespace PQ.Common.Fsm
             _current = null;
         }
 
-        private void Enter(FsmState<T> state)
+        private void Enter(FsmState<SharedData> state)
         {
             state.Enter();
             state.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);

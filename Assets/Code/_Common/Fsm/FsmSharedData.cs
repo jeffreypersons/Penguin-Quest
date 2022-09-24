@@ -8,7 +8,7 @@ namespace PQ.Common.Fsm
     */
     [ExecuteAlways]
     [System.Serializable]
-    public abstract class FsmBlackboardData : MonoBehaviour
+    public abstract class FsmSharedData : MonoBehaviour
     {
 
     }
