@@ -22,7 +22,7 @@ namespace PQ.Common.Fsm
         : IEquatable <FsmState<StateId, SharedData>>,
           IComparable<FsmState<StateId, SharedData>>
         where SharedData : FsmSharedData
-        where StateId    : Enum
+        where StateId    : struct, Enum
     {
         private StateId         _id;
         private SharedData      _data;

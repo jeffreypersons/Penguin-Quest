@@ -13,7 +13,7 @@ namespace PQ.Common.Fsm
     Also, states cannot have edges that loop directly back to itself.
     */
     internal sealed class FsmGraph<StateId, SharedData>
-        where StateId    : Enum
+        where StateId    : struct, Enum
         where SharedData : FsmSharedData
     {
         private sealed class Node

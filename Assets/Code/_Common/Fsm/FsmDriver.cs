@@ -20,7 +20,7 @@ namespace PQ.Common.Fsm
     effectively on game load, rather than much later on during game execution.
     */
     public abstract class FsmDriver<StateId, SharedData> : MonoBehaviour
-        where StateId    : Enum
+        where StateId    : struct, Enum
         where SharedData : FsmSharedData
     {
         private bool _initialized;
