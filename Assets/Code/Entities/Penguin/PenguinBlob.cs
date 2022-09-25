@@ -22,17 +22,19 @@ namespace PQ.Entities.Penguin
     [ExecuteAlways]
     [System.Serializable]
     [AddComponentMenu("PenguinBlob")]
-    public class PenguinBlob : FsmBlackboardData
+    public class PenguinBlob : FsmSharedData
     {
         // todo: think of a better way of doing this hooking up..
         public GameEventCenter EventBus { get; set; }
 
-        [Header("Penguin State Ids")]
-        public const string StateIdFeet       = "Penguin.State.OnFeet";
-        public const string StateIdBelly      = "Penguin.State.OnBelly";
-        public const string StateIdStandingUp = "Penguin.State.StandingUp";
-        public const string StateIdLyingDown  = "Penguin.State.LyingDown";
-        public const string StateIdMidair     = "Penguin.State.Midair";
+        public enum StateId
+        {
+            Feet,
+            Belly,
+            StandingUp,
+            LyingDown,
+            Midair,
+        }
 
 
         [Header("Body Part Collider Constraints")]

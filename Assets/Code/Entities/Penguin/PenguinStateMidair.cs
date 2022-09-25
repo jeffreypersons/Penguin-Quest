@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using PQ.Common.Fsm;
+﻿using PQ.Common.Fsm;
+using PenguinStateId = PQ.Entities.Penguin.PenguinBlob.StateId;
 
 
 namespace PQ.Entities.Penguin
 {
     // todo: add some sort of free fall check that forces a respawn/death
-    public class PenguinStateMidair : FsmState<PenguinBlob>
+    public class PenguinStateMidair : FsmState<PenguinStateId, PenguinBlob>
     {
         public PenguinStateMidair() : base() { }
 

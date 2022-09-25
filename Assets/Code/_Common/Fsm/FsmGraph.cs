@@ -12,30 +12,32 @@ namespace PQ.Common.Fsm
 
     Also, states cannot have edges that loop directly back to itself.
     */
-    internal sealed class FsmGraph<T>
-        where T : FsmBlackboardData
+    internal sealed class FsmGraph<StateId, SharedData>
+        where StateId    : Enum
+        where SharedData : FsmSharedData
     {
         private sealed class Node
         {
-            public readonly FsmState<T> state;
-            public readonly HashSet<string> neighbors;
+            public readonly FsmState<StateId, SharedData> state;
+            public readonly HashSet<StateId> neighbors;
 
-            public Node(FsmState<T> state, HashSet<string> neighbors)
+            public Node(FsmState<StateId, SharedData> state, HashSet<StateId> neighbors)
             {
                 this.state = state;
                 this.neighbors = neighbors;
             }
         }
 
+        private readonly Type _idType;
         private readonly int _nodeCount;
         private readonly int _edgeCount;
         private readonly string _description;
-        private readonly Dictionary<string, Node> _nodes;
+        private readonly Dictionary<StateId, Node> _nodes;
         
         public override string ToString() => _description;
 
         /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(List<(FsmState<T>, string[])> states)
+        public FsmGraph(List<(FsmState<StateId, SharedData>, StateId[])> states)
         {
             if (states == null || states.Count == 0)
             {
@@ -44,28 +46,32 @@ namespace PQ.Common.Fsm
 
             // fill in the state ids first, so we can use for validating the rest of the input
             // when populating the graph states and transitions
-            _nodes = new Dictionary<string, Node>(states.Count);
-            foreach ((FsmState<T> state, string[] _) in states)
+            Type idType = typeof(StateId);
+            _nodes = new Dictionary<StateId, Node>(states.Count);
+            foreach ((FsmState<StateId, SharedData> state, StateId[] _) in states)
             {
-                string id = state?.Id;
-                if (string.IsNullOrEmpty(id) || _nodes.ContainsKey(id))
+                StateId id = state.Id;
+                if (!Enum.IsDefined(idType, id) || _nodes.ContainsKey(id))
                 {
                     throw new ArgumentException($"Cannot add state {id} to graph - expected non null unique key");
                 }
                 _nodes.Add(id, null);
             }
-            
+
+            _idType = typeof(StateId);
             _nodeCount = 0;
             _edgeCount = 0;
             StringBuilder nodesInfo = new($" states");
             StringBuilder edgesInfo = new($" transitions");
-            foreach ((FsmState<T> state, string[] destinations) in states)
+            foreach ((FsmState<StateId, SharedData> state, StateId[] destinations) in states)
             {
-                string source = state.Id;
-                HashSet<string> neighbors = new(destinations.Length);
-                foreach (string dest in destinations)
+                StateId source = state.Id;
+                HashSet<StateId> neighbors = new(destinations.Length);
+                foreach (StateId dest in destinations)
                 {
-                    if (source == dest || neighbors.Contains(dest) || !_nodes.ContainsKey(dest))
+                    if (FsmState<StateId, SharedData>.HasSameId(source, dest) ||
+                        neighbors.Contains(dest) ||
+                        !_nodes.ContainsKey(dest))
                     {
                         throw new ArgumentException($"Cannot add transition {source}=>{dest} to graph - expected unique existing key");
                     }
@@ -84,11 +90,12 @@ namespace PQ.Common.Fsm
             _description = $"FsmGraph({_nodeCount} states, {_edgeCount} transitions) \n{nodesInfo} \n{edgesInfo}";
         }
 
-        public bool HasState(string id) =>
+        public bool HasState(StateId id) =>
             _nodes.ContainsKey(id);
-        public bool HasTransition(string source, string dest) =>
+        public bool HasTransition(StateId source, StateId dest) =>
             _nodes.ContainsKey(source) && _nodes[source].neighbors.Contains(dest);
 
-        public FsmState<T> GetState(string id) => _nodes.ContainsKey(id) ? _nodes[id].state : null;
+        public FsmState<StateId, SharedData> GetState(StateId id) =>
+            Enum.IsDefined(_idType, id) && _nodes.ContainsKey(id) ? _nodes[id].state : null;
     }
 }

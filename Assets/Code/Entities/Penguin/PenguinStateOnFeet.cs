@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateOnFeet : FsmState<PenguinBlob>
+    public class PenguinStateOnFeet : FsmState<PenguinBlob.StateId, PenguinBlob>
     {
         public PenguinStateOnFeet() : base() { }
 
@@ -43,7 +43,7 @@ namespace PQ.Entities.Penguin
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void HandleLieDownInputReceived()
         {
-            base.SignalMoveToNextState(PenguinBlob.StateIdLyingDown);
+            base.SignalMoveToNextState(PenguinBlob.StateId.LyingDown);
         }
 
         private void HandleGroundContactChanged(bool isGrounded)
@@ -51,7 +51,7 @@ namespace PQ.Entities.Penguin
             Blob.Animation.SetParamIsGrounded(isGrounded);
             if (!isGrounded)
             {
-                base.SignalMoveToNextState(PenguinBlob.StateIdMidair);
+                base.SignalMoveToNextState(PenguinBlob.StateId.Midair);
             }
         }
 

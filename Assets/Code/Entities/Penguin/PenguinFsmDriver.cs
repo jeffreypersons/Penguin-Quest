@@ -4,17 +4,16 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public sealed class PenguinFsmDriver : FsmDriver<PenguinBlob>
-    {
-        protected override void OnInitialStateEntered(string initial)
-        {
-            Debug.Log($"Entered initial state");
-        }
+    using PenguinStateId = PenguinBlob.StateId;
 
-        protected override void OnTransition(string source, string dest)
-        {
+    public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinBlob>
+    {
+        protected override void OnInitialStateEntered(PenguinStateId initial) =>
+            Debug.Log($"Entered initial state");
+
+        protected override void OnTransition(PenguinStateId source, PenguinStateId dest) =>
             Debug.Log($"Transitioning Penguin from {source} to {dest}");
-        }
+
 
         protected override void OnInitialize()
         {
@@ -24,26 +23,25 @@ namespace PQ.Entities.Penguin
                     $"PenguinBlob not found - driver must be attached to same gameObject as PenguinFsmDriver");
             }
 
+            Initialize(new Builder(persistentData: penguinBlob, initial: PenguinStateId.Feet)
 
-            Initialize(new Builder(persistentData: penguinBlob, initial: PenguinBlob.StateIdFeet)
-
-                .AddNode<PenguinStateOnFeet>(PenguinBlob.StateIdFeet, new[] {
-                    PenguinBlob.StateIdLyingDown,
-                    PenguinBlob.StateIdMidair,
+                .AddNode<PenguinStateOnFeet>(PenguinStateId.Feet, new[] {
+                    PenguinStateId.LyingDown,
+                    PenguinStateId.Midair,
                 })
-                .AddNode<PenguinStateOnBelly>(PenguinBlob.StateIdBelly, new[] {
-                    PenguinBlob.StateIdStandingUp,
-                    PenguinBlob.StateIdMidair,
+                .AddNode<PenguinStateOnBelly>(PenguinStateId.Belly, new[] {
+                    PenguinStateId.StandingUp,
+                    PenguinStateId.Midair,
                 })
-                .AddNode<PenguinStateStandingUp>(PenguinBlob.StateIdStandingUp, new[] {
-                    PenguinBlob.StateIdFeet,
+                .AddNode<PenguinStateStandingUp>(PenguinStateId.StandingUp, new[] {
+                    PenguinStateId.Feet,
                 })
-                .AddNode<PenguinStateLyingDown>(PenguinBlob.StateIdLyingDown, new[] {
-                    PenguinBlob.StateIdBelly,
+                .AddNode<PenguinStateLyingDown>(PenguinStateId.LyingDown, new[] {
+                    PenguinStateId.Belly,
                 })
-                .AddNode<PenguinStateMidair>(PenguinBlob.StateIdMidair, new[] {
-                    PenguinBlob.StateIdFeet,
-                    PenguinBlob.StateIdBelly,
+                .AddNode<PenguinStateMidair>(PenguinStateId.Midair, new[] {
+                    PenguinStateId.Feet,
+                    PenguinStateId.Belly,
                 })
             );
         }

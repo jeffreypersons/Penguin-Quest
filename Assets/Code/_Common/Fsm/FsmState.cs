@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PQ.Common.Events;
 
 
@@ -17,30 +18,34 @@ namespace PQ.Common.Fsm
     of the module that handles the correct ordering of states. If it was done here, there would be tons
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
-    public abstract class FsmState<DataBlob> : IEquatable<FsmState<DataBlob>>, IComparable<FsmState<DataBlob>>
-        where DataBlob : FsmBlackboardData
+    public abstract class FsmState<StateId, SharedData>
+        : IEquatable <FsmState<StateId, SharedData>>,
+          IComparable<FsmState<StateId, SharedData>>
+        where SharedData : FsmSharedData
+        where StateId    : Enum
     {
-        private string          _id;
-        private DataBlob        _blob;
+        private StateId         _id;
+        private SharedData      _data;
         private bool            _active;
         private PqEventRegistry _eventRegistry;
 
-        private PqEvent         _moveToLastStateSignal = new("fsm.state.move.last");
-        private PqEvent<string> _moveToNextStateSignal = new("fsm.state.move.next");
+        private PqEvent          _moveToLastStateSignal = new("fsm.state.move.last");
+        private PqEvent<StateId> _moveToNextStateSignal = new("fsm.state.move.next");
 
+        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
+        private static readonly EqualityComparer<StateId> IdEqualityComparer = EqualityComparer<StateId>.Default;
 
-        public    string   Id     => _id;
-        protected DataBlob Blob   => _blob;
-        public    bool     Active => _active;
-
-        public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateSignal;
-        public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateSignal;
+        public    StateId    Id     => _id;
+        protected SharedData Blob   => _data;
+        public    bool       Active => _active;
+        public IPqEventReceiver          OnMoveToLastStateSignaled => _moveToLastStateSignal;
+        public IPqEventReceiver<StateId> OnMoveToNextStateSignaled => _moveToNextStateSignal;
 
         public override string ToString() =>
             $"FsmState(" +
                 $"id:{_id}, " +
                 $"active:{_active}, " +
-                $"blob:{_blob}, " +
+                $"blob:{_data}, " +
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
 
@@ -51,16 +56,19 @@ namespace PQ.Common.Fsm
         // Public dummy state constructor so that we can constrain generics to new(), for use in factories
         public FsmState() { }
 
+        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
+        public bool        HasSameId(StateId id)                  => IdEqualityComparer.Equals(_id, id);
+        public static bool HasSameId(StateId left, StateId right) => IdEqualityComparer.Equals(left, right);
 
         // External entry point factory for constructing the state
         // Note that this is our uniform single access point for creating the state, no public constructors
-        public static StateSubclass Create<StateSubclass>(string id, DataBlob blob)
-            where StateSubclass : FsmState<DataBlob>, new()
+        public static StateSubclassInstance Create<StateSubclassInstance>(StateId id, SharedData blob)
+            where StateSubclassInstance : FsmState<StateId, SharedData>, new()
         {
             return new()
             {
                 _id = id,
-                _blob = blob,
+                _data = blob,
                 _active = false,
                 _eventRegistry = new(),
             };
@@ -100,12 +108,18 @@ namespace PQ.Common.Fsm
         public void LateUpdate()  => OnLateUpdate();
 
 
-        int IComparable<FsmState<DataBlob>>.CompareTo(FsmState<DataBlob> other) => Id.CompareTo(other.Id);
-        bool IEquatable<FsmState<DataBlob>>.Equals(FsmState<DataBlob> other) => other is not null && Id == other.Id;
-        public override bool Equals(object obj) => ((IEquatable<FsmState<DataBlob>>)this).Equals(obj as FsmState<DataBlob>);
-        public override int GetHashCode() => HashCode.Combine(Id);
-        public static bool operator ==(FsmState<DataBlob> left, FsmState<DataBlob> right) =>  Equals(left, right);
-        public static bool operator !=(FsmState<DataBlob> left, FsmState<DataBlob> right) => !Equals(left, right);
+        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) =>
+            Id.CompareTo(other.Id);
+        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) =>
+            other is not null && IdEqualityComparer.Equals(other.Id);
+        public override bool Equals(object obj) =>
+            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
+        public override int GetHashCode()
+            => HashCode.Combine(IdEqualityComparer.GetHashCode());
+        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            Equals(left, right);
+        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            !Equals(left, right);
 
 
 
@@ -114,10 +128,10 @@ namespace PQ.Common.Fsm
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void SignalMoveToLastState()            => _moveToLastStateSignal.Raise();
-        protected void SignalMoveToNextState(string dest) => _moveToNextStateSignal.Raise(dest);
+        protected void SignalMoveToLastState()             => _moveToLastStateSignal.Raise();
+        protected void SignalMoveToNextState(StateId dest) => _moveToNextStateSignal.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
-        protected void RegisterEvent<D>(IPqEventReceiver<D> event_, Action<D> handler_) => _eventRegistry.Add(event_, handler_);
+        protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
