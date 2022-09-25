@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateStandingUp : FsmState<PenguinBlob.StateId, PenguinBlob>
+    public class PenguinStateStandingUp : FsmState<PenguinStateId, PenguinBlob>
     {
         public PenguinStateStandingUp() : base() { }
 
@@ -44,7 +44,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 0.68f
             );
 
-            base.SignalMoveToNextState(PenguinBlob.StateId.Feet);
+            base.SignalMoveToNextState(PenguinStateId.Feet);
 
             // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
             //       and those values can be adjusted, perhaps in their own scriptable objects?

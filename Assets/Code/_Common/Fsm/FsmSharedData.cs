@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -6,8 +7,8 @@ namespace PQ.Common.Fsm
     /*
     Generic, persistent blob of components that can be used by state machine.
     */
+    [Serializable]
     [ExecuteAlways]
-    [System.Serializable]
     public abstract class FsmSharedData : MonoBehaviour
     {
 

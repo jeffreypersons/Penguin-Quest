@@ -1,5 +1,4 @@
 ﻿using PQ.Common.Fsm;
-using PenguinStateId = PQ.Entities.Penguin.PenguinBlob.StateId;
 
 
 namespace PQ.Entities.Penguin

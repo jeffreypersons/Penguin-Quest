@@ -4,8 +4,6 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    using PenguinStateId = PenguinBlob.StateId;
-
     public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinBlob>
     {
         protected override void OnInitialStateEntered(PenguinStateId initial) =>

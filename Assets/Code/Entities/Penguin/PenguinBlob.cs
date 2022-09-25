@@ -19,23 +19,13 @@ namespace PQ.Entities.Penguin
     Note that this always is running, so that gizmos and editor scripts can reference any of its properties
     without worry about when things are valid and active.
     */
+    [Serializable]
     [ExecuteAlways]
-    [System.Serializable]
     [AddComponentMenu("PenguinBlob")]
     public class PenguinBlob : FsmSharedData
     {
         // todo: think of a better way of doing this hooking up..
         public GameEventCenter EventBus { get; set; }
-
-        public enum StateId
-        {
-            Feet,
-            Belly,
-            StandingUp,
-            LyingDown,
-            Midair,
-        }
-
 
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableOuter;

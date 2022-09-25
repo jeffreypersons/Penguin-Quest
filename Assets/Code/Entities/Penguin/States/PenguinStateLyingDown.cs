@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateLyingDown : FsmState<PenguinBlob.StateId, PenguinBlob>
+    public class PenguinStateLyingDown : FsmState<PenguinStateId, PenguinBlob>
     {
         public PenguinStateLyingDown() : base() { }
 
@@ -57,7 +57,7 @@ namespace PQ.Entities.Penguin
                 edgeRadius: 1.25f
             );
 
-            base.SignalMoveToNextState(PenguinBlob.StateId.Belly);
+            base.SignalMoveToNextState(PenguinStateId.Belly);
         }
     }
 }
