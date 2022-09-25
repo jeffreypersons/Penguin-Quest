@@ -27,13 +27,13 @@ namespace PQ.Entities.Penguin
         // todo: think of a better way of doing this hooking up..
         public GameEventCenter EventBus { get; set; }
 
-        public sealed class StateId
+        public enum StateId
         {
-            public const string Feet       = "Penguin.State.OnFeet";
-            public const string Belly      = "Penguin.State.OnBelly";
-            public const string StandingUp = "Penguin.State.StandingUp";
-            public const string LyingDown  = "Penguin.State.LyingDown";
-            public const string Midair     = "Penguin.State.Midair";
+            Feet,
+            Belly,
+            StandingUp,
+            LyingDown,
+            Midair,
         }
 
 

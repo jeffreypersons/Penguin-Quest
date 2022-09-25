@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PQ.Common.Events;
 
 
@@ -17,24 +18,28 @@ namespace PQ.Common.Fsm
     of the module that handles the correct ordering of states. If it was done here, there would be tons
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
-    public abstract class FsmState<SharedData> : IEquatable<FsmState<SharedData>>, IComparable<FsmState<SharedData>>
+    public abstract class FsmState<StateId, SharedData>
+        : IEquatable <FsmState<StateId, SharedData>>,
+          IComparable<FsmState<StateId, SharedData>>
         where SharedData : FsmSharedData
+        where StateId    : Enum
     {
-        private string          _id;
+        private StateId         _id;
         private SharedData      _data;
         private bool            _active;
         private PqEventRegistry _eventRegistry;
 
-        private PqEvent         _moveToLastStateSignal = new("fsm.state.move.last");
-        private PqEvent<string> _moveToNextStateSignal = new("fsm.state.move.next");
+        private PqEvent          _moveToLastStateSignal = new("fsm.state.move.last");
+        private PqEvent<StateId> _moveToNextStateSignal = new("fsm.state.move.next");
 
+        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
+        private static readonly EqualityComparer<StateId> IdEqualityComparer = EqualityComparer<StateId>.Default;
 
-        public    string     Id     => _id;
+        public    StateId    Id     => _id;
         protected SharedData Blob   => _data;
         public    bool       Active => _active;
-
-        public IPqEventReceiver         OnMoveToLastStateSignaled => _moveToLastStateSignal;
-        public IPqEventReceiver<string> OnMoveToNextStateSignaled => _moveToNextStateSignal;
+        public IPqEventReceiver          OnMoveToLastStateSignaled => _moveToLastStateSignal;
+        public IPqEventReceiver<StateId> OnMoveToNextStateSignaled => _moveToNextStateSignal;
 
         public override string ToString() =>
             $"FsmState(" +
@@ -51,11 +56,14 @@ namespace PQ.Common.Fsm
         // Public dummy state constructor so that we can constrain generics to new(), for use in factories
         public FsmState() { }
 
+        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
+        public bool        HasSameId(StateId id)                  => IdEqualityComparer.Equals(_id, id);
+        public static bool HasSameId(StateId left, StateId right) => IdEqualityComparer.Equals(left, right);
 
         // External entry point factory for constructing the state
         // Note that this is our uniform single access point for creating the state, no public constructors
-        public static StateSubclassInstance Create<StateSubclassInstance>(string id, SharedData blob)
-            where StateSubclassInstance : FsmState<SharedData>, new()
+        public static StateSubclassInstance Create<StateSubclassInstance>(StateId id, SharedData blob)
+            where StateSubclassInstance : FsmState<StateId, SharedData>, new()
         {
             return new()
             {
@@ -100,12 +108,18 @@ namespace PQ.Common.Fsm
         public void LateUpdate()  => OnLateUpdate();
 
 
-        int IComparable<FsmState<SharedData>>.CompareTo(FsmState<SharedData> other) => Id.CompareTo(other.Id);
-        bool IEquatable<FsmState<SharedData>>.Equals(FsmState<SharedData> other) => other is not null && Id == other.Id;
-        public override bool Equals(object obj) => ((IEquatable<FsmState<SharedData>>)this).Equals(obj as FsmState<SharedData>);
-        public override int GetHashCode() => HashCode.Combine(Id);
-        public static bool operator ==(FsmState<SharedData> left, FsmState<SharedData> right) =>  Equals(left, right);
-        public static bool operator !=(FsmState<SharedData> left, FsmState<SharedData> right) => !Equals(left, right);
+        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) =>
+            Id.CompareTo(other.Id);
+        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) =>
+            other is not null && IdEqualityComparer.Equals(other.Id);
+        public override bool Equals(object obj) =>
+            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
+        public override int GetHashCode()
+            => HashCode.Combine(IdEqualityComparer.GetHashCode());
+        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            Equals(left, right);
+        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            !Equals(left, right);
 
 
 
@@ -114,8 +128,8 @@ namespace PQ.Common.Fsm
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void SignalMoveToLastState()            => _moveToLastStateSignal.Raise();
-        protected void SignalMoveToNextState(string dest) => _moveToNextStateSignal.Raise(dest);
+        protected void SignalMoveToLastState()             => _moveToLastStateSignal.Raise();
+        protected void SignalMoveToNextState(StateId dest) => _moveToNextStateSignal.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 

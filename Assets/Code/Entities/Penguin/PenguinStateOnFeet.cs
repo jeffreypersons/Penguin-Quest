@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Entities.Penguin
 {
-    public class PenguinStateOnFeet : FsmState<PenguinBlob>
+    public class PenguinStateOnFeet : FsmState<PenguinBlob.StateId, PenguinBlob>
     {
         public PenguinStateOnFeet() : base() { }
 
