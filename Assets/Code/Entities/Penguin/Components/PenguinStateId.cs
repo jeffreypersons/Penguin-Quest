@@ -6,10 +6,11 @@ namespace PQ.Entities.Penguin
     [Flags]
     public enum PenguinStateId
     {
-        Feet       = 0,
-        Belly      = 1 << 1,
-        StandingUp = 1 << 2,
-        LyingDown  = 1 << 3,
-        Midair     = 1 << 4,
+        None       = 0,
+        Feet       = 1 << 1,
+        Belly      = 1 << 2,
+        StandingUp = 1 << 3,
+        LyingDown  = 1 << 4,
+        Midair     = 1 << 5,
     }
 }
