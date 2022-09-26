@@ -7,7 +7,7 @@ namespace PQ.Entities.Penguin
     public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinBlob>
     {
         protected override void OnInitialStateEntered(PenguinStateId initial) =>
-            Debug.Log($"Entered initial state\n{this}");
+            Debug.Log($"Intialized {this}");
 
         protected override void OnTransition(PenguinStateId source, PenguinStateId dest) =>
             Debug.Log($"Transitioning Penguin from {source} to {dest}");

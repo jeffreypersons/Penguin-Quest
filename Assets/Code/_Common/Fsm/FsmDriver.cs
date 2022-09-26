@@ -41,8 +41,7 @@ namespace PQ.Common.Fsm
                     $"current:{_current?.Name ?? "<none>"}," +
                     $"last:{_last?.Name ?? "<none>"}," +
                     $"next:{_next?.Name ?? "<none>"})" +
-                $"\n  {_graph}" +
-            $"}}";
+                $"\n{_graph}";
         }
 
 

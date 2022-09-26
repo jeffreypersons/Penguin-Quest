@@ -36,7 +36,7 @@ namespace PQ.Common.Fsm
         public int StateCount => _nodeCount;
         public int TransitionCount => _edgeCount;
 
-        private const int indentAmount = 2;
+        private const int indentAmount = 4;
         
         public override string ToString() => _description;
 
@@ -64,10 +64,8 @@ namespace PQ.Common.Fsm
 
             _nodeCount = 0;
             _edgeCount = 0;
-            string indent1 = new(' ', indentAmount);
-            string indent2 = new(' ', indentAmount * 2);
-            StringBuilder nodesInfo = new($"{indent1}states\n");
-            StringBuilder edgesInfo = new($"{indent1}transitions\n");
+            string indent = new(' ', indentAmount);
+            StringBuilder stringBuilder = new();
             foreach ((FsmState<StateId, SharedData> state, StateId[] destinations) in states)
             {
                 StateId source = state.Id;
@@ -84,15 +82,14 @@ namespace PQ.Common.Fsm
                 }
 
                 state.Initialize();
-                nodesInfo.Append($"{indent2}{state}").AppendLine();
-                edgesInfo.Append($"{indent2}{source} => {{").AppendJoin(",", neighbors).Append($"}}").AppendLine();
+                stringBuilder.Append($"{indent}{source}=>{{").AppendJoin(",", neighbors).Append($"}}").AppendLine();
 
                 _nodeCount++;
                 _edgeCount += neighbors.Count;
                 _nodes[source] = new(state, neighbors);
             }
 
-            _description = $"FsmGraph({_nodeCount} states, {_edgeCount} transitions)\n{nodesInfo}\n{edgesInfo}";
+            _description = $"{{\n{stringBuilder}}}";
         }
 
         public bool HasState(StateId id) =>
