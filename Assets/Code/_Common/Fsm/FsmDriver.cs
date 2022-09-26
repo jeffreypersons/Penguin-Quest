@@ -32,17 +32,18 @@ namespace PQ.Common.Fsm
         private FsmState<StateId, SharedData> _next;
         private FsmState<StateId, SharedData> _current;
 
-        public override string ToString() =>
-            $"FsmDriver:{{" +
-                $"\nFsmData({_sharedData}), " +
-                $"\nFsmHistory(" +
-                    $"initial:{_initial.Id}," +
-                    $"current:{_current.Id}," +
-                    $"last:{_last.Id}," +
-                    $"next:{_next.Id})" +
-                $"{_graph}" +
+        public override string ToString()
+        {
+            return
+                $"{GetType()}(gameObject:{base.name},data:{_sharedData})" +
+                $"\n  FsmHistory(" +
+                    $"initial:{_initial?.Name ?? "<none>"}," +
+                    $"current:{_current?.Name ?? "<none>"}," +
+                    $"last:{_last?.Name ?? "<none>"}," +
+                    $"next:{_next?.Name ?? "<none>"})" +
+                $"\n  {_graph}" +
             $"}}";
-
+        }
 
 
         /*** Internal Hooks for Setting up a Specific State Machine Instance ***/

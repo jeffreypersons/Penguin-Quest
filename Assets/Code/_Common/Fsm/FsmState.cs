@@ -25,6 +25,7 @@ namespace PQ.Common.Fsm
         where StateId    : struct, Enum
     {
         private StateId         _id;
+        private string          _name;
         private SharedData      _data;
         private bool            _active;
         private PqEventRegistry _eventRegistry;
@@ -36,6 +37,7 @@ namespace PQ.Common.Fsm
         private static readonly EqualityComparer<StateId> IdEqualityComparer = EqualityComparer<StateId>.Default;
 
         public    StateId    Id     => _id;
+        public    string     Name   => _name;
         protected SharedData Blob   => _data;
         public    bool       Active => _active;
         public IPqEventReceiver          OnMoveToLastStateSignaled => _moveToLastStateSignal;
@@ -68,6 +70,7 @@ namespace PQ.Common.Fsm
             return new()
             {
                 _id = id,
+                _name = id.ToString(),
                 _data = blob,
                 _active = false,
                 _eventRegistry = new(),
