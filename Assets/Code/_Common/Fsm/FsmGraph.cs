@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Fsm
@@ -19,12 +20,12 @@ namespace PQ.Common.Fsm
         private sealed class Node
         {
             public readonly FsmState<StateId, SharedData> state;
-            public readonly HashSet<StateId> neighbors;
+            public readonly StateId neighborsBitset;
 
-            public Node(FsmState<StateId, SharedData> state, HashSet<StateId> neighbors)
+            public Node(FsmState<StateId, SharedData> state, StateId neighborsBitset)
             {
                 this.state = state;
-                this.neighbors = neighbors;
+                this.neighborsBitset = neighborsBitset;
             }
         }
 
@@ -36,12 +37,12 @@ namespace PQ.Common.Fsm
         public int StateCount => _nodeCount;
         public int TransitionCount => _edgeCount;
 
-        private const int indentAmount = 4;
+        private readonly string indent = new(' ', 4);
         
         public override string ToString() => _description;
 
         /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(List<(FsmState<StateId, SharedData>, StateId[])> states)
+        public FsmGraph(in List<(FsmState<StateId, SharedData>, StateId[])> states)
         {
             if (states == null || states.Count == 0)
             {
@@ -50,12 +51,13 @@ namespace PQ.Common.Fsm
 
             // fill in the state ids first, so we can use for validating the rest of the input
             // when populating the graph states and transitions
-            Type idType = typeof(StateId);
+            StringBuilder stringBuilder = new();
             _nodes = new Dictionary<StateId, Node>(states.Count);
-            foreach ((FsmState<StateId, SharedData> state, StateId[] _) in states)
+            foreach ((FsmState<StateId, SharedData> state, StateId[] neighbors) in states)
             {
+                stringBuilder.Append($"{indent}{state.Name}=>{{").AppendJoin(',', neighbors);
                 StateId id = state.Id;
-                if (!Enum.IsDefined(idType, id) || _nodes.ContainsKey(id))
+                if (_nodes.ContainsKey(id))
                 {
                     throw new ArgumentException($"Cannot add state {id} to graph - expected non null unique key");
                 }
@@ -64,29 +66,30 @@ namespace PQ.Common.Fsm
 
             _nodeCount = 0;
             _edgeCount = 0;
-            string indent = new(' ', indentAmount);
-            StringBuilder stringBuilder = new();
             foreach ((FsmState<StateId, SharedData> state, StateId[] destinations) in states)
             {
                 StateId source = state.Id;
-                HashSet<StateId> neighbors = new(destinations.Length);
+                StateId neighborBitset = default;
+                int neighborCount = destinations.Length;
+
                 foreach (StateId dest in destinations)
                 {
+                    stringBuilder.Append($"{EnumExtensions.NameOf(dest)},");
+
                     if (FsmState<StateId, SharedData>.HasSameId(source, dest) ||
-                        neighbors.Contains(dest) ||
+                        EnumExtensions.HasFlags(neighborBitset, dest) ||
                         !_nodes.ContainsKey(dest))
                     {
                         throw new ArgumentException($"Cannot add transition {source}=>{dest} to graph - expected unique existing key");
                     }
-                    neighbors.Add(dest);
+                    neighborBitset = EnumExtensions.SetFlags(neighborBitset, dest);
                 }
+                RemoveTrailingCharacter(stringBuilder, ',');
 
                 state.Initialize();
-                stringBuilder.Append($"{indent}{source}=>{{").AppendJoin(",", neighbors).Append($"}}").AppendLine();
-
                 _nodeCount++;
-                _edgeCount += neighbors.Count;
-                _nodes[source] = new(state, neighbors);
+                _edgeCount += destinations.Length;
+                _nodes[source] = new(state, neighborBitset);
             }
 
             _description = $"{{\n{stringBuilder}}}";
@@ -95,9 +98,19 @@ namespace PQ.Common.Fsm
         public bool HasState(StateId id) =>
             _nodes.ContainsKey(id);
         public bool HasTransition(StateId source, StateId dest) =>
-            _nodes.ContainsKey(source) && _nodes[source].neighbors.Contains(dest);
+            _nodes.ContainsKey(source) && EnumExtensions.HasFlags(_nodes[source].neighborsBitset, dest);
 
         public FsmState<StateId, SharedData> GetState(StateId id) =>
             _nodes.ContainsKey(id) ? _nodes[id].state : null;
+
+
+        private static void RemoveTrailingCharacter(StringBuilder stringBuilder, char character)
+        {
+            int size = stringBuilder.Length;
+            if (size > 0 && stringBuilder[size - 1] == character)
+            {
+                stringBuilder.Length--;
+            }
+        }
     }
 }
