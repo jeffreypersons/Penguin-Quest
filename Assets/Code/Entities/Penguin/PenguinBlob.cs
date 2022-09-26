@@ -210,7 +210,7 @@ namespace PQ.Entities.Penguin
         private static bool HasAllFlags(PenguinColliderConstraints constraints, PenguinColliderConstraints flags)
         {
             // check if ALL given flags are a proper subset of constraints
-            return EnumExtensions.HasAllFlags(constraints, flags);
+            return EnumExtensions.HasFlags(constraints, flags);
         }
     }
 }
