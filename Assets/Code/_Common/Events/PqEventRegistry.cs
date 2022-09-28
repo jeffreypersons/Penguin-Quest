@@ -126,11 +126,11 @@ namespace PQ.Common.Events
             if (_entries.Count > 0)
             {
 
-                _stringBuilder.Append(entry.Description);
+                _stringBuilder.Append(',').Append(entry.Description);
             }
             else
             {
-                _stringBuilder.Append(',').Append(entry.Description);
+                _stringBuilder.Append(entry.Description);
             }
 
             _description = _stringBuilder.ToString();

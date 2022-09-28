@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
 using PQ.Common.Fsm;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Entities.Penguin
@@ -117,7 +118,7 @@ namespace PQ.Entities.Penguin
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
-            Common.Extensions.GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
+            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
         }
         #endif
         
@@ -162,13 +163,13 @@ namespace PQ.Entities.Penguin
 
         private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
         {
-            _headCollider             .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableHead);
-            _torsoCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableTorso);
-            _frontFlipperUpperCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
-            _frontFlipperLowerCollider.enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFlippers);
-            _frontFootCollider        .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            _backFootCollider         .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableFeet);
-            _outerCollider            .enabled = !HasAllFlags(constraints, PenguinColliderConstraints.DisableOuter);
+            _headCollider             .enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableHead);
+            _torsoCollider            .enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableTorso);
+            _frontFlipperUpperCollider.enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableFlippers);
+            _frontFlipperLowerCollider.enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableFlippers);
+            _frontFootCollider        .enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableFeet);
+            _backFootCollider         .enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableFeet);
+            _outerCollider            .enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableOuter);
         }
 
         private PenguinColliderConstraints GetConstraintsAccordingToDisabledColliders()
@@ -206,9 +207,10 @@ namespace PQ.Entities.Penguin
         }
 
         [Pure]
-        private static bool HasAllFlags(PenguinColliderConstraints constraints, PenguinColliderConstraints flags)
+        private static bool IsDisabled(PenguinColliderConstraints constraints, PenguinColliderConstraints flags)
         {
             // check if ALL given flags are a proper subset of constraints
+            // note that unlike enum.hasFlags, this returns false for None = 0
             return (constraints & flags) == flags;
         }
     }

@@ -11,6 +11,6 @@ namespace PQ.Common.Fsm
     [ExecuteAlways]
     public abstract class FsmSharedData : MonoBehaviour
     {
-
+        public override string ToString() => $"{GetType()}";
     }
 }

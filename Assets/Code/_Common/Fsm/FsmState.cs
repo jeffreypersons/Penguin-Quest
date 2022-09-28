@@ -22,9 +22,10 @@ namespace PQ.Common.Fsm
         : IEquatable <FsmState<StateId, SharedData>>,
           IComparable<FsmState<StateId, SharedData>>
         where SharedData : FsmSharedData
-        where StateId    : Enum
+        where StateId    : struct, Enum
     {
         private StateId         _id;
+        private string          _name;
         private SharedData      _data;
         private bool            _active;
         private PqEventRegistry _eventRegistry;
@@ -36,6 +37,7 @@ namespace PQ.Common.Fsm
         private static readonly EqualityComparer<StateId> IdEqualityComparer = EqualityComparer<StateId>.Default;
 
         public    StateId    Id     => _id;
+        public    string     Name   => _name;
         protected SharedData Blob   => _data;
         public    bool       Active => _active;
         public IPqEventReceiver          OnMoveToLastStateSignaled => _moveToLastStateSignal;
@@ -65,9 +67,11 @@ namespace PQ.Common.Fsm
         public static StateSubclassInstance Create<StateSubclassInstance>(StateId id, SharedData blob)
             where StateSubclassInstance : FsmState<StateId, SharedData>, new()
         {
+            new UnityEngine.Vector3();
             return new()
             {
                 _id = id,
+                _name = Enum.GetName(typeof(StateId), id),
                 _data = blob,
                 _active = false,
                 _eventRegistry = new(),
