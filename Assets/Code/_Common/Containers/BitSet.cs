@@ -11,52 +11,52 @@ namespace PQ.Common.Extensions
     */
     public struct BitSet : IEquatable<BitSet>, IComparable<BitSet>
     {
-        public int Value    { get; private set; }
-        public int SetCount { get; private set; }
-        public int Length   { get; private set; }
+        public int Value { get; private set; }
+        public int Count { get; private set; }
+        public int Size  { get; private set; }
         
 
-        public BitSet(int length)
+        public BitSet(int size)
         {            
-            if (length < 0)
+            if (size < 0)
             {
                 throw new ArgumentException($"Bitset size cannot be negative");
-            }            
-            Value    = 0;
-            SetCount = 0;
-            Length   = length;
+            }
+            Value = 0;
+            Count = 0;
+            Size  = size;
         }
 
-        public bool TryAdd(int index)
+        public bool TryAdd(int bitPosition)
         {
-            int element = 1 << index;
-            if (index < 0 || index >= Length || (Value & element) != 0)
+            int element = 1 << bitPosition;
+            if (bitPosition < 0 || bitPosition >= Size || (Value & element) != 0)
             {
                 return false;
             }
 
             Value |= element;
-            SetCount++;
+            Count++;
             return true;
         }
 
-        public bool TryRemove(int index)
+        public bool TryRemove(int bitPosition)
         {
-            int element = 1 << index;
-            if (index < 0 || index >= Length || (Value & element) == 0)
+            int element = 1 << bitPosition;
+            if (bitPosition < 0 || bitPosition >= Size || (Value & element) == 0)
             {
                 return false;
             }
 
             Value &= element;
-            SetCount--;
+            Count--;
             return true;
         }
 
-        public bool IsSet(int index)
+        public bool IsSet(int bitPosition)
         {
             // note that no index check is necessary since that's enforced in Set()
-            return (Value & (1 << index)) != 0;
+            return (Value & (1 << bitPosition)) != 0;
         }
 
         public bool IsSubset(int mask)
@@ -66,9 +66,16 @@ namespace PQ.Common.Extensions
             return (Value & mask) == mask;
         }
 
+        public bool IsSubset(BitSet bitSet)
+        {
+            // explicitly check against given mask to ensure that zero
+            // is not included unless the mask is as well
+            return (Value & bitSet.Value) == bitSet.Value;
+        }
+
         public static string ToString(BitSet bitSet)
         {
-            var bits = new char[bitSet.Length];
+            var bits = new char[bitSet.Size];
             for (int i = 0; i < bits.Length; i++)
             {
                 bits[i] = bitSet.IsSet(i) ? '1' : '0';

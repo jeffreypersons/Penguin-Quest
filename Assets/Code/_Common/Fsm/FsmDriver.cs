@@ -80,10 +80,6 @@ namespace PQ.Common.Fsm
             {
                 throw new InvalidOperationException($"Cannot initialize - builder cannot be null");
             }
-            if (builder == null)
-            {
-                throw new InvalidOperationException($"Cannot initialize - builder cannot be null");
-            }
 
             _initialized = true;
             _graph       = new FsmGraph<StateId, SharedData>(builder.nodes);

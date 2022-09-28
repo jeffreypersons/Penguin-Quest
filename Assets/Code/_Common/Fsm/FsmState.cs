@@ -67,10 +67,11 @@ namespace PQ.Common.Fsm
         public static StateSubclassInstance Create<StateSubclassInstance>(StateId id, SharedData blob)
             where StateSubclassInstance : FsmState<StateId, SharedData>, new()
         {
+            new UnityEngine.Vector3();
             return new()
             {
                 _id = id,
-                _name = id.ToString(),
+                _name = Enum.GetName(typeof(StateId), id),
                 _data = blob,
                 _active = false,
                 _eventRegistry = new(),

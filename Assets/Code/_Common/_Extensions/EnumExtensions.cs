@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Unity.Collections.LowLevel.Unsafe;
+using UnityEditor;
 
 
 namespace PQ.Common.Extensions
@@ -11,52 +12,35 @@ namespace PQ.Common.Extensions
     Unlike much of the Enum utilities provided in System.Enum, via generic constraints and unsafe conversions,
     we get boxing-free (eg no garbage) highly performant conversions and bit flag operations.
 
-    Caution: For the sake of performance, all methods assume underlying type is the default int32, and that
-             system.flags is used as an attribute, with default value of none
+    Caution: For the sake of performance, all methods assume underlying type is the default int32
     */
     public static class EnumExtensions
     {
-        [Pure] public static bool IsDefined<T>(T value) where T : struct, Enum => Enum.IsDefined(typeof(T), value);
+        [Pure] public static int  AsInt<T>(T val)                 where T : struct, Enum => UnsafeUtility.As<T, int>(ref val);
+        [Pure] public static T    AsEnum<T>(int val)              where T : struct, Enum => UnsafeUtility.As<int, T>(ref val);
+        [Pure] public static int  CountEnumValues<T>()            where T : struct, Enum => Enum.GetNames(typeof(T)).Length;
+        [Pure] public static bool HasValue<T>(T value)            where T : struct, Enum => Enum.GetName(typeof(T), value) != null;
+        [Pure] public static bool HasUnderlyingType<T>(Type type) where T : struct, Enum => Enum.GetUnderlyingType(typeof(T)) == type;
 
-
-        [Pure] public static int AsInt<T>(T value)    where T : struct, Enum => UnsafeUtility.As<T, int>(ref value);
-
-        [Pure] public static T   AsEnum<T>(int value) where T : struct, Enum => UnsafeUtility.As<int, T>(ref value);
-
-
-        [Pure] public static string NameOf<T>()                 where T : struct, Enum => nameof(T);
-
-        [Pure] public static string NameOf<T>(T value)          where T : struct, Enum => nameof(value);
-
-        [Pure] public static string FullNameOfValue<T>(T value) where T : struct, Enum => $"{nameof(T)}.{nameof(value)}";
-
-
-        [Pure] public static T SetFlags<T>(T set, T subset)   where T : struct, Enum => AsEnum<T>(AsInt(set) | AsInt(subset));
-        [Pure] public static T ClearFlags<T>(T set, T subset) where T : struct, Enum => AsEnum<T>(AsInt(set) & AsInt(subset));
-
-
-        // check if ALL given flags are a proper subset of constraints
-        // note that unlike enum.hasFlags, this returns false for None = 0
+        /* Are all the enum values from 0 to n of type int32? */
         [Pure]
-        public static bool HasFlags<T>(T set, T subset)
-            where T : struct, Enum
+        public static bool AreAllEnumValuesDefault<TEnum>()
+            where TEnum : struct, Enum
         {
-            var set_    = AsInt(set);
-            var subset_ = AsInt(subset);
-            return (set_ & subset_) == subset_;
-        }
-
-        // OR all given flags together
-        [Pure]
-        public static T CombineFlags<T>(in T[] subsets)
-            where T : struct, Enum
-        {
-            int bits = 0;
-            for (int i = 0; i < subsets.Length; i++)
+            if (!HasUnderlyingType<TEnum>(typeof(int)))
             {
-                bits |= AsInt(subsets[i]);
+                return false;
             }
-            return AsEnum<T>(bits);
+
+            int totalCount = CountEnumValues<TEnum>();
+            for (int i = 0; i < totalCount; i++)
+            {
+                if (!HasValue(AsEnum<TEnum>(i)))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
