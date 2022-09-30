@@ -69,9 +69,7 @@ namespace PQ.Common.Fsm
             public Builder AddNode<StateSubclass>(StateId id, StateId[] transitions)
                 where StateSubclass : FsmState<StateId, SharedData>, new()
             {
-                var state = FsmState<StateId, SharedData>.Create<StateSubclass>(id, data);
-                state.Initialize();
-                nodes.Add((state, transitions));
+                nodes.Add((FsmState<StateId, SharedData>.Create<StateSubclass>(id, data), transitions));
                 return this;
             }
         }

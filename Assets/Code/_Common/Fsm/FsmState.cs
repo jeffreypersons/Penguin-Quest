@@ -83,8 +83,7 @@ namespace PQ.Common.Fsm
         public static StateSubclassInstance Create<StateSubclassInstance>(StateId id, SharedData blob)
             where StateSubclassInstance : FsmState<StateId, SharedData>, new()
         {
-            new UnityEngine.Vector3();
-            return new()
+            StateSubclassInstance instance = new()
             {
                 _id = id,
                 _name = Enum.GetName(typeof(StateId), id),
@@ -92,14 +91,9 @@ namespace PQ.Common.Fsm
                 _active = false,
                 _eventRegistry = new(),
             };
-        }
-
-        // Entry point for client code initializing state instances
-        // Any 'startup' code such as hooking up handlers to events is done here
-        public void Initialize()
-        {
-            OnIntialize();
-            _eventRegistry.UnsubscribeToAllRegisteredEvents();
+            instance.OnIntialize();
+            instance._eventRegistry.UnsubscribeToAllRegisteredEvents();
+            return instance;
         }
 
         // Entry point for client code utilizing state instances
