@@ -22,7 +22,6 @@ namespace PQ.Entities.Penguin
             }
 
             Initialize(new Builder(persistentData: penguinBlob, initial: PenguinStateId.Feet)
-
                 .AddNode<PenguinStateOnFeet>(PenguinStateId.Feet, new[] {
                     PenguinStateId.LyingDown,
                     PenguinStateId.Midair,

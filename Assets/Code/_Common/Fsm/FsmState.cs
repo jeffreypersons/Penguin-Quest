@@ -50,7 +50,23 @@ namespace PQ.Common.Fsm
                 $"blob:{_data}, " +
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
+        
 
+        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) =>
+            Id.CompareTo(other.Id);
+        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) =>
+            other is not null && IdEqualityComparer.Equals(Id, other.Id);
+
+        public override bool Equals(object obj) =>
+            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
+        public override int GetHashCode() =>
+            HashCode.Combine(IdEqualityComparer.GetHashCode());
+
+        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            ReferenceEquals(left, right) ||
+            (left is not null && ((IEquatable<FsmState<StateId, SharedData>>)left).Equals(right));
+        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            !(left == right);
 
 
         /*** External Facing Methods for Driving State Logic ***/
@@ -110,20 +126,6 @@ namespace PQ.Common.Fsm
 
         // Execute logic intended for later on in a frame such as programmatic visual effects
         public void LateUpdate()  => OnLateUpdate();
-
-
-        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) =>
-            Id.CompareTo(other.Id);
-        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) =>
-            other is not null && IdEqualityComparer.Equals(other.Id);
-        public override bool Equals(object obj) =>
-            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
-        public override int GetHashCode()
-            => HashCode.Combine(IdEqualityComparer.GetHashCode());
-        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            Equals(left, right);
-        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            !Equals(left, right);
 
 
 

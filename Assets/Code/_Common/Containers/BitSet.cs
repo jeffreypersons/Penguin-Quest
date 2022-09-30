@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PQ.Common.Fsm;
+using System;
+using System.Diagnostics.Contracts;
+using UnityEditor;
 
 
 namespace PQ.Common.Extensions
@@ -17,7 +20,7 @@ namespace PQ.Common.Extensions
         
 
         public BitSet(int size)
-        {            
+        {
             if (size < 0)
             {
                 throw new ArgumentException($"Bitset size cannot be negative");
@@ -25,6 +28,18 @@ namespace PQ.Common.Extensions
             Value = 0;
             Count = 0;
             Size  = size;
+        }
+
+        public void SetAll()
+        {
+            Value = ~0;
+            Count = Size;
+        }
+
+        public void RemoveAll()
+        {
+            Value = 0;
+            Count = 0;
         }
 
         public bool TryAdd(int bitPosition)
@@ -53,12 +68,14 @@ namespace PQ.Common.Extensions
             return true;
         }
 
+        [Pure]
         public bool IsSet(int bitPosition)
         {
             // note that no index check is necessary since that's enforced in Set()
             return (Value & (1 << bitPosition)) != 0;
         }
 
+        [Pure]
         public bool IsSubset(int mask)
         {
             // explicitly check against given mask to ensure that zero
@@ -66,6 +83,7 @@ namespace PQ.Common.Extensions
             return (Value & mask) == mask;
         }
 
+        [Pure]
         public bool IsSubset(BitSet bitSet)
         {
             // explicitly check against given mask to ensure that zero
@@ -73,6 +91,7 @@ namespace PQ.Common.Extensions
             return (Value & bitSet.Value) == bitSet.Value;
         }
 
+        [Pure]
         public static string ToString(BitSet bitSet)
         {
             var bits = new char[bitSet.Size];
@@ -83,15 +102,14 @@ namespace PQ.Common.Extensions
             return new string(bits);
         }
 
-        
-        public override string  ToString()         => ToString(bitSet: this);
-        public override int     GetHashCode()      => HashCode.Combine(Value);
-        public override bool    Equals(object obj) => obj is BitSet && Equals((BitSet)obj);
-
-        bool IEquatable<BitSet>.Equals(BitSet other)    => Value == other.Value;
+        bool IEquatable<BitSet>.Equals(BitSet other) => Value == other.Value;
         int IComparable<BitSet>.CompareTo(BitSet other) => Value.CompareTo(other.Value);
 
-        public static bool operator ==(BitSet left, BitSet right) => left.Value == right.Value;
-        public static bool operator !=(BitSet left, BitSet right) => left.Value != right.Value;
+        public override string  ToString()         => ToString(bitSet: this);
+        public override int     GetHashCode()      => HashCode.Combine(Value);
+        public override bool    Equals(object obj) => ((IEquatable<BitSet>)this).Equals((BitSet)obj);
+
+        public static bool operator ==(BitSet left, BitSet right) => ((IEquatable<BitSet>)left).Equals(right);
+        public static bool operator !=(BitSet left, BitSet right) => !(left == right);
     }
 }
