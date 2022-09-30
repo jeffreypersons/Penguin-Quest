@@ -21,11 +21,17 @@ namespace PQ.Common.Fsm
         #region cache
         // since enums are evaluated at compile time and bound to corresponding template parameter,
         // we only need to validate once, when this file first loads
-        private static BitSet _stateIdEntries;
+        private static BitSet   _stateIdEntries;
+        private static string[] _stateIdNames;
         private static BitSet CachedStateIdEntries
         {
             get
             {
+                if (_stateIdNames != null)
+                {
+                    return _stateIdEntries;
+                }
+
                 if (!EnumExtensions.AreAllEnumValuesDefault<StateId>())
                 {
                     throw new ArgumentException(
@@ -33,6 +39,7 @@ namespace PQ.Common.Fsm
                         $"received {EnumExtensions.AsUserFriendlyString<StateId>()} instead");
                 }
 
+                _stateIdNames = EnumExtensions.Names<StateId>();
                 _stateIdEntries = new BitSet(size: EnumExtensions.CountEnumValues<StateId>());
                 _stateIdEntries.SetAll();
                 return _stateIdEntries;
@@ -83,17 +90,12 @@ namespace PQ.Common.Fsm
                 throw new ArgumentException($"Fsm must have at least one state - received none");
             }
 
-            _stateCount      = 0;
+            // note that since the nodes are created using bitset, node list match state id enum order
+            _stateCount = 0;
             _transitionCount = 0;
             _description     = string.Empty;
             _nodes           = ExtractNodeForEachDefinedId(adjacencyList);
-
-            StringBuilder stringBuilder = new("{\n");
-            foreach (Node node in _nodes)
-            {
-                stringBuilder.Append($"{indentation}{node.state.Name}=>{{").AppendJoin(',', node.neighbors).Append($"}}");
-            }
-            _description = $"{{\n{stringBuilder}}}";
+            _description     = AsUserFriendlyString(_nodes);
         }
 
         public bool HasState(StateId id) => TryMapIdToIndex(id, out int _);
@@ -110,9 +112,13 @@ namespace PQ.Common.Fsm
         private static Node[] ExtractNodeForEachDefinedId(
             in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
         {
+            if (adjacencyList.Count != CachedStateIdEntries.Count)
+            {
+                throw new ArgumentException($"Cannot extract nodes -" +
+                    $"must have one state per stateId enum member yet counts are unequal");
+            }
+
             // fill the ordered buckets according to their underlying ordinal type
-            // note that since we enforce uniqueness and equal counts, there is no need
-            // to do any further checks
             Node[] nodes = new Node[CachedStateIdEntries.Count];
             foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
             {
@@ -147,6 +153,34 @@ namespace PQ.Common.Fsm
                 nodes[stateIndex] = new Node(state, neighbors);
             }
             return nodes;
+        }
+        
+        private static string AsUserFriendlyString(in Node[] nodes)
+        {
+            StringBuilder sb = new("{\n");
+            foreach (Node node in nodes)
+            {
+                sb.Append($"{indentation}{node.state.Name} => {{");
+                for (int i = 0; i < _stateIdNames.Length; i++)
+                {
+                    if (node.neighbors.IsSet(i))
+                    {
+                        sb.Append(_stateIdNames[i]).Append(',');
+                    }
+                }
+                RemoveTrailingCharacter(sb, ',');
+                sb.Append($"}}\n");
+            }
+            sb.Append("}");
+            return sb.ToString();
+        }
+        private static void RemoveTrailingCharacter(StringBuilder stringBuilder, char character)
+        {
+            int size = stringBuilder.Length;
+            if (stringBuilder[size - 1] == character)
+            {
+                stringBuilder.Length--;
+            }
         }
     }
 }

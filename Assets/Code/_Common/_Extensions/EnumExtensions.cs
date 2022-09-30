@@ -64,7 +64,7 @@ namespace PQ.Common.Extensions
         }
 
 
-        [Pure] private static string[] Names<T>()  where T : struct, Enum =>      Enum.GetNames(typeof(T));
-        [Pure] private static T[]      Values<T>() where T : struct, Enum => (T[])Enum.GetValues(typeof(T));
+        [Pure] public static string[] Names<T>()  where T : struct, Enum =>      Enum.GetNames(typeof(T));
+        [Pure] public static T[]      Values<T>() where T : struct, Enum => (T[])Enum.GetValues(typeof(T));
     }
 }
