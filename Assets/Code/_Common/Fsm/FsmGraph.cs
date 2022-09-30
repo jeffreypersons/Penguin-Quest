@@ -91,9 +91,7 @@ namespace PQ.Common.Fsm
             StringBuilder stringBuilder = new("{\n");
             foreach (Node node in _nodes)
             {
-                node.state.Initialize();
                 stringBuilder.Append($"{indentation}{node.state.Name}=>{{").AppendJoin(',', node.neighbors);
-                UnityEngine.Debug.Log(node.state);
             }
             _description = $"{{\n{stringBuilder}}}";
         }
