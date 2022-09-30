@@ -91,7 +91,7 @@ namespace PQ.Common.Fsm
             StringBuilder stringBuilder = new("{\n");
             foreach (Node node in _nodes)
             {
-                stringBuilder.Append($"{indentation}{node.state.Name}=>{{").AppendJoin(',', node.neighbors);
+                stringBuilder.Append($"{indentation}{node.state.Name}=>{{").AppendJoin(',', node.neighbors).Append($"}}");
             }
             _description = $"{{\n{stringBuilder}}}";
         }
