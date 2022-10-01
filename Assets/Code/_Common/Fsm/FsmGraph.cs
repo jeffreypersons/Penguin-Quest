@@ -55,14 +55,14 @@ namespace PQ.Common.Fsm
             _description     = AsUserFriendlyString(_nodes);
         }
 
-        public bool HasState(Id id) => FsmStateIdRepository<Id>.IsDefined(id);
+        public bool HasState(in Id id) => FsmStateIdRepository<Id>.IsDefined(id);
 
-        public bool HasTransition(Id source, Id dest) =>
+        public bool HasTransition(in Id source, in Id dest) =>
             FsmStateIdRepository<Id>.IsDefined(source) &&
             FsmStateIdRepository<Id>.IsDefined(dest)   &&
             _nodes[FsmStateIdRepository<Id>.GetIndex(source)].neighbors.IsSet(FsmStateIdRepository<Id>.GetIndex(dest));
 
-        public FsmState<Id, SharedData> GetState(Id id) =>
+        public FsmState<Id, SharedData> GetState(in Id id) =>
             FsmStateIdRepository<Id>.IsDefined(id)? _nodes[FsmStateIdRepository<Id>.GetIndex(id)].state : null;
 
 

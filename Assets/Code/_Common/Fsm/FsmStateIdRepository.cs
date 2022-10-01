@@ -25,6 +25,8 @@ namespace PQ.Common.Fsm
         private static readonly BitSet   _bitset;
         private static readonly string   _description;
 
+        [Pure] private static int   ToInt(TEnum value) => UnsafeUtility.As<TEnum, int>(ref value);
+        [Pure] private static TEnum ToEnum(int value)  => UnsafeUtility.As<int, TEnum>(ref value);
 
         static FsmStateIdRepository()
         {
@@ -49,22 +51,29 @@ namespace PQ.Common.Fsm
         }
 
 
-        [Pure] public static bool IsDefined(int index) => _bitset.IsSet(index);
-        [Pure] public static bool IsDefined(TEnum id)  => _bitset.IsSet(UnsafeUtility.As<TEnum, int>(ref id));
-
+        [Pure]
+        public static bool IsDefined(int index)
+        {
+            return _bitset.IsSet(index);
+        }
+        [Pure]
+        public static bool IsDefined(in TEnum id)
+        {
+            return _bitset.IsSet(ToInt(id));
+        }
 
         [Pure]
-        public static int GetIndex(TEnum id)
+        public static int GetIndex(in TEnum id)
         {
-            int index = UnsafeUtility.As<TEnum, int>(ref id);
+            int index = ToInt(id);
             ThrowIf(!_bitset.IsSet(index), $"Cannot look up index since id {id} is not defined");
             return index;
         }
 
         [Pure]
-        public static string GetName(TEnum id)
+        public static string GetName(in TEnum id)
         {
-            int index = UnsafeUtility.As<TEnum, int>(ref id);
+            int index = ToInt(id);
             ThrowIf(!_bitset.IsSet(index), $"Cannot look up name since id {id} is not defined");
             return _names[index];
         }
@@ -73,7 +82,7 @@ namespace PQ.Common.Fsm
         public static TEnum GetValue(int index)
         {
             ThrowIf(!_bitset.IsSet(index), $"Cannot look up id since index {index} is not defined");
-            return UnsafeUtility.As<int, TEnum>(ref index);
+            return ToEnum(index);
         }
 
 
