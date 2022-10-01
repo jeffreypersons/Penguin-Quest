@@ -55,15 +55,15 @@ namespace PQ.Common.Fsm
             _description     = AsUserFriendlyString(_nodes);
         }
 
-        public bool HasState(Id id) => FsmStateId<Id>.HasId(id);
+        public bool HasState(Id id) => FsmStateId<Id>.IsDefined(id);
 
         public bool HasTransition(Id source, Id dest) =>
-            FsmStateId<Id>.HasId(source) &&
-            FsmStateId<Id>.HasId(dest)   &&
-            _nodes[FsmStateId<Id>.AsIndex(source)].neighbors.IsSet(FsmStateId<Id>.AsIndex(dest));
+            FsmStateId<Id>.IsDefined(source) &&
+            FsmStateId<Id>.IsDefined(dest)   &&
+            _nodes[FsmStateId<Id>.GetIndex(source)].neighbors.IsSet(FsmStateId<Id>.GetIndex(dest));
 
         public FsmState<Id, SharedData> GetState(Id id) =>
-            FsmStateId<Id>.HasId(id)? _nodes[FsmStateId<Id>.AsIndex(id)].state : null;
+            FsmStateId<Id>.IsDefined(id)? _nodes[FsmStateId<Id>.GetIndex(id)].state : null;
 
 
         private static Node[] ExtractNodeForEachDefinedId(
@@ -83,23 +83,23 @@ namespace PQ.Common.Fsm
                 {
                     throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
                 }
-                if (!FsmStateId<Id>.HasId(state.Id))
+                if (!FsmStateId<Id>.IsDefined(state.Id))
                 {
                     throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(Id)} enum");
                 }
 
                 Id sourceId = state.Id;
-                int sourceIndex = FsmStateId<Id>.AsIndex(sourceId);
+                int sourceIndex = FsmStateId<Id>.GetIndex(sourceId);
                 BitSet neighbors = new(FsmStateId<Id>.Count);
                 for (int i = 0; i < adjacents.Length; i++)
                 {
                     Id neighborId = adjacents[i];
-                    if (!FsmStateId<Id>.HasId(neighborId))
+                    if (!FsmStateId<Id>.IsDefined(neighborId))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
                             $"destination is not a defined {typeof(Id)} enum");
                     }
-                    int neighborIndex = FsmStateId<Id>.AsIndex(neighborId);
+                    int neighborIndex = FsmStateId<Id>.GetIndex(neighborId);
                     if (!neighbors.TryAdd(neighborIndex))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - expected unique existing key");
@@ -122,9 +122,9 @@ namespace PQ.Common.Fsm
                 sb.Append($"{indentation}{node.state.Name} => {{");
                 for (int i = 0; i < FsmStateId<Id>.Count; i++)
                 {
-                    if (FsmStateId<Id>.HasIndex(i))
+                    if (FsmStateId<Id>.IsDefined(i))
                     {
-                        sb.Append(FsmStateId<Id>.AsName(i)).Append(',');
+                        sb.Append(FsmStateId<Id>.GetName(FsmStateId<Id>.GetValue(i))).Append(',');
                     }
                 }
                 RemoveTrailingCharacter(sb, ',');

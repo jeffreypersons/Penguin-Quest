@@ -3,6 +3,7 @@ using System.Linq;
 using System.Diagnostics.Contracts;
 using Unity.Collections.LowLevel.Unsafe;
 using PQ.Common.Containers;
+using System.Collections.Generic;
 
 
 namespace PQ.Common.Fsm
@@ -13,75 +14,87 @@ namespace PQ.Common.Fsm
     That is, since this functionality is intended to extend the generic StateId param used in other classes,
     it is only to be used statically, as enum definitions are processed at compile time, so we only need to do things once.
     */
-    public static class FsmStateId<Id>
-        where Id : struct, Enum
+    public static class FsmStateId<TEnum>
+        where TEnum : struct, Enum
     {
         // since enums are evaluated at compile time and bound to corresponding template parameter,
         // we only need to validate once, when this file first loads
-        private static readonly Type     _type   = typeof(Id);
-        private static readonly string[] _names  = Enum.GetNames(_type);
-        private static readonly BitSet   _bitset = new(_names.Length, true);
-        private static readonly int      _count  = _names.Length;
 
-        public static Type Type  => _type;
-        public static int  Count => _count;
+        private static readonly string[] _names;
+        private static readonly Type     _type;
+        private static readonly BitSet   _bitset;
+        private static readonly string   _description;
+
 
         static FsmStateId()
         {
-            if (!AreAllEnumValuesDefault<Id>())
+            _names       = Enum.GetNames(typeof(TEnum));
+            _type        = typeof(TEnum);
+            _bitset      = new(_names.Length, true);
+            _description = $"{_type.FullName} {{ {string.Join(',', _names)} }}";
+            
+            ThrowIf(!AreAllEnumValuesDefault(), "Enum values must be int32 with default values from 0 to n");
+        }
+
+        public static Type   Type   => _type;
+        public static int    Count  => _bitset.Count;
+        public static string String => _description;
+
+        public static IEnumerable<(int index, string name, TEnum field)> Fields()
+        {
+            for (int i = 0; i < Count; i++)
             {
-                throw new ArgumentException($"Enum values must be int32 with default values from 0 to n - received {AsUserFriendlyString<Id>()} instead");
+                yield return (i, _names[i], UnsafeUtility.As<int, TEnum>(ref i));
             }
         }
 
-        [Pure] public static bool HasId(Id id)         => _bitset.IsSet(UnsafeUtility.As<Id, int>(ref id));
-        [Pure] public static bool HasIndex(int index)  => _bitset.IsSet(index);
+
+        [Pure] public static bool IsDefined(int index) => _bitset.IsSet(index);
+        [Pure] public static bool IsDefined(TEnum id)  => _bitset.IsSet(UnsafeUtility.As<TEnum, int>(ref id));
+
 
         [Pure]
-        public static Id AsId(int index)
+        public static int GetIndex(TEnum id)
         {
-            if (!_bitset.IsSet(index))
-            {
-                throw new ArgumentException($"Index {index} is an invalid - not defined for {AsUserFriendlyString<Id>()}");
-            }
-            return UnsafeUtility.As<int, Id>(ref index);
-        }
-
-        [Pure]
-        public static int AsIndex(Id id)
-        {
-            int index = UnsafeUtility.As<Id, int>(ref id);
-            if (!_bitset.IsSet(index))
-            {
-                throw new ArgumentException($"Id {id} is an invalid - not defined for {AsUserFriendlyString<Id>()}");
-            }
+            int index = UnsafeUtility.As<TEnum, int>(ref id);
+            ThrowIf(!_bitset.IsSet(index), $"Cannot look up index since id {id} is not defined");
             return index;
         }
 
         [Pure]
-        public static string AsName(int index)
+        public static string GetName(TEnum id)
         {
-            if (!_bitset.IsSet(index))
-            {
-                throw new ArgumentException($"Id {index} is an invalid - not defined for {AsUserFriendlyString<Id>()}");
-            }
+            int index = UnsafeUtility.As<TEnum, int>(ref id);
+            ThrowIf(!_bitset.IsSet(index), $"Cannot look up name since id {id} is not defined");
             return _names[index];
+        }
+        
+        [Pure]
+        public static TEnum GetValue(int index)
+        {
+            ThrowIf(!_bitset.IsSet(index), $"Cannot look up id since index {index} is not defined");
+            return UnsafeUtility.As<int, TEnum>(ref index);
+        }
+
+
+
+        [Pure]
+        private static void ThrowIf(bool condition, string message)
+        {
+            if (!condition)
+            {
+                return;
+            }
+
+            var name   = _type.FullName;
+            var type   = Enum.GetUnderlyingType(_type).FullName;
+            var fields = _names.Zip(Enum.GetValues(_type).Cast<long>(), (k, v) => $"{k}={v}");
+
+            throw new ArgumentException($"{message} - received enum {name} : {type} {{ {string.Join(',', fields)} }}");
         }
 
         [Pure]
-        public static string AsName(Id id)
-        {
-            int index = UnsafeUtility.As<Id, int>(ref id);
-            if (!_bitset.IsSet(index))
-            {
-                throw new ArgumentException($"Id {id} is an invalid - not defined for {AsUserFriendlyString<Id>()}");
-            }
-            return _names[index];
-        }
-
-        [Pure]
-        private static bool AreAllEnumValuesDefault<TEnum>()
-            where TEnum : struct, Enum
+        private static bool AreAllEnumValuesDefault()
         {
             if (Enum.GetUnderlyingType(_type) != typeof(int))
             {
@@ -90,7 +103,7 @@ namespace PQ.Common.Fsm
 
             // note that checking for name existence is the most performant least garbage producing method,
             // compare to the much more reflection heavy Enum.GetValues() and Enum.IsDefined()
-            for (int i = 0; i < _bitset.Size; i++)
+            for (int i = 0; i < _bitset.Count; i++)
             {
                 if (Enum.GetName(_type, i) == null)
                 {
@@ -98,27 +111,6 @@ namespace PQ.Common.Fsm
                 }
             }
             return true;
-        }
-
-        /* Performance warning - uses reflection and multiple array allocations. */
-        [Pure]
-        private static string AsUserFriendlyString<TEnum>()
-            where TEnum : struct, Enum
-        {
-            [Pure] static string _EnumFieldToString(string name, TEnum value) =>
-                $"{name}={UnsafeUtility.As<TEnum, long>(ref value)}";
-
-
-            var enumType       = typeof(TEnum);
-            var underlyingType = Enum.GetUnderlyingType(enumType);
-            var names          = Enum.GetNames(enumType);
-            var values         = (TEnum[])Enum.GetValues(enumType);
-
-            string enumName   = enumType.FullName;
-            string typeName   = Enum.GetUnderlyingType(enumType).FullName;
-            string enumFields = string.Join(',', names.Zip(values, _EnumFieldToString));
-
-            return $"enum {enumType.FullName}:{typeName} {{ {enumFields} }}";
         }
     }
 }
