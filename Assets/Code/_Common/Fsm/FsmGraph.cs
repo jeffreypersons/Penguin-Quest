@@ -17,6 +17,18 @@ namespace PQ.Common.Fsm
         where Id         : struct, Enum
         where SharedData : FsmSharedData
     {
+        private static bool TryGetIndex(in Id id, out int index)
+        {
+            if (!FsmStateIdRepository<Id>.IsDefined(id))
+            {
+                index = -1;
+                return false;
+            }
+
+            index = FsmStateIdRepository<Id>.GetIndex(id);
+            return true;
+        }
+
         private struct Node
         {
             public readonly FsmState<Id, SharedData> state;
@@ -55,15 +67,16 @@ namespace PQ.Common.Fsm
             _description     = AsUserFriendlyString(_nodes);
         }
 
-        public bool HasState(in Id id) => FsmStateIdRepository<Id>.IsDefined(id);
+        public bool HasState(in Id id) =>
+            TryGetIndex(id, out _);
 
         public bool HasTransition(in Id source, in Id dest) =>
-            FsmStateIdRepository<Id>.IsDefined(source) &&
-            FsmStateIdRepository<Id>.IsDefined(dest)   &&
-            _nodes[FsmStateIdRepository<Id>.GetIndex(source)].neighbors.IsSet(FsmStateIdRepository<Id>.GetIndex(dest));
+            TryGetIndex(source, out int sourceIndex) &&
+            TryGetIndex(dest,   out int destIndex)   &&
+            _nodes[sourceIndex].neighbors.IsSet(destIndex);
 
         public FsmState<Id, SharedData> GetState(in Id id) =>
-            FsmStateIdRepository<Id>.IsDefined(id)? _nodes[FsmStateIdRepository<Id>.GetIndex(id)].state : null;
+            TryGetIndex(id, out int index)? _nodes[index].state : null;
 
 
         private static Node[] ExtractNodeForEachDefinedId(
@@ -83,23 +96,22 @@ namespace PQ.Common.Fsm
                 {
                     throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
                 }
-                if (!FsmStateIdRepository<Id>.IsDefined(state.Id))
+
+                Id sourceId = state.Id;
+                if (!TryGetIndex(state.Id, out int sourceIndex))
                 {
                     throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(Id)} enum");
                 }
 
-                Id sourceId = state.Id;
-                int sourceIndex = FsmStateIdRepository<Id>.GetIndex(sourceId);
                 BitSet neighbors = new(FsmStateIdRepository<Id>.Count);
                 for (int i = 0; i < adjacents.Length; i++)
                 {
                     Id neighborId = adjacents[i];
-                    if (!FsmStateIdRepository<Id>.IsDefined(neighborId))
+                    if (!TryGetIndex(neighborId, out int neighborIndex))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
                             $"destination is not a defined {typeof(Id)} enum");
                     }
-                    int neighborIndex = FsmStateIdRepository<Id>.GetIndex(neighborId);
                     if (!neighbors.TryAdd(neighborIndex))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - expected unique existing key");
