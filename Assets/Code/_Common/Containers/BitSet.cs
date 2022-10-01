@@ -1,10 +1,8 @@
-﻿using PQ.Common.Fsm;
-using System;
+﻿using System;
 using System.Diagnostics.Contracts;
-using UnityEditor;
 
 
-namespace PQ.Common.Extensions
+namespace PQ.Common.Containers
 {
     /*
     Fixed size array of bits.
@@ -19,15 +17,21 @@ namespace PQ.Common.Extensions
         public int Size  { get; private set; }
         
 
-        public BitSet(int size)
+        public BitSet(int size, bool defaultBitValue=false)
         {
-            if (size < 0)
+            if (size <= 0)
             {
-                throw new ArgumentException($"Bitset size cannot be negative");
+                throw new ArgumentException($"Bitset size cannot be zero or less");
             }
+
             Value = 0;
             Count = 0;
             Size  = size;
+
+            if (defaultBitValue)
+            {
+                SetAll();
+            }
         }
 
         public void SetAll()

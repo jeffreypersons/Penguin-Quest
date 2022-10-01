@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using PQ.Common.Extensions;
-using System.Diagnostics.Contracts;
+using PQ.Common.Containers;
 
 
 namespace PQ.Common.Fsm
@@ -14,57 +13,15 @@ namespace PQ.Common.Fsm
 
     Also, states cannot have edges that loop directly back to itself.
     */
-    internal sealed class FsmGraph<StateId, SharedData>
-        where StateId    : struct, Enum
+    internal sealed class FsmGraph<Id, SharedData>
+        where Id         : struct, Enum
         where SharedData : FsmSharedData
     {
-        #region cache
-        // since enums are evaluated at compile time and bound to corresponding template parameter,
-        // we only need to validate once, when this file first loads
-        private static BitSet   _stateIdEntries;
-        private static string[] _stateIdNames;
-        private static BitSet CachedStateIdEntries
-        {
-            get
-            {
-                if (_stateIdNames != null)
-                {
-                    return _stateIdEntries;
-                }
-
-                if (!EnumExtensions.AreAllEnumValuesDefault<StateId>())
-                {
-                    throw new ArgumentException(
-                        $"Id {typeof(StateId)} underlying enum type must be int32 with default values from 0 to n - " +
-                        $"received {EnumExtensions.AsUserFriendlyString<StateId>()} instead");
-                }
-
-                _stateIdNames = EnumExtensions.Names<StateId>();
-                _stateIdEntries = new BitSet(size: EnumExtensions.CountEnumValues<StateId>());
-                _stateIdEntries.SetAll();
-                return _stateIdEntries;
-            }
-        }
-
-        [Pure]
-        private static bool TryMapIdToIndex(StateId id, out int index)
-        {
-            index = EnumExtensions.AsInt(id);
-            if (!CachedStateIdEntries.IsSet(index))
-            {
-                index = -1;
-                return false;
-            }
-            return true;
-        }
-        #endregion cache
-
-
         private struct Node
         {
-            public readonly FsmState<StateId, SharedData> state;
+            public readonly FsmState<Id, SharedData> state;
             public readonly BitSet neighbors;
-            public Node(FsmState<StateId, SharedData> state, BitSet neighbors)
+            public Node(FsmState<Id, SharedData> state, BitSet neighbors)
             {
                 this.state = state;
                 this.neighbors = neighbors;
@@ -83,7 +40,7 @@ namespace PQ.Common.Fsm
 
 
         /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+        public FsmGraph(in List<(FsmState<Id, SharedData>, Id[])> adjacencyList)
         {
             if (adjacencyList == null || adjacencyList.Count == 0)
             {
@@ -91,66 +48,68 @@ namespace PQ.Common.Fsm
             }
 
             // note that since the nodes are created using bitset, node list match state id enum order
-            _stateCount = 0;
+            _stateCount      = 0;
             _transitionCount = 0;
             _description     = string.Empty;
             _nodes           = ExtractNodeForEachDefinedId(adjacencyList);
             _description     = AsUserFriendlyString(_nodes);
         }
 
-        public bool HasState(StateId id) => TryMapIdToIndex(id, out int _);
+        public bool HasState(Id id) => FsmStateId<Id>.HasId(id);
 
-        public bool HasTransition(StateId source, StateId dest) =>
-            TryMapIdToIndex(source, out int sourceIndex) &&
-            TryMapIdToIndex(dest,   out int destIndex)   &&
-            _nodes[sourceIndex].neighbors.IsSet(destIndex);
+        public bool HasTransition(Id source, Id dest) =>
+            FsmStateId<Id>.HasId(source) &&
+            FsmStateId<Id>.HasId(dest)   &&
+            _nodes[FsmStateId<Id>.AsIndex(source)].neighbors.IsSet(FsmStateId<Id>.AsIndex(dest));
 
-        public FsmState<StateId, SharedData> GetState(StateId id) =>
-            TryMapIdToIndex(id, out int index)? _nodes[index].state : null;
+        public FsmState<Id, SharedData> GetState(Id id) =>
+            FsmStateId<Id>.HasId(id)? _nodes[FsmStateId<Id>.AsIndex(id)].state : null;
 
 
         private static Node[] ExtractNodeForEachDefinedId(
-            in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+            in List<(FsmState<Id, SharedData>, Id[])> adjacencyList)
         {
-            if (adjacencyList.Count != CachedStateIdEntries.Count)
+            if (adjacencyList.Count != FsmStateId<Id>.Count)
             {
                 throw new ArgumentException($"Cannot extract nodes -" +
                     $"must have one state per stateId enum member yet counts are unequal");
             }
 
             // fill the ordered buckets according to their underlying ordinal type
-            Node[] nodes = new Node[CachedStateIdEntries.Count];
-            foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
+            Node[] nodes = new Node[FsmStateId<Id>.Count];
+            foreach ((FsmState<Id, SharedData> state, Id[] adjacents) in adjacencyList)
             {
                 if (state == null || adjacents == null)
                 {
                     throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
                 }
-                if (!TryMapIdToIndex(state.Id, out int stateIndex))
+                if (!FsmStateId<Id>.HasId(state.Id))
                 {
-                    throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(StateId)} enum");
+                    throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(Id)} enum");
                 }
 
-                StateId sourceId = state.Id;
-                BitSet neighbors = new(CachedStateIdEntries.Count);
+                Id sourceId = state.Id;
+                int sourceIndex = FsmStateId<Id>.AsIndex(sourceId);
+                BitSet neighbors = new(FsmStateId<Id>.Count);
                 for (int i = 0; i < adjacents.Length; i++)
                 {
-                    StateId neighborId = adjacents[i];
-                    if (!TryMapIdToIndex(neighborId, out int neighborIndex))
+                    Id neighborId = adjacents[i];
+                    if (!FsmStateId<Id>.HasId(neighborId))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
-                            $"destination is not a defined {typeof(StateId)} enum");
+                            $"destination is not a defined {typeof(Id)} enum");
                     }
+                    int neighborIndex = FsmStateId<Id>.AsIndex(neighborId);
                     if (!neighbors.TryAdd(neighborIndex))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - expected unique existing key");
                     }
-                    if (stateIndex == neighborIndex)
+                    if (sourceIndex == neighborIndex)
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - must be different states");
                     }
                 }
-                nodes[stateIndex] = new Node(state, neighbors);
+                nodes[sourceIndex] = new Node(state, neighbors);
             }
             return nodes;
         }
@@ -161,11 +120,11 @@ namespace PQ.Common.Fsm
             foreach (Node node in nodes)
             {
                 sb.Append($"{indentation}{node.state.Name} => {{");
-                for (int i = 0; i < _stateIdNames.Length; i++)
+                for (int i = 0; i < FsmStateId<Id>.Count; i++)
                 {
-                    if (node.neighbors.IsSet(i))
+                    if (FsmStateId<Id>.HasIndex(i))
                     {
-                        sb.Append(_stateIdNames[i]).Append(',');
+                        sb.Append(FsmStateId<Id>.AsName(i)).Append(',');
                     }
                 }
                 RemoveTrailingCharacter(sb, ',');
