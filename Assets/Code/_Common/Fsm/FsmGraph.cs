@@ -55,51 +55,51 @@ namespace PQ.Common.Fsm
             _description     = AsUserFriendlyString(_nodes);
         }
 
-        public bool HasState(Id id) => FsmStateId<Id>.IsDefined(id);
+        public bool HasState(Id id) => FsmStateIdRepository<Id>.IsDefined(id);
 
         public bool HasTransition(Id source, Id dest) =>
-            FsmStateId<Id>.IsDefined(source) &&
-            FsmStateId<Id>.IsDefined(dest)   &&
-            _nodes[FsmStateId<Id>.GetIndex(source)].neighbors.IsSet(FsmStateId<Id>.GetIndex(dest));
+            FsmStateIdRepository<Id>.IsDefined(source) &&
+            FsmStateIdRepository<Id>.IsDefined(dest)   &&
+            _nodes[FsmStateIdRepository<Id>.GetIndex(source)].neighbors.IsSet(FsmStateIdRepository<Id>.GetIndex(dest));
 
         public FsmState<Id, SharedData> GetState(Id id) =>
-            FsmStateId<Id>.IsDefined(id)? _nodes[FsmStateId<Id>.GetIndex(id)].state : null;
+            FsmStateIdRepository<Id>.IsDefined(id)? _nodes[FsmStateIdRepository<Id>.GetIndex(id)].state : null;
 
 
         private static Node[] ExtractNodeForEachDefinedId(
             in List<(FsmState<Id, SharedData>, Id[])> adjacencyList)
         {
-            if (adjacencyList.Count != FsmStateId<Id>.Count)
+            if (adjacencyList.Count != FsmStateIdRepository<Id>.Count)
             {
                 throw new ArgumentException($"Cannot extract nodes -" +
                     $"must have one state per stateId enum member yet counts are unequal");
             }
 
             // fill the ordered buckets according to their underlying ordinal type
-            Node[] nodes = new Node[FsmStateId<Id>.Count];
+            Node[] nodes = new Node[FsmStateIdRepository<Id>.Count];
             foreach ((FsmState<Id, SharedData> state, Id[] adjacents) in adjacencyList)
             {
                 if (state == null || adjacents == null)
                 {
                     throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
                 }
-                if (!FsmStateId<Id>.IsDefined(state.Id))
+                if (!FsmStateIdRepository<Id>.IsDefined(state.Id))
                 {
                     throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(Id)} enum");
                 }
 
                 Id sourceId = state.Id;
-                int sourceIndex = FsmStateId<Id>.GetIndex(sourceId);
-                BitSet neighbors = new(FsmStateId<Id>.Count);
+                int sourceIndex = FsmStateIdRepository<Id>.GetIndex(sourceId);
+                BitSet neighbors = new(FsmStateIdRepository<Id>.Count);
                 for (int i = 0; i < adjacents.Length; i++)
                 {
                     Id neighborId = adjacents[i];
-                    if (!FsmStateId<Id>.IsDefined(neighborId))
+                    if (!FsmStateIdRepository<Id>.IsDefined(neighborId))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
                             $"destination is not a defined {typeof(Id)} enum");
                     }
-                    int neighborIndex = FsmStateId<Id>.GetIndex(neighborId);
+                    int neighborIndex = FsmStateIdRepository<Id>.GetIndex(neighborId);
                     if (!neighbors.TryAdd(neighborIndex))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - expected unique existing key");
@@ -120,11 +120,11 @@ namespace PQ.Common.Fsm
             foreach (Node node in nodes)
             {
                 sb.Append($"{indentation}{node.state.Name} => {{");
-                for (int i = 0; i < FsmStateId<Id>.Count; i++)
+                for (int i = 0; i < FsmStateIdRepository<Id>.Count; i++)
                 {
-                    if (FsmStateId<Id>.IsDefined(i))
+                    if (FsmStateIdRepository<Id>.IsDefined(i))
                     {
-                        sb.Append(FsmStateId<Id>.GetName(FsmStateId<Id>.GetValue(i))).Append(',');
+                        sb.Append(FsmStateIdRepository<Id>.GetName(FsmStateIdRepository<Id>.GetValue(i))).Append(',');
                     }
                 }
                 RemoveTrailingCharacter(sb, ',');
