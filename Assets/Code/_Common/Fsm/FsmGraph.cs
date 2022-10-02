@@ -13,19 +13,15 @@ namespace PQ.Common.Fsm
 
     Also, states cannot have edges that loop directly back to itself.
     */
-    internal sealed class FsmGraph<Id, SharedData>
-        where Id         : struct, Enum
+    internal sealed class FsmGraph<StateId, SharedData>
+        where StateId    : struct, Enum
         where SharedData : FsmSharedData
     {
-        // since enums are processed at compile time, we validate and cache enum names/values
-        // only once (statically) per enum type
-        private static readonly FsmStateIdCache<Id> _stateIdCache = FsmStateIdCache<Id>.Instance;
-
         private struct Node
         {
-            public readonly FsmState<Id, SharedData> state;
+            public readonly FsmState<StateId, SharedData> state;
             public readonly BitSet neighbors;
-            public Node(FsmState<Id, SharedData> state, BitSet neighbors)
+            public Node(FsmState<StateId, SharedData> state, BitSet neighbors)
             {
                 this.state = state;
                 this.neighbors = neighbors;
@@ -40,11 +36,17 @@ namespace PQ.Common.Fsm
         private readonly int    _transitionCount;
         private readonly string _description;
         private readonly Node[] _nodes;
-        private static readonly string indentation = new(' ', 4);
 
+        private static readonly string indentation;
+        private static readonly FsmStateIdCache<StateId> idCache;
+        static FsmGraph()
+        {
+            // note that since enums are processed during compile time, we resolve the cache only once per static id type
+            indentation  = new(' ', 4);
+            idCache = FsmStateIdCache<StateId>.Instance;
+        }
 
-        /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(in List<(FsmState<Id, SharedData>, Id[])> adjacencyList)
+        public FsmGraph(in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
         {
             if (adjacencyList == null || adjacencyList.Count == 0)
             {
@@ -59,50 +61,50 @@ namespace PQ.Common.Fsm
             _description     = AsUserFriendlyString(_nodes);
         }
 
-        public bool HasState(in Id id) =>
-            _stateIdCache.TryGetIndex(id, out _);
+        public bool HasState(in StateId id) =>
+            idCache.TryGetIndex(id, out _);
 
-        public bool HasTransition(in Id source, in Id dest) =>
-            _stateIdCache.TryGetIndex(source, out int sourceIndex) &&
-            _stateIdCache.TryGetIndex(dest,   out int destIndex)   &&
+        public bool HasTransition(in StateId source, in StateId dest) =>
+            idCache.TryGetIndex(source, out int sourceIndex) &&
+            idCache.TryGetIndex(dest,   out int destIndex)   &&
             _nodes[sourceIndex].neighbors.IsSet(destIndex);
 
-        public FsmState<Id, SharedData> GetState(in Id id) =>
-            _stateIdCache.TryGetIndex(id, out int index)? _nodes[index].state : null;
+        public FsmState<StateId, SharedData> GetState(in StateId id) =>
+            idCache.TryGetIndex(id, out int index)? _nodes[index].state : null;
 
 
         private static Node[] ExtractNodeForEachDefinedId(
-            in List<(FsmState<Id, SharedData>, Id[])> adjacencyList)
+            in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
         {
-            if (adjacencyList.Count != _stateIdCache.Count)
+            if (adjacencyList.Count != idCache.Count)
             {
-                throw new ArgumentException($"Cannot extract nodes -" +
+                throw new ArgumentException($"Cannot extract nodes - " +
                     $"must have one state per stateId enum member yet counts are unequal");
             }
 
             // fill the ordered buckets according to their underlying ordinal type
-            Node[] nodes = new Node[_stateIdCache.Count];
-            foreach ((FsmState<Id, SharedData> state, Id[] adjacents) in adjacencyList)
+            Node[] nodes = new Node[idCache.Count];
+            foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
             {
                 if (state == null || adjacents == null)
                 {
                     throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
                 }
 
-                Id sourceId = state.Id;
-                if (!_stateIdCache.TryGetIndex(state.Id, out int sourceIndex))
+                StateId sourceId = state.Id;
+                if (!idCache.TryGetIndex(state.Id, out int sourceIndex))
                 {
-                    throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(Id)} enum");
+                    throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(StateId)} enum");
                 }
 
-                BitSet neighbors = new(_stateIdCache.Count);
+                BitSet neighbors = new(idCache.Count);
                 for (int i = 0; i < adjacents.Length; i++)
                 {
-                    Id neighborId = adjacents[i];
-                    if (!_stateIdCache.TryGetIndex(neighborId, out int neighborIndex))
+                    StateId neighborId = adjacents[i];
+                    if (!idCache.TryGetIndex(neighborId, out int neighborIndex))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
-                            $"destination is not a defined {typeof(Id)} enum");
+                            $"destination is not a defined {typeof(StateId)} enum");
                     }
                     if (!neighbors.TryAdd(neighborIndex))
                     {
@@ -124,7 +126,7 @@ namespace PQ.Common.Fsm
             foreach (Node node in nodes)
             {
                 sb.Append($"{indentation}{node.state.Name} => {{");
-                foreach ((int index, string name, Id _) in _stateIdCache.Fields())
+                foreach ((int index, string name, StateId _) in idCache.Fields())
                 {
                     if (node.neighbors.IsSet(index))
                     {

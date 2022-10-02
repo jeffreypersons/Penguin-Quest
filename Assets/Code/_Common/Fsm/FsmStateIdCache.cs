@@ -14,7 +14,7 @@ namespace PQ.Common.Fsm
     That is, since this functionality is intended to extend the generic StateId param used in other classes,
     it is only to be used statically, as enum definitions are processed at compile time, so we only need to do things once.
     */
-    public class FsmStateIdCache<TEnum>
+    internal class FsmStateIdCache<TEnum>
         where TEnum : struct, Enum
     {
         // since enums are evaluated at compile time and bound to corresponding template parameter,
@@ -32,28 +32,36 @@ namespace PQ.Common.Fsm
             }
         }
 
+        [Pure] private static int   ToInt(TEnum value) => UnsafeUtility.As<TEnum, int>(ref value);
+        [Pure] private static TEnum ToEnum(int value) => UnsafeUtility.As<int, TEnum>(ref value);
 
         private readonly string[] _names;
         private readonly Type     _type;
         private readonly BitSet   _bitset;
         private readonly string   _description;
-
-        [Pure] private static int   ToInt(TEnum value) => UnsafeUtility.As<TEnum, int>(ref value);
-        [Pure] private static TEnum ToEnum(int value)  => UnsafeUtility.As<int, TEnum>(ref value);
+        private readonly Comparer<TEnum>         _valueComparer;
+        private readonly EqualityComparer<TEnum> _equalityComparer;
 
         private FsmStateIdCache()
         {
-            _names       = Enum.GetNames(typeof(TEnum));
-            _type        = typeof(TEnum);
-            _bitset      = new(_names.Length, true);
-            _description = $"{_type.FullName} {{ {string.Join(',', _names)} }}";
-            
+            _names            = Enum.GetNames(typeof(TEnum));
+            _type             = typeof(TEnum);
+            _bitset           = new(_names.Length, true);
+            _description      = $"{_type.FullName} {{ {string.Join(',', _names)} }}";
+
+            // note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
+            _equalityComparer = EqualityComparer<TEnum>.Default;
+            _valueComparer    = Comparer<TEnum>.Default;
+
             ThrowIf(!AreAllEnumValuesDefault(), "Enum values must be int32 with default values from 0 to n");
         }
 
         public Type   Type   => _type;
         public int    Count  => _bitset.Count;
         public string String => _description;
+
+        public Comparer<TEnum>         ValueComparer    => _valueComparer;
+        public EqualityComparer<TEnum> EqualityComparer => _equalityComparer;
 
         public IEnumerable<(int index, string name, TEnum field)> Fields()
         {

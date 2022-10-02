@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using PQ.Common.Events;
+using UnityEngine;
 
 
 namespace PQ.Common.Fsm
@@ -19,22 +19,18 @@ namespace PQ.Common.Fsm
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
     public abstract class FsmState<StateId, SharedData>
-        : IEquatable <FsmState<StateId, SharedData>>,
+        : IEquatable<FsmState<StateId, SharedData>>,
           IComparable<FsmState<StateId, SharedData>>
         where SharedData : FsmSharedData
-        where StateId    : struct, Enum
+        where StateId : struct, Enum
     {
-        private StateId         _id;
-        private string          _name;
-        private SharedData      _data;
-        private bool            _active;
-        private PqEventRegistry _eventRegistry;
-
+        private StateId          _id;
+        private string           _name;
+        private SharedData       _data;
+        private bool             _active;
+        private PqEventRegistry  _eventRegistry;
         private PqEvent          _moveToLastStateSignal = new("fsm.state.move.last");
         private PqEvent<StateId> _moveToNextStateSignal = new("fsm.state.move.next");
-
-        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
-        private static readonly EqualityComparer<StateId> IdEqualityComparer = EqualityComparer<StateId>.Default;
 
         public    StateId    Id     => _id;
         public    string     Name   => _name;
@@ -50,33 +46,20 @@ namespace PQ.Common.Fsm
                 $"blob:{_data}, " +
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
-        
 
-        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) =>
-            Id.CompareTo(other.Id);
-        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) =>
-            other is not null && IdEqualityComparer.Equals(Id, other.Id);
+        private static readonly FsmStateIdCache<StateId> idCache;
 
-        public override bool Equals(object obj) =>
-            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
-        public override int GetHashCode() =>
-            HashCode.Combine(IdEqualityComparer.GetHashCode());
-
-        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            ReferenceEquals(left, right) ||
-            (left is not null && ((IEquatable<FsmState<StateId, SharedData>>)left).Equals(right));
-        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            !(left == right);
+        static FsmState()
+        {
+            // note that since enums are processed during compile time, we resolve the cache only once per static id type
+            idCache = FsmStateIdCache<StateId>.Instance;
+        }
 
 
         /*** External Facing Methods for Driving State Logic ***/
 
         // Public dummy state constructor so that we can constrain generics to new(), for use in factories
         public FsmState() { }
-
-        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
-        public bool        HasSameId(StateId id)                  => IdEqualityComparer.Equals(_id, id);
-        public static bool HasSameId(StateId left, StateId right) => IdEqualityComparer.Equals(left, right);
 
         // External entry point factory for constructing the state
         // Note that this is our uniform single access point for creating the state, no public constructors
@@ -85,10 +68,10 @@ namespace PQ.Common.Fsm
         {
             StateSubclassInstance instance = new()
             {
-                _id = id,
-                _name = Enum.GetName(typeof(StateId), id),
-                _data = blob,
-                _active = false,
+                _id            = id,
+                _name          = idCache.GetName(id),
+                _data          = blob,
+                _active        = false,
                 _eventRegistry = new(),
             };
             instance.OnIntialize();
@@ -128,8 +111,8 @@ namespace PQ.Common.Fsm
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void SignalMoveToLastState()             => _moveToLastStateSignal.Raise();
-        protected void SignalMoveToNextState(StateId dest) => _moveToNextStateSignal.Raise(dest);
+        protected void SignalMoveToLastState()                                          => _moveToLastStateSignal.Raise();
+        protected void SignalMoveToNextState(StateId dest)                              => _moveToNextStateSignal.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
@@ -145,5 +128,35 @@ namespace PQ.Common.Fsm
         protected virtual void OnUpdate()      { }
         protected virtual void OnFixedUpdate() { }
         protected virtual void OnLateUpdate()  { }
+        
+        
+        public bool        HasSameId(StateId id)                  => idCache.EqualityComparer.Equals(_id, id);
+        public static bool HasSameId(StateId left, StateId right) => idCache.EqualityComparer.Equals(left, right);
+
+        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other)
+        {
+            if (other is null)
+            {
+                return 1;
+            }
+            return idCache.ValueComparer.Compare(Id, other.Id);
+        }
+
+        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other)
+        {
+            return ReferenceEquals(this, other) ||
+                  (other is not null && idCache.EqualityComparer.Equals(Id, other.Id));
+        }
+
+        public override bool Equals(object obj) =>
+            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
+        public override int GetHashCode() =>
+            HashCode.Combine(idCache.EqualityComparer.GetHashCode());
+
+        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            ReferenceEquals(left, right) ||
+            (left is not null && ((IEquatable<FsmState<StateId, SharedData>>)left).Equals(right));
+        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
+            !(left == right);
     }
 }
