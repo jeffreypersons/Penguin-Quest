@@ -106,14 +106,12 @@ namespace PQ.Common.Containers
             return new string(bits);
         }
 
-        bool IEquatable<BitSet>.Equals(BitSet other) => Value == other.Value;
-        int IComparable<BitSet>.CompareTo(BitSet other) => Value.CompareTo(other.Value);
-
-        public override string  ToString()         => ToString(bitSet: this);
-        public override int     GetHashCode()      => HashCode.Combine(Value);
-        public override bool    Equals(object obj) => ((IEquatable<BitSet>)this).Equals((BitSet)obj);
-
-        public static bool operator ==(BitSet left, BitSet right) => ((IEquatable<BitSet>)left).Equals(right);
-        public static bool operator !=(BitSet left, BitSet right) => !(left == right);
+        bool IEquatable<BitSet>.Equals(BitSet other)              =>  Value == other.Value && Count == other.Count && Size == other.Size;
+        int IComparable<BitSet>.CompareTo(BitSet other)           =>  Value.CompareTo(other.Value);
+        public override string  ToString()                        =>  ToString(bitSet: this);
+        public override int     GetHashCode()                     =>  HashCode.Combine(Value);
+        public override bool    Equals(object obj)                =>  ((IEquatable<BitSet>)this).Equals((BitSet)obj);
+        public static bool operator ==(BitSet left, BitSet right) =>  ((IEquatable<BitSet>)left).Equals(right);
+        public static bool operator !=(BitSet left, BitSet right) => !((IEquatable<BitSet>)left).Equals(right);
     }
 }
