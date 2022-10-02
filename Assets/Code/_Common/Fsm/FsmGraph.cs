@@ -67,7 +67,7 @@ namespace PQ.Common.Fsm
         public bool HasTransition(in StateId source, in StateId dest) =>
             idCache.TryGetIndex(source, out int sourceIndex) &&
             idCache.TryGetIndex(dest,   out int destIndex)   &&
-            _nodes[sourceIndex].neighbors.IsSet(destIndex);
+            _nodes[sourceIndex].neighbors.IsTrue(destIndex);
 
         public FsmState<StateId, SharedData> GetState(in StateId id) =>
             idCache.TryGetIndex(id, out int index)? _nodes[index].state : null;
@@ -128,7 +128,7 @@ namespace PQ.Common.Fsm
                 sb.Append($"{indentation}{node.state.Name} => {{");
                 foreach ((int index, string name, StateId _) in idCache.Fields())
                 {
-                    if (node.neighbors.IsSet(index))
+                    if (node.neighbors.IsTrue(index))
                     {
                         sb.Append(name).Append(',');
                     }

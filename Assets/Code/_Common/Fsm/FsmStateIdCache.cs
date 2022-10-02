@@ -86,19 +86,19 @@ namespace PQ.Common.Fsm
         [Pure]
         public bool IsDefined(int index)
         {
-            return _bitset.IsSet(index);
+            return _bitset.IsTrue(index);
         }
         [Pure]
         public bool IsDefined(in TEnum id)
         {
-            return _bitset.IsSet(ToInt(id));
+            return _bitset.IsTrue(ToInt(id));
         }
 
         [Pure]
         public int GetIndex(in TEnum id)
         {
             int index = ToInt(id);
-            ThrowIf(!_bitset.IsSet(index), $"Cannot look up index since id {id} is not defined");
+            ThrowIf(!_bitset.IsTrue(index), $"Cannot look up index since id {id} is not defined");
             return index;
         }
 
@@ -106,14 +106,14 @@ namespace PQ.Common.Fsm
         public string GetName(in TEnum id)
         {
             int index = ToInt(id);
-            ThrowIf(!_bitset.IsSet(index), $"Cannot look up name since id {id} is not defined");
+            ThrowIf(!_bitset.IsTrue(index), $"Cannot look up name since id {id} is not defined");
             return _names[index];
         }
         
         [Pure]
         public TEnum GetValue(int index)
         {
-            ThrowIf(!_bitset.IsSet(index), $"Cannot look up id since index {index} is not defined");
+            ThrowIf(!_bitset.IsTrue(index), $"Cannot look up id since index {index} is not defined");
             return ToEnum(index);
         }
 
