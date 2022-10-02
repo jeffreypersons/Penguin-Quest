@@ -134,23 +134,37 @@ namespace PQ.Common.Fsm
         public static bool HasSameId(StateId left, StateId right) => idCache.EqualityComparer.Equals(left, right);
 
         int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) => Compare(this, other);
+        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other)    => Equal(this, other);
 
-        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) => Compare(this, other) == 0;
+        public override bool Equals(object obj) => Equal(this, obj as FsmState<StateId, SharedData>);
+        public override int GetHashCode() => HashCode.Combine(idCache.EqualityComparer.GetHashCode(Id));
 
-        public override bool Equals(object obj) => Compare(this, obj as FsmState<StateId, SharedData>) == 0;
-        public override int GetHashCode() => HashCode.Combine(idCache.EqualityComparer.GetHashCode());
-
-        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) => Compare(left, right) == 0;
-        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) => Compare(left, right) != 0;
+        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>  Equal(left, right);
+        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) => !Equal(left, right);
 
 
+        private static bool Equal(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return true;
+            }
+            if (left is null)
+            {
+                return false;
+            }
+            if (right is null)
+            {
+                return false;
+            }
+            return ReferenceEquals(left.Blob, right.Blob) && idCache.EqualityComparer.Equals(left.Id, right.Id);
+        }
         private static int Compare(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right)
         {
             if (ReferenceEquals(left, right))
             {
                 return 0;
             }
-
             if (left is null)
             {
                 return -1;
@@ -159,7 +173,6 @@ namespace PQ.Common.Fsm
             {
                 return 1;
             }
-
             return idCache.ValueComparer.Compare(left.Id, right.Id);
         }
     }
