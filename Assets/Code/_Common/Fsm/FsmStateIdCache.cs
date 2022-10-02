@@ -14,21 +14,34 @@ namespace PQ.Common.Fsm
     That is, since this functionality is intended to extend the generic StateId param used in other classes,
     it is only to be used statically, as enum definitions are processed at compile time, so we only need to do things once.
     */
-    public static class FsmStateIdCache<TEnum>
+    public class FsmStateIdCache<TEnum>
         where TEnum : struct, Enum
     {
         // since enums are evaluated at compile time and bound to corresponding template parameter,
-        // we only need to validate once, when this file first loads
+        // we only need to validate once, when this instance is first used
+        private static FsmStateIdCache<TEnum> _instance;
+        public static FsmStateIdCache<TEnum> Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new FsmStateIdCache<TEnum>();
+                }
+                return _instance;
+            }
+        }
 
-        private static readonly string[] _names;
-        private static readonly Type     _type;
-        private static readonly BitSet   _bitset;
-        private static readonly string   _description;
+
+        private readonly string[] _names;
+        private readonly Type     _type;
+        private readonly BitSet   _bitset;
+        private readonly string   _description;
 
         [Pure] private static int   ToInt(TEnum value) => UnsafeUtility.As<TEnum, int>(ref value);
         [Pure] private static TEnum ToEnum(int value)  => UnsafeUtility.As<int, TEnum>(ref value);
 
-        static FsmStateIdCache()
+        private FsmStateIdCache()
         {
             _names       = Enum.GetNames(typeof(TEnum));
             _type        = typeof(TEnum);
@@ -38,11 +51,11 @@ namespace PQ.Common.Fsm
             ThrowIf(!AreAllEnumValuesDefault(), "Enum values must be int32 with default values from 0 to n");
         }
 
-        public static Type   Type   => _type;
-        public static int    Count  => _bitset.Count;
-        public static string String => _description;
+        public Type   Type   => _type;
+        public int    Count  => _bitset.Count;
+        public string String => _description;
 
-        public static IEnumerable<(int index, string name, TEnum field)> Fields()
+        public IEnumerable<(int index, string name, TEnum field)> Fields()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -50,20 +63,31 @@ namespace PQ.Common.Fsm
             }
         }
 
+        public bool TryGetIndex(in TEnum id, out int index)
+        {
+            if (!IsDefined(id))
+            {
+                index = -1;
+                return false;
+            }
+
+            index = GetIndex(id);
+            return true;
+        }
 
         [Pure]
-        public static bool IsDefined(int index)
+        public bool IsDefined(int index)
         {
             return _bitset.IsSet(index);
         }
         [Pure]
-        public static bool IsDefined(in TEnum id)
+        public bool IsDefined(in TEnum id)
         {
             return _bitset.IsSet(ToInt(id));
         }
 
         [Pure]
-        public static int GetIndex(in TEnum id)
+        public int GetIndex(in TEnum id)
         {
             int index = ToInt(id);
             ThrowIf(!_bitset.IsSet(index), $"Cannot look up index since id {id} is not defined");
@@ -71,7 +95,7 @@ namespace PQ.Common.Fsm
         }
 
         [Pure]
-        public static string GetName(in TEnum id)
+        public string GetName(in TEnum id)
         {
             int index = ToInt(id);
             ThrowIf(!_bitset.IsSet(index), $"Cannot look up name since id {id} is not defined");
@@ -79,7 +103,7 @@ namespace PQ.Common.Fsm
         }
         
         [Pure]
-        public static TEnum GetValue(int index)
+        public TEnum GetValue(int index)
         {
             ThrowIf(!_bitset.IsSet(index), $"Cannot look up id since index {index} is not defined");
             return ToEnum(index);
@@ -88,7 +112,7 @@ namespace PQ.Common.Fsm
 
 
         [Pure]
-        private static void ThrowIf(bool condition, string message)
+        private void ThrowIf(bool condition, string message)
         {
             if (!condition)
             {
@@ -103,7 +127,7 @@ namespace PQ.Common.Fsm
         }
 
         [Pure]
-        private static bool AreAllEnumValuesDefault()
+        private bool AreAllEnumValuesDefault()
         {
             if (Enum.GetUnderlyingType(_type) != typeof(int))
             {

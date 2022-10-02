@@ -17,17 +17,7 @@ namespace PQ.Common.Fsm
         where Id         : struct, Enum
         where SharedData : FsmSharedData
     {
-        private static bool TryGetIndex(in Id id, out int index)
-        {
-            if (!FsmStateIdCache<Id>.IsDefined(id))
-            {
-                index = -1;
-                return false;
-            }
-
-            index = FsmStateIdCache<Id>.GetIndex(id);
-            return true;
-        }
+        private static readonly FsmStateIdCache<Id> _stateIdCache = FsmStateIdCache<Id>.Instance;
 
         private struct Node
         {
@@ -68,28 +58,28 @@ namespace PQ.Common.Fsm
         }
 
         public bool HasState(in Id id) =>
-            TryGetIndex(id, out _);
+            _stateIdCache.TryGetIndex(id, out _);
 
         public bool HasTransition(in Id source, in Id dest) =>
-            TryGetIndex(source, out int sourceIndex) &&
-            TryGetIndex(dest,   out int destIndex)   &&
+            _stateIdCache.TryGetIndex(source, out int sourceIndex) &&
+            _stateIdCache.TryGetIndex(dest,   out int destIndex)   &&
             _nodes[sourceIndex].neighbors.IsSet(destIndex);
 
         public FsmState<Id, SharedData> GetState(in Id id) =>
-            TryGetIndex(id, out int index)? _nodes[index].state : null;
+            _stateIdCache.TryGetIndex(id, out int index)? _nodes[index].state : null;
 
 
         private static Node[] ExtractNodeForEachDefinedId(
             in List<(FsmState<Id, SharedData>, Id[])> adjacencyList)
         {
-            if (adjacencyList.Count != FsmStateIdCache<Id>.Count)
+            if (adjacencyList.Count != _stateIdCache.Count)
             {
                 throw new ArgumentException($"Cannot extract nodes -" +
                     $"must have one state per stateId enum member yet counts are unequal");
             }
 
             // fill the ordered buckets according to their underlying ordinal type
-            Node[] nodes = new Node[FsmStateIdCache<Id>.Count];
+            Node[] nodes = new Node[_stateIdCache.Count];
             foreach ((FsmState<Id, SharedData> state, Id[] adjacents) in adjacencyList)
             {
                 if (state == null || adjacents == null)
@@ -98,16 +88,16 @@ namespace PQ.Common.Fsm
                 }
 
                 Id sourceId = state.Id;
-                if (!TryGetIndex(state.Id, out int sourceIndex))
+                if (!_stateIdCache.TryGetIndex(state.Id, out int sourceIndex))
                 {
                     throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(Id)} enum");
                 }
 
-                BitSet neighbors = new(FsmStateIdCache<Id>.Count);
+                BitSet neighbors = new(_stateIdCache.Count);
                 for (int i = 0; i < adjacents.Length; i++)
                 {
                     Id neighborId = adjacents[i];
-                    if (!TryGetIndex(neighborId, out int neighborIndex))
+                    if (!_stateIdCache.TryGetIndex(neighborId, out int neighborIndex))
                     {
                         throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
                             $"destination is not a defined {typeof(Id)} enum");
@@ -132,11 +122,11 @@ namespace PQ.Common.Fsm
             foreach (Node node in nodes)
             {
                 sb.Append($"{indentation}{node.state.Name} => {{");
-                for (int i = 0; i < FsmStateIdCache<Id>.Count; i++)
+                foreach ((int index, string name, Id _) in _stateIdCache.Fields())
                 {
-                    if (FsmStateIdCache<Id>.IsDefined(i))
+                    if (node.neighbors.IsSet(index))
                     {
-                        sb.Append(FsmStateIdCache<Id>.GetName(FsmStateIdCache<Id>.GetValue(i))).Append(',');
+                        sb.Append(name).Append(',');
                     }
                 }
                 RemoveTrailingCharacter(sb, ',');
@@ -145,6 +135,7 @@ namespace PQ.Common.Fsm
             sb.Append("}");
             return sb.ToString();
         }
+
         private static void RemoveTrailingCharacter(StringBuilder stringBuilder, char character)
         {
             int size = stringBuilder.Length;
