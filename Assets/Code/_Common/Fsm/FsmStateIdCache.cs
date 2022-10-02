@@ -14,7 +14,7 @@ namespace PQ.Common.Fsm
     That is, since this functionality is intended to extend the generic StateId param used in other classes,
     it is only to be used statically, as enum definitions are processed at compile time, so we only need to do things once.
     */
-    public static class FsmStateIdRepository<TEnum>
+    public static class FsmStateIdCache<TEnum>
         where TEnum : struct, Enum
     {
         // since enums are evaluated at compile time and bound to corresponding template parameter,
@@ -28,7 +28,7 @@ namespace PQ.Common.Fsm
         [Pure] private static int   ToInt(TEnum value) => UnsafeUtility.As<TEnum, int>(ref value);
         [Pure] private static TEnum ToEnum(int value)  => UnsafeUtility.As<int, TEnum>(ref value);
 
-        static FsmStateIdRepository()
+        static FsmStateIdCache()
         {
             _names       = Enum.GetNames(typeof(TEnum));
             _type        = typeof(TEnum);
