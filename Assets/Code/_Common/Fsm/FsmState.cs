@@ -133,30 +133,34 @@ namespace PQ.Common.Fsm
         public bool        HasSameId(StateId id)                  => idCache.EqualityComparer.Equals(_id, id);
         public static bool HasSameId(StateId left, StateId right) => idCache.EqualityComparer.Equals(left, right);
 
-        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other)
+        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) => Compare(this, other);
+
+        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) => Compare(this, other) == 0;
+
+        public override bool Equals(object obj) => Compare(this, obj as FsmState<StateId, SharedData>) == 0;
+        public override int GetHashCode() => HashCode.Combine(idCache.EqualityComparer.GetHashCode());
+
+        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) => Compare(left, right) == 0;
+        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) => Compare(left, right) != 0;
+
+
+        private static int Compare(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right)
         {
-            if (other is null)
+            if (ReferenceEquals(left, right))
+            {
+                return 0;
+            }
+
+            if (left is null)
+            {
+                return -1;
+            }
+            if (right is null)
             {
                 return 1;
             }
-            return idCache.ValueComparer.Compare(Id, other.Id);
+
+            return idCache.ValueComparer.Compare(left.Id, right.Id);
         }
-
-        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other)
-        {
-            return ReferenceEquals(this, other) ||
-                  (other is not null && idCache.EqualityComparer.Equals(Id, other.Id));
-        }
-
-        public override bool Equals(object obj) =>
-            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
-        public override int GetHashCode() =>
-            HashCode.Combine(idCache.EqualityComparer.GetHashCode());
-
-        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            ReferenceEquals(left, right) ||
-            (left is not null && ((IEquatable<FsmState<StateId, SharedData>>)left).Equals(right));
-        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            !(left == right);
     }
 }
