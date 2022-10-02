@@ -17,6 +17,8 @@ namespace PQ.Common.Fsm
         where Id         : struct, Enum
         where SharedData : FsmSharedData
     {
+        // since enums are processed at compile time, we validate and cache enum names/values
+        // only once (statically) per enum type
         private static readonly FsmStateIdCache<Id> _stateIdCache = FsmStateIdCache<Id>.Instance;
 
         private struct Node
