@@ -1,97 +1,108 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 
-namespace PQ.Common.Extensions
+namespace PQ.Common.Containers
 {
     /*
     Fixed size array of bits.
 
     Unlike C#'s BitVector32 collection, this is more similar to C++'s bitset, with more support
     for checking non-contiguous subsets (as opposed to BitVector32.Section).
+
+    Note that no index checking is necessary outside of the mutating methods that strictly enforce it.
     */
     public struct BitSet : IEquatable<BitSet>, IComparable<BitSet>
     {
-        public int Value { get; private set; }
-        public int Count { get; private set; }
-        public int Size  { get; private set; }
-        
+        public const int MinSize = 1;
+        public const int MaxSize = 64;
 
-        public BitSet(int size)
-        {            
-            if (size < 0)
+        public long Data  { get; private set; }
+        public int  Count { get; private set; }
+        public int  Size  { get; private set; }
+
+        /*
+        // set all bits between start (inclusive) and end (exclusive) to 1
+        [Pure]
+        private static long SetBits(long data, int start, int end)
+        {
+            long mask = ~(~0 << (end - start + 1));
+            long value = (data >> start) & mask;
+            return value;
+        }
+        */
+
+        public BitSet(int size, bool value=false)
+        {
+            if (size < MinSize || size > MaxSize)
             {
-                throw new ArgumentException($"Bitset size cannot be negative");
+                throw new ArgumentException($"Bitset size must be in range [1, 64] - received {size}");
             }
-            Value = 0;
+
+            Data  = 0;
             Count = 0;
             Size  = size;
+
+            if (value)
+            {
+                Data  = ~0;
+                Count = Size;
+            }
+            else
+            {
+                Data  = 0;
+                Count = 0;
+            }
         }
 
-        public bool TryAdd(int bitPosition)
+        [Pure] public bool IsTrue(int index)       => (Data & (1 << index)) != 0;
+        [Pure] public bool IsSubset(long mask)     => (Data & mask) == mask;
+        [Pure] public bool IsSubset(BitSet bitSet) => (Data & bitSet.Data) == bitSet.Data;
+
+
+        public bool TryAdd(int index)
         {
-            int element = 1 << bitPosition;
-            if (bitPosition < 0 || bitPosition >= Size || (Value & element) != 0)
+            long element = 1 << index;
+            if (index < 0 || index >= Size || (Data & element) != 0)
             {
                 return false;
             }
 
-            Value |= element;
+            Data |= element;
             Count++;
             return true;
         }
 
-        public bool TryRemove(int bitPosition)
+        public bool TryRemove(int index)
         {
-            int element = 1 << bitPosition;
-            if (bitPosition < 0 || bitPosition >= Size || (Value & element) == 0)
+            long element = 1 << index;
+            if (index < 0 || index >= Size || (Data & element) == 0)
             {
                 return false;
             }
 
-            Value &= element;
+            Data &= element;
             Count--;
             return true;
         }
 
-        public bool IsSet(int bitPosition)
-        {
-            // note that no index check is necessary since that's enforced in Set()
-            return (Value & (1 << bitPosition)) != 0;
-        }
-
-        public bool IsSubset(int mask)
-        {
-            // explicitly check against given mask to ensure that zero
-            // is not included unless the mask is as well
-            return (Value & mask) == mask;
-        }
-
-        public bool IsSubset(BitSet bitSet)
-        {
-            // explicitly check against given mask to ensure that zero
-            // is not included unless the mask is as well
-            return (Value & bitSet.Value) == bitSet.Value;
-        }
-
+        [Pure]
         public static string ToString(BitSet bitSet)
         {
             var bits = new char[bitSet.Size];
             for (int i = 0; i < bits.Length; i++)
             {
-                bits[i] = bitSet.IsSet(i) ? '1' : '0';
+                bits[i] = bitSet.IsTrue(i) ? '1' : '0';
             }
             return new string(bits);
         }
 
-        
-        public override string  ToString()         => ToString(bitSet: this);
-        public override int     GetHashCode()      => HashCode.Combine(Value);
-        public override bool    Equals(object obj) => obj is BitSet && Equals((BitSet)obj);
-
-        bool IEquatable<BitSet>.Equals(BitSet other)    => Value == other.Value;
-        int IComparable<BitSet>.CompareTo(BitSet other) => Value.CompareTo(other.Value);
-
-        public static bool operator ==(BitSet left, BitSet right) => left.Value == right.Value;
-        public static bool operator !=(BitSet left, BitSet right) => left.Value != right.Value;
+        bool IEquatable<BitSet>.Equals(BitSet other)              =>  Data == other.Data && Count == other.Count && Size == other.Size;
+        int IComparable<BitSet>.CompareTo(BitSet other)           =>  Data.CompareTo(other.Data);
+        public override string  ToString()                        =>  ToString(bitSet: this);
+        public override int     GetHashCode()                     =>  HashCode.Combine(Data);
+        public override bool    Equals(object obj)                =>  ((IEquatable<BitSet>)this).Equals((BitSet)obj);
+        public static bool operator ==(BitSet left, BitSet right) =>  ((IEquatable<BitSet>)left).Equals(right);
+        public static bool operator !=(BitSet left, BitSet right) => !((IEquatable<BitSet>)left).Equals(right);
     }
 }

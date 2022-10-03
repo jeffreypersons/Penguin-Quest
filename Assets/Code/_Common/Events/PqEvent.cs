@@ -47,17 +47,21 @@ namespace PQ.Common.Events
         public string Name => _name;
         public PqEvent(string name) => _name = name;
 
-        public void Raise()                            => _action.Invoke();
-        public void AddHandler(Action onRaise)         => _action += onRaise;
-        public void RemoveHandler(Action onRaise)      => _action -= onRaise;
+        public void Raise()                       => _action.Invoke();
+        public void AddHandler(Action onRaise)    => _action += onRaise;
+        public void RemoveHandler(Action onRaise) => _action -= onRaise;
+
         bool IEquatable<PqEvent>.Equals(PqEvent other) => other is not null && Name == other.Name;
 
         public override string ToString()         => $"Event({_name})";
         public override int    GetHashCode()      => HashCode.Combine(base.GetHashCode(), _action.GetHashCode(), Name);
         public override bool   Equals(object obj) => ((IEquatable<PqEvent>)this).Equals(obj as PqEvent);
 
-        public static bool operator ==(PqEvent left, PqEvent right) =>  Equals(left, right);
-        public static bool operator !=(PqEvent left, PqEvent right) => !Equals(left, right);
+        public static bool operator ==(PqEvent left, PqEvent right) =>
+            ReferenceEquals(left, right) ||
+            (left is not null && ((IEquatable<PqEvent>)left).Equals(right));
+        public static bool operator !=(PqEvent left, PqEvent right) =>
+            !(left == right);
     }
 
 
@@ -70,16 +74,20 @@ namespace PQ.Common.Events
         public string Name => _name;
         public PqEvent(string name) => _name = name;
 
-        public void Raise(T args)                            => _action.Invoke(args);
-        public void AddHandler(Action<T> onRaise)            => _action += onRaise;
-        public void RemoveHandler(Action<T> onRaise)         => _action -= onRaise;
+        public void Raise(T args)                    => _action.Invoke(args);
+        public void AddHandler(Action<T> onRaise)    => _action += onRaise;
+        public void RemoveHandler(Action<T> onRaise) => _action -= onRaise;
+
         bool IEquatable<PqEvent<T>>.Equals(PqEvent<T> other) => other is not null && Name == other.Name;
 
         public override string ToString()         => $"Event<{typeof(T).FullName}>({_name})";
         public override int    GetHashCode()      => HashCode.Combine(base.GetHashCode(), _action.GetHashCode(), Name);
         public override bool   Equals(object obj) => ((IEquatable<PqEvent<T>>)this).Equals(obj as PqEvent<T>);
 
-        public static bool operator ==(PqEvent<T> left, PqEvent<T> right) =>  Equals(left, right);
-        public static bool operator !=(PqEvent<T> left, PqEvent<T> right) => !Equals(left, right);
+        public static bool operator ==(PqEvent<T> left, PqEvent<T> right) =>
+            ReferenceEquals(left, right) ||
+            (left is not null && ((IEquatable<PqEvent<T>>)left).Equals(right));
+        public static bool operator !=(PqEvent<T> left, PqEvent<T> right) =>
+            !(left == right);
     }
 }

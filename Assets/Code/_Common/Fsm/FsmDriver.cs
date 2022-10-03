@@ -55,6 +55,12 @@ namespace PQ.Common.Fsm
 
             public Builder(SharedData persistentData, StateId initial)
             {
+                if (persistentData == null || !persistentData)
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot initialize - shared data cannot be null or destroyed," +
+                        $"as otherwise any event registration in state.OnInitialize() will fail");
+                }
                 this.initial = initial;
                 this.data    = persistentData;
                 this.nodes   = new List<(FsmState<StateId, SharedData>, StateId[])>();

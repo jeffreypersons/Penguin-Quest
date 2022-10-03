@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using PQ.Common.Events;
+using UnityEngine;
 
 
 namespace PQ.Common.Fsm
@@ -19,22 +19,18 @@ namespace PQ.Common.Fsm
     of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
     */
     public abstract class FsmState<StateId, SharedData>
-        : IEquatable <FsmState<StateId, SharedData>>,
+        : IEquatable<FsmState<StateId, SharedData>>,
           IComparable<FsmState<StateId, SharedData>>
         where SharedData : FsmSharedData
-        where StateId    : struct, Enum
+        where StateId : struct, Enum
     {
-        private StateId         _id;
-        private string          _name;
-        private SharedData      _data;
-        private bool            _active;
-        private PqEventRegistry _eventRegistry;
-
+        private StateId          _id;
+        private string           _name;
+        private SharedData       _data;
+        private bool             _active;
+        private PqEventRegistry  _eventRegistry;
         private PqEvent          _moveToLastStateSignal = new("fsm.state.move.last");
         private PqEvent<StateId> _moveToNextStateSignal = new("fsm.state.move.next");
-
-        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
-        private static readonly EqualityComparer<StateId> IdEqualityComparer = EqualityComparer<StateId>.Default;
 
         public    StateId    Id     => _id;
         public    string     Name   => _name;
@@ -51,6 +47,13 @@ namespace PQ.Common.Fsm
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
 
+        private static readonly FsmStateIdCache<StateId> idCache;
+
+        static FsmState()
+        {
+            // note that since enums are processed during compile time, we resolve the cache only once per static id type
+            idCache = FsmStateIdCache<StateId>.Instance;
+        }
 
 
         /*** External Facing Methods for Driving State Logic ***/
@@ -58,32 +61,22 @@ namespace PQ.Common.Fsm
         // Public dummy state constructor so that we can constrain generics to new(), for use in factories
         public FsmState() { }
 
-        // Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
-        public bool        HasSameId(StateId id)                  => IdEqualityComparer.Equals(_id, id);
-        public static bool HasSameId(StateId left, StateId right) => IdEqualityComparer.Equals(left, right);
-
         // External entry point factory for constructing the state
         // Note that this is our uniform single access point for creating the state, no public constructors
         public static StateSubclassInstance Create<StateSubclassInstance>(StateId id, SharedData blob)
             where StateSubclassInstance : FsmState<StateId, SharedData>, new()
         {
-            new UnityEngine.Vector3();
-            return new()
+            StateSubclassInstance instance = new()
             {
-                _id = id,
-                _name = Enum.GetName(typeof(StateId), id),
-                _data = blob,
-                _active = false,
+                _id            = id,
+                _name          = idCache.GetName(id),
+                _data          = blob,
+                _active        = false,
                 _eventRegistry = new(),
             };
-        }
-
-        // Entry point for client code initializing state instances
-        // Any 'startup' code such as hooking up handlers to events is done here
-        public void Initialize()
-        {
-            OnIntialize();
-            _eventRegistry.UnsubscribeToAllRegisteredEvents();
+            instance.OnIntialize();
+            instance._eventRegistry.UnsubscribeToAllRegisteredEvents();
+            return instance;
         }
 
         // Entry point for client code utilizing state instances
@@ -112,28 +105,14 @@ namespace PQ.Common.Fsm
         public void LateUpdate()  => OnLateUpdate();
 
 
-        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) =>
-            Id.CompareTo(other.Id);
-        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other) =>
-            other is not null && IdEqualityComparer.Equals(other.Id);
-        public override bool Equals(object obj) =>
-            ((IEquatable<FsmState<StateId, SharedData>>)this).Equals(obj as FsmState<StateId, SharedData>);
-        public override int GetHashCode()
-            => HashCode.Combine(IdEqualityComparer.GetHashCode());
-        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            Equals(left, right);
-        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>
-            !Equals(left, right);
-
-
 
         /*** Internal Hooks for Defining State Specific Logic ***/
 
         // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
         // and unsubscribed on state exit.
         // Can only be invoked in OnInitialize.
-        protected void SignalMoveToLastState()             => _moveToLastStateSignal.Raise();
-        protected void SignalMoveToNextState(StateId dest) => _moveToNextStateSignal.Raise(dest);
+        protected void SignalMoveToLastState()                                          => _moveToLastStateSignal.Raise();
+        protected void SignalMoveToNextState(StateId dest)                              => _moveToNextStateSignal.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
         protected void RegisterEvent<T>(IPqEventReceiver<T> event_, Action<T> handler_) => _eventRegistry.Add(event_, handler_);
 
@@ -149,5 +128,52 @@ namespace PQ.Common.Fsm
         protected virtual void OnUpdate()      { }
         protected virtual void OnFixedUpdate() { }
         protected virtual void OnLateUpdate()  { }
+        
+        
+        public bool        HasSameId(StateId id)                  => idCache.EqualityComparer.Equals(_id, id);
+        public static bool HasSameId(StateId left, StateId right) => idCache.EqualityComparer.Equals(left, right);
+
+        int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) => Compare(this, other);
+        bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other)    => Equal(this, other);
+
+        public override bool Equals(object obj) => Equal(this, obj as FsmState<StateId, SharedData>);
+        public override int GetHashCode() => HashCode.Combine(idCache.EqualityComparer.GetHashCode(Id));
+
+        public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>  Equal(left, right);
+        public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) => !Equal(left, right);
+
+
+        private static bool Equal(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return true;
+            }
+            if (left is null)
+            {
+                return false;
+            }
+            if (right is null)
+            {
+                return false;
+            }
+            return ReferenceEquals(left.Blob, right.Blob) && idCache.EqualityComparer.Equals(left.Id, right.Id);
+        }
+        private static int Compare(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return 0;
+            }
+            if (left is null)
+            {
+                return -1;
+            }
+            if (right is null)
+            {
+                return 1;
+            }
+            return idCache.ValueComparer.Compare(left.Id, right.Id);
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using PQ.Common.Extensions;
+using PQ.Common.Containers;
 
 
 namespace PQ.Common.Fsm
@@ -17,132 +17,136 @@ namespace PQ.Common.Fsm
         where StateId    : struct, Enum
         where SharedData : FsmSharedData
     {
-        private readonly int _nodeCount;
-        private readonly int _edgeCount;
-        private readonly string _description;
+        private struct Node
+        {
+            public readonly FsmState<StateId, SharedData> state;
+            public readonly BitSet neighbors;
+            public Node(FsmState<StateId, SharedData> state, BitSet neighbors)
+            {
+                this.state = state;
+                this.neighbors = neighbors;
+            }
+        }
 
-        private readonly BitSet _stateIds;
-        private readonly BitSet[] _neighbors;
-        private readonly FsmState<StateId, SharedData>[] _states;
-
-        public int StateCount      => _nodeCount;
-        public int TransitionCount => _edgeCount;
-
-        private readonly string indent = new(' ', 4);
-        
+        public int StateCount      => _stateCount;
+        public int TransitionCount => _transitionCount;
         public override string ToString() => _description;
 
-        /* Fill the graph with states, initialize them, and add their neighbors. */
-        public FsmGraph(in List<(FsmState<StateId, SharedData>, StateId[])> nodes)
+        private readonly int    _stateCount;
+        private readonly int    _transitionCount;
+        private readonly string _description;
+        private readonly Node[] _nodes;
+
+        private static readonly string indentation;
+        private static readonly FsmStateIdCache<StateId> idCache;
+        static FsmGraph()
         {
-            int stateIdCount = EnumExtensions.CountEnumValues<StateId>();
-            if (nodes == null || nodes.Count == 0)
+            // note that since enums are processed during compile time, we resolve the cache only once per static id type
+            indentation  = new(' ', 4);
+            idCache = FsmStateIdCache<StateId>.Instance;
+        }
+
+        public FsmGraph(in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+        {
+            if (adjacencyList == null || adjacencyList.Count == 0)
             {
                 throw new ArgumentException($"Fsm must have at least one state - received none");
             }
-            if (nodes.Count != stateIdCount)
-            {
-                throw new ArgumentException($"Fsm must have one state per stateId enum member - counts are unequal");
-            }
-            if (!EnumExtensions.AreAllEnumValuesDefault<StateId>())
-            {
-                throw new ArgumentException("Id's underlying enum type must be int32 with default values from 0 to n");
-            }
 
+            // note that since the nodes are created using bitset, node list match state id enum order
+            _stateCount      = 0;
+            _transitionCount = 0;
+            _description     = string.Empty;
+            _nodes           = ExtractNodeForEachDefinedId(adjacencyList);
+            _description     = AsUserFriendlyString(_nodes);
+        }
+
+        public bool HasState(in StateId id) =>
+            idCache.TryGetIndex(id, out _);
+
+        public bool HasTransition(in StateId source, in StateId dest) =>
+            idCache.TryGetIndex(source, out int sourceIndex) &&
+            idCache.TryGetIndex(dest,   out int destIndex)   &&
+            _nodes[sourceIndex].neighbors.IsTrue(destIndex);
+
+        public FsmState<StateId, SharedData> GetState(in StateId id) =>
+            idCache.TryGetIndex(id, out int index)? _nodes[index].state : null;
+
+
+        private static Node[] ExtractNodeForEachDefinedId(
+            in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+        {
+            if (adjacencyList.Count != idCache.Count)
+            {
+                throw new ArgumentException($"Cannot extract nodes - " +
+                    $"must have one state per stateId enum member yet counts are unequal");
+            }
 
             // fill the ordered buckets according to their underlying ordinal type
-            // note that since we enforce uniqueness and equal counts, there is no need
-            // to do any further checks
-            _nodeCount   = 0;
-            _edgeCount   = 0;
-            _description = string.Empty;
-            _stateIds    = new BitSet(stateIdCount);
-            _states      = new FsmState<StateId, SharedData>[stateIdCount];
-            _neighbors   = new BitSet[stateIdCount];
-            foreach ((var state, var neighbors) in nodes)
+            Node[] nodes = new Node[idCache.Count];
+            foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
             {
-                if (!TryGetIndex(state, out int stateIndex))
+                if (state == null || adjacents == null)
                 {
-                    throw new ArgumentException($"Cannot add state to graph - expected non state with a defined state id");
-                }
-                if (!_stateIds.TryAdd(stateIndex))
-                {
-                    throw new ArgumentException($"Cannot add state to graph - non-duplicate state");
-                }
-                if (neighbors == null)
-                {
-                    throw new ArgumentException($"Cannot add state to graph - neighbors cannot be null");
+                    throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
                 }
 
-                state.Initialize();
-                _nodeCount++;
-                _edgeCount += neighbors.Length;
-                _states[stateIndex] = state;
-                _neighbors[stateIndex] = new BitSet(stateIdCount);
-            }
-
-            // loop through again after it's all initialized..
-            StringBuilder stringBuilder = new("{\n");
-            foreach ((var state, var neighbors) in nodes)
-            {
-                int stateIndex = EnumExtensions.AsInt(state.Id);
-                foreach (StateId neighborId in neighbors)
+                StateId sourceId = state.Id;
+                if (!idCache.TryGetIndex(state.Id, out int sourceIndex))
                 {
-                    int neighborIndex = EnumExtensions.AsInt(neighborId);
-                    if (!_stateIds.IsSet(neighborIndex) || !_neighbors[stateIndex].TryAdd(neighborIndex))
+                    throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(StateId)} enum");
+                }
+
+                BitSet neighbors = new(idCache.Count);
+                for (int i = 0; i < adjacents.Length; i++)
+                {
+                    StateId neighborId = adjacents[i];
+                    if (!idCache.TryGetIndex(neighborId, out int neighborIndex))
                     {
-                        throw new ArgumentException($"Cannot add transition {state.Id}=>{neighborId} to graph - expected unique existing key");
+                        throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
+                            $"destination is not a defined {typeof(StateId)} enum");
                     }
-                    if (FsmState<StateId, SharedData>.HasSameId(state.Id, neighborId))
+                    if (!neighbors.TryAdd(neighborIndex))
                     {
-                        throw new ArgumentException($"Cannot add transition {state.Id}=>{neighborId} to graph - must be different states");
+                        throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - expected unique existing key");
+                    }
+                    if (sourceIndex == neighborIndex)
+                    {
+                        throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - must be different states");
                     }
                 }
-                stringBuilder.Append($"{indent}{state.Name}=>{{").AppendJoin(',', neighbors);
+                nodes[sourceIndex] = new Node(state, neighbors);
             }
-            _description = $"{{\n{stringBuilder}}}";
+            return nodes;
+        }
+        
+        private static string AsUserFriendlyString(in Node[] nodes)
+        {
+            StringBuilder sb = new("{\n");
+            foreach (Node node in nodes)
+            {
+                sb.Append($"{indentation}{node.state.Name} => {{");
+                foreach ((int index, string name, StateId _) in idCache.Fields())
+                {
+                    if (node.neighbors.IsTrue(index))
+                    {
+                        sb.Append(name).Append(',');
+                    }
+                }
+                RemoveTrailingCharacter(sb, ',');
+                sb.Append($"}}\n");
+            }
+            sb.Append("}");
+            return sb.ToString();
         }
 
-        public bool HasState(StateId id) =>
-            TryGetIndex(id, out int index) &&
-            _stateIds.IsSet(index);
-
-        public bool HasTransition(StateId source, StateId dest) =>
-            TryGetIndex(source, out int sourceIndex) &&
-            TryGetIndex(dest,   out int destIndex)   &&
-            _neighbors[sourceIndex].IsSet(destIndex);
-
-        public FsmState<StateId, SharedData> GetState(StateId id) =>
-            TryGetIndex(id, out int index)? _states[index] : null;
-
-
-        private bool TryGetIndex(StateId id, out int index)
+        private static void RemoveTrailingCharacter(StringBuilder stringBuilder, char character)
         {
-            index = EnumExtensions.AsInt(id);
-            if (index < 0 || index >= _states.Length)
+            int size = stringBuilder.Length;
+            if (stringBuilder[size - 1] == character)
             {
-                index = -1;
-                return false;
+                stringBuilder.Length--;
             }
-            return true;
-        }
-
-        private bool TryGetIndex(FsmState<StateId, SharedData> state, out int index)
-        {
-            if (state == null)
-            {
-                index = -1;
-                return false;
-            }
-            int enumValue = EnumExtensions.AsInt(state.Id);
-            if (enumValue < 0 || enumValue >= _states.Length)
-            {
-                index = -1;
-                return false;
-            }
-
-            index = enumValue;
-            return true;
         }
     }
 }
