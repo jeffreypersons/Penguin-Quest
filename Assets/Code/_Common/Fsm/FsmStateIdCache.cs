@@ -4,8 +4,6 @@ using System.Diagnostics.Contracts;
 using Unity.Collections.LowLevel.Unsafe;
 using PQ.Common.Containers;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Reflection;
 
 
 namespace PQ.Common.Fsm
@@ -123,7 +121,7 @@ namespace PQ.Common.Fsm
 
             ThrowIf(count < MinIndexValue || count > MaxIndexValue,
                 $"Enum values must be default from {MinIndexValue} to {MaxIndexValue}");
-            for (int i = 0; i <= count; i++)
+            for (int i = 0; i < count; i++)
             {
                 ThrowIf(Enum.GetName(type, i) == null, "Enum values must be default from 0 to n");
             }

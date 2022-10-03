@@ -21,14 +21,16 @@ namespace PQ.Common.Containers
         public int  Count { get; private set; }
         public int  Size  { get; private set; }
 
+        /*
         // set all bits between start (inclusive) and end (exclusive) to 1
         [Pure]
         private static long SetBits(long data, int start, int end)
         {
-            long mask = ~(~0 << (end - start));
+            long mask = ~(~0 << (end - start + 1));
             long value = (data >> start) & mask;
             return value;
         }
+        */
 
         public BitSet(int size, bool value=false)
         {
@@ -43,7 +45,7 @@ namespace PQ.Common.Containers
 
             if (value)
             {
-                Data  = SetBits(size, 0, size);
+                Data  = ~0;
                 Count = Size;
             }
             else
