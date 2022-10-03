@@ -4,6 +4,8 @@ using System.Diagnostics.Contracts;
 using Unity.Collections.LowLevel.Unsafe;
 using PQ.Common.Containers;
 using System.Collections.Generic;
+using UnityEngine;
+using System.Reflection;
 
 
 namespace PQ.Common.Fsm
@@ -13,6 +15,8 @@ namespace PQ.Common.Fsm
 
     That is, since this functionality is intended to extend the generic StateId param used in other classes,
     it is only to be used statically, as enum definitions are processed at compile time, so we only need to do things once.
+
+    Note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons.
     */
     internal class FsmStateIdCache<TEnum>
         where TEnum : struct, Enum
@@ -32,38 +36,34 @@ namespace PQ.Common.Fsm
             }
         }
 
-        [Pure] private static int   ToInt(TEnum value) => UnsafeUtility.As<TEnum, int>(ref value);
-        [Pure] private static TEnum ToEnum(int value) => UnsafeUtility.As<int, TEnum>(ref value);
-
-        private readonly string[] _names;
         private readonly Type     _type;
+        private readonly string[] _names;
         private readonly BitSet   _bitset;
-        private readonly string   _description;
+
         private readonly Comparer<TEnum>         _valueComparer;
         private readonly EqualityComparer<TEnum> _equalityComparer;
 
+        private const int MinIndexValue = BitSet.MinSize;
+        private const int MaxIndexValue = BitSet.MaxSize;
+
         private FsmStateIdCache()
         {
-            _names            = Enum.GetNames(typeof(TEnum));
+            _names            = ExtractNames<TEnum>();
             _type             = typeof(TEnum);
             _bitset           = new(_names.Length, true);
-            _description      = $"{_type.FullName} {{ {string.Join(',', _names)} }}";
-
-            // note that since enums are a value type, we can't use ==, so this is the best we can do (no boxing!) for id comparisons
             _equalityComparer = EqualityComparer<TEnum>.Default;
             _valueComparer    = Comparer<TEnum>.Default;
-
-            ThrowIf(!AreAllEnumValuesDefault(), "Enum values must be int32 with default values from 0 to n");
+            UnityEngine.Debug.Log(_bitset);
         }
 
-        public Type   Type   => _type;
-        public int    Count  => _bitset.Count;
-        public string String => _description;
+        public Type Type  => _type;
+        public int  Count => _bitset.Count;
 
         public Comparer<TEnum>         ValueComparer    => _valueComparer;
         public EqualityComparer<TEnum> EqualityComparer => _equalityComparer;
 
-        public IEnumerable<(int index, string name, TEnum field)> Fields()
+
+        public IEnumerable<(int index, string name, TEnum id)> Fields()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -71,87 +71,87 @@ namespace PQ.Common.Fsm
             }
         }
 
-        public bool TryGetIndex(in TEnum id, out int index)
+        [Pure]
+        public bool TryGetIndex(TEnum id, out int index)
         {
-            if (!IsDefined(id))
+            index = UnsafeUtility.As<TEnum, int>(ref id);
+            if (!_bitset.IsTrue(index))
             {
                 index = -1;
                 return false;
             }
-
-            index = GetIndex(id);
             return true;
-        }
-
-        [Pure]
-        public bool IsDefined(int index)
-        {
-            return _bitset.IsTrue(index);
-        }
-        [Pure]
-        public bool IsDefined(in TEnum id)
-        {
-            return _bitset.IsTrue(ToInt(id));
         }
 
         [Pure]
         public int GetIndex(in TEnum id)
         {
-            int index = ToInt(id);
-            ThrowIf(!_bitset.IsTrue(index), $"Cannot look up index since id {id} is not defined");
+            ThrowIf(!TryGetIndex(id, out int index), $"Cannot get index - id {id} not defined");
             return index;
         }
 
         [Pure]
         public string GetName(in TEnum id)
         {
-            int index = ToInt(id);
-            ThrowIf(!_bitset.IsTrue(index), $"Cannot look up name since id {id} is not defined");
+            ThrowIf(!TryGetIndex(id, out int index), $"Cannot get name - id {id} not defined");
             return _names[index];
         }
-        
+
+
         [Pure]
-        public TEnum GetValue(int index)
+        public bool TryGetId(int index, out TEnum id)
         {
-            ThrowIf(!_bitset.IsTrue(index), $"Cannot look up id since index {index} is not defined");
-            return ToEnum(index);
+            id = UnsafeUtility.As<int, TEnum>(ref index);
+            return _bitset.IsTrue(index);
+        }
+
+        [Pure]
+        public TEnum GetId(int index)
+        {
+            ThrowIf(!TryGetId(index, out TEnum id), $"Cannot get id - index {index} not defined");
+            return id;
+        }
+        
+
+
+        [Pure]
+        private static string[] ExtractNames<T>() where T : struct, Enum
+        {
+            var type  = typeof(T);
+            var names = Enum.GetNames(type);
+            var count = names.Length;
+
+            ThrowIf(count < MinIndexValue || count > MaxIndexValue,
+                $"Enum values must be default from {MinIndexValue} to {MaxIndexValue}");
+            for (int i = 0; i <= count; i++)
+            {
+                ThrowIf(Enum.GetName(type, i) == null, "Enum values must be default from 0 to n");
+            }
+
+            return names;
         }
 
 
-
         [Pure]
-        private void ThrowIf(bool condition, string message)
+        private static void ThrowIf(bool hasError, string message)
         {
-            if (!condition)
+            if (!hasError)
             {
                 return;
             }
+            
+            [Pure] static string _EnumFieldToString(string name, TEnum value) =>
+                $"{name}={UnsafeUtility.As<TEnum, long>(ref value)}";
 
-            var name   = _type.FullName;
-            var type   = Enum.GetUnderlyingType(_type).FullName;
-            var fields = _names.Zip(Enum.GetValues(_type).Cast<long>(), (k, v) => $"{k}={v}");
+            var type   = typeof(TEnum);
+            var names  = Enum.GetNames(type);
+            var values = (TEnum[])Enum.GetValues(type);
 
-            throw new ArgumentException($"{message} - received enum {name} : {type} {{ {string.Join(',', fields)} }}");
-        }
+            string enumName   = type.FullName;
+            string typeName   = Enum.GetUnderlyingType(type).FullName;
+            string enumFields = string.Join(',', names.Zip(values, _EnumFieldToString));
 
-        [Pure]
-        private bool AreAllEnumValuesDefault()
-        {
-            if (Enum.GetUnderlyingType(_type) != typeof(int))
-            {
-                return false;
-            }
-
-            // note that checking for name existence is the most performant least garbage producing method,
-            // compare to the much more reflection heavy Enum.GetValues() and Enum.IsDefined()
-            for (int i = 0; i < _bitset.Count; i++)
-            {
-                if (Enum.GetName(_type, i) == null)
-                {
-                    return false;
-                }
-            }
-            return true;
+            throw new ArgumentException($"{message} - received enum {enumName} : {typeName} {{ {enumFields} }}");
         }
     }
 }
