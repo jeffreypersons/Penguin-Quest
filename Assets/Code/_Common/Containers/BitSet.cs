@@ -21,37 +21,24 @@ namespace PQ.Common.Containers
         public int  Count { get; private set; }
         public int  Size  { get; private set; }
 
-        /*
-        // set all bits between start (inclusive) and end (exclusive) to 1
-        [Pure]
-        private static long SetBits(long data, int start, int end)
-        {
-            long mask = ~(~0 << (end - start + 1));
-            long value = (data >> start) & mask;
-            return value;
-        }
-        */
-
         public BitSet(int size, bool value=false)
         {
             if (size < MinSize || size > MaxSize)
             {
-                throw new ArgumentException($"Bitset size must be in range [1, 64] - received {size}");
+                throw new ArgumentException($"Bitset size must be in range [{MinSize}, {MaxSize}] - received {size}");
             }
-
-            Data  = 0;
-            Count = 0;
-            Size  = size;
 
             if (value)
             {
                 Data  = ~0;
-                Count = Size;
+                Count = size;
+                Size  = size;
             }
             else
             {
                 Data  = 0;
                 Count = 0;
+                Size  = size;
             }
         }
 
