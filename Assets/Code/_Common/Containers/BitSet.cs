@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 
@@ -20,6 +21,7 @@ namespace PQ.Common.Containers
         public long Data  { get; private set; }
         public int  Count { get; private set; }
         public int  Size  { get; private set; }
+
 
         public BitSet(int size, bool value=false)
         {
@@ -43,10 +45,10 @@ namespace PQ.Common.Containers
         }
 
         [Pure] public bool IsTrue(int index)       => (Data & (1 << index)) != 0;
-        [Pure] public bool IsSubset(long mask)     => (Data & mask) == mask;
         [Pure] public bool IsSubset(BitSet bitSet) => (Data & bitSet.Data) == bitSet.Data;
 
 
+        /* If ith bit false, set to true. */
         public bool TryAdd(int index)
         {
             long element = 1 << index;
@@ -60,6 +62,7 @@ namespace PQ.Common.Containers
             return true;
         }
 
+        /* If ith bit true, set to false. */
         public bool TryRemove(int index)
         {
             long element = 1 << index;
@@ -71,6 +74,18 @@ namespace PQ.Common.Containers
             Data &= element;
             Count--;
             return true;
+        }
+
+        /* Retrieve positions of all set bits. */
+        public IEnumerable<int> Indices()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (IsTrue(i))
+                {
+                    yield return i;
+                }
+            }
         }
 
         [Pure]
