@@ -112,7 +112,7 @@ namespace PQ.Common.Containers
 
             long leftEnd  =  1L << offsetFromRight;
             long rightEnd = -1L >> offsetFromLeft;
-            long result   = leftEnd & rightEnd;
+            long result   = leftEnd | rightEnd;
 
             UnityEngine.Debug.LogFormat(
                 "({0}){1} + ({2}){3} --> ({4}){5} ",
