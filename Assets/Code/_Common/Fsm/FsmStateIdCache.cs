@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Unity.Collections.LowLevel.Unsafe;
 using PQ.Common.Containers;
-using System.Collections.Generic;
 
 
 namespace PQ.Common.Fsm
@@ -51,7 +51,6 @@ namespace PQ.Common.Fsm
             _bitset           = new(_names.Length, true);
             _equalityComparer = EqualityComparer<TEnum>.Default;
             _valueComparer    = Comparer<TEnum>.Default;
-            UnityEngine.Debug.Log(_bitset);
         }
 
         public Type Type  => _type;
@@ -73,7 +72,7 @@ namespace PQ.Common.Fsm
         public bool TryGetIndex(TEnum id, out int index)
         {
             index = UnsafeUtility.As<TEnum, int>(ref id);
-            if (!_bitset.IsTrue(index))
+            if (!_bitset.HasIndex(index))
             {
                 index = -1;
                 return false;
@@ -100,7 +99,7 @@ namespace PQ.Common.Fsm
         public bool TryGetId(int index, out TEnum id)
         {
             id = UnsafeUtility.As<int, TEnum>(ref index);
-            return _bitset.IsTrue(index);
+            return _bitset.HasIndex(index);
         }
 
         [Pure]
