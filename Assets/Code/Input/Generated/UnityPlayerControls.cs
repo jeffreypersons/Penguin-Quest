@@ -15,12 +15,12 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace PQ.Generated
+namespace PQ.Input.Generated
 {
-    public partial class @PlayerControls : IInputActionCollection2, IDisposable
+    public partial class @UnityPlayerControls : IInputActionCollection2, IDisposable
     {
         public InputActionAsset asset { get; }
-        public @PlayerControls()
+        public @UnityPlayerControls()
         {
             asset = InputActionAsset.FromJson(@"{
     ""name"": ""UnityPlayerControls"",
@@ -886,8 +886,8 @@ namespace PQ.Generated
         private readonly InputAction m_Gameplay_Fire;
         public struct GameplayActions
         {
-            private @PlayerControls m_Wrapper;
-            public GameplayActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+            private @UnityPlayerControls m_Wrapper;
+            public GameplayActions(@UnityPlayerControls wrapper) { m_Wrapper = wrapper; }
             public InputAction @MoveHorizontal => m_Wrapper.m_Gameplay_MoveHorizontal;
             public InputAction @JumpUp => m_Wrapper.m_Gameplay_JumpUp;
             public InputAction @StandUp => m_Wrapper.m_Gameplay_StandUp;
@@ -963,8 +963,8 @@ namespace PQ.Generated
         private readonly InputAction m_UI_TrackedDeviceOrientation;
         public struct UIActions
         {
-            private @PlayerControls m_Wrapper;
-            public UIActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+            private @UnityPlayerControls m_Wrapper;
+            public UIActions(@UnityPlayerControls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Navigate => m_Wrapper.m_UI_Navigate;
             public InputAction @Submit => m_Wrapper.m_UI_Submit;
             public InputAction @Cancel => m_Wrapper.m_UI_Cancel;

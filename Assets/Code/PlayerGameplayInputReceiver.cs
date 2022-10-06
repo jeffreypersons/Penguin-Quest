@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using PQ.Generated;
+using PQ.Input.Generated;
 
 
 namespace PQ
@@ -15,7 +15,7 @@ namespace PQ
     [AddComponentMenu("PlayerGameplayInputReceiver")]
     public class PlayerGameplayInputReceiver : MonoBehaviour
     {
-        private PlayerControls _generatedPlayerControls;
+        private UnityPlayerControls _generatedPlayerControls;
         private GameEventCenter _eventCenter;
 
         private HorizontalInput _horizontalInputState;
@@ -30,7 +30,7 @@ namespace PQ
         {
             _eventCenter = GameEventCenter.Instance;
 
-            PlayerControls controls = new PlayerControls();
+            UnityPlayerControls controls = new UnityPlayerControls();
 
             _generatedPlayerControls = controls;
             _moveHorizontal = controls.Gameplay.MoveHorizontal;
