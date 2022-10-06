@@ -15,7 +15,6 @@ namespace PQ
     }
 
     // todo: replace this with GameEventRegistries for UI, Commands, etc
-
     /*
     All game events are held here (as static data, so it can be accessed across scenes).
 

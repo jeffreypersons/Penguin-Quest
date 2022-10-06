@@ -42,12 +42,10 @@ namespace PQ.Common.Containers
                 Count = 0;
                 Size  = size;
             }
-
-            CreateMask(0, 2, 5);
         }
 
         /* Is the ith bit set to true? */
-        [Pure] public bool HasIndex(int index)     => (Data & (1 << index)) != 0;
+        [Pure] public bool HasIndex(int index)     => (Data & (1L << index)) != 0;
 
         /* Is given bitset a subset of ours? */
         [Pure] public bool IsSubset(BitSet bitSet) => (Data & bitSet.Data) == bitSet.Data;
@@ -105,33 +103,19 @@ namespace PQ.Common.Containers
 
         // assumes [start < end] AND [(end - start) <= max]
         [Pure]
-        private static long CreateMask(int startIndex, int endIndex, int maxLength)
+        public static long CreateMask(int startIndex, int endIndex, int maxLength)
         {
-            var offsetFromRight = startIndex;
-            var offsetFromLeft  = maxLength - (endIndex - startIndex);
-
-            long leftEnd  =  1L << offsetFromRight;
-            long rightEnd = -1L >> offsetFromLeft;
-            long result   = leftEnd | rightEnd;
-
-            UnityEngine.Debug.LogFormat(
-                "({0}){1} + ({2}){3} --> ({4}){5} ",
-                leftEnd,  AsBitString(leftEnd,  maxLength),
-                rightEnd, AsBitString(rightEnd, maxLength),
-                result,   AsBitString(result, maxLength)
-            );
-            return result;
+            long maskFrom0ToStart = (1L << startIndex) - 1;
+            long maskFrom0ToEnd   = (1L << endIndex)   - 1;
+            return maskFrom0ToStart ^ maskFrom0ToEnd;
         }
 
         [Pure]
         private static string AsBitString(long data, int length)
         {
-            var bits = new char[length];
-            for (int i = 0; i < length; i++)
-            {
-                bits[i] = (data & (1L << i)) != 0 ? '1' : '0';
-            }
-            return new string(bits);
+            return Convert
+                .ToString(value: data, toBase: 2)
+                .PadLeft(totalWidth: length, paddingChar: '0');
         }
     }
 }
