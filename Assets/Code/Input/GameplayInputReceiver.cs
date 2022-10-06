@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using PQ.Input.Generated;
 
 
-namespace PQ
+namespace PQ.Input
 {
     /*
     Input receiver that maps gameplay control input to the game event system.
