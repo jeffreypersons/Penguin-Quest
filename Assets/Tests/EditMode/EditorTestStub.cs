@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine.TestTools;
 
 
+// stub for any tests that don't requiring playing a scene
 public class EditTests
 {
     [Test]
