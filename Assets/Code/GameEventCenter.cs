@@ -3,19 +3,7 @@
 
 namespace PQ
 {
-    // todo: find a better place for this
-    public struct HorizontalInput
-    {
-        public enum Type { None, Left, Right }
-        public readonly Type value;
-        public HorizontalInput(Type value)
-        {
-            this.value = value;
-        }
-    }
-
     // todo: replace this with GameEventRegistries for UI, Commands, etc
-
     /*
     All game events are held here (as static data, so it can be accessed across scenes).
 
