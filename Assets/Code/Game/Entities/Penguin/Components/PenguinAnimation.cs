@@ -3,7 +3,7 @@ using UnityEngine;
 using PQ.Common.Events;
 
 
-namespace PQ.Entities.Penguin
+namespace PQ.Game.Entities.Penguin
 {
     /*
     Overview

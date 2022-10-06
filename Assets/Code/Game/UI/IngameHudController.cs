@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 
 
-namespace PQ.UI
+namespace PQ.Game.UI
 {
     public class IngameHudController : MonoBehaviour
     {

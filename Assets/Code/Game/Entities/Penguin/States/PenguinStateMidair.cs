@@ -1,7 +1,7 @@
 ﻿using PQ.Common.Fsm;
 
 
-namespace PQ.Entities.Penguin
+namespace PQ.Game.Entities.Penguin
 {
     // todo: add some sort of free fall check that forces a respawn/death
     public class PenguinStateMidair : FsmState<PenguinStateId, PenguinBlob>

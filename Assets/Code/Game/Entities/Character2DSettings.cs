@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace PQ.Entities
+namespace PQ.Game.Entities
 {
     [CreateAssetMenu(
         fileName = "Character2DSettings",

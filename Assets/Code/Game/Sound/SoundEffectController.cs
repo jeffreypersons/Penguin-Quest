@@ -2,7 +2,7 @@
 using PQ.Common.Events;
 
 
-namespace PQ.Sound
+namespace PQ.Game.Sound
 {
     public class SoundEffectController : MonoBehaviour
     {

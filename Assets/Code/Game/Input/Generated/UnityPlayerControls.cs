@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace PQ.Input.Generated
+namespace PQ.Game.Input.Generated
 {
     public partial class @UnityPlayerControls : IInputActionCollection2, IDisposable
     {

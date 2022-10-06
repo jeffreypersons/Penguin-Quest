@@ -2,7 +2,7 @@
 using PQ.Common.Fsm;
 
 
-namespace PQ.Entities.Penguin
+namespace PQ.Game.Entities.Penguin
 {
     public class PenguinStateLyingDown : FsmState<PenguinStateId, PenguinBlob>
     {

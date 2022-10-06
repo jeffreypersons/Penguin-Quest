@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using PQ.Common.Extensions;
 
 
-namespace PQ.UI
+namespace PQ.Game.UI
 {
     public class IngameMenuController : MonoBehaviour
     {

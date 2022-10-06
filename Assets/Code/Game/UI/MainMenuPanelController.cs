@@ -5,7 +5,7 @@ using CustomAttributes;
 using PQ.Common.Extensions;
 
 
-namespace PQ.UI
+namespace PQ.Game.UI
 {
     /*
     Controller for opening sub panels of the main menu.

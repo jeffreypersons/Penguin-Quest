@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PQ
+namespace PQ.Game
 {
     /*
     Handles game level logic/event handling.

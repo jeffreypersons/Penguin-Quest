@@ -5,7 +5,7 @@ using PQ.Common.Casts;
 using PQ.Common.Physics;
 
 
-namespace PQ.Entities
+namespace PQ.Game.Entities
 {
     public class Character2D : MonoBehaviour
     {

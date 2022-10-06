@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 
 
-namespace PQ
+namespace PQ.Game
 {
     public struct PlayerSettingsInfo
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using PQ.Common.Casts;
 using PQ.Common.Physics;
-using PQ.Entities;
+using PQ.Game.Entities;
 
 
 namespace PQ.TestScenes.Minimal

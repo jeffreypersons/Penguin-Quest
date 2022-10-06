@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 
 
-namespace PQ.Camera
+namespace PQ.Game.Camera
 {
     /*
     Camera behavior for following a subject.

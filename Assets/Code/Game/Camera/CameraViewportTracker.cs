@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PQ.Camera
+namespace PQ.Game.Camera
 {
     /*
     Camera viewport world bounds tracking for given camera.

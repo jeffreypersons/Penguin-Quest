@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using PQ.Input.Generated;
+using PQ.Game.Input.Generated;
 
 
-namespace PQ.Input
+namespace PQ.Game.Input
 {
     /*
     Input receiver that maps gameplay control input to the game event system.

@@ -5,7 +5,7 @@ using PQ.Common.Fsm;
 using PQ.Common.Extensions;
 
 
-namespace PQ.Entities.Penguin
+namespace PQ.Game.Entities.Penguin
 {
     /*
     Collection of penguin components.

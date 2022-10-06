@@ -1,5 +1,6 @@
 using UnityEngine;
-using PQ.Entities;
+using PQ.Game;
+using PQ.Game.Entities;
 
 
 namespace PQ.TestScenes.Minimal

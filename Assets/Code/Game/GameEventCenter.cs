@@ -1,7 +1,7 @@
 ﻿using PQ.Common.Events;
 
 
-namespace PQ
+namespace PQ.Game
 {
     // todo: find a better place for this
     public struct HorizontalInput

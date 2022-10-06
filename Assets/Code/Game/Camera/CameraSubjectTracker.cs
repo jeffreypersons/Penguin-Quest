@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace PQ.Camera
+namespace PQ.Game.Camera
 {
     /*
     World positional tracking for given transform, intended for use by rendering/camera/etc scripts.
