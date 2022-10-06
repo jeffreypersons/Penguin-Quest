@@ -1,25 +1,20 @@
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
 using UnityEngine.TestTools;
+
 
 public class EditTests
 {
-    // A Test behaves as an ordinary method
     [Test]
     public void EditTestsSimplePasses()
     {
-        // Use the Assert class to test conditions
+        // simple assertions go here ie `Assert(shouldBeTrue, messageIfNotTrue);`
     }
 
-    // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-    // `yield return null;` to skip a frame.
     [UnityTest]
     public IEnumerator EditTestsWithEnumeratorPasses()
     {
-        // Use the Assert class to test conditions.
-        // Use yield to skip a frame.
+        // like coroutines in play mode, `yield return null;` can be used to skip a frame in edit mode
         yield return null;
     }
 }
