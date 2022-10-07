@@ -17,7 +17,7 @@ namespace PQ.Game.Entities.Penguin
             RegisterEvent(Blob.EventBus.jumpCommand,                       HandleJumpInputReceived);
             RegisterEvent(Blob.EventBus.lieDownCommand,                    HandleLieDownInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
-            RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
+            //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged); // disabled until we fix ground handling
         }
 
         protected override void OnEnter()
