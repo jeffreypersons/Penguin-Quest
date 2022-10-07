@@ -13,10 +13,10 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            RegisterEvent(Blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
-            RegisterEvent(Blob.EventBus.jumpCommand,                       HandleJumpInputReceived);
             RegisterEvent(Blob.EventBus.lieDownCommand,                    HandleLieDownInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
+            //RegisterEvent(Blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
+            //RegisterEvent(Blob.EventBus.jumpCommand,                       HandleJumpInputReceived);
             //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged); // disabled until we fix ground handling
         }
 
