@@ -48,12 +48,12 @@ namespace PQ.Game.Peformance
                 Debug.Log($"Disabled v-sync passes between frames");
             }
 
-            int targetFrameRate = _settings.TargetFrameRate;
-            if (TargetFrameRate != targetFrameRate)
+            int targetFps = _settings.TargetFrameRate;
+            if (TargetFrameRate != targetFps)
             {
-                Application.targetFrameRate = targetFrameRate;
+                TargetFrameRate = targetFps;
                 Debug.LogFormat($"Set target frame-rate to {0}",
-                    targetFrameRate == -1 ? "platform default" : targetFrameRate);
+                    targetFps == -1 ? "platform default" : targetFps);
             }
         }
     }
