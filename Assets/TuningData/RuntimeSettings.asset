@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8632dddd53b30c347a5ebb2c462cb9fb, type: 3}
   m_Name: RuntimeSettings
   m_EditorClassIdentifier: 
-  _targetFrameRate: 60
-  _fallbackToPlatformDefaultFrameRate: 0
+  _customTargetFrameRate: 60
+  _usePlatformDefaultFrameRate: 0
