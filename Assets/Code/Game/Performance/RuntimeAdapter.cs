@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -11,12 +12,19 @@ namespace PQ.Game.Peformance
     {
         [SerializeField] private RuntimeSettings _settings;
 
+        private string QualityInfo =>
+            $"quality level {QualitySettings.GetQualityLevel()} of" +
+            $"[{string.Join(", ", QualitySettings.names)}]";
+
+        private int VSyncCount      { get => QualitySettings.vSyncCount;  set => QualitySettings.vSyncCount = value;  }
+        private int TargetFrameRate { get => Application.targetFrameRate; set => Application.targetFrameRate = value; }
+
+
         void Awake()
         {
             UpdateCurrentSettings();
             Debug.Log(
-                $"Starting up {GetType()} with quality level {QualitySettings.GetQualityLevel()} and " +
-                $"target frame-rate {Application.targetFrameRate}");
+                $"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
         }
 
         void OnValidate()
@@ -34,19 +42,18 @@ namespace PQ.Game.Peformance
             // Note that in spite of these precautions, some platforms such as IOS still force v-sync, and there
             // is no actual way to turn it off.
             //
-            //
-            if (QualitySettings.vSyncCount != 0)
+            if (VSyncCount != 0)
             {
-                QualitySettings.vSyncCount = 0;
+                VSyncCount = 0;
                 Debug.Log($"Disabled v-sync passes between frames");
             }
 
-            int target = _settings.TargetFrameRate;
-            if (Application.targetFrameRate != target)
+            int targetFrameRate = _settings.TargetFrameRate;
+            if (TargetFrameRate != targetFrameRate)
             {
-                Application.targetFrameRate = target;
+                Application.targetFrameRate = targetFrameRate;
                 Debug.LogFormat($"Set target frame-rate to {0}",
-                    target == -1 ? "platform default" : target);
+                    targetFrameRate == -1 ? "platform default" : targetFrameRate);
             }
         }
     }

@@ -4,7 +4,7 @@
 QualitySettings:
   m_ObjectHideFlags: 0
   serializedVersion: 5
-  m_CurrentQuality: 3
+  m_CurrentQuality: 0
   m_QualitySettings:
   - serializedVersion: 2
     name: Very Low
@@ -42,12 +42,9 @@ QualitySettings:
     resolutionScalingFixedDPIFactor: 1
     customRenderPipeline: {fileID: 0}
     excludedTargetPlatforms:
-    - Standalone
     - Windows Store Apps
     - iPhone
     - Android
-    - WebGL
-    - Server
   - serializedVersion: 2
     name: Low
     pixelLightCount: 0
@@ -84,12 +81,9 @@ QualitySettings:
     resolutionScalingFixedDPIFactor: 1
     customRenderPipeline: {fileID: 0}
     excludedTargetPlatforms:
-    - WebGL
     - Android
-    - Standalone
     - Windows Store Apps
     - iPhone
-    - Server
   - serializedVersion: 2
     name: Medium
     pixelLightCount: 1
@@ -243,9 +237,9 @@ QualitySettings:
     PSP2: 2
     Server: 0
     Stadia: 5
-    Standalone: 5
+    Standalone: 0
     Tizen: 2
-    WebGL: 3
+    WebGL: 0
     WiiU: 5
     Windows Store Apps: 5
     XboxOne: 5
