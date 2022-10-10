@@ -23,7 +23,7 @@ namespace PQ.Game.Entities
             _body.MoveTo(position);
             _body.SetLocalOrientation3D(0, 0, rotation);
         }
-        public void FaceRight() => _body.SetLocalOrientation3D(0, 0, 0);
+        public void FaceRight() => _body.SetLocalOrientation3D(0,   0, 0);
         public void FaceLeft()  => _body.SetLocalOrientation3D(0, 180, 0);
         public void MoveForward()
         {
@@ -48,12 +48,15 @@ namespace PQ.Game.Entities
 
         void FixedUpdate()
         {
-            UpdateGroundContactInfo();
-
             if (!_isGrounded)
             {
                 _body.MoveBy(0.10f * Settings.GravityStrength * Vector2.down);
             }
+            if (_isGrounded)
+            {
+
+            }
+            UpdateGroundContactInfo();
         }
 
 
@@ -71,11 +74,8 @@ namespace PQ.Game.Entities
             var groundDistanceToCheck   = 5.00f;
             var groundDistanceTolerated = 2.00f;
 
-            var result = _caster.CheckBelow(groundLayer, groundDistanceToCheck);
-            bool isInContactWithGround =
-                result.hitRatio >= 0.50f &&
-                result.hitDistanceAverage <= groundDistanceTolerated;
-
+            var result = _caster.CastBelow(0.50f, groundLayer, groundDistanceToCheck);
+            bool isInContactWithGround = result.distance <= groundDistanceTolerated;
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;

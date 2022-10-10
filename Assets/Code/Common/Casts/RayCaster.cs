@@ -8,41 +8,52 @@ namespace PQ.Common.Casts
     */
     public sealed class RayCaster
     {
-        public float     MaxDistance      { get; set; } = Mathf.Infinity;
-        public LayerMask LayerMask        { get; set; } = ~0;
-        public bool      DrawCastInEditor { get; set; } = true;
+        public const int   AllLayers   = ~0;
+        public const float MaxDistance = Mathf.Infinity;
+
+        public bool DrawCastInEditor { get; set; } = true;
 
         public override string ToString() =>
-            $"{GetType().Name}:{{" +
-                $"distance:{MaxDistance}," +
-                $"layerMask:{LayerMask}," +
-                $"drawCastInEditor:{DrawCastInEditor}}}";
+            $"{GetType().Name}(" +
+                $"drawCastInEditor:{DrawCastInEditor}" +
+            $")";
 
 
         public RayCaster() { }
 
 
         /* Shoot out a line between given points, seeing if a TargetLayer is hit. */
-        public RayHit CastBetween(Vector2 from, Vector2 to)
+        public RayHit CastBetween(Vector2 from, Vector2 to, int layerMask = AllLayers)
         {
-            return Cast(from, (to - from).normalized, MaxDistance, LayerMask);
+            return Cast(
+                origin:    from,
+                direction: (to - from).normalized,
+                layerMask: layerMask,
+                distance:  Vector2.Distance(from, to));
         }
 
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromPoint(Vector2 point, Vector2 direction)
+        public RayHit CastFromPoint(Vector2 point, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
         {
-            return Cast(point, direction, MaxDistance, LayerMask);
+            return Cast(
+                origin:    point,
+                direction: direction.normalized,
+                layerMask: layerMask,
+                distance:  distance);
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromCollider(Collider2D collider, Vector2 direction)
+        public RayHit CastFromCollider(Collider2D collider, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
         {
-            Vector2 point = FindPositionOnColliderEdgeInGivenDirection(collider, direction);
-            return Cast(point, direction, MaxDistance, LayerMask);
+            return Cast(
+                origin:    FindPositionOnColliderEdgeInGivenDirection(collider, direction),
+                direction: direction.normalized,
+                layerMask: layerMask,
+                distance:  distance);
         }
 
 
-        private RayHit Cast(Vector2 origin, Vector2 direction, float distance, LayerMask layerMask)
+        private RayHit Cast(Vector2 origin, Vector2 direction, LayerMask layerMask, float distance)
         {
             RaycastHit2D castHit2D = Physics2D.Raycast(origin, direction, distance, layerMask);
 
