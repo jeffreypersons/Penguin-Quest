@@ -13,58 +13,85 @@ namespace PQ.Common.Casts
     */
     public sealed class RayCasterBox
     {
+        private struct Side
+        {
+            public readonly Vector2 start;
+            public readonly Vector2 end;
+            public readonly Vector2 normal;
+            public Side(in Vector2 start, in Vector2 end, in Vector2 normal)
+            {
+                this.start  = start;
+                this.end    = end;
+                this.normal = normal;
+            }
+        }
+
         private bool _boundsAreZero;
         private Vector2 _center;
         private Vector2 _xAxis;
         private Vector2 _yAxis;
+
         private KinematicBody2D _body;
-        private RayCasterSegment _backCaster;
-        private RayCasterSegment _frontCaster;
-        private RayCasterSegment _bottomSensor;
-        private RayCasterSegment _topCaster;
+        private RayCaster _caster;
+
+        private Side _backSide;
+        private Side _frontSide;
+        private Side _bottomSide;
+        private Side _topSide;
 
         public Vector2 Center      => _center;
         public Vector2 ForwardAxis => _xAxis;
         public Vector2 UpAxis      => _yAxis;
 
-        public (Vector2, Vector2) BackSide   => (_backCaster.SegmentStart,   _backCaster.SegmentEnd);
-        public (Vector2, Vector2) FrontSide  => (_frontCaster.SegmentStart,  _frontCaster.SegmentEnd);
-        public (Vector2, Vector2) BottomSide => (_bottomSensor.SegmentStart, _bottomSensor.SegmentEnd);
-        public (Vector2, Vector2) TopSide    => (_topCaster.SegmentStart,    _topCaster.SegmentEnd);
+        public (Vector2, Vector2) BackSide   => (_backSide.start,   _backSide.end);
+        public (Vector2, Vector2) FrontSide  => (_frontSide.start,  _frontSide.end);
+        public (Vector2, Vector2) BottomSide => (_bottomSide.start, _bottomSide.end);
+        public (Vector2, Vector2) TopSide    => (_topSide.start,    _topSide.end);
 
         public override string ToString() =>
-            $"{GetType().Name}{{" +
-                $"Back{_backCaster}, " +
-                $"Front{_frontCaster}, " +
-                $"Bottom{_bottomSensor}, " +
-                $"Top{_topCaster}}}";
+            $"{GetType().Name}(" +
+                $"center:{_center}," +
+                $"xAxis:{_xAxis}," +
+                $"yAxis:{_yAxis})";
 
 
         public RayCasterBox(KinematicBody2D body)
         {
-            _body = body;
-            _backCaster   = new();
-            _frontCaster  = new();
-            _bottomSensor = new();
-            _topCaster    = new();
+            _body       = body;
+            _caster     = new();
+            _backSide   = new();
+            _frontSide  = new();
+            _bottomSide = new();
+            _topSide    = new();
         }
 
-        public RayHit CheckBehind(float t, LayerMask mask, float distance) => Cast(_backCaster,   t, mask, distance);
-        public RayHit CheckFront(float t, LayerMask mask,  float distance) => Cast(_frontCaster,  t, mask, distance);
-        public RayHit CheckAbove(float t, LayerMask mask,  float distance) => Cast(_topCaster,    t, mask, distance);
-        public RayHit CheckBelow(float t, LayerMask mask,  float distance) => Cast(_bottomSensor, t, mask, distance);
+        public RayHit CastBehind(float t, in LayerMask mask, float distance) => Cast(_backSide,   t, mask, distance);
+        public RayHit CastFront(float t,  in LayerMask mask, float distance) => Cast(_frontSide,  t, mask, distance);
+        public RayHit CastBelow(float t,  in LayerMask mask, float distance) => Cast(_bottomSide, t, mask, distance);
+        public RayHit CastAbove(float t,  in LayerMask mask, float distance) => Cast(_topSide,    t, mask, distance);
 
 
-        private RayHit Cast(RayCasterSegment caster, float t, LayerMask layerMask, float distanceToCast)
+        /* Perform a one off ray cast at given t in range [0,1]. */
+        private RayHit Cast(in Side side, float t, in LayerMask layerMask, float distanceToCast)
         {
+            if (t < -1f || t > 1f)
+            {
+                throw new ArgumentOutOfRangeException($"Given t {t} is outside segment [-1,1] - skipping cast");
+            }
+
             UpdateBoundsIfChanged();
 
             if (_boundsAreZero)
             {
                 throw new InvalidOperationException("Bounds cannot be zero");
             }
-            return caster.CastAt(t, layerMask, distanceToCast);
+
+            Vector2 rayOrigin = Vector2.Lerp(side.start, side.end, t);
+            _caster.LayerMask = layerMask;
+            _caster.MaxDistance = distanceToCast;
+            return _caster.CastFromPoint(rayOrigin, side.normal);
         }
+
 
         private void UpdateBoundsIfChanged()
         {
@@ -103,10 +130,10 @@ namespace PQ.Common.Casts
             _center = center;
             _xAxis  = xAxis;
             _yAxis  = yAxis;
-            _backCaster  .UpdatePositioning(segmentStart: rearBottom,  segmentEnd: rearTop,     rayDirection: -xAxis);
-            _frontCaster .UpdatePositioning(segmentStart: frontBottom, segmentEnd: frontTop,    rayDirection:  xAxis);
-            _bottomSensor.UpdatePositioning(segmentStart: rearBottom,  segmentEnd: frontBottom, rayDirection: -yAxis);
-            _topCaster   .UpdatePositioning(segmentStart: rearTop,     segmentEnd: frontTop,    rayDirection:  yAxis);
+            _backSide   = new(start: rearBottom,  end: rearTop,     normal: (-xAxis).normalized);
+            _frontSide  = new(start: frontBottom, end: frontTop,    normal: xAxis.normalized);
+            _bottomSide = new(start: rearBottom,  end: frontBottom, normal: (-yAxis).normalized);
+            _topSide    = new(start: rearTop,     end: frontTop,    normal: yAxis.normalized);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace PQ.TestScenes.Minimal
         private void UpdateGroundContactInfo(bool force = false)
         {
             // todo: use a scriptable object or something for these checks
-            var result = _caster.CheckBelow(t: 0.50f, mask: LayerMask.GetMask("Platform"), 10f);
+            var result = _caster.CastBelow(t: 0.50f, mask: LayerMask.GetMask("Platform"), 10f);
             bool isInContactWithGround = result.distance >= 0.50f;
             if (_isGrounded != isInContactWithGround || force)
             {

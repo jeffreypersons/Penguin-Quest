@@ -74,7 +74,7 @@ namespace PQ.Game.Entities
             var groundDistanceToCheck   = 5.00f;
             var groundDistanceTolerated = 2.00f;
 
-            var result = _caster.CheckBelow(0.50f, groundLayer, groundDistanceToCheck);
+            var result = _caster.CastBelow(0.50f, groundLayer, groundDistanceToCheck);
             bool isInContactWithGround = result.distance <= groundDistanceTolerated;
             if (_isGrounded != isInContactWithGround || force)
             {
