@@ -26,12 +26,13 @@ namespace PQ.Common.Casts
             }
         }
 
+
+        private RayCaster _caster;
+        private KinematicBody2D _body;
+
         private Vector2 _center;
         private Vector2 _xAxis;
         private Vector2 _yAxis;
-
-        private KinematicBody2D _body;
-        private RayCaster _caster;
 
         private Side _backSide;
         private Side _frontSide;
