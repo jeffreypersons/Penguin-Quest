@@ -66,18 +66,17 @@ namespace PQ.Common.Casts
 
         public bool DrawCastInEditor { get => _caster.DrawCastInEditor; set => _caster.DrawCastInEditor = value; }
 
-        public RayHit CastBehind(float t, in LayerMask mask, float distance) => Cast(_backSide,   t, mask, distance);
-        public RayHit CastFront(float t,  in LayerMask mask, float distance) => Cast(_frontSide,  t, mask, distance);
-        public RayHit CastBelow(float t,  in LayerMask mask, float distance) => Cast(_bottomSide, t, mask, distance);
-        public RayHit CastAbove(float t,  in LayerMask mask, float distance) => Cast(_topSide,    t, mask, distance);
+        public RayHit CastBehind(float t, in LayerMask mask, float distance) => CastFromSideAt(_backSide,   t, mask, distance);
+        public RayHit CastFront(float t,  in LayerMask mask, float distance) => CastFromSideAt(_frontSide,  t, mask, distance);
+        public RayHit CastBelow(float t,  in LayerMask mask, float distance) => CastFromSideAt(_bottomSide, t, mask, distance);
+        public RayHit CastAbove(float t,  in LayerMask mask, float distance) => CastFromSideAt(_topSide,    t, mask, distance);
 
 
-        /* Perform a one off ray cast at given t in range [-1,1]. */
-        private RayHit Cast(in Side side, float t, in LayerMask layerMask, float distance)
+        private RayHit CastFromSideAt(in Side side, float t, in LayerMask layerMask, float distance)
         {
-            if (t < -1f || t > 1f)
+            if (t < 0 || t > 1f)
             {
-                throw new ArgumentOutOfRangeException($"Given t {t} is outside range [-1,1]");
+                throw new ArgumentOutOfRangeException($"Given t {t} is outside range [0, 1]");
             }
 
             UpdateBoundsIfChanged();
