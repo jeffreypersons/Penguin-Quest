@@ -11,6 +11,7 @@ namespace PQ.Game.Entities
     {
         private RayCasterBox _caster;
 
+        private float _amountToMoveForward;
         private bool _isGrounded;
         private KinematicBody2D _body;
         private PqEvent<bool> _groundContactChangedEvent = new("character2D.groundContact.changed");
@@ -27,8 +28,7 @@ namespace PQ.Game.Entities
         public void FaceLeft()  => _body.SetLocalOrientation3D(0, 180, 0);
         public void MoveForward()
         {
-            float distanceToMove = Settings.HorizontalMovementPeakSpeed * Time.fixedDeltaTime;
-            _body.MoveBy(distanceToMove * _body.Forward);
+            _amountToMoveForward = Settings.HorizontalMovementPeakSpeed * Time.fixedDeltaTime;
         }
         public void Jump()
         {
@@ -39,6 +39,7 @@ namespace PQ.Game.Entities
         {
             _body = gameObject.GetComponent<KinematicBody2D>();
             _caster = new RayCasterBox(_body);
+            _amountToMoveForward = 0f;
         }
 
         void Start()
@@ -48,14 +49,15 @@ namespace PQ.Game.Entities
 
         void FixedUpdate()
         {
+            UpdateGroundContactInfo();
+
             if (!_isGrounded)
             {
                 _body.MoveBy(0.10f * Settings.GravityStrength * Vector2.down);
             }
-            if (_isGrounded)
-            {
+            _body.MoveBy(_amountToMoveForward * _body.Forward);
+            _amountToMoveForward = 0f;
 
-            }
             UpdateGroundContactInfo();
         }
 
@@ -71,7 +73,7 @@ namespace PQ.Game.Entities
 
             // todo: use a scriptable object or something for these variables
             var groundLayer = LayerMask.GetMask("Platform");
-            var groundDistanceToCheck   = 5.00f;
+            var groundDistanceToCheck   = 10.00f;
             var groundDistanceTolerated = 2.00f;
 
             var result = _caster.CastBelow(0.50f, groundLayer, groundDistanceToCheck);
