@@ -73,8 +73,8 @@ namespace PQ.Common.Casts
         public RayHit CastAbove(float t,  in LayerMask mask, float distance) => Cast(_topSide,    t, mask, distance);
 
 
-        /* Perform a one off ray cast at given t in range [0,1]. */
-        private RayHit Cast(in Side side, float t, in LayerMask layerMask, float distanceToCast)
+        /* Perform a one off ray cast at given t in range [-1,1]. */
+        private RayHit Cast(in Side side, float t, in LayerMask layerMask, float distance)
         {
             if (t < -1f || t > 1f)
             {
@@ -89,7 +89,7 @@ namespace PQ.Common.Casts
             }
 
             Vector2 rayOrigin = Vector2.Lerp(side.start, side.end, t);
-            return _caster.CastFromPoint(rayOrigin, side.normal);
+            return _caster.CastFromPoint(rayOrigin, side.normal, layerMask, distance);
         }
 
 

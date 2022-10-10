@@ -28,28 +28,28 @@ namespace PQ.Common.Casts
             return Cast(
                 origin:    from,
                 direction: (to - from).normalized,
-                distance:  Vector2.Distance(from, to),
-                layerMask: layerMask);
+                layerMask: layerMask,
+                distance:  Vector2.Distance(from, to));
         }
 
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromPoint(Vector2 point, Vector2 direction, float distance=MaxDistance, int layerMask = AllLayers)
+        public RayHit CastFromPoint(Vector2 point, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
         {
             return Cast(
                 origin:    point,
                 direction: direction.normalized,
-                distance:  distance,
-                layerMask: layerMask);
+                layerMask: layerMask,
+                distance:  distance);
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromCollider(Collider2D collider, Vector2 direction, float distance=MaxDistance, int layerMask = AllLayers)
+        public RayHit CastFromCollider(Collider2D collider, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
         {
             return Cast(
                 origin:    FindPositionOnColliderEdgeInGivenDirection(collider, direction),
                 direction: direction.normalized,
-                distance:  distance,
-                layerMask: layerMask);
+                layerMask: layerMask,
+                distance:  distance);
         }
 
 
