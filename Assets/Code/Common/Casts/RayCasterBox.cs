@@ -26,7 +26,6 @@ namespace PQ.Common.Casts
             }
         }
 
-        private bool _boundsAreZero;
         private Vector2 _center;
         private Vector2 _xAxis;
         private Vector2 _yAxis;
@@ -78,41 +77,26 @@ namespace PQ.Common.Casts
         {
             if (t < -1f || t > 1f)
             {
-                throw new ArgumentOutOfRangeException($"Given t {t} is outside segment [-1,1] - skipping cast");
+                throw new ArgumentOutOfRangeException($"Given t {t} is outside range [-1,1]");
             }
 
             UpdateBoundsIfChanged();
 
-            if (_boundsAreZero)
-            {
-                throw new InvalidOperationException("Bounds cannot be zero");
-            }
-
-            Vector2 rayOrigin = Vector2.Lerp(side.start, side.end, t);
+            Vector2 rayOrigin = Vector2.LerpUnclamped(side.start, side.end, t);
             return _caster.CastFromPoint(rayOrigin, side.normal, layerMask, distance);
         }
 
 
         private void UpdateBoundsIfChanged()
         {
-            Vector2 center;
-            Vector2 xAxis;
-            Vector2 yAxis;
             if (_body.BoundExtents == Vector2.zero)
             {
-                _boundsAreZero = true;
-                center = _body.Position;
-                xAxis  = _body.Forward;
-                yAxis  = _body.Up;
+                throw new InvalidOperationException("Bounds cannot be zero");
             }
-            else
-            {
-                _boundsAreZero = false;
-                center = _body.Position;
-                xAxis  = _body.BoundExtents.x * _body.Forward;
-                yAxis  = _body.BoundExtents.y * _body.Up;
-            }
-            
+
+            Vector2 center = _body.Position;
+            Vector2 xAxis  = _body.BoundExtents.x * _body.Forward;
+            Vector2 yAxis  = _body.BoundExtents.y * _body.Up;
             if (center == _center &&
                 Mathf.Approximately(xAxis.x, _xAxis.x) && Mathf.Approximately(xAxis.y, _xAxis.y) &&
                 Mathf.Approximately(yAxis.x, _yAxis.x) && Mathf.Approximately(yAxis.y, _yAxis.y))
