@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using PQ.Common.Physics;
 
 
@@ -48,35 +49,21 @@ namespace PQ.Common.Casts
             _topCaster    = new();
         }
 
-        public void SetBehindRayCount(int rayCount) => _backCaster.SetRayCount(rayCount);
-        public void SetFrontRayCount(int rayCount)  => _frontCaster.SetRayCount(rayCount);
-        public void SetBelowRayCount(int rayCount)  => _bottomSensor.SetRayCount(rayCount);
-        public void SetAboveRayCount(int rayCount)  => _topCaster.SetRayCount(rayCount);
-        public void SetAllRayCounts(int rayCount)
-        {
-            _backCaster  .SetRayCount(rayCount);
-            _frontCaster .SetRayCount(rayCount);
-            _bottomSensor.SetRayCount(rayCount);
-            _topCaster   .SetRayCount(rayCount);
-        }
-
-        public RayHitGroup CheckBehind(LayerMask target, float distance) => Cast(_backCaster,   target, distance);
-        public RayHitGroup CheckFront(LayerMask target,  float distance) => Cast(_frontCaster,  target, distance);
-        public RayHitGroup CheckAbove(LayerMask target,  float distance) => Cast(_topCaster,    target, distance);
-        public RayHitGroup CheckBelow(LayerMask target,  float distance) => Cast(_bottomSensor, target, distance);
+        public RayHit CheckBehind(float t, LayerMask mask, float distance) => Cast(_backCaster,   t, mask, distance);
+        public RayHit CheckFront(float t, LayerMask mask,  float distance) => Cast(_frontCaster,  t, mask, distance);
+        public RayHit CheckAbove(float t, LayerMask mask,  float distance) => Cast(_topCaster,    t, mask, distance);
+        public RayHit CheckBelow(float t, LayerMask mask,  float distance) => Cast(_bottomSensor, t, mask, distance);
 
 
-        private RayHitGroup Cast(RayCasterSegment caster, LayerMask layerMask, float distanceToCast)
+        private RayHit Cast(RayCasterSegment caster, float t, LayerMask layerMask, float distanceToCast)
         {
             UpdateBoundsIfChanged();
 
             if (_boundsAreZero)
             {
-                RayHit hit = caster.CastAt(0.50f, layerMask, distanceToCast);
-                return new RayHitGroup(hitCount: hit? 1 : 0, rayCount: 1, hit.distance);
+                throw new InvalidOperationException("Bounds cannot be zero");
             }
-
-            return caster.CastAll(layerMask, distanceToCast);
+            return caster.CastAt(t, layerMask, distanceToCast);
         }
 
         private void UpdateBoundsIfChanged()
