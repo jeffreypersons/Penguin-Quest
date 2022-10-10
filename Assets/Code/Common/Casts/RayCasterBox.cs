@@ -65,6 +65,8 @@ namespace PQ.Common.Casts
             _topSide    = new();
         }
 
+        public bool DrawCastInEditor { get => _caster.DrawCastInEditor; set => _caster.DrawCastInEditor = value; }
+
         public RayHit CastBehind(float t, in LayerMask mask, float distance) => Cast(_backSide,   t, mask, distance);
         public RayHit CastFront(float t,  in LayerMask mask, float distance) => Cast(_frontSide,  t, mask, distance);
         public RayHit CastBelow(float t,  in LayerMask mask, float distance) => Cast(_bottomSide, t, mask, distance);
@@ -87,8 +89,6 @@ namespace PQ.Common.Casts
             }
 
             Vector2 rayOrigin = Vector2.Lerp(side.start, side.end, t);
-            _caster.LayerMask = layerMask;
-            _caster.MaxDistance = distanceToCast;
             return _caster.CastFromPoint(rayOrigin, side.normal);
         }
 
@@ -127,9 +127,9 @@ namespace PQ.Common.Casts
             Vector2 frontBottom = new(max.x, min.y);
             Vector2 frontTop    = new(max.x, max.y);
 
-            _center = center;
-            _xAxis  = xAxis;
-            _yAxis  = yAxis;
+            _center     = center;
+            _xAxis      = xAxis;
+            _yAxis      = yAxis;
             _backSide   = new(start: rearBottom,  end: rearTop,     normal: (-xAxis).normalized);
             _frontSide  = new(start: frontBottom, end: frontTop,    normal: xAxis.normalized);
             _bottomSide = new(start: rearBottom,  end: frontBottom, normal: (-yAxis).normalized);
