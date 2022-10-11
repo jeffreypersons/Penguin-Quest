@@ -16,32 +16,32 @@ namespace PQ.Common.Physics
         private Rigidbody2D _rigidBody;
         private Collider2D _collider;
 
-        public Vector2 Forward       => _rigidBody.transform.right.normalized;
-        public Vector2 Up            => _rigidBody.transform.up.normalized;
-        public Vector2 Position      => _rigidBody.position;
-        public float   Rotation      => _rigidBody.rotation;
-        public float   Depth         => _rigidBody.transform.position.z;
-
-        public Vector2 BoundsCenter  => _collider.bounds.center;
-        public Vector2 BoundsExtents => _collider ? _collider.bounds.extents : Vector2.zero;
+        public Vector2 Forward  => _rigidBody.transform.right.normalized;
+        public Vector2 Up       => _rigidBody.transform.up.normalized;
+        public Vector2 Position => _rigidBody.position;
+        public float   Rotation => _rigidBody.rotation;
+        public float   Depth    => _rigidBody.transform.position.z;
+        public Bounds? Bounds   => _collider? _collider.bounds : null;
 
         public override string ToString() =>
-            $"KinematicBody2D@({Position.x},{Position.y},{Depth}), " +
+            $"{GetType()}(({Position.x},{Position.y},{Depth}), " +
                 $"Rotation: {Rotation}, " +
                 $"Forward: {Forward}, " +
-                $"Up: {Up}";
+                $"Up: {Up}," +
+                $"Bounds: {Bounds}" +
+            $")";
 
 
         void Awake()
         {
             _rigidBody = gameObject.GetComponent<Rigidbody2D>();
-            _collider  = gameObject.GetComponent<Collider2D>();
             if (_rigidBody == null)
             {
                 throw new MissingComponentException("Expected attached rigidbody2D - not found");
             }
 
             _rigidBody.isKinematic = true;
+            _collider = _rigidBody.GetComponent<Collider2D>();
         }
 
         public bool IsTouching(ContactFilter2D contactFilter) => _rigidBody.IsTouching(contactFilter);
