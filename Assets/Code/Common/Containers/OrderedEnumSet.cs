@@ -29,26 +29,16 @@ namespace PQ.Common.Containers
         private readonly string[] _names;
         private readonly int      _count;
 
-        private readonly Comparer<TEnum>         _valueComparer;
-        private readonly EqualityComparer<TEnum> _equalityComparer;
-
         public OrderedEnumSet()
         {
             _type  = typeof(TEnum);
             _names = ExtractNames<TEnum>();
             _count = _names.Length;
-
-            _equalityComparer = EqualityComparer<TEnum>.Default;
-            _valueComparer    = Comparer<TEnum>.Default;
         }
 
         public override string ToString() => $"{{{string.Join(',', _names)}}}";
         public Type Type  => _type;
         public int  Count => _count;
-
-        public Comparer<TEnum>         ValueComparer    => _valueComparer;
-        public EqualityComparer<TEnum> EqualityComparer => _equalityComparer;
-
 
         public IEnumerable<(int index, string name, TEnum id)> Fields()
         {

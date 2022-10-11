@@ -48,17 +48,10 @@ namespace PQ.Common.Fsm
             }
         }
 
-        public override string ToString() => $"{GetType()}{_enumSet}";
-
         public int Count => _enumSet.Count;
-
-        public Comparer<TEnum>         ValueComparer    => _enumSet.ValueComparer;
-        public EqualityComparer<TEnum> EqualityComparer => _enumSet.EqualityComparer;
 
         public IEnumerable<(int index, string name, TEnum id)> Fields() => _enumSet.Fields();
 
         [Pure] public bool TryGetIndex(TEnum id, out int index) => _enumSet.TryGetIndex(id, out index);
-
-        [Pure] public string GetName(in TEnum id) => _enumSet.GetName(id);
     }
 }
