@@ -89,14 +89,14 @@ namespace PQ.Common.Casts
 
         private void UpdateBoundsIfChanged()
         {
-            if (_body.BoundExtents == Vector2.zero)
+            if (_body.BoundsExtents == Vector2.zero)
             {
                 throw new InvalidOperationException("Bounds cannot be zero");
             }
 
-            Vector2 center = _body.Position;
-            Vector2 xAxis  = _body.BoundExtents.x * _body.Forward;
-            Vector2 yAxis  = _body.BoundExtents.y * _body.Up;
+            Vector2 center = _body.BoundsCenter;
+            Vector2 xAxis  = _body.BoundsExtents.x * _body.Forward;
+            Vector2 yAxis  = _body.BoundsExtents.y * _body.Up;
             if (center == _center &&
                 Mathf.Approximately(xAxis.x, _xAxis.x) && Mathf.Approximately(xAxis.y, _xAxis.y) &&
                 Mathf.Approximately(yAxis.x, _yAxis.x) && Mathf.Approximately(yAxis.y, _yAxis.y))

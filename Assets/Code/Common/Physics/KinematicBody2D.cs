@@ -14,14 +14,16 @@ namespace PQ.Common.Physics
     public sealed class KinematicBody2D : MonoBehaviour
     {
         private Rigidbody2D _rigidBody;
-        private Collider2D  _collider;
+        private Collider2D _collider;
 
-        public Vector2 Forward      => _rigidBody.transform.right.normalized;
-        public Vector2 Up           => _rigidBody.transform.up.normalized;
-        public Vector2 Position     => _collider? _collider.bounds.center : _rigidBody.position;
-        public float   Rotation     => _rigidBody.rotation;
-        public Vector2 BoundExtents => _collider? _collider.bounds.extents : Vector2.zero;
-        public float   Depth        => _rigidBody.transform.position.z;
+        public Vector2 Forward       => _rigidBody.transform.right.normalized;
+        public Vector2 Up            => _rigidBody.transform.up.normalized;
+        public Vector2 Position      => _rigidBody.position;
+        public float   Rotation      => _rigidBody.rotation;
+        public float   Depth         => _rigidBody.transform.position.z;
+
+        public Vector2 BoundsCenter  => _collider.bounds.center;
+        public Vector2 BoundsExtents => _collider ? _collider.bounds.extents : Vector2.zero;
 
         public override string ToString() =>
             $"KinematicBody2D@({Position.x},{Position.y},{Depth}), " +

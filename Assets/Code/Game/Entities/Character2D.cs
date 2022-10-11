@@ -65,7 +65,7 @@ namespace PQ.Game.Entities
         private void UpdateGroundContactInfo(bool force = false)
         {
             // collider is turned off - check back later
-            if (_body.BoundExtents == Vector2.zero)
+            if (_body.BoundsExtents == Vector2.zero)
             {
                 Debug.Log("Collider is turned off - skipping");
                 return;
