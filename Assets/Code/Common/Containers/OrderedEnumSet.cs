@@ -8,10 +8,13 @@ using Unity.Collections.LowLevel.Unsafe;
 namespace PQ.Common.Containers
 {
     /*
-    Layer on top of generic enum with caching and validation, done statically only once per generic enum type.
+    Simple sequence of ordered enum sets with functionality for looking up names, indices, and comparisons.
 
-    That is, since this functionality is intended to extend the generic enum param when used as a flat, ordered sequence.
-    It is only to be used statically, as enum definitions are processed at compile time, so we only need to do things once.
+
+    That is, this functionality is intended to extend the generic enum param when used as a flat, ordered sequence.
+
+    Despite enums being defined at compile time and thus are fully static, this class does not enforce singleton access
+    to give clients the option, in the case that it is used in a multi-threaded context.
 
 
     Properties
@@ -22,24 +25,6 @@ namespace PQ.Common.Containers
     public class OrderedEnumSet<TEnum>
         where TEnum : struct, Enum
     {
-        // since enums are evaluated at compile time and bound to corresponding template parameter,
-        // we only need to validate once, when this instance is first used
-        //
-        // note that if we ever need to support multi-threading, this can be made thread safe with a performance
-        // penalty via C# 7's Lazy feature
-        private static OrderedEnumSet<TEnum> _instance;
-        public static OrderedEnumSet<TEnum> Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new OrderedEnumSet<TEnum>();
-                }
-                return _instance;
-            }
-        }
-
         private readonly Type     _type;
         private readonly string[] _names;
         private readonly int      _count;
@@ -47,17 +32,19 @@ namespace PQ.Common.Containers
         private readonly Comparer<TEnum>         _valueComparer;
         private readonly EqualityComparer<TEnum> _equalityComparer;
 
-
-        private OrderedEnumSet()
+        public OrderedEnumSet()
         {
-            _names            = ExtractNames<TEnum>();
-            _type             = typeof(TEnum);
+            _type  = typeof(TEnum);
+            _names = ExtractNames<TEnum>();
+            _count = _names.Length;
+
             _equalityComparer = EqualityComparer<TEnum>.Default;
             _valueComparer    = Comparer<TEnum>.Default;
         }
 
+        public override string ToString() => $"{{{string.Join(',', _names)}}}";
         public Type Type  => _type;
-        public int  Count => Count;
+        public int  Count => _count;
 
         public Comparer<TEnum>         ValueComparer    => _valueComparer;
         public EqualityComparer<TEnum> EqualityComparer => _equalityComparer;
