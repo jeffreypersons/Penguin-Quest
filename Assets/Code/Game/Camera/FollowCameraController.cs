@@ -22,7 +22,7 @@ namespace PQ.Game.Camera
     [ExecuteAlways]
     [RequireComponent(typeof(UnityEngine.Camera))]
     public class FollowCameraController : MonoBehaviour
-    {        
+    {
         [Header("Subject to Follow")]
         [Tooltip("Transform of (any) subject for camera to follow (does not have to be 'visible')")]
         [SerializeField] private Transform _subject;
