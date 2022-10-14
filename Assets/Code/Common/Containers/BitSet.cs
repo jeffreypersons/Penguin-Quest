@@ -47,7 +47,7 @@ namespace PQ.Common.Containers
         [Pure] public bool HasIndex(int index)     => (Data & (1L << index)) != 0;
 
         /* Is given bitset a subset of ours? */
-        [Pure] public bool IsSubset(BitSet bitSet) => (Data & bitSet.Data) == bitSet.Data;
+        [Pure] public bool IsSubset(in BitSet other) => (Data & other.Data) == other.Data;
 
 
         /* If ith bit false, set to true. */
@@ -81,6 +81,7 @@ namespace PQ.Common.Containers
         /* Retrieve positions of all set bits. */
         public IEnumerable<int> Indices()
         {
+            // todo: investigate just how much garbage this is creating
             for (int i = 0; i < Count; i++)
             {
                 if (HasIndex(i))
@@ -92,7 +93,7 @@ namespace PQ.Common.Containers
 
         bool IEquatable<BitSet>.Equals(BitSet other)              =>  Data == other.Data && Count == other.Count && Size == other.Size;
         int IComparable<BitSet>.CompareTo(BitSet other)           =>  Data.CompareTo(other.Data);
-        public override string  ToString()                        =>  AsBitString(Data, Size);
+        public override string  ToString()                        =>  AsString(Data, Size);
         public override int     GetHashCode()                     =>  HashCode.Combine(Data);
         public override bool    Equals(object obj)                =>  ((IEquatable<BitSet>)this).Equals((BitSet)obj);
         public static bool operator ==(BitSet left, BitSet right) =>  ((IEquatable<BitSet>)left).Equals(right);
@@ -110,7 +111,7 @@ namespace PQ.Common.Containers
         }
 
         [Pure]
-        private static string AsBitString(long data, int length)
+        private static string AsString(long data, int length)
         {
             return Convert
                 .ToString(value: data, toBase: 2)
