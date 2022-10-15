@@ -56,6 +56,7 @@ namespace PQ.Common.Containers
         private long Data  { readonly get; set;         }
         public int   Count { readonly get; private set; }
         public int   Size  { readonly get; private set; }
+
         public Type Type => typeof(T);
 
         public override string ToString() => $"{GetType().Name}<{typeof(T)}>{{ {string.Join(", ", Entries())} }}";
@@ -77,25 +78,11 @@ namespace PQ.Common.Containers
             }
         }
 
-        /* If index is in range, what field was declared at that position (irregardless of set or not)? */
-        public bool TryGet(int index, out T enumField)
-        {
-            enumField = UnsafeUtility.As<int, T>(ref index);
-            return index >= 0 && index < Size;
-        }
-
-        /* If field is defined, in what order was the enum field declared (irregardless of set or not)? */
-        public bool TryGetIndex(T enumField, out int index)
-        {
-            index = UnsafeUtility.As<T, int>(ref enumField);
-            return index >= 0 && index < Size;
-        }
-
         /* Is value included in our set? */
         [Pure]
         public bool Contains(T flag)
         {
-            int index = UnsafeUtility.As<T, int>(ref flag);
+            int index = (int)EnumFields.ValueOf(flag);
             long mask = 1L << index;
             return (Data & mask) != 0;
         }
@@ -110,7 +97,7 @@ namespace PQ.Common.Containers
         /* If value is a valid enum that _is not_ already in our set, then include that flag. */
         public bool Add(T flag)
         {
-            int index = UnsafeUtility.As<T, int>(ref flag);
+            int index = (int)EnumFields.ValueOf(flag);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) != 0)
             {
@@ -125,7 +112,7 @@ namespace PQ.Common.Containers
         /* If value is a valid _is_ already in our set, then exclude that flag. */
         public bool Remove(T flag)
         {
-            int index = UnsafeUtility.As<T, int>(ref flag);
+            int index = (int)EnumFields.ValueOf(flag);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) == 0)
             {

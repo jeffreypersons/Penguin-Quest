@@ -42,21 +42,17 @@ namespace PQ.Common.Containers
         [Pure] public Type Type           => _type;
         [Pure] public Type UnderlyingType => _underlyingType;
 
-        [Pure] public long ValueAt(T field)     => UnsafeUtility.As<T, long>(ref field);
-        [Pure] public int  IndexAt(T field)     => UnsafeUtility.As<T, int>(ref field);
+        [Pure] public long ValueOf(T field)     => UnsafeUtility.As<T, long>(ref field);
         [Pure] public T    FieldAt(int index)   => UnsafeUtility.As<int, T>(ref index);
-
-        [Pure] public bool IsDefined(int index) => index >= 0 && index < _size;
-        [Pure] public bool IsDefined(T field)   => IndexAt(field) >= 0 && IndexAt(field) < _size;
         [Pure] public bool IsDefault(int index) => Enum.GetName(_type, index) == null;
-        [Pure] public bool IsDefault(T field)   => Enum.GetName(_type, IndexAt(field)) == null;
+        [Pure] public bool IsDefault(T field)   => Enum.GetName(_type, (int)ValueOf(field)) == null;
 
         [Pure]
         public override string ToString()
         {
             string name   = _type.Name;
             string type   = _underlyingType.Name;
-            string fields = string.Join(", ", Names.Zip(Values, (k, v) => $"{k}={ValueAt(v)}"));
+            string fields = string.Join(", ", Names.Zip(Values, (k, v) => $"{k}={ValueOf(v)}"));
 
             return $"{name} : {type} {{ {fields} }}";
         }
