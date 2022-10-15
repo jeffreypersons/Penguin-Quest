@@ -74,14 +74,22 @@ namespace PQ.Common.Containers
             }
         }
 
+        public EnumSet(in T[] flags) : this(value: false)
+        {
+            foreach (T flag in flags)
+            {
+                Add(flag);
+            }
+        }
+
         /* What are the enum fields included in our set, in order that they were declared? */
         public IEnumerable<T> Entries()
         {
             // todo: investigate just how much garbage this is creating
-            foreach (T key in EnumFields.Entries())
+            foreach (T entry in EnumFields.Entries())
             {
-                if (Contains(key))
-                    yield return key;
+                if (Contains(entry))
+                    yield return entry;
             }
         }
 
