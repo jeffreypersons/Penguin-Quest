@@ -25,7 +25,7 @@ namespace PQ.Common.Containers
     - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
     - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
-    public struct EnumSet<T>
+    public sealed class EnumSet<T>
         where T : struct, Enum
     {
         public const int MinSize = 1;
@@ -33,7 +33,7 @@ namespace PQ.Common.Containers
 
         // only validate once per enum since defined at compile time
         // note that could be made thread safe using C#'s Lazy feature
-        public static readonly EnumMetadata<T> EnumFields;
+        private static EnumMetadata<T> EnumFields { get; set; }
         static EnumSet()
         {
             EnumFields = new EnumMetadata<T>();
@@ -42,21 +42,22 @@ namespace PQ.Common.Containers
                 throw new ArgumentException($"Bitset size must be in range [{MinSize}, {MaxSize}] - received {EnumFields.Size}");
             }
 
-            foreach (var field in EnumFields.Entries())
+            for (int i = 0; i < EnumFields.Size; i++)
             {
-                if (EnumFields.IsDefault(field))
+                if (!EnumFields.IsDefined(i))
                 {
                     throw new ArgumentException($"Enum values must match declaration order - received {EnumFields}");
                 }
             }
         }
-        
-        private long Data  { readonly get; set;         }
-        public int   Count { readonly get; private set; }
-        public int   Size  { readonly get; private set; }
+
+
+        private long Data  { get; set;         }
+        public  int  Count { get; private set; }
+        public  int  Size  { get; private set; }
 
         public Type Type => typeof(T);
-        public override string ToString() => $"{GetType().Name}<{typeof(T)}>{{ {string.Join(", ", Entries())} }}";
+        public override string ToString() => $"{GetType().Name}<{typeof(T)}>{{ {string.Join(", ", Flags(Data, Size))} }}";
         
         public EnumSet(bool value = false)
         {
@@ -78,26 +79,27 @@ namespace PQ.Common.Containers
         {
             foreach (T flag in flags)
             {
-                Add(flag);
+                if (!Add(flag))
+                {
+                    throw new ArgumentException(
+                        $"Cannot add undefined or duplicate flags - " +
+                        $"possible flags include {{{string.Join(", ", EnumFields.Names)}}} " +
+                        $"yet received [{string.Join(", ", flags)}]");
+                }
             }
         }
 
         /* What are the enum fields included in our set, in order that they were declared? */
         public IEnumerable<T> Entries()
         {
-            // todo: investigate just how much garbage this is creating
-            foreach (T entry in EnumFields.Entries())
-            {
-                if (Contains(entry))
-                    yield return entry;
-            }
+            return Flags(Data, Size);
         }
 
         /* Is value included in our set? */
         [Pure]
         public bool Contains(T flag)
         {
-            int index = (int)EnumFields.ValueOf(flag);
+            int index = EnumFields.AsValue<int>(flag);
             long mask = 1L << index;
             return (Data & mask) != 0;
         }
@@ -112,7 +114,7 @@ namespace PQ.Common.Containers
         /* If value is a valid enum that _is not_ already in our set, then include that flag. */
         public bool Add(T flag)
         {
-            int index = (int)EnumFields.ValueOf(flag);
+            int index = EnumFields.AsValue<int>(flag);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) != 0)
             {
@@ -127,7 +129,7 @@ namespace PQ.Common.Containers
         /* If value is a valid _is_ already in our set, then exclude that flag. */
         public bool Remove(T flag)
         {
-            int index = (int)EnumFields.ValueOf(flag);
+            int index = EnumFields.AsValue<int>(flag);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) == 0)
             {
@@ -137,6 +139,18 @@ namespace PQ.Common.Containers
             Data &= mask;
             Count--;
             return true;
+        }
+
+        // todo: investigate just how much garbage this is creating
+        private static IEnumerable<T> Flags(long data, int size)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                if ((data & (1L << i)) != 0)
+                {
+                    yield return EnumFields.Fields[i];
+                }
+            }
         }
     }
 }

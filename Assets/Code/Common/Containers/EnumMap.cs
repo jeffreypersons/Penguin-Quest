@@ -22,7 +22,13 @@ namespace PQ.Common.Containers
     public sealed class EnumMap<TKey, TValue>
         where TKey : struct, Enum
     {
-        public static readonly EnumMetadata<TKey> EnumFields = EnumSet<TKey>.EnumFields;
+        // note that this could be made thread safe using C#'s Lazy feature
+        private static EnumMetadata<TKey> EnumFields { get; set; }
+        static EnumMap()
+        {
+            EnumFields = new EnumMetadata<TKey>();
+        }
+
 
         private readonly EnumSet<TKey> _keys;
         private readonly TValue[]      _values;
@@ -30,11 +36,29 @@ namespace PQ.Common.Containers
         public Type KeyType   => typeof(TKey);
         public Type ValueType => typeof(TValue);
         public int  Count     => _keys.Count;
-        public override string ToString() => $"{GetType().Name}<{typeof(TKey)}>{{ {string.Join(", ", Entries())} }}";
+        public override string ToString() =>
+            $"{typeof(EnumMap<TKey, TValue>).Name}<{typeof(TKey)}>{{ {string.Join(", ", Entries())} }}";
 
-        public EnumMap()
+        public EnumMap(in (TKey key, TValue value)[] entries=null)
         {
-            _values = new TValue[_keys.Count];
+            _keys   = new EnumSet<TKey>();
+            _values = new TValue[EnumFields.Size];
+
+            if (entries == null)
+            {
+                return;
+            }
+
+            foreach ((TKey key, TValue value) in entries)
+            {
+                if (!Add(key, value))
+                {
+                    throw new ArgumentException(
+                        $"Cannot add undefined or duplicate keys - " +
+                        $"possible keys include {{{string.Join(", ", EnumFields.Names)}}} " +
+                        $"yet received [{string.Join(", ", entries)}]");
+                }
+            }
         }
 
         /* What are the enum fields included in our set, in order? */
@@ -47,7 +71,14 @@ namespace PQ.Common.Containers
                     yield return (key, value);
             }
         }
-        
+
+        /* Is key a valid enum? */
+        [Pure]
+        public bool IsDefined(TKey key)
+        {
+            return _keys.Contains(key);
+        }
+
         /* Is key included in our set of keys? */
         [Pure]
         public bool Contains(TKey key)
@@ -71,7 +102,7 @@ namespace PQ.Common.Containers
                 value = default;
                 return false;
             }
-            value = _values[(int)EnumFields.ValueOf(key)];
+            value = _values[EnumFields.AsValue<int>(key)];
             return true;
         }
 
@@ -82,7 +113,7 @@ namespace PQ.Common.Containers
             {
                 return false;
             }
-            _values[(int)EnumFields.ValueOf(key)] = value;
+            _values[EnumFields.AsValue<int>(key)] = value;
             return true;
         }
 
@@ -93,7 +124,7 @@ namespace PQ.Common.Containers
             {
                 return false;
             }
-            _values[(int)EnumFields.ValueOf(key)] = default;
+            _values[EnumFields.AsValue<int>(key)] = default;
             return true;
         }
     }

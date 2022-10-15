@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using PQ.Common.Containers;
+using UnityEngine.Networking.Types;
+using UnityEngine;
 
 
 namespace PQ.Common.Fsm
@@ -20,12 +21,13 @@ namespace PQ.Common.Fsm
         private struct Node
         {
             public readonly FsmState<StateId, SharedData> state;
-            public readonly BitSet neighbors;
-            public Node(FsmState<StateId, SharedData> state, BitSet neighbors)
+            public readonly EnumSet<StateId> neighbors;
+            public Node(FsmState<StateId, SharedData> state, EnumSet<StateId> neighbors)
             {
                 this.state = state;
                 this.neighbors = neighbors;
             }
+            public override string ToString() => $"{state.Id} => {{ {string.Join(", ", neighbors.Entries())} }}";
         }
 
         public int StateCount      => _stateCount;
@@ -35,18 +37,9 @@ namespace PQ.Common.Fsm
         private readonly int    _stateCount;
         private readonly int    _transitionCount;
         private readonly string _description;
-        private readonly Node[] _nodes;
+        private readonly EnumMap<StateId, Node> _nodes;
 
-        private static readonly string indentation;
-        private static readonly FsmStateIdCache<StateId> idCache;
-        static FsmGraph()
-        {
-            // note that since enums are processed during compile time, we resolve the cache only once per static id type
-            indentation  = new(' ', 4);
-            idCache = FsmStateIdCache<StateId>.Instance;
-        }
-
-        public FsmGraph(in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+        public FsmGraph(in List<(FsmState<StateId, SharedData> state, StateId[] adjacents)> adjacencyList)
         {
             if (adjacencyList == null || adjacencyList.Count == 0)
             {
@@ -56,34 +49,25 @@ namespace PQ.Common.Fsm
             // note that since the nodes are created using bitset, node list match state id enum order
             _stateCount      = 0;
             _transitionCount = 0;
-            _description     = string.Empty;
-            _nodes           = ExtractNodeForEachDefinedId(adjacencyList);
-            _description     = AsUserFriendlyString(_nodes);
+            _nodes           = ExtractNodes(adjacencyList);
+            _description     = $"FsmGraph{_nodes}";
         }
 
-        public bool HasState(in StateId id) =>
-            idCache.TryGetIndex(id, out _);
+        public bool HasTransition(StateId id, in StateId dest) =>
+            _nodes.TryGetValue(id, out Node node) && node.neighbors.Contains(dest);
 
-        public bool HasTransition(in StateId source, in StateId dest) =>
-            idCache.TryGetIndex(source, out int sourceIndex) &&
-            idCache.TryGetIndex(dest,   out int destIndex)   &&
-            _nodes[sourceIndex].neighbors.HasIndex(destIndex);
-
-        public FsmState<StateId, SharedData> GetState(in StateId id) =>
-            idCache.TryGetIndex(id, out int index)? _nodes[index].state : null;
-
-
-        private static Node[] ExtractNodeForEachDefinedId(
-            in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+        public FsmState<StateId, SharedData> GetState(StateId id)
         {
-            if (adjacencyList.Count != idCache.Count)
+            if (!_nodes.TryGetValue(id, out Node node))
             {
-                throw new ArgumentException($"Cannot extract nodes - " +
-                    $"must have one state per stateId enum member yet counts are unequal");
+                throw new ArgumentException($"Given id {id} is invalid - expected a defined {typeof(StateId)}");
             }
+            return node.state;
+        }
 
-            // fill the ordered buckets according to their underlying ordinal type
-            Node[] nodes = new Node[idCache.Count];
+        private static EnumMap<StateId, Node> ExtractNodes(in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+        {
+            var nodes = new EnumMap<StateId, Node>();
             foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
             {
                 if (state == null || adjacents == null)
@@ -91,62 +75,18 @@ namespace PQ.Common.Fsm
                     throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
                 }
 
-                StateId sourceId = state.Id;
-                if (!idCache.TryGetIndex(state.Id, out int sourceIndex))
+                var id = state.Id;
+                var neighbors = new EnumSet<StateId>(adjacents);
+                if (!nodes.Add(id, new Node(state, neighbors)))
                 {
-                    throw new ArgumentException($"Cannot add node - {state.Id} is not a defined {typeof(StateId)} enum");
+                    throw new ArgumentException($"Cannot add node - {id} is not a defined {typeof(StateId)} enum");
                 }
-
-                BitSet neighbors = new(idCache.Count);
-                for (int i = 0; i < adjacents.Length; i++)
+                if (neighbors.Contains(id))
                 {
-                    StateId neighborId = adjacents[i];
-                    if (!idCache.TryGetIndex(neighborId, out int neighborIndex))
-                    {
-                        throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} -" +
-                            $"destination is not a defined {typeof(StateId)} enum");
-                    }
-                    if (!neighbors.TryAdd(neighborIndex))
-                    {
-                        throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - expected unique existing key");
-                    }
-                    if (sourceIndex == neighborIndex)
-                    {
-                        throw new ArgumentException($"Cannot add transition {sourceId}=>{neighborId} - must be different states");
-                    }
+                    throw new ArgumentException($"Cannot add transition {id}=>{id} - must be different states");
                 }
-                nodes[sourceIndex] = new Node(state, neighbors);
             }
             return nodes;
-        }
-        
-        private static string AsUserFriendlyString(in Node[] nodes)
-        {
-            StringBuilder sb = new("{\n");
-            foreach (Node node in nodes)
-            {
-                sb.Append($"{indentation}{node.state.Name} => {{");
-                foreach ((int index, string name, StateId _) in idCache.Fields())
-                {
-                    if (node.neighbors.HasIndex(index))
-                    {
-                        sb.Append(name).Append(',');
-                    }
-                }
-                RemoveTrailingCharacter(sb, ',');
-                sb.Append($"}}\n");
-            }
-            sb.Append("}");
-            return sb.ToString();
-        }
-
-        private static void RemoveTrailingCharacter(StringBuilder stringBuilder, char character)
-        {
-            int size = stringBuilder.Length;
-            if (stringBuilder[size - 1] == character)
-            {
-                stringBuilder.Length--;
-            }
         }
     }
 }
