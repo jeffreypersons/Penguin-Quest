@@ -27,36 +27,38 @@ namespace PQ.Common.Containers
     - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
     - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
-    public struct EnumSet<TEnum>
-        where TEnum : struct, Enum
+    public struct EnumSet<T>
+        where T : struct, Enum
     {
         public const int MinSize = 1;
         public const int MaxSize = 64;
 
         // only validate once per enum since defined at compile time
         // note that could be made thread safe using C#'s Lazy feature
-        private static readonly int _enumMemberCount;
+        public static readonly EnumMetadata<T> EnumFields;
         static EnumSet()
         {
-            _enumMemberCount = Enum.GetNames(typeof(TEnum)).Length;
-            if (!AreAllEnumValuesDefault(0, _enumMemberCount))
+            EnumFields = new EnumMetadata<T>();
+            if (EnumFields.Size < MinSize || EnumFields.Size > MaxSize)
             {
-                throw new ArgumentException(
-                    $"Enum values must be default from 0 to size-1 - received {EnumAsUserFriendlyString()}");
+                throw new ArgumentException($"Bitset size must be in range [{MinSize}, {MaxSize}] - received {EnumFields.Size}");
             }
 
-            if (_enumMemberCount < MinSize || _enumMemberCount > MaxSize)
+            foreach (var field in EnumFields.Entries())
             {
-                throw new ArgumentException($"Bitset size must be in range [{MinSize}, {MaxSize}] - received {_enumMemberCount}");
+                if (EnumFields.IsDefault(field))
+                {
+                    throw new ArgumentException($"Enum values must match declaration order - received {EnumFields}");
+                }
             }
         }
         
         private long Data  { readonly get; set;         }
         public int   Count { readonly get; private set; }
         public int   Size  { readonly get; private set; }
-        public Type Type => typeof(TEnum);
+        public Type Type => typeof(T);
 
-        public override string ToString() => $"{GetType().Name}<{typeof(TEnum)}>{{ {string.Join(", ", Entries())} }}";
+        public override string ToString() => $"{GetType().Name}<{typeof(T)}>{{ {string.Join(", ", Entries())} }}";
 
 
         public EnumSet(bool value = false)
@@ -64,51 +66,51 @@ namespace PQ.Common.Containers
             if (value)
             {
                 Data  = ~0;
-                Count = _enumMemberCount;
-                Size  = _enumMemberCount;
+                Count = EnumFields.Size;
+                Size  = EnumFields.Size;
             }
             else
             {
                 Data  = 0;
                 Count = 0;
-                Size  = _enumMemberCount;
+                Size  = EnumFields.Size;
             }
         }
 
         /* If index is in range, what field was declared at that position (irregardless of set or not)? */
-        public bool TryGet(int index, out TEnum enumField)
+        public bool TryGet(int index, out T enumField)
         {
-            enumField = UnsafeUtility.As<int, TEnum>(ref index);
+            enumField = UnsafeUtility.As<int, T>(ref index);
             return index >= 0 && index < Size;
         }
 
         /* If field is defined, in what order was the enum field declared (irregardless of set or not)? */
-        public bool TryGetIndex(TEnum enumField, out int index)
+        public bool TryGetIndex(T enumField, out int index)
         {
-            index = UnsafeUtility.As<TEnum, int>(ref enumField);
+            index = UnsafeUtility.As<T, int>(ref enumField);
             return index >= 0 && index < Size;
         }
 
         /* Is value included in our set? */
         [Pure]
-        public bool Contains(TEnum flag)
+        public bool Contains(T flag)
         {
-            int index = UnsafeUtility.As<TEnum, int>(ref flag);
+            int index = UnsafeUtility.As<T, int>(ref flag);
             long mask = 1L << index;
             return (Data & mask) != 0;
         }
 
         /* Is the other set a equivalent OR a subset of ours? */
         [Pure]
-        public bool Contains(in EnumSet<TEnum> other)
+        public bool Contains(in EnumSet<T> other)
         {
             return (Data & other.Data) == other.Data;
         }
 
         /* If value is a valid enum that _is not_ already in our set, then include that flag. */
-        public bool Add(TEnum flag)
+        public bool Add(T flag)
         {
-            int index = UnsafeUtility.As<TEnum, int>(ref flag);
+            int index = UnsafeUtility.As<T, int>(ref flag);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) != 0)
             {
@@ -121,9 +123,9 @@ namespace PQ.Common.Containers
         }
 
         /* If value is a valid _is_ already in our set, then exclude that flag. */
-        public bool Remove(TEnum flag)
+        public bool Remove(T flag)
         {
-            int index = UnsafeUtility.As<TEnum, int>(ref flag);
+            int index = UnsafeUtility.As<T, int>(ref flag);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) == 0)
             {
@@ -136,48 +138,17 @@ namespace PQ.Common.Containers
         }
 
         /* What are the enum fields included in our set, in order? */
-        public IEnumerable<TEnum> Entries()
+        public IEnumerable<T> Entries()
         {
             // todo: investigate just how much garbage this is creating
             for (int i = 0; i < Count; i++)
             {
-                TEnum flag = UnsafeUtility.As<int, TEnum>(ref i);
+                T flag = UnsafeUtility.As<int, T>(ref i);
                 if (Contains(flag))
                 {
                     yield return flag;
                 }
             }
-        }
-
-        [Pure]
-        private static bool AreAllEnumValuesDefault(int start, int count)
-        {
-            for (int i = start; i < count; i++)
-            {
-                // note that we call getName here instead of isDefined since it produces less garbage
-                if (Enum.GetName(typeof(TEnum), i) == null)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        [Pure]
-        private static string EnumAsUserFriendlyString()
-        {
-            [Pure] static string _EnumFieldToString(string name, TEnum value) =>
-                $"{name}={UnsafeUtility.As<TEnum, long>(ref value)}";
-
-            var type   = typeof(TEnum);
-            var names  = Enum.GetNames(type);
-            var values = (TEnum[])Enum.GetValues(type);
-
-            string enumName   = type.FullName;
-            string typeName   = Enum.GetUnderlyingType(type).FullName;
-            string enumFields = string.Join(", ", names.Zip(values, _EnumFieldToString));
-
-            return $"{enumName} : {typeName} {{ {enumFields} }}";
         }
     }
 }
