@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PQ.Common.Events;
 
 
@@ -21,7 +22,7 @@ namespace PQ.Common.Fsm
         : IEquatable<FsmState<StateId, SharedData>>,
           IComparable<FsmState<StateId, SharedData>>
         where SharedData : FsmSharedData
-        where StateId : struct, Enum
+        where StateId    : struct, Enum
     {
         private StateId          _id;
         private string           _name;
@@ -46,12 +47,14 @@ namespace PQ.Common.Fsm
                 $"eventRegistry:[{_eventRegistry}]" +
             $")";
 
-        private static readonly FsmStateIdCache<StateId> idCache;
+        private static readonly Comparer<StateId>         idValueComparer;
+        private static readonly EqualityComparer<StateId> idEqualityComparer;
 
         static FsmState()
         {
-            // note that since enums are processed during compile time, we resolve the cache only once per static id type
-            idCache = FsmStateIdCache<StateId>.Instance;
+            // note that since enums are processed during compile time, we cache the comparers once per static id type
+            idValueComparer    = Comparer<StateId>.Default;
+            idEqualityComparer = EqualityComparer<StateId>.Default;
         }
 
 
@@ -68,7 +71,7 @@ namespace PQ.Common.Fsm
             StateSubclassInstance instance = new()
             {
                 _id            = id,
-                _name          = idCache.GetName(id),
+                _name          = id.ToString(),
                 _data          = blob,
                 _active        = false,
                 _eventRegistry = new(),
@@ -129,14 +132,14 @@ namespace PQ.Common.Fsm
         protected virtual void OnLateUpdate()  { }
         
         
-        public bool        HasSameId(StateId id)                  => idCache.EqualityComparer.Equals(_id, id);
-        public static bool HasSameId(StateId left, StateId right) => idCache.EqualityComparer.Equals(left, right);
+        public bool        HasSameId(StateId id)                  => idEqualityComparer.Equals(_id, id);
+        public static bool HasSameId(StateId left, StateId right) => idEqualityComparer.Equals(left, right);
 
         int IComparable<FsmState<StateId, SharedData>>.CompareTo(FsmState<StateId, SharedData> other) => Compare(this, other);
         bool IEquatable<FsmState<StateId, SharedData>>.Equals(FsmState<StateId, SharedData> other)    => Equal(this, other);
 
         public override bool Equals(object obj) => Equal(this, obj as FsmState<StateId, SharedData>);
-        public override int GetHashCode() => HashCode.Combine(idCache.EqualityComparer.GetHashCode(Id));
+        public override int GetHashCode() => HashCode.Combine(idEqualityComparer.GetHashCode(Id));
 
         public static bool operator ==(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) =>  Equal(left, right);
         public static bool operator !=(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right) => !Equal(left, right);
@@ -156,7 +159,7 @@ namespace PQ.Common.Fsm
             {
                 return false;
             }
-            return ReferenceEquals(left.Blob, right.Blob) && idCache.EqualityComparer.Equals(left.Id, right.Id);
+            return ReferenceEquals(left.Blob, right.Blob) && idEqualityComparer.Equals(left.Id, right.Id);
         }
         private static int Compare(FsmState<StateId, SharedData> left, FsmState<StateId, SharedData> right)
         {
@@ -172,7 +175,7 @@ namespace PQ.Common.Fsm
             {
                 return 1;
             }
-            return idCache.ValueComparer.Compare(left.Id, right.Id);
+            return idValueComparer.Compare(left.Id, right.Id);
         }
     }
 }

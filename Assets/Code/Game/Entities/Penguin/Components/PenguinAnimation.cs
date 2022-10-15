@@ -55,6 +55,9 @@ namespace PQ.Game.Entities.Penguin
         private PqEvent _standUpEnded    = new("penguin.animation.standup.end");
         private PqEvent _fired           = new("penguin.animation.fire");
         private PqEvent _used            = new("penguin.animation.use");
+        private PqEvent _frontFootDown   = new("penguin.animation.walking.frontfoot.down");
+
+
 
         public IPqEventReceiver JumpLiftOff     => _jumpLiftOff;
         public IPqEventReceiver LieDownStarted  => _lieDownStarted;
@@ -64,6 +67,7 @@ namespace PQ.Game.Entities.Penguin
         public IPqEventReceiver StandUpEnded    => _standUpEnded;
         public IPqEventReceiver Fired           => _fired;
         public IPqEventReceiver Used            => _used;
+        public IPqEventReceiver FrontFootDown   => _frontFootDown;
 
         public void ResetAllTriggers()
         {
@@ -88,7 +92,9 @@ namespace PQ.Game.Entities.Penguin
         public void TriggerParamFireParameter()              => _animator.SetTrigger(paramFire);
         public void TriggerParamUseParameter()               => _animator.SetTrigger(paramUse);
         
-        
+
+        // todo: look into referencing event.raise directly in the animator
+        /* Note that since these names are referenced directly in animator, any name changes must happen there, too. */
         private void OnLieDownAnimationEventStart()  => ForwardAsEvent(OnLieDownAnimationEventStart,  _lieDownStarted);
         private void OnLieDownAnimationEventMid()    => ForwardAsEvent(OnLieDownAnimationEventMid,    _lieDownMidpoint);
         private void OnLieDownAnimationEventEnd()    => ForwardAsEvent(OnLieDownAnimationEventEnd,    _lieDownEnded);
@@ -99,6 +105,8 @@ namespace PQ.Game.Entities.Penguin
         private void OnJumpUpAnimationEventImpulse() => ForwardAsEvent(OnJumpUpAnimationEventImpulse, _jumpLiftOff);
         private void OnFireAnimationEvent()          => ForwardAsEvent(OnFireAnimationEvent,          _fired);
         private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           _used);
+
+        private void OnFrontFootDownAnimationEvent() => ForwardAsEvent(OnFrontFootDownAnimationEvent, _frontFootDown);
 
 
         private void ForwardAsEvent(Action animatorEvent, PqEvent customEvent)
