@@ -141,9 +141,9 @@ namespace PQ.Common.Containers
             return true;
         }
 
-        // todo: investigate just how much garbage this is creating
         private static IEnumerable<T> Flags(long data, int size)
         {
+            // todo: investigate just how much garbage this is creating, and consider replacing with list style enumerator struct
             for (int i = 0; i < size; i++)
             {
                 if ((data & (1L << i)) != 0)

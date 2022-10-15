@@ -64,11 +64,13 @@ namespace PQ.Common.Containers
         /* What are the enum fields included in our set, in order? */
         public IEnumerable<(TKey key, TValue value)> Entries()
         {
-            // todo: investigate just how much garbage this is creating
+            // todo: investigate just how much garbage this is creating, and consider replacing with list style enumerator struct
             foreach (TKey key in _keys.Entries())
             {
                 if (TryGetValue(key, out TValue value))
+                {
                     yield return (key, value);
+                }
             }
         }
 
