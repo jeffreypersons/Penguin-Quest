@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using Unity.Collections.LowLevel.Unsafe;
 
 
 namespace PQ.Common.Containers
@@ -58,10 +56,8 @@ namespace PQ.Common.Containers
         public int   Size  { readonly get; private set; }
 
         public Type Type => typeof(T);
-
         public override string ToString() => $"{GetType().Name}<{typeof(T)}>{{ {string.Join(", ", Entries())} }}";
-
-
+        
         public EnumSet(bool value = false)
         {
             if (value)
@@ -75,6 +71,17 @@ namespace PQ.Common.Containers
                 Data  = 0;
                 Count = 0;
                 Size  = EnumFields.Size;
+            }
+        }
+
+        /* What are the enum fields included in our set, in order that they were declared? */
+        public IEnumerable<T> Entries()
+        {
+            // todo: investigate just how much garbage this is creating
+            foreach (T key in EnumFields.Entries())
+            {
+                if (Contains(key))
+                    yield return key;
             }
         }
 
@@ -122,20 +129,6 @@ namespace PQ.Common.Containers
             Data &= mask;
             Count--;
             return true;
-        }
-
-        /* What are the enum fields included in our set, in order? */
-        public IEnumerable<T> Entries()
-        {
-            // todo: investigate just how much garbage this is creating
-            for (int i = 0; i < Count; i++)
-            {
-                T flag = UnsafeUtility.As<int, T>(ref i);
-                if (Contains(flag))
-                {
-                    yield return flag;
-                }
-            }
         }
     }
 }
