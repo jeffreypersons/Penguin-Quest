@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -18,11 +19,22 @@ namespace PQ.Game.Peformance
         private int VSyncCount      { get => QualitySettings.vSyncCount;  set => QualitySettings.vSyncCount  = value; }
         private int TargetFrameRate { get => Application.targetFrameRate; set => Application.targetFrameRate = value; }
 
+        private void Awake()
+        {
+            Debug.Log($"OnAwake : " + ReportGarbageCollection());
+        }
 
         void Start()
         {
+            Debug.Log($"OnStart : " + ReportGarbageCollection());
+
             UpdateCurrentSettings();
             Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
+        }
+
+        private void OnDestroy()
+        {
+            Debug.Log($"OnDestroy : " + ReportGarbageCollection());
         }
 
         void OnValidate()
@@ -53,6 +65,15 @@ namespace PQ.Game.Peformance
                 Debug.LogFormat($"Set target frame-rate to {0}",
                     targetFps == -1 ? "platform default" : targetFps);
             }
+        }
+
+        private string ReportGarbageCollection()
+        {
+            var gcCount1stGen = GC.CollectionCount(generation: 0);
+            var gcTotalMemory = GC.GetTotalMemory(forceFullCollection: false);
+            return $"****** Garbage Collection Report ******\n" +
+                   $"GC Count[gen-0]       : {gcCount1stGen}\n" +
+                   $"Approximate GC memory : {gcTotalMemory}\n";
         }
     }
 }
