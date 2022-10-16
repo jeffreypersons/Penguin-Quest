@@ -39,11 +39,10 @@ namespace PQ.Common.Containers
         [Pure] public IReadOnlyList<string> Names  => _names;
         [Pure] public IReadOnlyList<TEnum>  Fields => _values;
 
-        [Pure] public U     AsValue<U>(TEnum field) where U : struct => UnsafeUtility.As<TEnum, U>(ref field);
-        [Pure] public TEnum AsEnum<U>(U value)      where U : struct => UnsafeUtility.As<U, TEnum>(ref value);
-        [Pure] public bool  IsDefined<U>(U value)   where U : struct => Enum.GetName(_type, value) != null;
-        [Pure] public bool  IsDefined(TEnum field) =>
-            Enum.GetName(_type, UnsafeUtility.As<TEnum, long>(ref field)) != null;
+        [Pure] public U     FieldToValue<U>(TEnum field) where U : struct => UnsafeUtility.As<TEnum, U>(ref field);
+        [Pure] public TEnum ValueToField<U>(U value)     where U : struct => UnsafeUtility.As<U, TEnum>(ref value);
+        [Pure] public bool  IsValueDefined<U>(U value)   where U : struct => Enum.GetName(_type, value) != null;
+        [Pure] public bool  IsFieldDefined(TEnum field) => Enum.GetName(_type, UnsafeUtility.As<TEnum, long>(ref field)) != null;
 
         public override string ToString()
         {

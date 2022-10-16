@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PQ.Game.Peformance
 {
-    // todo: extend this to provide platform specific overrides
+    // todo: look into possibly extending this to provide platform specific overrides
     /*
     Runtime adapter for performance and synchronizing other game-wide and/or platform specific settings.
     */
@@ -13,18 +13,28 @@ namespace PQ.Game.Peformance
         [SerializeField] private RuntimeSettings _settings;
 
         private string QualityInfo =>
-            $"quality level {QualitySettings.GetQualityLevel()} of" +
+            $"quality level {QualitySettings.GetQualityLevel()} of " +
             $"[{string.Join(", ", QualitySettings.names)}]";
 
-        private int VSyncCount      { get => QualitySettings.vSyncCount;  set => QualitySettings.vSyncCount = value;  }
+        private int VSyncCount      { get => QualitySettings.vSyncCount;  set => QualitySettings.vSyncCount  = value; }
         private int TargetFrameRate { get => Application.targetFrameRate; set => Application.targetFrameRate = value; }
 
-
-        void Awake()
+        private void Awake()
         {
+            Debug.Log($"OnAwake : Gathering GC info.." + ReportGarbageCollection());
+        }
+
+        void Start()
+        {
+            Debug.Log($"OnStart : Gathering GC info.." + ReportGarbageCollection());
+
             UpdateCurrentSettings();
-            Debug.Log(
-                $"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
+            Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
+        }
+
+        private void OnDestroy()
+        {
+            Debug.Log($"OnDestroy : Gathering GC info.." + ReportGarbageCollection());
         }
 
         void OnValidate()
@@ -55,6 +65,15 @@ namespace PQ.Game.Peformance
                 Debug.LogFormat($"Set target frame-rate to {0}",
                     targetFps == -1 ? "platform default" : targetFps);
             }
+        }
+
+        private string ReportGarbageCollection()
+        {
+            var gcCount1stGen = GC.CollectionCount(generation: 0);
+            var gcTotalMemory = GC.GetTotalMemory(forceFullCollection: false);
+            return $"\n****** Current Garbage Collection Stats ******\n" +
+                   $"GC Count[gen-0] : {gcCount1stGen}\n" +
+                   $"Approximate GC memory : {gcTotalMemory}\n";
         }
     }
 }
