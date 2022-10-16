@@ -45,16 +45,17 @@ namespace PQ.Common.Fsm
                 throw new ArgumentException($"Fsm must have at least one state - received none");
             }
 
-            // note that since the nodes are created using bitset, node list match state id enum order
             _stateCount      = 0;
             _transitionCount = 0;
             _nodes           = new EnumMap<StateId, Node>();
-            _description     = $"FsmGraph{string.Join($"\n{_indentation}", _nodes.Values)}";
-
             foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
             {
                 AddNode(state, adjacents);
             }
+
+            // note that we build the graph description after rather then in the loop with a string builder
+            // such that everything is processed inline with map's intrinsic sorted order
+            _description = $"FsmGraph{string.Join($"\n{_indentation}", _nodes.Values)}";
         }
 
         public bool HasTransition(StateId id, in StateId dest) =>
