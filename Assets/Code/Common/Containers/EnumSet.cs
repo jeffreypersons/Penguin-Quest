@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 
 namespace PQ.Common.Containers
@@ -25,28 +26,28 @@ namespace PQ.Common.Containers
     - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
     - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
-    public sealed class EnumSet<T>
-        where T : struct, Enum
+    public sealed class EnumSet<TEnum>
+        where TEnum : struct, Enum
     {
         public const int MinSize = 1;
         public const int MaxSize = 64;
 
         // only validate once per enum since defined at compile time
         // note that could be made thread safe using C#'s Lazy feature
-        private static EnumMetadata<T> EnumFields { get; set; }
+        private static EnumMetadata<TEnum> EnumFieldData { get; set; }
         static EnumSet()
         {
-            EnumFields = new EnumMetadata<T>();
-            if (EnumFields.Size < MinSize || EnumFields.Size > MaxSize)
+            EnumFieldData = new EnumMetadata<TEnum>();
+            if (EnumFieldData.Size < MinSize || EnumFieldData.Size > MaxSize)
             {
-                throw new ArgumentException($"Bitset size must be in range [{MinSize}, {MaxSize}] - received {EnumFields.Size}");
+                throw new ArgumentException($"Bitset size must be in range [{MinSize}, {MaxSize}] - received {EnumFieldData.Size}");
             }
 
-            for (int i = 0; i < EnumFields.Size; i++)
+            for (int i = 0; i < EnumFieldData.Size; i++)
             {
-                if (!EnumFields.IsDefined(i))
+                if (!EnumFieldData.IsValueDefined(i))
                 {
-                    throw new ArgumentException($"Enum values must match declaration order - received {EnumFields}");
+                    throw new ArgumentException($"Enum values must match declaration order - received {EnumFieldData}");
                 }
             }
         }
@@ -56,65 +57,84 @@ namespace PQ.Common.Containers
         public  int  Count { get; private set; }
         public  int  Size  { get; private set; }
 
-        public Type Type => typeof(T);
-        public override string ToString() => $"{GetType().Name}<{typeof(T)}>{{ {string.Join(", ", Flags(Data, Size))} }}";
-        
+        public Type Type => typeof(TEnum);
+        public override string ToString() =>
+            $"{GetType().Name}<{typeof(TEnum)}>{{ {string.Join(", ", ExtractItems(Data, Size))} }}";
+
+
+        // todo: look into returning cached enumerators instead...
+
+        /* Get a copy of each added field in the set (in their enum defined order) */
+        public IReadOnlyList<TEnum> Entries => ExtractItems(Data, Size).ToArray();
+
+        /* What are all the fields defined in the backing enum, in order? */
+        public IReadOnlyList<TEnum> EnumFields => EnumFieldData.Fields;
+
+
         public EnumSet(bool value = false)
         {
             if (value)
             {
                 Data  = ~0;
-                Count = EnumFields.Size;
-                Size  = EnumFields.Size;
+                Count = EnumFieldData.Size;
+                Size  = EnumFieldData.Size;
             }
             else
             {
                 Data  = 0;
                 Count = 0;
-                Size  = EnumFields.Size;
+                Size  = EnumFieldData.Size;
             }
         }
 
-        public EnumSet(in T[] flags) : this(value: false)
+        public EnumSet(in TEnum[] flags) : this(value: false)
         {
-            foreach (T flag in flags)
+            foreach (TEnum flag in flags)
             {
                 if (!Add(flag))
                 {
                     throw new ArgumentException(
                         $"Cannot add undefined or duplicate flags - " +
-                        $"possible flags include {{{string.Join(", ", EnumFields.Names)}}} " +
+                        $"possible flags include {{{string.Join(", ", EnumFieldData.Names)}}} " +
                         $"yet received [{string.Join(", ", flags)}]");
                 }
             }
         }
 
-        /* What are the enum fields included in our set, in order that they were declared? */
-        public IEnumerable<T> Entries()
+        /* At the ith declared field in the enum - what's there and is it in our set? */
+        public bool TryGetEnumField(int enumPosition, out TEnum enumField)
         {
-            return Flags(Data, Size);
+            enumField = EnumFieldData.ValueToField(enumPosition);
+            return enumPosition >= 0 && enumPosition < Size;
+        }
+
+        /* At the enum field - what position in the enum was it declared and is it in our set? */
+        public bool TryGetEnumOrdering(TEnum enumField, out int enumPosition)
+        {
+            enumPosition = EnumFieldData.FieldToValue<int>(enumField);
+            return enumPosition >= 0 && enumPosition < Size;
         }
 
         /* Is value included in our set? */
         [Pure]
-        public bool Contains(T flag)
+        public bool Contains(TEnum field)
         {
-            int index = EnumFields.AsValue<int>(flag);
+            int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;
             return (Data & mask) != 0;
         }
 
         /* Is the other set a equivalent OR a subset of ours? */
         [Pure]
-        public bool Contains(in EnumSet<T> other)
+        public bool Contains(in EnumSet<TEnum> other)
         {
             return (Data & other.Data) == other.Data;
         }
 
         /* If value is a valid enum that _is not_ already in our set, then include that flag. */
-        public bool Add(T flag)
+        public bool Add(TEnum field)
         {
-            int index = EnumFields.AsValue<int>(flag);
+            int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) != 0)
             {
@@ -127,9 +147,9 @@ namespace PQ.Common.Containers
         }
 
         /* If value is a valid _is_ already in our set, then exclude that flag. */
-        public bool Remove(T flag)
+        public bool Remove(TEnum field)
         {
-            int index = EnumFields.AsValue<int>(flag);
+            int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) == 0)
             {
@@ -141,14 +161,14 @@ namespace PQ.Common.Containers
             return true;
         }
 
-        private static IEnumerable<T> Flags(long data, int size)
+        private static IEnumerable<TEnum> ExtractItems(long data, int size)
         {
             // todo: investigate just how much garbage this is creating, and consider replacing with list style enumerator struct
             for (int i = 0; i < size; i++)
             {
                 if ((data & (1L << i)) != 0)
                 {
-                    yield return EnumFields.Fields[i];
+                    yield return EnumFieldData.Fields[i];
                 }
             }
         }

@@ -16,6 +16,7 @@ namespace PQ.Common.Fsm
         where StateId    : struct, Enum
         where SharedData : FsmSharedData
     {
+        private static readonly string _indentation = new(' ', 4);
         private struct Node
         {
             public readonly FsmState<StateId, SharedData> state;
@@ -25,17 +26,17 @@ namespace PQ.Common.Fsm
                 this.state = state;
                 this.neighbors = neighbors;
             }
-            public override string ToString() => $"{state.Id} => {{ {string.Join(", ", neighbors.Entries())} }}";
+            public override string ToString() => $"{state.Id} => {{ {string.Join(", ", neighbors.Entries)} }}";
         }
 
-        public int StateCount      => _stateCount;
+        public int StateCount => _stateCount;
         public int TransitionCount => _transitionCount;
         public override string ToString() => _description;
 
-        private readonly int    _stateCount;
-        private readonly int    _transitionCount;
-        private readonly string _description;
-        private readonly EnumMap<StateId, Node> _nodes;
+        private int    _stateCount;
+        private int    _transitionCount;
+        private string _description;
+        private EnumMap<StateId, Node> _nodes;
 
         public FsmGraph(in List<(FsmState<StateId, SharedData> state, StateId[] adjacents)> adjacencyList)
         {
@@ -47,8 +48,13 @@ namespace PQ.Common.Fsm
             // note that since the nodes are created using bitset, node list match state id enum order
             _stateCount      = 0;
             _transitionCount = 0;
-            _nodes           = ExtractNodes(adjacencyList);
-            _description     = $"FsmGraph{_nodes}";
+            _nodes           = new EnumMap<StateId, Node>();
+            _description     = $"FsmGraph{string.Join($"\n{_indentation}", _nodes.Values)}";
+
+            foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
+            {
+                AddNode(state, adjacents);
+            }
         }
 
         public bool HasTransition(StateId id, in StateId dest) =>
@@ -62,29 +68,28 @@ namespace PQ.Common.Fsm
             }
             return node.state;
         }
-
-        private static EnumMap<StateId, Node> ExtractNodes(in List<(FsmState<StateId, SharedData>, StateId[])> adjacencyList)
+        
+        
+        private void AddNode(FsmState<StateId, SharedData> state, StateId[] adjacents)
         {
-            var nodes = new EnumMap<StateId, Node>();
-            foreach ((FsmState<StateId, SharedData> state, StateId[] adjacents) in adjacencyList)
+            if (state == null || adjacents == null)
             {
-                if (state == null || adjacents == null)
-                {
-                    throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
-                }
-
-                var id = state.Id;
-                var neighbors = new EnumSet<StateId>(adjacents);
-                if (!nodes.Add(id, new Node(state, neighbors)))
-                {
-                    throw new ArgumentException($"Cannot add node - {id} is not a defined {typeof(StateId)} enum");
-                }
-                if (neighbors.Contains(id))
-                {
-                    throw new ArgumentException($"Cannot add transition {id}=>{id} - must be different states");
-                }
+                throw new ArgumentException($"Cannot add node - expected non null adjacency list entry");
             }
-            return nodes;
+
+            var id = state.Id;
+            var neighbors = new EnumSet<StateId>(adjacents);
+            if (!_nodes.Add(id, new Node(state, neighbors)))
+            {
+                throw new ArgumentException($"Cannot add node - {id} is not a defined {typeof(StateId)} enum");
+            }
+            if (neighbors.Contains(id))
+            {
+                throw new ArgumentException($"Cannot add transition {id}=>{id} - must be different states");
+            }
+
+            _stateCount++;
+            _transitionCount += neighbors.Count;
         }
     }
 }

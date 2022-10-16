@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 
 namespace PQ.Common.Containers
@@ -22,27 +23,37 @@ namespace PQ.Common.Containers
     public sealed class EnumMap<TKey, TValue>
         where TKey : struct, Enum
     {
-        // note that this could be made thread safe using C#'s Lazy feature
-        private static EnumMetadata<TKey> EnumFields { get; set; }
-        static EnumMap()
-        {
-            EnumFields = new EnumMetadata<TKey>();
-        }
-
-
         private readonly EnumSet<TKey> _keys;
         private readonly TValue[]      _values;
 
         public Type KeyType   => typeof(TKey);
         public Type ValueType => typeof(TValue);
         public int  Count     => _keys.Count;
+
+
+        // todo: look into returning cached enumerators instead...
+
+        /* Get a copy of each added field in the set (in their enum defined order) */
+        public IReadOnlyList<TKey> Keys => ExtractAddedKeys(_keys).ToArray();
+
+        /* Get a copy of each added value in the set (in their key's enum defined order) */
+        public IReadOnlyList<TValue> Values => ExtractAddedValues(_keys, _values).ToArray();
+
+        /* Get a copy of each added {field, value} in the set (in their enum defined order) */
+        public IReadOnlyList<(TKey key, TValue value)> Entries => ExtractAddedEntries(_keys, _values).ToArray();
+
+        /* What are all the fields defined in the backing enum, in order? */
+        public IReadOnlyList<TKey> EnumFields => _keys.EnumFields;
+
+
         public override string ToString() =>
-            $"{typeof(EnumMap<TKey, TValue>).Name}<{typeof(TKey)}>{{ {string.Join(", ", Entries())} }}";
+            $"{typeof(EnumMap<TKey, TValue>).Name}<{typeof(TKey)}>" +
+            $"{{ {string.Join(", ", ExtractAddedValues(_keys, _values))} }}";
 
         public EnumMap(in (TKey key, TValue value)[] entries=null)
         {
             _keys   = new EnumSet<TKey>();
-            _values = new TValue[EnumFields.Size];
+            _values = new TValue[_keys.Size];
 
             if (entries == null)
             {
@@ -55,21 +66,8 @@ namespace PQ.Common.Containers
                 {
                     throw new ArgumentException(
                         $"Cannot add undefined or duplicate keys - " +
-                        $"possible keys include {{{string.Join(", ", EnumFields.Names)}}} " +
+                        $"possible keys include {{{string.Join(", ", EnumFields)}}} " +
                         $"yet received [{string.Join(", ", entries)}]");
-                }
-            }
-        }
-
-        /* What are the enum fields included in our set, in order? */
-        public IEnumerable<(TKey key, TValue value)> Entries()
-        {
-            // todo: investigate just how much garbage this is creating, and consider replacing with list style enumerator struct
-            foreach (TKey key in _keys.Entries())
-            {
-                if (TryGetValue(key, out TValue value))
-                {
-                    yield return (key, value);
                 }
             }
         }
@@ -99,35 +97,72 @@ namespace PQ.Common.Containers
         [Pure]
         public bool TryGetValue(TKey key, out TValue value)
         {
-            if (!_keys.Contains(key))
+            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.Contains(key))
             {
                 value = default;
                 return false;
             }
-            value = _values[EnumFields.AsValue<int>(key)];
+            value = _values[index];
             return true;
         }
 
         /* If value is a valid enum that _is not_ already in our map, then add the entry. */
         public bool Add(TKey key, TValue value)
         {
-            if (!_keys.Add(key))
+            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.Add(key))
             {
                 return false;
             }
-            _values[EnumFields.AsValue<int>(key)] = value;
+            _values[index] = value;
             return true;
         }
 
         /* If value is a valid enum that _is_ already in our map, then remove the entry. */
         public bool Remove(TKey key)
         {
-            if (!_keys.Remove(key))
+            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.Remove(key))
             {
                 return false;
             }
-            _values[EnumFields.AsValue<int>(key)] = default;
+            _values[index] = default;
             return true;
+        }
+
+
+
+        // todo: investigate just how much garbage these are creating, and consider replacing with list style enumerator struct
+
+        private static IEnumerable<TKey> ExtractAddedKeys(EnumSet<TKey> keys)
+        {
+            for (int i = 0; i < keys.Size; i++)
+            {
+                if (keys.TryGetEnumField(i, out TKey key) && keys.Contains(key))
+                {
+                    yield return key;
+                }
+            }
+        }
+
+        private static IEnumerable<TValue> ExtractAddedValues(EnumSet<TKey> keys, TValue[] values)
+        {
+            for (int i = 0; i < keys.Size; i++)
+            {
+                if (keys.TryGetEnumField(i, out TKey key) && keys.Contains(key))
+                {
+                    yield return values[i];
+                }
+            }
+        }
+
+        private static IEnumerable<(TKey key, TValue value)> ExtractAddedEntries(EnumSet<TKey> keys, TValue[] values)
+        {
+            for (int i = 0; i < keys.Size; i++)
+            {
+                if (keys.TryGetEnumField(i, out TKey key) && keys.Contains(key))
+                {
+                    yield return (key, values[i]);
+                }
+            }
         }
     }
 }
