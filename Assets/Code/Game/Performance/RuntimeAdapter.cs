@@ -19,7 +19,7 @@ namespace PQ.Game.Peformance
         private int TargetFrameRate { get => Application.targetFrameRate; set => Application.targetFrameRate = value; }
 
 
-        void Awake()
+        void Start()
         {
             UpdateCurrentSettings();
             Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
