@@ -21,12 +21,12 @@ namespace PQ.Game.Peformance
 
         private void Awake()
         {
-            Debug.Log($"OnAwake : " + ReportGarbageCollection());
+            Debug.Log($"OnAwake : Gathering GC info.." + ReportGarbageCollection());
         }
 
         void Start()
         {
-            Debug.Log($"OnStart : " + ReportGarbageCollection());
+            Debug.Log($"OnStart : Gathering GC info.." + ReportGarbageCollection());
 
             UpdateCurrentSettings();
             Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
@@ -34,7 +34,7 @@ namespace PQ.Game.Peformance
 
         private void OnDestroy()
         {
-            Debug.Log($"OnDestroy : " + ReportGarbageCollection());
+            Debug.Log($"OnDestroy : Gathering GC info.." + ReportGarbageCollection());
         }
 
         void OnValidate()
@@ -71,8 +71,8 @@ namespace PQ.Game.Peformance
         {
             var gcCount1stGen = GC.CollectionCount(generation: 0);
             var gcTotalMemory = GC.GetTotalMemory(forceFullCollection: false);
-            return $"****** Garbage Collection Report ******\n" +
-                   $"GC Count[gen-0]       : {gcCount1stGen}\n" +
+            return $"\n****** Current Garbage Collection Stats ******\n" +
+                   $"GC Count[gen-0] : {gcCount1stGen}\n" +
                    $"Approximate GC memory : {gcTotalMemory}\n";
         }
     }
