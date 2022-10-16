@@ -12,7 +12,7 @@ namespace PQ.Game.Peformance
         [SerializeField] private RuntimeSettings _settings;
 
         private string QualityInfo =>
-            $"quality level {QualitySettings.GetQualityLevel()} of" +
+            $"quality level {QualitySettings.GetQualityLevel()} of " +
             $"[{string.Join(", ", QualitySettings.names)}]";
 
         private int VSyncCount      { get => QualitySettings.vSyncCount;  set => QualitySettings.vSyncCount  = value; }
@@ -22,8 +22,7 @@ namespace PQ.Game.Peformance
         void Awake()
         {
             UpdateCurrentSettings();
-            Debug.Log(
-                $"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
+            Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
         }
 
         void OnValidate()
