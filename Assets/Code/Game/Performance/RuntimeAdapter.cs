@@ -1,10 +1,9 @@
-using System;
 using UnityEngine;
 
 
 namespace PQ.Game.Peformance
 {
-    // todo: extend this to provide platform specific overrides
+    // todo: look into possibly extending this to provide platform specific overrides
     /*
     Runtime adapter for performance and synchronizing other game-wide and/or platform specific settings.
     */
@@ -16,7 +15,7 @@ namespace PQ.Game.Peformance
             $"quality level {QualitySettings.GetQualityLevel()} of" +
             $"[{string.Join(", ", QualitySettings.names)}]";
 
-        private int VSyncCount      { get => QualitySettings.vSyncCount;  set => QualitySettings.vSyncCount = value;  }
+        private int VSyncCount      { get => QualitySettings.vSyncCount;  set => QualitySettings.vSyncCount  = value; }
         private int TargetFrameRate { get => Application.targetFrameRate; set => Application.targetFrameRate = value; }
 
 
