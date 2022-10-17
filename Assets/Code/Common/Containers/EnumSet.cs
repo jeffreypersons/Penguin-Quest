@@ -9,20 +9,19 @@ namespace PQ.Common.Containers
     /*
     Simple ordered sequence of enums with set and flag operations.
 
-
-    Essentially a layer on top of plain enums that allow toggling of flags without the need of declaring it for that.
-    
-    In other words, rather than writing [System.Flags] and assigning manual values (error prone and fragile to change!),
-    this takes care of all the bit-shifting and validation needed to work with subsets of enums.
-
+    Overview
+    - Essentially a layer on top of plain enums that allow toggling of flags without the need of declaring it for that.
+      In other words, rather than writing [System.Flags] and assigning manual values (error prone and fragile to change!),
+      this takes care of all the bit-shifting and validation needed to work with subsets of enums
 
     Properties
-    - intrinsically sorted by the order defined in the enum
-    - constant time 'contains' check
-    - generic (no boxing!) enum comparisons via comparer (relevant since == cannot be used with generic enum types)
-    - upfront validation of enum constraints (that the values follow the pattern of 0,1,2,....,n-1,n)
+    - plain enums only      : all enum fields default to unique integers from 0 to size-1
+    - intrinsically ordered : keys are stored in the order defined by the enum
+    - low memory footprint  : garbage free type conversions, up-front allocation, and one-time only enum validation/caching
+    - scalable              : constant time contains/get/add/remove, constant memory usage
 
     Notes
+    - C# collection interfaces intentionally avoided as this is a very specialized container, and we want to avoid extra boxing/virtual calls
     - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
     - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
@@ -91,7 +90,7 @@ namespace PQ.Common.Containers
         {
             foreach (TEnum flag in flags)
             {
-                if (!Add(flag))
+                if (!TryAdd(flag))
                 {
                     throw new ArgumentException(
                         $"Cannot add undefined or duplicate flags - " +
@@ -101,15 +100,15 @@ namespace PQ.Common.Containers
             }
         }
 
-        /* At the ith declared field in the enum - what's there and is it in our set? */
-        public bool TryGetEnumField(int enumPosition, out TEnum enumField)
+        // lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
+        internal bool TryGetEnumField(int enumPosition, out TEnum enumField)
         {
             enumField = EnumFieldData.ValueToField(enumPosition);
             return enumPosition >= 0 && enumPosition < Size;
         }
 
-        /* At the enum field - what position in the enum was it declared and is it in our set? */
-        public bool TryGetEnumOrdering(TEnum enumField, out int enumPosition)
+        // reverse lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
+        internal bool TryGetEnumOrdering(TEnum enumField, out int enumPosition)
         {
             enumPosition = EnumFieldData.FieldToValue<int>(enumField);
             return enumPosition >= 0 && enumPosition < Size;
@@ -132,7 +131,7 @@ namespace PQ.Common.Containers
         }
 
         /* If value is a valid enum that _is not_ already in our set, then include that flag. */
-        public bool Add(TEnum field)
+        public bool TryAdd(TEnum field)
         {
             int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;
@@ -147,7 +146,7 @@ namespace PQ.Common.Containers
         }
 
         /* If value is a valid _is_ already in our set, then exclude that flag. */
-        public bool Remove(TEnum field)
+        public bool TryRemove(TEnum field)
         {
             int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;

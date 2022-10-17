@@ -8,17 +8,22 @@ namespace PQ.Common.Containers
 {
     /*
     Low overhead container for mapping enum fields to values.
-
-    Note that we intentionally don't extend any of C#'s collection interfaces, as this is a very specialized container,
-    and we want to avoid the overhead of any virtual calls/additionally boxing.
+    
+    Overview
+    - Essentially a layer on top of plain enums that allow constant time array-like lookups but with the convenience and
+      type safety of a dictionary-like API, without any need for custom enum flags or values (error prone and fragile to change!),
+      or the overhead of using a hashmap and constantly validating enums
 
     Properties
-    - fixed size            : each enum field is unique and has a corresponding value
     - plain enums only      : all enum fields default to unique integers from 0 to size-1
-    - intrinsically ordered : values are stored in the order defined by the enum
-    - fast enum indexing    : constant time lookups via enum keys
-    - cache friendly        : values stored contiguously
+    - intrinsically ordered : keys and corresponding map values are stored in the order defined by the enum
     - low memory footprint  : garbage free type conversions, up-front allocation, and one-time only enum validation/caching
+    - scalable complexity   : constant time contains/get/add/remove, linear memory usage
+
+    Notes
+    - C# collection interfaces intentionally avoided as this is a very specialized container, and we want to avoid extra boxing/virtual calls
+    - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
+    - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
     public sealed class EnumMap<TKey, TValue>
         where TKey : struct, Enum
@@ -62,7 +67,7 @@ namespace PQ.Common.Containers
 
             foreach ((TKey key, TValue value) in entries)
             {
-                if (!Add(key, value))
+                if (!TryAdd(key, value))
                 {
                     throw new ArgumentException(
                         $"Cannot add undefined or duplicate keys - " +
@@ -107,9 +112,9 @@ namespace PQ.Common.Containers
         }
 
         /* If value is a valid enum that _is not_ already in our map, then add the entry. */
-        public bool Add(TKey key, TValue value)
+        public bool TryAdd(TKey key, TValue value)
         {
-            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.Add(key))
+            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.TryAdd(key))
             {
                 return false;
             }
@@ -118,9 +123,9 @@ namespace PQ.Common.Containers
         }
 
         /* If value is a valid enum that _is_ already in our map, then remove the entry. */
-        public bool Remove(TKey key)
+        public bool TryRemove(TKey key)
         {
-            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.Remove(key))
+            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.TryRemove(key))
             {
                 return false;
             }
