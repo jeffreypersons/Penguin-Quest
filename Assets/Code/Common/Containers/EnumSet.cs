@@ -127,9 +127,9 @@ namespace PQ.Common.Containers
 
         /* Is key included in our set? */
         [Pure]
-        public bool Contains(TKey field)
+        public bool Contains(TKey key)
         {
-            int index = EnumFieldData.FieldToValue<int>(field);
+            int index = EnumFieldData.FieldToValue<int>(key);
             long mask = 1L << index;
             return (Data & mask) != 0;
         }
@@ -144,32 +144,41 @@ namespace PQ.Common.Containers
         /* If key is both valid enum and not found add it - otherwise throw. */
         public void Add(TKey key)
         {
-            // note that we only explicitly signal bad enum values here as that's the only place it can be added,
-            // as everywhere else an undefined enum value is treated the same as a missing key
-            if (!IsEnumFieldDefined(key))
+            int index = EnumFieldData.FieldToValue<int>(key);
+            if (index < 0 || index >= Size)
             {
                 throw new ArgumentException($"Failed to add entry - key {key} is not a defined field of {typeof(TKey)}");
             }
-            if (!TryAdd(key))
+
+            long mask = 1L << index;
+            if ((Data & mask) != 0)
             {
                 throw new ArgumentException($"Failed to add entry - values cannot be overriden, key {key} already found in {this}");
             }
+
+            Data |= mask;
+            Count++;
         }
 
         /* If key found remove entry - otherwise throw. */
         public void Remove(TKey key)
         {
-            if (!TryRemove(key))
+            int index = EnumFieldData.FieldToValue<int>(key);
+            long mask = 1L << index;
+            if (index < 0 || index >= Size || (Data & mask) == 0)
             {
                 throw new ArgumentException($"Failed to remove entry - key {key} not found in {this}");
             }
+
+            Data &= mask;
+            Count--;
         }
 
 
         /* If key is both defined and not found add it - otherwise throw (exception free alternative to add). */
-        public bool TryAdd(TKey field)
+        public bool TryAdd(TKey key)
         {
-            int index = EnumFieldData.FieldToValue<int>(field);
+            int index = EnumFieldData.FieldToValue<int>(key);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) != 0)
             {
@@ -182,9 +191,9 @@ namespace PQ.Common.Containers
         }
 
         /* If key found remove entry - otherwise throw (exception free alternative to remove). */
-        public bool TryRemove(TKey field)
+        public bool TryRemove(TKey key)
         {
-            int index = EnumFieldData.FieldToValue<int>(field);
+            int index = EnumFieldData.FieldToValue<int>(key);
             long mask = 1L << index;
             if (index < 0 || index >= Size || (Data & mask) == 0)
             {

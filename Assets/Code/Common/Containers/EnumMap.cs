@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 
 
 namespace PQ.Common.Containers
@@ -93,11 +94,11 @@ namespace PQ.Common.Containers
         {
             get
             {
-                if (!TryGetValue(key, out TValue value))
+                if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.Contains(key))
                 {
                     throw new ArgumentException($"Failed to lookup value - key {key} is not found in {_keys}");
                 }
-                return value;
+                return _values[index];
             }
         }
 
@@ -106,23 +107,27 @@ namespace PQ.Common.Containers
         {
             // note that we only explicitly signal bad enum values here as that's the only place it can be added,
             // as everywhere else an undefined enum value is treated the same as a missing key
-            if (!_keys.IsEnumFieldDefined(key))
+            if (!_keys.TryGetEnumOrdering(key, out int index))
             {
                 throw new ArgumentException($"Failed to add entry - key {key} is not a defined field of {typeof(TKey)}");
             }
-            if (!TryAdd(key, value))
+            if (!_keys.TryAdd(key))
             {
                 throw new ArgumentException($"Failed to add entry - values cannot be overriden, key {key} already found in {_keys}");
             }
+
+            _values[index] = value;
         }
 
         /* If key found remove entry - otherwise throw. */
         public void Remove(TKey key)
         {
-            if (!_keys.TryRemove(key))
+            if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.TryRemove(key))
             {
                 throw new ArgumentException($"Failed to remove entry - key {key} not found in {_keys}");
             }
+
+            _values[index] = default;
         }
 
 
@@ -135,6 +140,7 @@ namespace PQ.Common.Containers
                 value = default;
                 return false;
             }
+
             value = _values[index];
             return true;
         }
@@ -146,6 +152,7 @@ namespace PQ.Common.Containers
             {
                 return false;
             }
+
             _values[index] = value;
             return true;
         }
@@ -157,6 +164,7 @@ namespace PQ.Common.Containers
             {
                 return false;
             }
+
             _values[index] = default;
             return true;
         }
