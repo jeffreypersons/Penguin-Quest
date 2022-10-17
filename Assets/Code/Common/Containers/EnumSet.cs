@@ -25,18 +25,18 @@ namespace PQ.Common.Containers
     - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
     - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
-    public sealed class EnumSet<TEnum>
-        where TEnum : struct, Enum
+    public sealed class EnumSet<TKey>
+        where TKey : struct, Enum
     {
         public const int MinSize = 1;
         public const int MaxSize = 64;
 
         // only validate once per enum since defined at compile time
         // note that could be made thread safe using C#'s Lazy feature
-        private static EnumMetadata<TEnum> EnumFieldData { get; set; }
+        private static EnumMetadata<TKey> EnumFieldData { get; set; }
         static EnumSet()
         {
-            EnumFieldData = new EnumMetadata<TEnum>();
+            EnumFieldData = new EnumMetadata<TKey>();
             if (EnumFieldData.Size < MinSize || EnumFieldData.Size > MaxSize)
             {
                 throw new ArgumentException($"Bitset size must be in range [{MinSize}, {MaxSize}] - received {EnumFieldData.Size}");
@@ -51,24 +51,44 @@ namespace PQ.Common.Containers
             }
         }
 
+        // is enum value valid - functionality we don't want outside the assembly,
+        // as everywhere else an undefined enum value is treated the same as a missing key
+        internal bool IsEnumFieldDefined(TKey enumField)
+        {
+            var index = EnumFieldData.FieldToValue<int>(enumField);
+            return index >= 0 && index < Size;
+        }
+
+        // lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
+        internal bool TryGetEnumField(int enumPosition, out TKey enumField)
+        {
+            enumField = EnumFieldData.ValueToField(enumPosition);
+            return enumPosition >= 0 && enumPosition < Size;
+        }
+
+        // reverse lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
+        internal bool TryGetEnumOrdering(TKey enumField, out int enumPosition)
+        {
+            enumPosition = EnumFieldData.FieldToValue<int>(enumField);
+            return enumPosition >= 0 && enumPosition < Size;
+        }
+
 
         private long Data  { get; set;         }
         public  int  Count { get; private set; }
         public  int  Size  { get; private set; }
 
-        public Type Type => typeof(TEnum);
-        public override string ToString() =>
-            $"{GetType().Name}<{typeof(TEnum)}>{{ {string.Join(", ", ExtractItems(Data, Size))} }}";
+        public Type Type => typeof(TKey);
 
 
         // todo: look into returning cached enumerators instead...
 
         /* Get a copy of each added field in the set (in their enum defined order) */
-        public IReadOnlyList<TEnum> Entries => ExtractItems(Data, Size).ToArray();
+        public IReadOnlyList<TKey> Entries => ExtractItems(Data, Size).ToArray();
 
         /* What are all the fields defined in the backing enum, in order? */
-        public IReadOnlyList<TEnum> EnumFields => EnumFieldData.Fields;
-
+        public IReadOnlyList<TKey> EnumFields => EnumFieldData.Fields;
+        
 
         public EnumSet(bool value = false)
         {
@@ -86,37 +106,28 @@ namespace PQ.Common.Containers
             }
         }
 
-        public EnumSet(in TEnum[] flags) : this(value: false)
+        public EnumSet(in TKey[] entries) : this(value: false)
         {
-            foreach (TEnum flag in flags)
+            if (entries == null)
             {
-                if (!TryAdd(flag))
-                {
-                    throw new ArgumentException(
-                        $"Cannot add undefined or duplicate flags - " +
-                        $"possible flags include {{{string.Join(", ", EnumFieldData.Names)}}} " +
-                        $"yet received [{string.Join(", ", flags)}]");
-                }
+                return;
+            }
+
+            foreach (TKey entry in entries)
+            {
+                Add(entry);
             }
         }
 
-        // lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
-        internal bool TryGetEnumField(int enumPosition, out TEnum enumField)
+        public override string ToString()
         {
-            enumField = EnumFieldData.ValueToField(enumPosition);
-            return enumPosition >= 0 && enumPosition < Size;
+            return $"{GetType().Name}<{typeof(TKey)}>" +
+                   $"{{ {string.Join(", ", ExtractItems(Data, Size))} }}";
         }
 
-        // reverse lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
-        internal bool TryGetEnumOrdering(TEnum enumField, out int enumPosition)
-        {
-            enumPosition = EnumFieldData.FieldToValue<int>(enumField);
-            return enumPosition >= 0 && enumPosition < Size;
-        }
-
-        /* Is value included in our set? */
+        /* Is key included in our set? */
         [Pure]
-        public bool Contains(TEnum field)
+        public bool Contains(TKey field)
         {
             int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;
@@ -125,13 +136,38 @@ namespace PQ.Common.Containers
 
         /* Is the other set a equivalent OR a subset of ours? */
         [Pure]
-        public bool Contains(in EnumSet<TEnum> other)
+        public bool Contains(in EnumSet<TKey> other)
         {
             return (Data & other.Data) == other.Data;
         }
+        
+        /* If key is both valid enum and not found add it - otherwise throw. */
+        public void Add(TKey key)
+        {
+            // note that we only explicitly signal bad enum values here as that's the only place it can be added,
+            // as everywhere else an undefined enum value is treated the same as a missing key
+            if (!IsEnumFieldDefined(key))
+            {
+                throw new ArgumentException($"Failed to add entry - key {key} is not a defined field of {typeof(TKey)}");
+            }
+            if (!TryAdd(key))
+            {
+                throw new ArgumentException($"Failed to add entry - values cannot be overriden, key {key} already found in {this}");
+            }
+        }
 
-        /* If value is a valid enum that _is not_ already in our set, then include that flag. */
-        public bool TryAdd(TEnum field)
+        /* If key found remove entry - otherwise throw. */
+        public void Remove(TKey key)
+        {
+            if (!TryRemove(key))
+            {
+                throw new ArgumentException($"Failed to remove entry - key {key} not found in {this}");
+            }
+        }
+
+
+        /* If key is both defined and not found add it - otherwise throw (exception free alternative to add). */
+        public bool TryAdd(TKey field)
         {
             int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;
@@ -145,8 +181,8 @@ namespace PQ.Common.Containers
             return true;
         }
 
-        /* If value is a valid _is_ already in our set, then exclude that flag. */
-        public bool TryRemove(TEnum field)
+        /* If key found remove entry - otherwise throw (exception free alternative to remove). */
+        public bool TryRemove(TKey field)
         {
             int index = EnumFieldData.FieldToValue<int>(field);
             long mask = 1L << index;
@@ -160,9 +196,12 @@ namespace PQ.Common.Containers
             return true;
         }
 
-        private static IEnumerable<TEnum> ExtractItems(long data, int size)
+
+
+        // todo: investigate just how much garbage these are creating, and consider replacing with list style enumerator struct
+
+        private static IEnumerable<TKey> ExtractItems(long data, int size)
         {
-            // todo: investigate just how much garbage this is creating, and consider replacing with list style enumerator struct
             for (int i = 0; i < size; i++)
             {
                 if ((data & (1L << i)) != 0)

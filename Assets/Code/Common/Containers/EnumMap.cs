@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 
 
 namespace PQ.Common.Containers
@@ -51,10 +51,6 @@ namespace PQ.Common.Containers
         public IReadOnlyList<TKey> EnumFields => _keys.EnumFields;
 
 
-        public override string ToString() =>
-            $"{typeof(EnumMap<TKey, TValue>).Name}<{typeof(TKey)}>" +
-            $"{{ {string.Join(", ", ExtractAddedValues(_keys, _values))} }}";
-
         public EnumMap(in (TKey key, TValue value)[] entries=null)
         {
             _keys   = new EnumSet<TKey>();
@@ -67,21 +63,14 @@ namespace PQ.Common.Containers
 
             foreach ((TKey key, TValue value) in entries)
             {
-                if (!TryAdd(key, value))
-                {
-                    throw new ArgumentException(
-                        $"Cannot add undefined or duplicate keys - " +
-                        $"possible keys include {{{string.Join(", ", EnumFields)}}} " +
-                        $"yet received [{string.Join(", ", entries)}]");
-                }
+                Add(key, value);
             }
         }
 
-        /* Is key a valid enum? */
-        [Pure]
-        public bool IsDefined(TKey key)
+        public override string ToString()
         {
-            return _keys.Contains(key);
+            return $"{typeof(EnumMap<TKey, TValue>).Name}<{typeof(TKey)},{typeof(TValue)}>" +
+                   $"{{ {string.Join(", ", ExtractAddedValues(_keys, _values))} }}";
         }
 
         /* Is key included in our set of keys? */
@@ -91,14 +80,53 @@ namespace PQ.Common.Containers
             return _keys.Contains(key);
         }
 
-        /* Is the other set a equivalent OR a subset of ours? */
+        /* Is the other set a equivalent OR a subset of our keys? */
         [Pure]
         public bool Contains(in EnumSet<TKey> other)
         {
             return _keys.Contains(other);
         }
 
-        /* If key is _already_ in our map, then fetch it's value. */
+        /* Key-based indexer with bound checks and disabled value overwriting (ie readonly). */
+        [Pure]
+        public TValue this[TKey key]
+        {
+            get
+            {
+                if (!TryGetValue(key, out TValue value))
+                {
+                    throw new ArgumentException($"Failed to lookup value - key {key} is not found in {_keys}");
+                }
+                return value;
+            }
+        }
+
+        /* If key is both valid enum and not found add it - otherwise throw. */
+        public void Add(TKey key, TValue value)
+        {
+            // note that we only explicitly signal bad enum values here as that's the only place it can be added,
+            // as everywhere else an undefined enum value is treated the same as a missing key
+            if (!_keys.IsEnumFieldDefined(key))
+            {
+                throw new ArgumentException($"Failed to add entry - key {key} is not a defined field of {typeof(TKey)}");
+            }
+            if (!TryAdd(key, value))
+            {
+                throw new ArgumentException($"Failed to add entry - values cannot be overriden, key {key} already found in {_keys}");
+            }
+        }
+
+        /* If key found remove entry - otherwise throw. */
+        public void Remove(TKey key)
+        {
+            if (!_keys.TryRemove(key))
+            {
+                throw new ArgumentException($"Failed to remove entry - key {key} not found in {_keys}");
+            }
+        }
+
+
+        /* If key is already in our map, then fetch it's value (exception free alternative to index lookup). */
         [Pure]
         public bool TryGetValue(TKey key, out TValue value)
         {
@@ -111,7 +139,7 @@ namespace PQ.Common.Containers
             return true;
         }
 
-        /* If value is a valid enum that _is not_ already in our map, then add the entry. */
+        /* If key is both defined and not found add it (exception free alternative to add). */
         public bool TryAdd(TKey key, TValue value)
         {
             if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.TryAdd(key))
@@ -122,7 +150,7 @@ namespace PQ.Common.Containers
             return true;
         }
 
-        /* If value is a valid enum that _is_ already in our map, then remove the entry. */
+        /* If key found remove entry - otherwise throw (exception free alternative to remove). */
         public bool TryRemove(TKey key)
         {
             if (!_keys.TryGetEnumOrdering(key, out int index) || !_keys.TryRemove(key))
