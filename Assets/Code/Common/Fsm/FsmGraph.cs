@@ -80,7 +80,7 @@ namespace PQ.Common.Fsm
 
             var id = state.Id;
             var neighbors = new EnumSet<StateId>(adjacents);
-            if (!_nodes.Add(id, new Node(state, neighbors)))
+            if (!_nodes.TryAdd(id, new Node(state, neighbors)))
             {
                 throw new ArgumentException($"Cannot add node - {id} is not a defined {typeof(StateId)} enum");
             }
