@@ -40,13 +40,13 @@ namespace PQ.Common.Containers
         // todo: look into returning cached enumerators instead...
 
         /* Get a copy of each added field in the set (in their enum defined order) */
-        public IReadOnlyList<TKey> Keys => ExtractAddedKeys(_keys).ToArray();
+        public IReadOnlyList<TKey> Keys => ExtractKeys(_keys).ToArray();
 
         /* Get a copy of each added value in the set (in their key's enum defined order) */
-        public IReadOnlyList<TValue> Values => ExtractAddedValues(_keys, _values).ToArray();
+        public IReadOnlyList<TValue> Values => ExtractValues(_keys, _values).ToArray();
 
         /* Get a copy of each added {field, value} in the set (in their enum defined order) */
-        public IReadOnlyList<(TKey key, TValue value)> Entries => ExtractAddedEntries(_keys, _values).ToArray();
+        public IReadOnlyList<(TKey key, TValue value)> Entries => ExtractEntries(_keys, _values).ToArray();
 
         /* What are all the fields defined in the backing enum, in order? */
         public IReadOnlyList<TKey> EnumFields => _keys.EnumFields;
@@ -71,7 +71,7 @@ namespace PQ.Common.Containers
         public override string ToString()
         {
             return $"{typeof(EnumMap<TKey, TValue>).Name}<{typeof(TKey)},{typeof(TValue)}>" +
-                   $"{{ {string.Join(", ", ExtractAddedValues(_keys, _values))} }}";
+                   $"{{ {string.Join(", ", ExtractValues(_keys, _values))} }}";
         }
 
         /* Is key included in our set of keys? */
@@ -173,7 +173,7 @@ namespace PQ.Common.Containers
 
         // todo: investigate just how much garbage these are creating, and consider replacing with list style enumerator struct
 
-        private static IEnumerable<TKey> ExtractAddedKeys(EnumSet<TKey> keys)
+        private static IEnumerable<TKey> ExtractKeys(EnumSet<TKey> keys)
         {
             for (int i = 0; i < keys.Size; i++)
             {
@@ -184,7 +184,7 @@ namespace PQ.Common.Containers
             }
         }
 
-        private static IEnumerable<TValue> ExtractAddedValues(EnumSet<TKey> keys, TValue[] values)
+        private static IEnumerable<TValue> ExtractValues(EnumSet<TKey> keys, TValue[] values)
         {
             for (int i = 0; i < keys.Size; i++)
             {
@@ -195,7 +195,7 @@ namespace PQ.Common.Containers
             }
         }
 
-        private static IEnumerable<(TKey key, TValue value)> ExtractAddedEntries(EnumSet<TKey> keys, TValue[] values)
+        private static IEnumerable<(TKey key, TValue value)> ExtractEntries(EnumSet<TKey> keys, TValue[] values)
         {
             for (int i = 0; i < keys.Size; i++)
             {

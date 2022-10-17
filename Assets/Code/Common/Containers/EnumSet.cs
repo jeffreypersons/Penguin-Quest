@@ -51,62 +51,56 @@ namespace PQ.Common.Containers
             }
         }
 
-        // is enum value valid - functionality we don't want outside the assembly,
-        // as everywhere else an undefined enum value is treated the same as a missing key
-        internal bool IsEnumFieldDefined(TKey enumField)
-        {
-            var index = EnumFieldData.FieldToValue<int>(enumField);
-            return index >= 0 && index < Size;
-        }
-
         // lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
         internal bool TryGetEnumField(int enumPosition, out TKey enumField)
         {
             enumField = EnumFieldData.ValueToField(enumPosition);
-            return enumPosition >= 0 && enumPosition < Size;
+            return enumPosition >= 0 && enumPosition < _size;
         }
 
         // reverse lookup by index - functionality we don't want outside the assembly, as clients should use the fields directly
         internal bool TryGetEnumOrdering(TKey enumField, out int enumPosition)
         {
             enumPosition = EnumFieldData.FieldToValue<int>(enumField);
-            return enumPosition >= 0 && enumPosition < Size;
+            return enumPosition >= 0 && enumPosition < _size;
         }
 
 
-        private long Data  { get; set;         }
-        public  int  Count { get; private set; }
-        public  int  Size  { get; private set; }
+        private long         _flags;
+        private int          _count;
+        private readonly int _size;
 
-        public Type Type => typeof(TKey);
+        public Type Type  => typeof(TKey);
+        public int  Count => _count;
+        public int  Size  => _size;
 
 
         // todo: look into returning cached enumerators instead...
 
         /* Get a copy of each added field in the set (in their enum defined order) */
-        public IReadOnlyList<TKey> Entries => ExtractItems(Data, Size).ToArray();
+        public IReadOnlyList<TKey> Entries => ExtractEntries(_flags, _size).ToArray();
 
         /* What are all the fields defined in the backing enum, in order? */
         public IReadOnlyList<TKey> EnumFields => EnumFieldData.Fields;
         
 
-        public EnumSet(bool value = false)
+        public EnumSet(bool startFull = false)
         {
-            if (value)
+            if (startFull)
             {
-                Data  = ~0;
-                Count = EnumFieldData.Size;
-                Size  = EnumFieldData.Size;
+                _flags = ~0;
+                _count = EnumFieldData.Size;
+                _size  = EnumFieldData.Size;
             }
             else
             {
-                Data  = 0;
-                Count = 0;
-                Size  = EnumFieldData.Size;
+                _flags = 0;
+                _count = 0;
+                _size  = EnumFieldData.Size;
             }
         }
 
-        public EnumSet(in TKey[] entries) : this(value: false)
+        public EnumSet(in TKey[] entries) : this(startFull: false)
         {
             if (entries == null)
             {
@@ -122,7 +116,7 @@ namespace PQ.Common.Containers
         public override string ToString()
         {
             return $"{GetType().Name}<{typeof(TKey)}>" +
-                   $"{{ {string.Join(", ", ExtractItems(Data, Size))} }}";
+                   $"{{ {string.Join(", ", ExtractEntries(_flags, _size))} }}";
         }
 
         /* Is key included in our set? */
@@ -131,33 +125,33 @@ namespace PQ.Common.Containers
         {
             int index = EnumFieldData.FieldToValue<int>(key);
             long mask = 1L << index;
-            return (Data & mask) != 0;
+            return (_flags & mask) != 0;
         }
 
         /* Is the other set a equivalent OR a subset of ours? */
         [Pure]
         public bool Contains(in EnumSet<TKey> other)
         {
-            return (Data & other.Data) == other.Data;
+            return (_flags & other._flags) == other._flags;
         }
         
         /* If key is both valid enum and not found add it - otherwise throw. */
         public void Add(TKey key)
         {
             int index = EnumFieldData.FieldToValue<int>(key);
-            if (index < 0 || index >= Size)
+            if (index < 0 || index >= _size)
             {
                 throw new ArgumentException($"Failed to add entry - key {key} is not a defined field of {typeof(TKey)}");
             }
 
             long mask = 1L << index;
-            if ((Data & mask) != 0)
+            if ((_flags & mask) != 0)
             {
                 throw new ArgumentException($"Failed to add entry - values cannot be overriden, key {key} already found in {this}");
             }
 
-            Data |= mask;
-            Count++;
+            _flags |= mask;
+            _count++;
         }
 
         /* If key found remove entry - otherwise throw. */
@@ -165,13 +159,13 @@ namespace PQ.Common.Containers
         {
             int index = EnumFieldData.FieldToValue<int>(key);
             long mask = 1L << index;
-            if (index < 0 || index >= Size || (Data & mask) == 0)
+            if (index < 0 || index >= _size || (_flags & mask) == 0)
             {
                 throw new ArgumentException($"Failed to remove entry - key {key} not found in {this}");
             }
 
-            Data &= mask;
-            Count--;
+            _flags &= mask;
+            _count--;
         }
 
 
@@ -180,13 +174,13 @@ namespace PQ.Common.Containers
         {
             int index = EnumFieldData.FieldToValue<int>(key);
             long mask = 1L << index;
-            if (index < 0 || index >= Size || (Data & mask) != 0)
+            if (index < 0 || index >= Size || (_flags & mask) != 0)
             {
                 return false;
             }
 
-            Data |= mask;
-            Count++;
+            _flags |= mask;
+            _count++;
             return true;
         }
 
@@ -195,13 +189,13 @@ namespace PQ.Common.Containers
         {
             int index = EnumFieldData.FieldToValue<int>(key);
             long mask = 1L << index;
-            if (index < 0 || index >= Size || (Data & mask) == 0)
+            if (index < 0 || index >= Size || (_flags & mask) == 0)
             {
                 return false;
             }
 
-            Data &= mask;
-            Count--;
+            _flags &= mask;
+            _count--;
             return true;
         }
 
@@ -209,11 +203,11 @@ namespace PQ.Common.Containers
 
         // todo: investigate just how much garbage these are creating, and consider replacing with list style enumerator struct
 
-        private static IEnumerable<TKey> ExtractItems(long data, int size)
+        private static IEnumerable<TKey> ExtractEntries(long flags, int size)
         {
             for (int i = 0; i < size; i++)
             {
-                if ((data & (1L << i)) != 0)
+                if ((flags & (1L << i)) != 0)
                 {
                     yield return EnumFieldData.Fields[i];
                 }
