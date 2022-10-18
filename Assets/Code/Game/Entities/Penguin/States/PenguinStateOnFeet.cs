@@ -15,7 +15,8 @@ namespace PQ.Game.Entities.Penguin
         {
             RegisterEvent(Blob.EventBus.lieDownCommand,                    HandleLieDownInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
-            //RegisterEvent(Blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
+
+            //RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.JumpLiftOff), HandleJumpLiftOff);
             //RegisterEvent(Blob.EventBus.jumpCommand,                       HandleJumpInputReceived);
             //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged); // disabled until we fix ground handling
         }
@@ -85,11 +86,11 @@ namespace PQ.Game.Entities.Penguin
         {
             if (_horizontalInput.value == HorizontalInput.Type.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller

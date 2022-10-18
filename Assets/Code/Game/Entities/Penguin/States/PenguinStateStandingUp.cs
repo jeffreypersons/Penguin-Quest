@@ -10,8 +10,8 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimation.EventId.StandUpStarted), HandleStandUpAnimationStarted);
-            RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimation.EventId.StandUpEnded),   HandleStandUpAnimationFinished);
+            RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.StandUpStarted), HandleStandUpAnimationStarted);
+            RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.StandUpEnded),   HandleStandUpAnimationFinished);
         }
 
         protected override void OnEnter()

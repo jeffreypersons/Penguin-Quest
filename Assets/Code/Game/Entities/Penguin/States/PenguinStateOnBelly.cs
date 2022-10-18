@@ -59,11 +59,11 @@ namespace PQ.Game.Entities.Penguin
         {
             if (_horizontalInput.value == HorizontalInput.Type.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnBellySettings.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnBellySettings.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller

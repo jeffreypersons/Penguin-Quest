@@ -20,39 +20,6 @@ namespace PQ.Game.Entities.Penguin
     [Serializable]
     public class PenguinAnimation : MonoBehaviour
     {
-        // rather than hold a bunch of properties, we use these IDs for looking up which events to trigger (from animator),
-        // or listen to (from client code), greatly consolidating animation boilerplate
-        public enum EventId
-        {
-            JumpLiftOff,
-            LieDownStarted,
-            LieDownMidpoint,
-            LieDownEnded,
-            StandUpStarted,
-            StandUpEnded,
-            Fired,
-            Used,
-            FrontFootDown,
-        }
-
-        /*
-        Reminder: These parameters _must_ match the names in mecanim.
-        Unfortunately there is no easy way to generate the parameter names,
-        so just be careful to make sure that they match the parameters listed in the Unity Animator.
-        */
-        // todo: look into validation of the param names with the animator using below enums
-        public enum Params
-        {
-            Locomotion,
-            SlopeIntensity,
-            IsGrounded,
-            TriggerLieDown,
-            TriggerStandUp,
-            TriggerJumpUp,
-            TriggerFire,
-            TriggerUse,
-        }
-
         private readonly string paramLocomotion = "LocomotionIntensity";
         private readonly string paramSlope      = "SlopeIntensity";
         private readonly string paramIsGrounded = "IsGrounded";
@@ -66,19 +33,14 @@ namespace PQ.Game.Entities.Penguin
         [Header("Animator Settings")]
         [SerializeField] private Animator _animator;
         [SerializeField] private bool     _logEvents = false;
+        private EnumMap<PenguinAnimationEventId, PqEvent> _animationEvents;
 
-        [Header("Animation Settings")]
-        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
-         "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
-        [Range(0.01f, 1.00f)][SerializeField] private float _locomotionBlendStep = 0.10f;
-
-        private EnumMap<EventId, PqEvent> _animationEvents;
-
+        public Vector2 SkeletalRootPosition => _animator.rootPosition;
 
         private void Awake()
         {
-            _animationEvents = new EnumMap<EventId, PqEvent>();
-            foreach (EventId id in _animationEvents.EnumFields)
+            _animationEvents = new EnumMap<PenguinAnimationEventId, PqEvent>();
+            foreach (PenguinAnimationEventId id in _animationEvents.EnumFields)
             {
                 _animationEvents.Add(id, new PqEvent(id.ToString()));
             }
@@ -86,7 +48,7 @@ namespace PQ.Game.Entities.Penguin
         }
         
         // our callback to hook up with Animator in animation clip window, for triggering our custom events
-        private void RaiseEvent(EventId id)
+        private void RaiseEvent(PenguinAnimationEventId id)
         {
             if (_logEvents)
             {
@@ -98,14 +60,7 @@ namespace PQ.Game.Entities.Penguin
             _animationEvents[id].Raise();
         }
 
-
-
-        // How quickly do we blend locomotion? Note that this does not affect anything in the animator,
-        // rather it's an animation related kept here for relevance
-        public float   LocomotionBlendStep  => _locomotionBlendStep;
-        public Vector2 SkeletalRootPosition => _animator.rootPosition;
-
-        public IPqEventReceiver LookupEvent(EventId id) => _animationEvents[id];
+        public IPqEventReceiver LookupEvent(PenguinAnimationEventId id) => _animationEvents[id];
 
         public void SetParamLocomotionIntensity(float ratio) => _animator.SetFloat(paramLocomotion, ratio);
         public void SetParamSlopeIntensity(float ratio)      => _animator.SetFloat(paramSlope,      ratio);
