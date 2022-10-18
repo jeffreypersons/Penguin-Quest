@@ -32,7 +32,7 @@ namespace PQ.Game.Entities.Penguin
         {
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
-            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetFloat(PenguinAnimationParamNames.paramLocomotion, _locomotionBlend);
         }
 
         protected override void OnUpdate()
@@ -49,7 +49,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleGroundContactChanged(bool isGrounded)
         {
-            Blob.Animation.SetParamIsGrounded(isGrounded);
+            Blob.Animation.SetBool(PenguinAnimationParamNames.paramIsGrounded, isGrounded);
             if (!isGrounded)
             {
                 base.SignalMoveToNextState(PenguinStateId.Midair);
@@ -59,7 +59,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleJumpInputReceived()
         {
-            Blob.Animation.TriggerParamJumpUpParameter();
+            Blob.Animation.SetTrigger(PenguinAnimationParamNames.paramJump);
         }
 
         private void HandleJumpLiftOff()
@@ -101,7 +101,7 @@ namespace PQ.Game.Entities.Penguin
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
             }
 
-            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetFloat(PenguinAnimationParamNames.paramLocomotion, _locomotionBlend);
         }
     }
 }
