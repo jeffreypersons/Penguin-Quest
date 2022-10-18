@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using PQ.Common.Events;
+using PQ.Common.Containers;
 
 
 namespace PQ.Game.Entities.Penguin
@@ -19,20 +20,39 @@ namespace PQ.Game.Entities.Penguin
     [Serializable]
     public class PenguinAnimation : MonoBehaviour
     {
-        [SerializeField] private Animator _animator;
-        [SerializeField] private bool _logEvents = false;
-
-        [Header("Animation Settings")]
-        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
-         "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
-        [Range(0.01f, 1.00f)][SerializeField] private float _locomotionBlendStep = 0.10f;
+        // rather than hold a bunch of properties, we use these IDs for looking up which events to trigger (from animator),
+        // or listen to (from client code), greatly consolidating animation boilerplate
+        public enum EventId
+        {
+            JumpLiftOff,
+            LieDownStarted,
+            LieDownMidpoint,
+            LieDownEnded,
+            StandUpStarted,
+            StandUpEnded,
+            Fired,
+            Used,
+            FrontFootDown,
+        }
 
         /*
         Reminder: These parameters _must_ match the names in mecanim.
         Unfortunately there is no easy way to generate the parameter names,
         so just be careful to make sure that they match the parameters listed in the Unity Animator.
         */
-        // todo: look into validation of the param names with the animator
+        // todo: look into validation of the param names with the animator using below enums
+        public enum Params
+        {
+            Locomotion,
+            SlopeIntensity,
+            IsGrounded,
+            TriggerLieDown,
+            TriggerStandUp,
+            TriggerJumpUp,
+            TriggerFire,
+            TriggerUse,
+        }
+
         private readonly string paramLocomotion = "LocomotionIntensity";
         private readonly string paramSlope      = "SlopeIntensity";
         private readonly string paramIsGrounded = "IsGrounded";
@@ -43,32 +63,62 @@ namespace PQ.Game.Entities.Penguin
         private readonly string paramUse        = "Use";
 
 
+        [Header("Animator Settings")]
+        [SerializeField] private Animator _animator;
+        [SerializeField] private bool     _logEvents = false;
+
+        [Header("Animation Settings")]
+        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
+         "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
+        [Range(0.01f, 1.00f)][SerializeField] private float _locomotionBlendStep = 0.10f;
+
+        private EnumMap<EventId, PqEvent> _animationEvents;
+
+
+        private void Awake()
+        {
+            _animationEvents = new EnumMap<EventId, PqEvent>();
+            foreach (EventId id in _animationEvents.EnumFields)
+            {
+                _animationEvents.Add(id, new PqEvent(id.ToString()));
+            }
+            Debug.Log("Populated animation event mapping: " + _animationEvents);
+        }
+        
+        // our callback to hook up with Animator in animation clip window, for triggering our custom events
+        private void RaiseEvent(EventId id)
+        {
+            if (_logEvents)
+            {
+                var className     = GetType().Name;
+                var currentFrame  = Time.frameCount - 1;
+                var eventReceived = _animationEvents[id].Name;
+                Debug.Log($"{className}[Frame:{currentFrame}] - triggering {eventReceived} from animator");
+            }
+            _animationEvents[id].Raise();
+        }
+
+
+
         // How quickly do we blend locomotion? Note that this does not affect anything in the animator,
         // rather it's an animation related kept here for relevance
-        public float LocomotionBlendStep => _locomotionBlendStep;
+        public float   LocomotionBlendStep  => _locomotionBlendStep;
+        public Vector2 SkeletalRootPosition => _animator.rootPosition;
 
-        private PqEvent _jumpLiftOff     = new("penguin.animation.jump.liftoff");
-        private PqEvent _lieDownStarted  = new("penguin.animation.liedown.start");
-        private PqEvent _lieDownMidpoint = new("penguin.animation.liedown.mid");
-        private PqEvent _lieDownEnded    = new("penguin.animation.liedown.end");
-        private PqEvent _standUpStarted  = new("penguin.animation.standup.start");
-        private PqEvent _standUpEnded    = new("penguin.animation.standup.end");
-        private PqEvent _fired           = new("penguin.animation.fire");
-        private PqEvent _used            = new("penguin.animation.use");
-        private PqEvent _frontFootDown   = new("penguin.animation.walking.frontfoot.down");
+        public IPqEventReceiver LookupEvent(EventId id) => _animationEvents[id];
 
+        public void SetParamLocomotionIntensity(float ratio) => _animator.SetFloat(paramLocomotion, ratio);
+        public void SetParamSlopeIntensity(float ratio)      => _animator.SetFloat(paramSlope,      ratio);
+        public void SetParamIsGrounded(bool value)           => _animator.SetBool(paramIsGrounded,  value);
 
+        public void TriggerParamLieDownParameter()           => _animator.SetTrigger(paramLie);
+        public void TriggerParamStandUpParameter()           => _animator.SetTrigger(paramStand);
+        public void TriggerParamJumpUpParameter()            => _animator.SetTrigger(paramJump);
+        public void TriggerParamFireParameter()              => _animator.SetTrigger(paramFire);
+        public void TriggerParamUseParameter()               => _animator.SetTrigger(paramUse);
+        
 
-        public IPqEventReceiver JumpLiftOff     => _jumpLiftOff;
-        public IPqEventReceiver LieDownStarted  => _lieDownStarted;
-        public IPqEventReceiver LieDownMidpoint => _lieDownMidpoint;
-        public IPqEventReceiver LieDownEnded    => _lieDownEnded;
-        public IPqEventReceiver StandUpStarted  => _standUpStarted;
-        public IPqEventReceiver StandUpEnded    => _standUpEnded;
-        public IPqEventReceiver Fired           => _fired;
-        public IPqEventReceiver Used            => _used;
-        public IPqEventReceiver FrontFootDown   => _frontFootDown;
-
+        // todo: look into a way we can get rid of these - maybe through animator transition's write-defaults or similar?
         public void ResetAllTriggers()
         {
             // note that only triggers need to be reset, as they are timing dependent
@@ -78,46 +128,6 @@ namespace PQ.Game.Entities.Penguin
             _animator.ResetTrigger(paramJump);
             _animator.ResetTrigger(paramFire);
             _animator.ResetTrigger(paramUse);
-        }
-
-        public Vector2 SkeletalRootPosition => _animator.rootPosition;
-
-        public void SetParamLocomotionIntensity(float ratio) => _animator.SetFloat(paramLocomotion, ratio);
-        public void SetParamSlopeIntensity(float ratio)      => _animator.SetFloat(paramSlope,      ratio);
-        public void SetParamIsGrounded(bool value)           => _animator.SetBool(paramIsGrounded,  value);
-        
-        public void TriggerParamLieDownParameter()           => _animator.SetTrigger(paramLie);
-        public void TriggerParamStandUpParameter()           => _animator.SetTrigger(paramStand);
-        public void TriggerParamJumpUpParameter()            => _animator.SetTrigger(paramJump);
-        public void TriggerParamFireParameter()              => _animator.SetTrigger(paramFire);
-        public void TriggerParamUseParameter()               => _animator.SetTrigger(paramUse);
-        
-
-        // todo: look into referencing event.raise directly in the animator
-        /* Note that since these names are referenced directly in animator, any name changes must happen there, too. */
-        private void OnLieDownAnimationEventStart()  => ForwardAsEvent(OnLieDownAnimationEventStart,  _lieDownStarted);
-        private void OnLieDownAnimationEventMid()    => ForwardAsEvent(OnLieDownAnimationEventMid,    _lieDownMidpoint);
-        private void OnLieDownAnimationEventEnd()    => ForwardAsEvent(OnLieDownAnimationEventEnd,    _lieDownEnded);
-        
-        private void OnStandUpAnimationEventStart()  => ForwardAsEvent(OnStandUpAnimationEventStart,  _standUpStarted);
-        private void OnStandUpAnimationEventEnd()    => ForwardAsEvent(OnStandUpAnimationEventEnd,    _standUpEnded);
-
-        private void OnJumpUpAnimationEventImpulse() => ForwardAsEvent(OnJumpUpAnimationEventImpulse, _jumpLiftOff);
-        private void OnFireAnimationEvent()          => ForwardAsEvent(OnFireAnimationEvent,          _fired);
-        private void OnUseAnimationEvent()           => ForwardAsEvent(OnUseAnimationEvent,           _used);
-
-        private void OnFrontFootDownAnimationEvent() => ForwardAsEvent(OnFrontFootDownAnimationEvent, _frontFootDown);
-
-
-        private void ForwardAsEvent(Action animatorEvent, PqEvent customEvent)
-        {
-            if (_logEvents)
-            {
-                Debug.Log($"[Frame:{Time.frameCount - 1}] " +
-                          $"Received {animatorEvent.Method.Name}, forwarding as {customEvent.Name}");
-            }
-
-            customEvent.Raise();
         }
     }
 }
