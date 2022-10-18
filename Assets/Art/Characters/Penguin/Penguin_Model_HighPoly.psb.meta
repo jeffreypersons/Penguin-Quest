@@ -26,6 +26,8 @@ ScriptedImporter:
     convertToNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
+    swizzle: 50462976
     isReadable: 0
     streamingMipmaps: 1
     streamingMipmapsPriority: 0
@@ -93,9 +95,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    parentGroupIndex: -1
     uvTransform: {x: 0, y: 0}
-    spritePosition: {x: 0, y: 0}
   mosaicSpriteImportData: []
   rigSpriteImportData:
   - name: Flipper_Front
@@ -9961,9 +9961,7 @@ ScriptedImporter:
     - {x: 220, y: 219}
     - {x: 0, y: 220}
     tessellationDetail: 0.06
-    parentGroupIndex: -1
-    uvTransform: {x: 4, y: 2156}
-    spritePosition: {x: 114, y: 623}
+    uvTransform: {x: -110, y: 1533}
   - name: Torso
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -14500,9 +14498,7 @@ ScriptedImporter:
     - {x: 240, y: 239}
     - {x: 0, y: 240}
     tessellationDetail: 0.05
-    parentGroupIndex: -1
-    uvTransform: {x: 4, y: 4}
-    spritePosition: {x: 30, y: 187}
+    uvTransform: {x: -26, y: -183}
   - name: Eye
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -15391,9 +15387,7 @@ ScriptedImporter:
     - {x: 32, y: 31}
     - {x: 0, y: 32}
     tessellationDetail: 0.01
-    parentGroupIndex: -1
-    uvTransform: {x: 1572, y: 974}
-    spritePosition: {x: 706, y: 2662}
+    uvTransform: {x: 866, y: -1688}
   - name: Head
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -18474,9 +18468,7 @@ ScriptedImporter:
     - {x: 211, y: 210}
     - {x: 0, y: 211}
     tessellationDetail: 0.01
-    parentGroupIndex: -1
-    uvTransform: {x: 940, y: 4}
-    spritePosition: {x: 342, y: 2113}
+    uvTransform: {x: 598, y: -2109}
   - name: Beak_Upper
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -21357,9 +21349,7 @@ ScriptedImporter:
     - {x: 102, y: 101}
     - {x: 0, y: 102}
     tessellationDetail: 0.01
-    parentGroupIndex: -1
-    uvTransform: {x: 1572, y: 870}
-    spritePosition: {x: 762, y: 2656}
+    uvTransform: {x: 810, y: -1786}
   - name: Beak_Lower
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -23546,9 +23536,7 @@ ScriptedImporter:
     - {x: 107, y: 106}
     - {x: 107, y: 0}
     tessellationDetail: 0.01
-    parentGroupIndex: -1
-    uvTransform: {x: 1572, y: 729}
-    spritePosition: {x: 762, y: 2530}
+    uvTransform: {x: 810, y: -1801}
   - name: Foot_Front
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -27809,9 +27797,7 @@ ScriptedImporter:
     - {x: 225, y: 224}
     - {x: 225, y: 0}
     tessellationDetail: 0.01
-    parentGroupIndex: -1
-    uvTransform: {x: 940, y: 729}
-    spritePosition: {x: 404, y: 30}
+    uvTransform: {x: 536, y: 699}
   - name: Foot_Back
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -31993,9 +31979,7 @@ ScriptedImporter:
     - {x: 226, y: 225}
     - {x: 226, y: 0}
     tessellationDetail: 0.01
-    parentGroupIndex: -1
-    uvTransform: {x: 940, y: 1337}
-    spritePosition: {x: 228, y: 30}
+    uvTransform: {x: 712, y: 1307}
   - name: Flipper_Back
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -41580,9 +41564,7 @@ ScriptedImporter:
     - {x: 220, y: 219}
     - {x: 0, y: 220}
     tessellationDetail: 0
-    parentGroupIndex: -1
-    uvTransform: {x: 392, y: 2156}
-    spritePosition: {x: 514, y: 629}
+    uvTransform: {x: -122, y: 1527}
   characterData:
     bones:
     - name: SkeletonRoot
@@ -41975,6 +41957,7 @@ ScriptedImporter:
       order: 0
     dimension: {x: 0, y: 0}
     characterGroups: []
+    pivot: {x: 0, y: 0}
     boneReadOnly: 0
   sharedRigSpriteImportData: []
   sharedRigCharacterData:
@@ -41982,6 +41965,7 @@ ScriptedImporter:
     parts: []
     dimension: {x: 0, y: 0}
     characterGroups: []
+    pivot: {x: 0, y: 0}
     boneReadOnly: 0
   platformSettings:
   - name: Default
@@ -42060,6 +42044,7 @@ ScriptedImporter:
   paperDollMode: 0
   keepDupilcateSpriteName: 0
   skeletonAssetReferenceID: 
+  padding: 4
   spriteCategoryList:
     categories:
     - name: Penguin_FrontFlipper
@@ -42194,6 +42179,7 @@ ScriptedImporter:
     isVisible: 1
   sharedRigPSDLayers: []
   pSDLayerImportSetting: []
+  importFileNodeState: 1
   generateGOHierarchy: 0
   textureAssetName: PenguinSkeleton Texture
   prefabAssetName: PenguinSkeleton Prefab
