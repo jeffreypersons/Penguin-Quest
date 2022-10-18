@@ -15,7 +15,8 @@ namespace PQ.Game.Entities.Penguin
         {
             RegisterEvent(Blob.EventBus.lieDownCommand,                    HandleLieDownInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
-            //RegisterEvent(Blob.Animation.JumpLiftOff,                      HandleJumpLiftOff);
+
+            //RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.JumpLiftOff), HandleJumpLiftOff);
             //RegisterEvent(Blob.EventBus.jumpCommand,                       HandleJumpInputReceived);
             //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged); // disabled until we fix ground handling
         }
@@ -31,7 +32,7 @@ namespace PQ.Game.Entities.Penguin
         {
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
-            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetFloat(PenguinAnimationParamNames.paramLocomotion, _locomotionBlend);
         }
 
         protected override void OnUpdate()
@@ -48,7 +49,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleGroundContactChanged(bool isGrounded)
         {
-            Blob.Animation.SetParamIsGrounded(isGrounded);
+            Blob.Animation.SetBool(PenguinAnimationParamNames.paramIsGrounded, isGrounded);
             if (!isGrounded)
             {
                 base.SignalMoveToNextState(PenguinStateId.Midair);
@@ -58,7 +59,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleJumpInputReceived()
         {
-            Blob.Animation.TriggerParamJumpUpParameter();
+            Blob.Animation.SetTrigger(PenguinAnimationParamNames.paramJump);
         }
 
         private void HandleJumpLiftOff()
@@ -85,11 +86,11 @@ namespace PQ.Game.Entities.Penguin
         {
             if (_horizontalInput.value == HorizontalInput.Type.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.Animation.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
@@ -100,7 +101,7 @@ namespace PQ.Game.Entities.Penguin
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
             }
 
-            Blob.Animation.SetParamLocomotionIntensity(_locomotionBlend);
+            Blob.Animation.SetFloat(PenguinAnimationParamNames.paramLocomotion, _locomotionBlend);
         }
     }
 }

@@ -15,20 +15,18 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.Animation.TriggerParamJumpUpParameter();
+            Blob.Animation.SetTrigger(PenguinAnimationParamNames.paramJump);
         }
 
         protected override void OnExit()
         {
-            // reset any triggers such that any pending animation events are cleared out to avoid them
-            // from firing automatically on landing
-            Blob.Animation.ResetAllTriggers();
+            // no op
         }
 
 
         private void HandleGroundContactChanged(bool isGrounded)
         {
-            Blob.Animation.SetParamIsGrounded(isGrounded);
+            Blob.Animation.SetBool(PenguinAnimationParamNames.paramIsGrounded, isGrounded);
             if (isGrounded)
             {
                 base.SignalMoveToLastState();

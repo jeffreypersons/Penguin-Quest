@@ -10,19 +10,18 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            RegisterEvent(Blob.Animation.StandUpStarted, HandleStandUpAnimationStarted);
-            RegisterEvent(Blob.Animation.StandUpEnded,   HandleStandUpAnimationFinished);
+            RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.StandUpStarted), HandleStandUpAnimationStarted);
+            RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.StandUpEnded),   HandleStandUpAnimationFinished);
         }
 
         protected override void OnEnter()
         {
-            Blob.Animation.ResetAllTriggers();
-            Blob.Animation.TriggerParamStandUpParameter();
+            Blob.Animation.SetTrigger(PenguinAnimationParamNames.paramStand);
         }
 
         protected override void OnExit()
         {
-            Blob.Animation.ResetAllTriggers();
+            // no op
         }
 
 
