@@ -17,13 +17,12 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.Animation.ResetAllTriggers();
             Blob.Animation.TriggerParamLieDownParameter();
         }
 
         protected override void OnExit()
         {
-            Blob.Animation.ResetAllTriggers();
+            // no op
         }
 
 

@@ -116,18 +116,22 @@ namespace PQ.Game.Entities.Penguin
         public void TriggerParamJumpUpParameter()            => _animator.SetTrigger(paramJump);
         public void TriggerParamFireParameter()              => _animator.SetTrigger(paramFire);
         public void TriggerParamUseParameter()               => _animator.SetTrigger(paramUse);
-        
 
-        // todo: look into a way we can get rid of these - maybe through animator transition's write-defaults or similar?
-        public void ResetAllTriggers()
+
+        // to avoid any queuing of triggers (ie jump will fire 5 times if it was during a jump)
+        // we can reset each trigger's corresponding queue, which is typically the desired use case
+        //
+        // in other words, reset any triggers such that any pending animation events are cleared out to avoid them
+        // from firing automatically when the animation state exits
+        public static void ResetAllAnimatorTriggers(Animator animator)
         {
-            // note that only triggers need to be reset, as they are timing dependent
-            // unlike float, int, bool, and string parameters
-            _animator.ResetTrigger(paramLie);
-            _animator.ResetTrigger(paramStand);
-            _animator.ResetTrigger(paramJump);
-            _animator.ResetTrigger(paramFire);
-            _animator.ResetTrigger(paramUse);
+            foreach (var trigger in animator.parameters)
+            {
+                if (trigger.type == AnimatorControllerParameterType.Trigger)
+                {
+                    animator.ResetTrigger(trigger.name);
+                }
+            }
         }
     }
 }
