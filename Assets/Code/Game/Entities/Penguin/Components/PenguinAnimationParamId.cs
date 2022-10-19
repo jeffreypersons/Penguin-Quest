@@ -1,10 +1,11 @@
-﻿
+﻿using PQ.Common.Containers;
+
 
 namespace PQ.Game.Entities.Penguin
 {
     public enum PenguinAnimationParamId
     {
-        Locomotion,
+        LocomotionIntensity,
         SlopeIntensity,
         IsGrounded,
         TriggerLieDown,
@@ -19,8 +20,14 @@ namespace PQ.Game.Entities.Penguin
     Reminder: These parameters _must_ match the names in mecanim.
     Unfortunately there is no easy way to generate the parameter names,
     so just be careful to make sure that they match the parameters listed in the Unity Animator.
+
+    todo: try adding params like done in this doc example: https://docs.unity3d.com/ScriptReference/Animations.AnimatorController.html
+          eg controller.AddParameter("Fire", AnimatorControllerParameterType.Trigger);
+
+          doing this will entail some custom editor scripting, possible locking on animator values, and so forth.
+          
     */
-    // todo: look into validation of the param names with the animator using below enums
+    // todo: look into validation of the param names with the animator using above enums
     public static class PenguinAnimationParamNames
     {
         public static readonly string paramLocomotion = "LocomotionIntensity";
