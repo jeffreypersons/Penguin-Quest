@@ -5,8 +5,8 @@ using CustomAttributes;
 using PQ.Common.Extensions;
 
 
-[CustomPropertyDrawer(typeof(TagSelectorAttribute))]
-public class TagSelectorPropertyDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(EnumSelectorAttribute))]
+public class EnumSelectorPropertyDrawer : PropertyDrawer
 {
     internal static class Tags
     {
