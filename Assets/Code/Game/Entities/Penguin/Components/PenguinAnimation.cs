@@ -18,8 +18,7 @@ namespace PQ.Game.Entities.Penguin
         // Optional overridable callback for when data was supplied to this instance
         protected override void OnParamChanged<T>(string paramName, T paramValue)
         {
-            // todo: look into comparing current value in base component, such that we only log when it actually changes
-            // comment out since very noisy...
+            // todo: replace the 'comment toggle' with proper on/off logging elsewhere
             //Debug.Log($"PenguinAnimation[{Time.frameCount - 1}]: Param {paramName} with {paramValue} sent to animator");
         }
     }

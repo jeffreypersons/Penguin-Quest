@@ -46,28 +46,50 @@ namespace PQ.Game.Entities
 
         // knobs for feeding the animator relevant data and context that it can then use to determine transitions/blends
 
-        public void SetInteger(string paramName, int paramValue)
+        public bool SetInteger(string paramName, int paramValue)
         {
+            if (_animator.GetInteger(paramName) == paramValue)
+            {
+                return false;
+            }
+
             _animator.SetInteger(paramName, paramValue);
             OnParamChanged(paramName, paramValue);
+            return true;
         }
 
-        public void SetBool(string paramName, bool paramValue)
+        public bool SetBool(string paramName, bool paramValue)
         {
+            if (_animator.GetBool(paramName) == paramValue)
+            {
+                return false;
+            }
+
             _animator.SetBool(paramName, paramValue);
             OnParamChanged(paramName, paramValue);
+            return true;
         }
 
-        public void SetFloat(string paramName, float paramValue)
+        public bool SetFloat(string paramName, float paramValue)
         {
+            if (_animator.GetFloat(paramName) == paramValue)
+            {
+                return false;
+            }
+
             _animator.SetFloat(paramName, paramValue);
             OnParamChanged(paramName, paramValue);
+            return true;
         }
 
-        public void SetTrigger(string paramName)
+        // add trigger to queue, regardless of it's already set or not.
+        // if it is, then call ResetAllAnimatorTriggers() in one of the callbacks on parameter set
+        // in the child class
+        public bool AddTriggerToQueue(string paramName)
         {
             _animator.SetTrigger(paramName);
             OnParamChanged(paramName, "trigger");
+            return true;
         }
 
 
