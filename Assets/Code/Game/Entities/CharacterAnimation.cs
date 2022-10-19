@@ -64,7 +64,10 @@ namespace PQ.Game.Entities
             OnParamChanged(paramName, paramValue);
         }
 
-        public void SetTrigger(string paramName)
+        // add trigger to queue, regardless of it's already set or not.
+        // if it is, then call ResetAllAnimatorTriggers() in one of the callbacks on parameter set
+        // in the child class
+        public void AddTriggerToQueue(string paramName)
         {
             _animator.SetTrigger(paramName);
             OnParamChanged(paramName, "trigger");

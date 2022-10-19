@@ -59,7 +59,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleJumpInputReceived()
         {
-            Blob.Animation.SetTrigger(PenguinAnimationParamNames.paramJump);
+            Blob.Animation.AddTriggerToQueue(PenguinAnimationParamNames.paramJump);
         }
 
         private void HandleJumpLiftOff()

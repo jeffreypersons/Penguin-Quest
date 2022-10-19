@@ -15,7 +15,7 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.Animation.SetTrigger(PenguinAnimationParamNames.paramJump);
+            Blob.Animation.AddTriggerToQueue(PenguinAnimationParamNames.paramJump);
         }
 
         protected override void OnExit()
