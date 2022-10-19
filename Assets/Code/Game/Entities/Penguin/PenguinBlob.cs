@@ -163,6 +163,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void UpdateColliderEnabilityAccordingToConstraints(PenguinColliderConstraints constraints)
         {
+            // todo: replace with enum set..
             _headCollider             .enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableHead);
             _torsoCollider            .enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableTorso);
             _frontFlipperUpperCollider.enabled = !IsDisabled(constraints, PenguinColliderConstraints.DisableFlippers);
