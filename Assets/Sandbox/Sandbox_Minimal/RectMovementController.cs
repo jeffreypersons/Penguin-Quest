@@ -14,7 +14,7 @@ namespace PQ.TestScenes.Minimal
         private bool _isGrounded;
 
         public Vector2 Position => _body.Position;
-        public Character2DSettings Settings { get; set; }
+        public CharacterEntitySettings Settings { get; set; }
 
         public void PlaceAt(Vector2 position, float rotation)
         {

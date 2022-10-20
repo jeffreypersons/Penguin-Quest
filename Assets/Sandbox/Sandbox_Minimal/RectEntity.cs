@@ -7,7 +7,7 @@ namespace PQ.TestScenes.Minimal
 {
     public class RectEntity : MonoBehaviour
     {
-        [SerializeField] private Character2DSettings _characterSettings;
+        [SerializeField] private CharacterEntitySettings _characterSettings;
 
         private GameEventCenter _eventCenter;
         private RectMovementController _controller;

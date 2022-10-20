@@ -7,7 +7,7 @@ namespace PQ.Game.Entities
         fileName = "Character2DSettings",
         menuName = "ScriptableObjects/Character2DSettings",
         order    = 1)]
-    public class Character2DSettings : ScriptableObject
+    public class CharacterEntitySettings : ScriptableObject
     {
         public float   LocomotionBlendStep                => _locomotionBlendStep;
         public float   GravityStrength                    => _gravityStrength;

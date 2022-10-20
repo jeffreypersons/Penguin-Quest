@@ -7,7 +7,7 @@ using PQ.Common.Physics;
 
 namespace PQ.Game.Entities
 {
-    public class Character2D : MonoBehaviour
+    public class CharacterEntity : MonoBehaviour
     {
         private RayCasterBox _caster;
 
@@ -16,7 +16,7 @@ namespace PQ.Game.Entities
         private KinematicBody2D _body;
         private PqEvent<bool> _groundContactChangedEvent = new("character2D.groundContact.changed");
 
-        public Character2DSettings Settings { get; set; }
+        public CharacterEntitySettings Settings { get; set; }
         public IPqEventReceiver<bool> OnGroundContactChanged => _groundContactChangedEvent;
 
         public void PlaceAt(Vector2 position, float rotation)

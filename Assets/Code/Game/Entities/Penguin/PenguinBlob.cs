@@ -32,12 +32,12 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableOuter;
         
         [Header("Setting Bundles")]
-        [SerializeField] private Character2DSettings _penguinOnFeetSettings;
-        [SerializeField] private Character2DSettings _penguinOnBellySettings;
+        [SerializeField] private CharacterEntitySettings _penguinOnFeetSettings;
+        [SerializeField] private CharacterEntitySettings _penguinOnBellySettings;
 
         [Header("Component References")]
         [SerializeField] private PenguinAnimationDriver _penguinAnimation;
-        [SerializeField] private Character2D            _characterController;
+        [SerializeField] private CharacterEntity            _characterController;
 
         [Header("Collider References")]
         [SerializeField] private CapsuleCollider2D _outerCollider;
@@ -49,11 +49,11 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _backFootCollider;
         
         
-        public Character2DSettings OnFeetSettings  => _penguinOnFeetSettings;
-        public Character2DSettings OnBellySettings => _penguinOnBellySettings;
+        public CharacterEntitySettings OnFeetSettings  => _penguinOnFeetSettings;
+        public CharacterEntitySettings OnBellySettings => _penguinOnBellySettings;
 
         public PenguinAnimationDriver Animation            => _penguinAnimation;
-        public Character2D            CharacterController  => _characterController;
+        public CharacterEntity            CharacterController  => _characterController;
         public Vector2                SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
         public CapsuleCollider2D OuterCollider             => _outerCollider;
