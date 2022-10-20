@@ -197,7 +197,7 @@ namespace PQ.Game.Entities
         private void EnsureRegisteredAndEditorParamsAreAnExistMatch()
         {
             IReadOnlyList<string> expected = _animationParams.Values;
-            IReadOnlyList<string> actual   = (IReadOnlyList<string>)_animator.parameters.Select(param => param.name);
+            IReadOnlyList<string> actual   = _animator.parameters.Select(param => param.name).ToArray();
             for (int i = 0; i < expected.Count; i++)
             {
                 if (i >= actual.Count || expected[i] != actual[i])

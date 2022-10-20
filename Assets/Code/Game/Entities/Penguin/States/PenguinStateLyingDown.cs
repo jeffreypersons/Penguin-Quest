@@ -17,7 +17,7 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.Animation.AddTriggerToQueue(PenguinAnimationParamId.TriggerLieDown);
+            Blob.Animation.AddTriggerToQueue(PenguinAnimationParamId.LieDown);
         }
 
         protected override void OnExit()
