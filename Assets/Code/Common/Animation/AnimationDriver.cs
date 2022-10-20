@@ -17,7 +17,7 @@ using System.Collections.Generic;
 //   * https://forum.unity.com/threads/custom-editor-for-animation-controller.513564
 //
 //
-namespace PQ.Game.Entities
+namespace PQ.Common.Animation
 {
     /*
     Generic component for listening to animation events, interfacing with animator, and setting parameters.
@@ -33,7 +33,7 @@ namespace PQ.Game.Entities
     */
     [Serializable]
     [ExecuteAlways]
-    public abstract class CharacterAnimation<EventId, ParamId> : MonoBehaviour
+    public abstract class AnimationDriver<EventId, ParamId> : MonoBehaviour
         where EventId : struct, Enum
         where ParamId : struct, Enum
     {

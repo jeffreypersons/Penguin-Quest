@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using PQ.Common.Animation;
 
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinAnimation : CharacterAnimation<PenguinAnimationEventId, PenguinAnimationParamId>
+    public class PenguinAnimation : AnimationDriver<PenguinAnimationEventId, PenguinAnimationParamId>
     {
         protected override void OnInitialize()
         {
