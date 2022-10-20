@@ -52,14 +52,18 @@ namespace PQ.Common.Containers
         public IReadOnlyList<TKey> EnumFields => _keys.EnumFields;
 
 
-        public EnumMap(in (TKey key, TValue value)[] entries=null)
+
+        public EnumMap()
         {
             _keys   = new EnumSet<TKey>();
             _values = new TValue[_keys.Size];
+        }
 
+        public EnumMap(in (TKey key, TValue value)[] entries) : this()
+        {
             if (entries == null)
             {
-                return;
+                throw new ArgumentNullException($"Failed to add entries - cannot be null");
             }
 
             foreach ((TKey key, TValue value) in entries)
@@ -67,6 +71,7 @@ namespace PQ.Common.Containers
                 Add(key, value);
             }
         }
+
 
         public override string ToString()
         {
