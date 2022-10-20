@@ -36,8 +36,8 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField] private Character2DSettings _penguinOnBellySettings;
 
         [Header("Component References")]
-        [SerializeField] private PenguinAnimation _penguinAnimation;
-        [SerializeField] private Character2D      _characterController;
+        [SerializeField] private PenguinAnimationDriver _penguinAnimation;
+        [SerializeField] private Character2D            _characterController;
 
         [Header("Collider References")]
         [SerializeField] private CapsuleCollider2D _outerCollider;
@@ -52,9 +52,9 @@ namespace PQ.Game.Entities.Penguin
         public Character2DSettings OnFeetSettings  => _penguinOnFeetSettings;
         public Character2DSettings OnBellySettings => _penguinOnBellySettings;
 
-        public PenguinAnimation Animation            => _penguinAnimation;
-        public Character2D      CharacterController  => _characterController;
-        public Vector2          SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
+        public PenguinAnimationDriver Animation            => _penguinAnimation;
+        public Character2D            CharacterController  => _characterController;
+        public Vector2                SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
         public CapsuleCollider2D OuterCollider             => _outerCollider;
         public Collider2D        ColliderHead              => _headCollider;

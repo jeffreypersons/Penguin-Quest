@@ -4,7 +4,7 @@ using PQ.Common.Animation;
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinAnimation : AnimationDriver<PenguinAnimationEventId, PenguinAnimationParamId>
+    public class PenguinAnimationDriver : AnimationDriver<PenguinAnimationEventId, PenguinAnimationParamId>
     {
         protected override void OnInitialize()
         {
