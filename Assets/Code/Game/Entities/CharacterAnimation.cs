@@ -1,14 +1,24 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using PQ.Common.Events;
 using PQ.Common.Containers;
+using System.Collections.Generic;
 
 
+//
+// *** todo: look into advanced animator param support ***
+// - use param class that is used as our source of truth for the animator params,
+//   which will throw errors if anything is attempted to be added in the editor (or kept in sync),
+//   and internally use hash ids (with collision validation) for performance/memory improvements over raw names
+// - some relevant resources:
+//   * https://docs.unity3d.com/ScriptReference/Animations.AnimatorController.html
+//   * https://forum.unity.com/threads/animator-parameter-to-custom-editor.857440/#post-8369559
+//   * https://forum.unity.com/threads/custom-editor-for-animation-controller.513564
+//
+//
 namespace PQ.Game.Entities
 {
-    // todo: write editor tools to provide hooks into animatorParamIds as well
-    // todo: look into possibly integrating enumMap into event registry, and just using that here..
-
     /*
     Generic component for listening to animation events, interfacing with animator, and setting parameters.
 
@@ -19,15 +29,17 @@ namespace PQ.Game.Entities
 
     In other words, note that we only expose parameter updates (not querying!) and event subscription (not raising!),
     as parameters drive the animator, events and any related data are hooked up in the editor to notify clients of the
-    current animation context (and any corresponding data)
+    current animation context (and any corresponding data).
     */
     [Serializable]
     [ExecuteAlways]
-    public abstract class CharacterAnimation<EventId> : MonoBehaviour
+    public abstract class CharacterAnimation<EventId, ParamId> : MonoBehaviour
         where EventId : struct, Enum
+        where ParamId : struct, Enum
     {
         private Animator _animator;
         private EnumMap<EventId, PqEvent> _animationEvents;
+        private EnumMap<ParamId, string>  _animationParams;
 
         public Vector2 SkeletalRootPosition => _animator.rootPosition;
 
@@ -41,13 +53,14 @@ namespace PQ.Game.Entities
         /*** Internal Hooks for Setting up a Animation Component Instance ***/
 
         // external facing event queries such that callbacks to animator events can be hooked up where this is called
-        public IPqEventReceiver LookupEvent(EventId id) => _animationEvents[id];
+        public IPqEventReceiver LookupEvent(EventId eventId) => _animationEvents[eventId];
 
 
         // knobs for feeding the animator relevant data and context that it can then use to determine transitions/blends
 
-        public bool SetInteger(string paramName, int paramValue)
+        public bool SetInteger(ParamId paramId, int paramValue)
         {
+            var paramName = _animationParams[paramId];
             if (_animator.GetInteger(paramName) == paramValue)
             {
                 return false;
@@ -58,8 +71,9 @@ namespace PQ.Game.Entities
             return true;
         }
 
-        public bool SetBool(string paramName, bool paramValue)
+        public bool SetBool(ParamId paramId, bool paramValue)
         {
+            var paramName = _animationParams[paramId];
             if (_animator.GetBool(paramName) == paramValue)
             {
                 return false;
@@ -70,8 +84,9 @@ namespace PQ.Game.Entities
             return true;
         }
 
-        public bool SetFloat(string paramName, float paramValue)
+        public bool SetFloat(ParamId paramId, float paramValue)
         {
+            var paramName = _animationParams[paramId];
             if (_animator.GetFloat(paramName) == paramValue)
             {
                 return false;
@@ -85,8 +100,9 @@ namespace PQ.Game.Entities
         // add trigger to queue, regardless of it's already set or not.
         // if it is, then call ResetAllAnimatorTriggers() in one of the callbacks on parameter set
         // in the child class
-        public bool AddTriggerToQueue(string paramName)
+        public bool AddTriggerToQueue(ParamId paramId)
         {
+            var paramName = _animationParams[paramId];
             _animator.SetTrigger(paramName);
             OnParamChanged(paramName, "trigger");
             return true;
@@ -144,9 +160,53 @@ namespace PQ.Game.Entities
             // note that since other monobehaviors may want to query events on Start(),
             // we populate events early here in Awake as opposed to Start
             _animationEvents = new EnumMap<EventId, PqEvent>();
-            foreach (EventId id in _animationEvents.EnumFields)
+            foreach (EventId eventId in _animationEvents.EnumFields)
             {
-                _animationEvents.Add(id, new PqEvent(id.ToString()));
+                _animationEvents.Add(eventId, new PqEvent(eventId.ToString()));
+            }
+
+            // eventually we will support parameter ids directly, OR map IDs to a custom param class,
+            // but for now we explicitly maintain id to mecanim parameter names, and enforce exact match
+            _animationParams = new EnumMap<ParamId, string>();
+            foreach (ParamId id in _animationParams.EnumFields)
+            {
+                _animationParams.Add(id, id.ToString());
+            }
+
+            var expected = _animationParams.EnumFields as IReadOnlyList<ParamId>;
+            var actual = _animator.parameters as IReadOnlyList<AnimatorControllerParameter>;
+            for (int i = 0; i < expected.Count; i++)
+            {
+                if (i >= actual.Count || expected[i].ToString() != actual[i].name)
+                {
+                    throw new InvalidOperationException(
+                        $"Animation parameter mismatch - expected [{string.Join(',', expected)}] " +
+                        $"found parameter mismatch - actual [{string.Join(',', actual)}]"
+                    );
+                }
+
+            }
+            EnsureRegisteredAndEditorParamsAreAnExistMatch();
+        }
+        
+
+
+        /*** Internal 'Machinery' ***/
+
+        // is the ordering, count, and names of our paramIds an _exact_ match with the ones in the mecanim editor window?
+        private void EnsureRegisteredAndEditorParamsAreAnExistMatch()
+        {
+            IReadOnlyList<string> expected = _animationParams.Values;
+            IReadOnlyList<string> actual   = (IReadOnlyList<string>)_animator.parameters.Select(param => param.name);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                if (i >= actual.Count || expected[i] != actual[i])
+                {
+                    throw new InvalidOperationException(
+                        $"Animation parameter mismatch - expected [{string.Join(',', expected)}] " +
+                        $"found parameter mismatch - actual [{string.Join(',', actual)}]"
+                    );
+                }
             }
         }
     }

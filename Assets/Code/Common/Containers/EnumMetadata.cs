@@ -5,6 +5,14 @@ using System.Diagnostics.Contracts;
 using Unity.Collections.LowLevel.Unsafe;
 
 
+//
+// *** todo: look into serializable enum name support ***
+// - add a wrapper for individual values with serialization/editor custom attribute built in, such that it's name is serialized
+// - this would allow new enum members to be added anywhere within their definition _without_ the current side effect
+//   of all currently stored enum fields in the editor becoming incorrect due to change in enum member's implicit integer
+//   value, since that index is what Unity serializes by default
+//
+//
 namespace PQ.Common.Containers
 {
     /*

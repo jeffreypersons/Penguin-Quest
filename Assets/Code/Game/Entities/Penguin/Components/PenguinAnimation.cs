@@ -3,7 +3,7 @@
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinAnimation : CharacterAnimation<PenguinAnimationEventId>
+    public class PenguinAnimation : CharacterAnimation<PenguinAnimationEventId, PenguinAnimationParamId>
     {
         protected override void OnInitialize()
         {

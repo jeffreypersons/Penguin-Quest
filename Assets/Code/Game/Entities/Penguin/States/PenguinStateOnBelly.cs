@@ -28,7 +28,7 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnExit()
         {
             _locomotionBlend = 0.0f;
-            Blob.Animation.SetFloat(PenguinAnimationParamNames.paramLocomotion, _locomotionBlend);
+            Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
         }
 
         protected override void OnUpdate()
@@ -40,7 +40,7 @@ namespace PQ.Game.Entities.Penguin
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
         private void HandleGroundContactChanged(bool isGrounded)
         {
-            Blob.Animation.SetBool(PenguinAnimationParamNames.paramIsGrounded, isGrounded);
+            Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, isGrounded);
         }
 
         private void HandleStandUpInputReceived()
@@ -81,7 +81,7 @@ namespace PQ.Game.Entities.Penguin
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
             }
 
-            Blob.Animation.SetFloat(PenguinAnimationParamNames.paramLocomotion, _locomotionBlend);
+            Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
         }
     }
 }
