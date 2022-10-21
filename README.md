@@ -4,6 +4,7 @@ A penguin on a quest to eat a bunch of fish and slide, jump, and walk his way to
 Can play in-browser at itch.io!: https://jeffreypersons.itch.io/penguin-quest (EDIT: As of 2022 there is something causing the web player to hang, so avoid for now!)
 
 _Status: still in development_
+HEADS UP: if downloading this locally for the first time, MAKE SURE GIT LFS IS INSTALLED ON YOUR MACHINE! (otherwise you'll get weird photoshop file errors and stuff)
 
 Ongoing development of a platformer using C# and Unity with a focus on skeletal animation featuring a jumping and sliding penguin in a spline-based world complete with slope alignment, camera following, HUD, and root motion.
 
