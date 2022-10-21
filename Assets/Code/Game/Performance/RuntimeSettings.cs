@@ -9,7 +9,7 @@ namespace PQ.Game.Peformance
         order    = 1)]
     public class RuntimeSettings : ScriptableObject
     {
-        public int TargetFrameRate    => _usePlatformDefaultFrameRate? -1 : _customTargetFrameRate;
+        public int TargetFrameRate => _usePlatformDefaultFrameRate? -1 : _customTargetFrameRate;
 
 
 
