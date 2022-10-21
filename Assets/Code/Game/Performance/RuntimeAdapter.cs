@@ -21,15 +21,19 @@ namespace PQ.Game.Peformance
 
         private void Awake()
         {
+            if (!Application.IsPlaying(this))
+            {
+                return;
+            }
+
             Debug.Log($"OnAwake : Gathering GC info.." + ReportGarbageCollection());
+            UpdateCurrentSettings();
+            Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
         }
 
         void Start()
         {
             Debug.Log($"OnStart : Gathering GC info.." + ReportGarbageCollection());
-
-            UpdateCurrentSettings();
-            Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
         }
 
         private void OnDestroy()
