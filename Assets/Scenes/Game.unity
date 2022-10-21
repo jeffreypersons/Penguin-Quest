@@ -128,6 +128,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 6209392992845193032, guid: 4fa0445a7556ddc4ca0b26fd1ecbc204,
@@ -246,6 +247,7 @@ PrefabInstance:
       value: Hud
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 4fa0445a7556ddc4ca0b26fd1ecbc204, type: 3}
 --- !u!1 &439218191 stripped
 GameObject:
@@ -343,6 +345,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _settings: {fileID: 11400000, guid: 69a29b76217678a48a24db8be605b111, type: 2}
+--- !u!4 &1117750752 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8715041716411336930, guid: 2f2faa6da29227548b98aba3c67361a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 8715041715279549082}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1355897172
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,8 +509,6 @@ MonoBehaviour:
       rightTangent: {x: 0, y: 0.06363678, z: 0}
       mode: 2
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -511,8 +517,6 @@ MonoBehaviour:
       rightTangent: {x: 38.83716, y: 15.524048, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -521,8 +525,6 @@ MonoBehaviour:
       rightTangent: {x: 28.858215, y: -15.824478, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -531,8 +533,6 @@ MonoBehaviour:
       rightTangent: {x: 18.539978, y: -25.947533, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -541,8 +541,6 @@ MonoBehaviour:
       rightTangent: {x: 8.302734, y: -5.6265526, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -551,8 +549,6 @@ MonoBehaviour:
       rightTangent: {x: 38.03369, y: -9.711861, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -561,8 +557,6 @@ MonoBehaviour:
       rightTangent: {x: 75.688965, y: -3.142273, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -571,8 +565,6 @@ MonoBehaviour:
       rightTangent: {x: 17.235107, y: 11.3282995, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -581,8 +573,6 @@ MonoBehaviour:
       rightTangent: {x: 59.590454, y: -8.0391445, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -591,8 +581,6 @@ MonoBehaviour:
       rightTangent: {x: 28.086243, y: -6.7694826, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -601,8 +589,6 @@ MonoBehaviour:
       rightTangent: {x: 20.09523, y: 7.710842, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -611,8 +597,6 @@ MonoBehaviour:
       rightTangent: {x: 31.754395, y: -4.690666, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -621,8 +605,6 @@ MonoBehaviour:
       rightTangent: {x: 36.652912, y: -12.340595, z: -0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -631,8 +613,6 @@ MonoBehaviour:
       rightTangent: {x: 25.961653, y: 3.0082307, z: -0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -641,8 +621,6 @@ MonoBehaviour:
       rightTangent: {x: 27.50217, y: -3.886939, z: -0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -651,8 +629,6 @@ MonoBehaviour:
       rightTangent: {x: 22.266205, y: 0.46328402, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -661,8 +637,6 @@ MonoBehaviour:
       rightTangent: {x: 11.760864, y: 5.882827, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -671,8 +645,6 @@ MonoBehaviour:
       rightTangent: {x: 8.575806, y: 2.5835152, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -681,8 +653,6 @@ MonoBehaviour:
       rightTangent: {x: 12.916046, y: 1.662857, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -691,8 +661,6 @@ MonoBehaviour:
       rightTangent: {x: 22.846436, y: -6.1965885, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -701,8 +669,6 @@ MonoBehaviour:
       rightTangent: {x: 25.628296, y: -4.72145, z: 0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -711,8 +677,6 @@ MonoBehaviour:
       rightTangent: {x: 18.985443, y: -14.260404, z: -0}
       mode: 1
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -721,8 +685,6 @@ MonoBehaviour:
       rightTangent: {x: 0, y: 0, z: 0}
       mode: 2
       height: 1
-      bevelCutoff: 0
-      bevelSize: 0
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
@@ -742,6 +704,8 @@ MonoBehaviour:
   m_EnableTangents: 0
   m_GeometryCached: 0
   m_UTess2D: 0
+  m_Creator: {fileID: 0}
+  m_Modifiers: []
 --- !u!1971053207 &1410837692
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0
@@ -792,6 +756,7 @@ SpriteShapeRenderer:
   m_LocalAABB:
     m_Center: {x: -250.00452, y: 69.45874, z: 0}
     m_Extent: {x: 850.3954, y: 169.45876, z: 0}
+  m_SpriteSortPoint: 0
 --- !u!4 &1410837693
 Transform:
   m_ObjectHideFlags: 0
@@ -1195,6 +1160,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5455959190062047664, guid: 6fc3cd80adb2f6542ab1e50a650c8138,
@@ -1258,12 +1224,14 @@ PrefabInstance:
       value: InputSystem
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 6fc3cd80adb2f6542ab1e50a650c8138, type: 3}
 --- !u!1001 &1528079834
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4753795910216235723, guid: 6d76bc27df941db4d96760c2af2147ca,
@@ -1329,9 +1297,10 @@ PrefabInstance:
     - target: {fileID: 7859832108952071242, guid: 6d76bc27df941db4d96760c2af2147ca,
         type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
 --- !u!4 &1528079835 stripped
 Transform:
@@ -1346,7 +1315,7 @@ LightingSettings:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Settings.lighting
-  serializedVersion: 4
+  serializedVersion: 5
   m_GIWorkflowMode: 1
   m_EnableBakedLightmaps: 0
   m_EnableRealtimeLightmaps: 0
@@ -1386,7 +1355,7 @@ LightingSettings:
   m_LightProbeSampleCountMultiplier: 4
   m_PVRBounces: 2
   m_PVRMinBounces: 1
-  m_PVREnvironmentMIS: 1
+  m_PVREnvironmentImportanceSampling: 1
   m_PVRFilteringMode: 2
   m_PVRDenoiserTypeDirect: 0
   m_PVRDenoiserTypeIndirect: 0
@@ -1401,6 +1370,7 @@ LightingSettings:
   m_PVRFilteringAtrousPositionSigmaIndirect: 2
   m_PVRFilteringAtrousPositionSigmaAO: 1
   m_PVRTiledBaking: 0
+  m_NumRaysToShootPerTexel: -1
 --- !u!212 &1678445933964496022
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1491,6 +1461,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5121901046628408876, guid: 0a2544a0c5c99754dbac428d23f1d664,
@@ -1554,6 +1525,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
 --- !u!20 &7110129387491571184 stripped
 Camera:
@@ -1572,6 +1544,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
@@ -1645,12 +1618,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1528079835}
     m_RemovedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1117750752}
   m_SourcePrefab: {fileID: 100100000, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
 --- !u!1001 &8715041715279549082
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 7110129387491571187}
     m_Modifications:
     - target: {fileID: 8715041716411336930, guid: 2f2faa6da29227548b98aba3c67361a3,
@@ -1714,4 +1693,5 @@ PrefabInstance:
       value: SnowVfx
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}

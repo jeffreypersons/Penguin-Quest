@@ -75,7 +75,7 @@ namespace PQ.Game.Camera
                 $"subject:{_subjectInfo}}}";
 
 
-        private UnityEngine.Camera _cam;
+        private UnityEngine.Camera    _cam;
         private CameraViewportTracker _viewportInfo;
         private CameraSubjectTracker  _subjectInfo;
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using PQ.Common.Events;
 using PQ.Common.Containers;
-using System.Collections.Generic;
 
 
 //
@@ -170,20 +170,6 @@ namespace PQ.Common.Animation
             foreach (ParamId id in _animationParams.EnumFields)
             {
                 _animationParams.Add(id, id.ToString());
-            }
-
-            var expected = _animationParams.EnumFields as IReadOnlyList<ParamId>;
-            var actual = _animator.parameters as IReadOnlyList<AnimatorControllerParameter>;
-            for (int i = 0; i < expected.Count; i++)
-            {
-                if (i >= actual.Count || expected[i].ToString() != actual[i].name)
-                {
-                    throw new InvalidOperationException(
-                        $"Animation parameter mismatch - expected [{string.Join(',', expected)}] " +
-                        $"found parameter mismatch - actual [{string.Join(',', actual)}]"
-                    );
-                }
-
             }
             EnsureRegisteredAndEditorParamsAreAnExistMatch();
         }
