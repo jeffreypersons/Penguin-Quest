@@ -153,7 +153,7 @@ namespace PQ.Common.Animation
             _animator = gameObject.GetComponent<Animator>();
             if (_animator == null)
             {
-                throw new MissingComponentException("Expected attached animator - not found");
+                throw new MissingComponentException($"Expected attached animator - not found on {gameObject}");
             }
 
             // note that since other monobehaviors may want to query events on Start(),

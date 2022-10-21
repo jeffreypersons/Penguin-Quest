@@ -38,7 +38,7 @@ namespace PQ.Common.Physics
             _rigidBody = gameObject.GetComponent<Rigidbody2D>();
             if (_rigidBody == null)
             {
-                throw new MissingComponentException("Expected attached rigidbody2D - not found");
+                throw new MissingComponentException($"Expected attached rigidbody2D - not found on {gameObject}");
             }
 
             _rigidBody.isKinematic = true;
