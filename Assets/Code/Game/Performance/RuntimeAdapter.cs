@@ -21,11 +21,6 @@ namespace PQ.Game.Peformance
 
         private void Awake()
         {
-            if (!Application.IsPlaying(this))
-            {
-                return;
-            }
-
             Debug.Log($"OnAwake : Gathering GC info.." + ReportGarbageCollection());
             UpdateCurrentSettings();
             Debug.Log($"Starting up {GetType()} with target frame-rate {TargetFrameRate} and {QualityInfo}");
@@ -43,16 +38,19 @@ namespace PQ.Game.Peformance
 
         void OnValidate()
         {
-            if (!Application.IsPlaying(this))
-            {
-                return;
-            }
-
             UpdateCurrentSettings();
         }
 
         private void UpdateCurrentSettings()
         {
+            // there are some cases where it starts up in editor after a reimport where the application's target
+            // framerate is temporarily zeroed out. Since we only care about the true starting target frame rate when the
+            // game actually starts, we can skip updates for those cases
+            if (!Application.IsPlaying(this) || TargetFrameRate == 0)
+            {
+                return;
+            }
+
             //
             // For all current conceivable cases, we never want to await vertical synchronization to
             // occur between frames, as it can effectively cap frame rate by doing so by matching platform refresh.
