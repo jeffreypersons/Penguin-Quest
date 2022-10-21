@@ -27,7 +27,7 @@ namespace PQ.Game.Entities.Penguin
         public GameEventCenter EventBus { get; set; }
 
         [Header("Body Part Collider Constraints")]
-        [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.DisableOuter;
+        [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.None;
         
         [Header("Setting Bundles")]
         [SerializeField] private CharacterEntitySettings _penguinOnFeetSettings;
