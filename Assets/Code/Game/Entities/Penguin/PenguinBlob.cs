@@ -20,7 +20,6 @@ namespace PQ.Game.Entities.Penguin
     Note that this always is running, so that gizmos and editor scripts can reference any of its properties
     without worry about when things are valid and active.
     */
-    [ExecuteAlways]
     [AddComponentMenu("PenguinBlob")]
     public class PenguinBlob : FsmSharedData
     {
@@ -36,7 +35,7 @@ namespace PQ.Game.Entities.Penguin
 
         [Header("Component References")]
         [SerializeField] private PenguinAnimationDriver _penguinAnimation;
-        [SerializeField] private CharacterEntity            _characterController;
+        [SerializeField] private CharacterEntity        _characterController;
 
         [Header("Collider References")]
         [SerializeField] private CapsuleCollider2D _outerCollider;
@@ -52,7 +51,7 @@ namespace PQ.Game.Entities.Penguin
         public CharacterEntitySettings OnBellySettings => _penguinOnBellySettings;
 
         public PenguinAnimationDriver Animation            => _penguinAnimation;
-        public CharacterEntity            CharacterController  => _characterController;
+        public CharacterEntity        CharacterController  => _characterController;
         public Vector2                SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
         public CapsuleCollider2D OuterCollider             => _outerCollider;

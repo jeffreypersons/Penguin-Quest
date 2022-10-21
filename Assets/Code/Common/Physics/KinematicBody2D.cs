@@ -8,11 +8,12 @@ namespace PQ.Common.Physics
 
     Note that no caching is done - that is up to any client code.
     */
+    [ExecuteAlways]
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
         private Rigidbody2D _rigidBody;
-        private Collider2D _collider;
+        private Collider2D  _collider;
 
         public Vector2 Forward  => _rigidBody.transform.right.normalized;
         public Vector2 Up       => _rigidBody.transform.up.normalized;
@@ -33,7 +34,7 @@ namespace PQ.Common.Physics
         void Awake()
         {
             // enforce rigidbody existence, collider is optional
-            _collider = gameObject.GetComponent<Collider2D>();
+            _collider  = gameObject.GetComponent<Collider2D>();
             _rigidBody = gameObject.GetComponent<Rigidbody2D>();
             if (_rigidBody == null)
             {
