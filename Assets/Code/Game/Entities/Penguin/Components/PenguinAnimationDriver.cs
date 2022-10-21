@@ -13,7 +13,7 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEventRaised(string eventName)
         {
-            Debug.Log($"PenguinAnimation[{Time.frameCount - 1}]: Event {eventName} received from animator");
+            Debug.Log($"PenguinAnimation[Frame={Time.frameCount - 1}]: Event {eventName} received from animator");
         }
 
         // Optional overridable callback for when data was supplied to this instance
