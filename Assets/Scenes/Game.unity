@@ -1294,11 +1294,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PenguinPlayer
       objectReference: {fileID: 0}
-    - target: {fileID: 7859832108952071242, guid: 6d76bc27df941db4d96760c2af2147ca,
-        type: 3}
-      propertyPath: m_ApplyRootMotion
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
@@ -1555,12 +1550,12 @@ PrefabInstance:
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.358091
+      value: 12.35
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 53.036247
+      value: 53.050003
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f,
         type: 3}
