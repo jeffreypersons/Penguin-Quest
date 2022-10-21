@@ -204,7 +204,7 @@ namespace PQ.Game.Entities.Penguin
         [Pure]
         private static bool IsDisabled(Collider2D collider)
         {
-            return !collider.enabled;
+            return collider == null || !collider || !collider.enabled;
         }
 
         [Pure]
