@@ -14,10 +14,12 @@ namespace PQ.Game.Entities.Penguin
         StandUpEnded,
         Fired,
         Used,
-        FrontFootUp,
-        FrontFootDown,
-        FrontAndBackFootAligned,
-        BackFootUp,
-        BackFootDown,
+        WalkingFrontFootUp,
+        WalkingFrontFootDown,
+        WalkingFrontAndBackFootAligned,
+        WalkingBackFootUp,
+        WalkingBackFootDown,
+        BellySlideFlippersExtended,
+        BellySlideFlippersAndBellyAligned,
     }
 }
