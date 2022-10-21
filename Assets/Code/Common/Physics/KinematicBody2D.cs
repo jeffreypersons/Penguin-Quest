@@ -8,8 +8,6 @@ namespace PQ.Common.Physics
 
     Note that no caching is done - that is up to any client code.
     */
-    [ExecuteAlways]
-    [System.Serializable]
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
@@ -41,7 +39,7 @@ namespace PQ.Common.Physics
             }
 
             _rigidBody.isKinematic = true;
-            _collider = _rigidBody.GetComponent<Collider2D>();
+            _collider = gameObject.GetComponent<Collider2D>();
         }
 
         public bool IsTouching(ContactFilter2D contactFilter) => _rigidBody.IsTouching(contactFilter);
