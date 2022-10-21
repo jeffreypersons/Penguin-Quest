@@ -32,6 +32,8 @@ namespace PQ.Common.Physics
 
         void Awake()
         {
+            // enforce rigidbody existence, collider is optional
+            _collider = gameObject.GetComponent<Collider2D>();
             _rigidBody = gameObject.GetComponent<Rigidbody2D>();
             if (_rigidBody == null)
             {
@@ -39,7 +41,6 @@ namespace PQ.Common.Physics
             }
 
             _rigidBody.isKinematic = true;
-            _collider = gameObject.GetComponent<Collider2D>();
         }
 
         public bool IsTouching(ContactFilter2D contactFilter) => _rigidBody.IsTouching(contactFilter);
