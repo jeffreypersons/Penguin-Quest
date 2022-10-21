@@ -20,7 +20,6 @@ namespace PQ.Game.Entities.Penguin
     Note that this always is running, so that gizmos and editor scripts can reference any of its properties
     without worry about when things are valid and active.
     */
-    [Serializable]
     [ExecuteAlways]
     [AddComponentMenu("PenguinBlob")]
     public class PenguinBlob : FsmSharedData
@@ -98,10 +97,13 @@ namespace PQ.Game.Entities.Penguin
             _outerCollider.enabled = wasPreviouslyEnabled;
         }
 
-        void Start()
+        void Awake()
         {
             _colliderConstraints = GetConstraintsAccordingToDisabledColliders();
-            
+        }
+        
+        void Start()
+        {            
             #if UNITY_EDITOR
             if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
             {

@@ -31,7 +31,6 @@ namespace PQ.Common.Animation
     as parameters drive the animator, events and any related data are hooked up in the editor to notify clients of the
     current animation context (and any corresponding data).
     */
-    [Serializable]
     [ExecuteAlways]
     public abstract class AnimationDriver<EventId, ParamId> : MonoBehaviour
         where EventId : struct, Enum
