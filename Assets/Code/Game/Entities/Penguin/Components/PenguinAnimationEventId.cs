@@ -19,7 +19,7 @@ namespace PQ.Game.Entities.Penguin
         WalkingFrontAndBackFootAligned,
         WalkingBackFootUp,
         WalkingBackFootDown,
-        BellySlideFlippersExtended,
         BellySlideFlippersAndBellyAligned,
+        BellySlideFlippersExtended,
     }
 }
