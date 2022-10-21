@@ -21,10 +21,7 @@ namespace PQ.Game.Peformance
 
         private void Awake()
         {
-            // there are some cases where it starts up in editor after a reimport where the application's target
-            // framerate is temporarily zeroed out. Since we only care about the true starting target frame rate when the
-            // game actually starts, we can skip updates for those cases
-            if (!Application.IsPlaying(this) || TargetFrameRate == 0)
+            if (!Application.IsPlaying(this))
             {
                 return;
             }
@@ -46,6 +43,11 @@ namespace PQ.Game.Peformance
 
         void OnValidate()
         {
+            if (!Application.IsPlaying(this))
+            {
+                return;
+            }
+
             UpdateCurrentSettings();
         }
 
