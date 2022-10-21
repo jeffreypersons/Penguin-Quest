@@ -127,11 +127,13 @@ namespace PQ.Common.Fsm
         protected abstract void OnExit();
 
         // Optional recurring callbacks
-        protected virtual void OnUpdate()      { }
-        protected virtual void OnFixedUpdate() { }
-        protected virtual void OnLateUpdate()  { }
-        
-        
+        protected virtual void OnFixedUpdate()  { }
+        protected virtual void OnAnimatorMove() { }
+        protected virtual void OnAnimatorIk()   { }
+        protected virtual void OnUpdate()       { }
+        protected virtual void OnLateUpdate()   { }
+
+
         public bool        HasSameId(StateId id)                  => idEqualityComparer.Equals(_id, id);
         public static bool HasSameId(StateId left, StateId right) => idEqualityComparer.Equals(left, right);
 
