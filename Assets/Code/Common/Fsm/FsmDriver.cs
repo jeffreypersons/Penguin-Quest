@@ -174,16 +174,14 @@ namespace PQ.Common.Fsm
                     $"Cannot move to {dest} - a transition " +
                     $"{_activeState.Id}=>{_scheduledState.Id} is already queued");
             }
-
-            var next = _graph.GetState(dest);
-            if (!_graph.HasTransition(_activeState.Id, next.Id))
+            if (!_graph.HasTransition(_activeState.Id, dest))
             {
                 throw new InvalidOperationException(
                     $"Cannot move to {dest} - transition " +
                     $"{_activeState.Id}=>{dest} was not found");
             }
 
-            _scheduledState = next;
+            _scheduledState = _graph.GetState(dest);
         }
 
         private bool ProcessTransitionIfScheduled()
