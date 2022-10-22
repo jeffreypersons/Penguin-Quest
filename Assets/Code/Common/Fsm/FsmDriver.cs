@@ -27,20 +27,20 @@ namespace PQ.Common.Fsm
         private SharedData _sharedData;
         private FsmGraph<StateId, SharedData> _graph;
 
-        private FsmState<StateId, SharedData> _initial;
-        private FsmState<StateId, SharedData> _last;
-        private FsmState<StateId, SharedData> _next;
-        private FsmState<StateId, SharedData> _current;
+        private FsmState<StateId, SharedData> _initialState;
+        private FsmState<StateId, SharedData> _previousState;
+        private FsmState<StateId, SharedData> _activeState;
+        private FsmState<StateId, SharedData> _scheduledState;
 
         public override string ToString()
         {
             return
                 $"{GetType()}(gameObject:{base.name},data:{_sharedData})" +
-                $"\n  FsmHistory(" +
-                    $"initial:{_initial?.Name ?? "<none>"}," +
-                    $"current:{_current?.Name ?? "<none>"}," +
-                    $"last:{_last?.Name ?? "<none>"}," +
-                    $"next:{_next?.Name ?? "<none>"})" +
+                $"\n  FsmStateHistory(" +
+                    $"current:{_activeState?.Name    ?? "<none>"}," +
+                    $"initial:{_initialState?.Name   ?? "<none>"}," +
+                    $"last:{   _previousState?.Name  ?? "<none>"}," +
+                    $"next:{   _scheduledState?.Name ?? "<none>"})" +
                 $"\n{_graph}";
         }
 
@@ -87,18 +87,18 @@ namespace PQ.Common.Fsm
                 throw new InvalidOperationException($"Cannot initialize - builder cannot be null");
             }
 
-            _initialized = true;
-            _graph       = new FsmGraph<StateId, SharedData>(builder.nodes);
-            _sharedData  = builder.data;
-            _initial     = _graph.GetState(builder.initial);
+            _initialized  = true;
+            _graph        = new FsmGraph<StateId, SharedData>(builder.nodes);
+            _sharedData   = builder.data;
+            _initialState = _graph.GetState(builder.initial);
 
             if (_sharedData == null || !_sharedData)
             {
                 throw new InvalidOperationException($"Cannot initialize - shared data cannot be null or destroyed");
             }
-            if (_initial == null)
+            if (_initialState == null)
             {
-                throw new InvalidOperationException($"Cannot initialize - initial state {_initial} was not found");
+                throw new InvalidOperationException($"Cannot initialize - initial state {_initialState} was not found");
             }
         }
 
@@ -125,89 +125,101 @@ namespace PQ.Common.Fsm
             {
                 throw new InvalidOperationException("Cannot start driver - blob and graph must be provided in OnInitialize()");
             }
-            if (_next != null)
+            if (_scheduledState != null)
             {
                 throw new InvalidOperationException("Cannot start driver - states can only be scheduled when driver is active!");
             }
-            Enter(_initial);
-            OnInitialStateEntered(_initial.Id);
-        }
-
-        private void Update()
-        {
-            ProcessTransitionIfScheduled();
-            _current.Update();
+            Enter(_initialState);
+            OnInitialStateEntered(_initialState.Id);
         }
 
         private void FixedUpdate()
         {
-            _current.FixedUpdate();
+            _activeState.ExecuteFixedUpdate();
+        }
+
+        private void OnAnimatorMove()
+        {
+            _activeState.ExecuteAnimatorRootMotionUpdate();
+        }
+
+        private void OnAnimatorIK(int layerIndex)
+        {
+            _activeState.ExecuteAnimatorIkPassUpdate(layerIndex);
+        }
+
+        private void Update()
+        {
+            // todo: look into if transition processing would actually make more sense in fixed update,
+            //       as that's around where the animator does it..
+            //       see https://docs.unity3d.com/2022.1/Documentation/Manual/ExecutionOrder.html
+            ProcessTransitionIfScheduled();
+            _activeState.ExecuteUpdate();
         }
 
         private void LateUpdate()
         {
-            _current.LateUpdate();
+            _activeState.ExecuteLateUpdate();
         }
 
 
 
         /*** Internal 'Machinery' ***/
 
-        private void HandleOnMoveToLastStateSignaled()             => ScheduleTransition(_last.Id);
-        private void HandleOnMoveToNextStateSignaled(StateId dest) => ScheduleTransition(dest);
-
         private void ScheduleTransition(StateId dest)
         {
-            if (_next != null)
+            if (_scheduledState != null)
             {
-                throw new InvalidOperationException($"Cannot move to {dest} - a transition {_current.Id}=>{_next.Id} is already queued");
+                throw new InvalidOperationException(
+                    $"Cannot move to {dest} - a transition " +
+                    $"{_activeState.Id}=>{_scheduledState.Id} is already queued");
+            }
+            if (!_graph.HasTransition(_activeState.Id, dest))
+            {
+                throw new InvalidOperationException(
+                    $"Cannot move to {dest} - transition " +
+                    $"{_activeState.Id}=>{dest} was not found");
             }
 
-            FsmState<StateId, SharedData> next = _graph.GetState(dest);
-            if (next == null)
-            {
-                throw new InvalidOperationException($"Cannot move to {dest} - state {next.Id} was not found");
-            }
-            if (!_graph.HasTransition(_current.Id, dest))
-            {
-                throw new InvalidOperationException($"Cannot move to {dest} - transition {_current.Id}=>{dest} was not found");
-            }
-
-            _next = next;
+            _scheduledState = _graph.GetState(dest);
         }
 
         private bool ProcessTransitionIfScheduled()
         {
-            if (_next == null)
+            if (_scheduledState == null)
             {
                 return false;
             }
-            StateId source = _current.Id;
-            StateId dest   = _next.Id;
 
-            Exit(_current);
+            StateId source = _activeState.Id;
+            StateId dest   = _scheduledState.Id;
+
+            Exit(_activeState);
             OnTransition(source, dest);
-            Enter(_next);
+            Enter(_scheduledState);
             return true;
         }
 
 
+        private void HandleOnMoveToPreviousStateSignaled()         => ScheduleTransition(_previousState.Id);
+        private void HandleOnMoveToNextStateSignaled(StateId dest) => ScheduleTransition(dest);
+
         private void Exit(FsmState<StateId, SharedData> state)
         {
             state.Exit();
-            state.OnMoveToLastStateSignaled.RemoveHandler(HandleOnMoveToLastStateSignaled);
+            state.OnMoveToPreviousStateSignaled.RemoveHandler(HandleOnMoveToPreviousStateSignaled);
             state.OnMoveToNextStateSignaled.RemoveHandler(HandleOnMoveToNextStateSignaled);
-            _last    = state;
-            _current = null;
+            _previousState = state;
+            _activeState   = null;
         }
 
         private void Enter(FsmState<StateId, SharedData> state)
         {
             state.Enter();
-            state.OnMoveToLastStateSignaled.AddHandler(HandleOnMoveToLastStateSignaled);
+            state.OnMoveToPreviousStateSignaled.AddHandler(HandleOnMoveToPreviousStateSignaled);
             state.OnMoveToNextStateSignaled.AddHandler(HandleOnMoveToNextStateSignaled);
-            _current = state;
-            _next    = null;
+            _activeState    = state;
+            _scheduledState = null;
         }
     }
 }
