@@ -29,7 +29,7 @@ namespace PQ.Game.Entities.Penguin
             Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, isGrounded);
             if (isGrounded)
             {
-                base.SignalMoveToLastState();
+                base.SignalMoveToPreviousState();
             }
         }
     }
