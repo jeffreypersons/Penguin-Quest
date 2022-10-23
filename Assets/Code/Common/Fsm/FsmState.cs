@@ -8,7 +8,6 @@ namespace PQ.Common.Fsm
     /*
     Representation of a node in a finite state machine that encapsulates state-specific logic.
 
-
     Note that is it up to the call site to do any transition validation (or similar) - and that all states have a
     single unified entry point, with a blackboard instance (SharedData) that can be asked for data relevant to the
     specific state implementation.

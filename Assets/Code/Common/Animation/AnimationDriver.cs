@@ -22,7 +22,6 @@ namespace PQ.Common.Animation
     /*
     Generic component for listening to animation events, interfacing with animator, and setting parameters.
 
-
     Note that animation event IDs are used to abstract the animator event details away, such that we only need
     to lookup 'subscribers' to be notified of an event, and parameters for notifying the animator that a relevant
     change occurred (eg data related to blending, transitions, or animation masks).

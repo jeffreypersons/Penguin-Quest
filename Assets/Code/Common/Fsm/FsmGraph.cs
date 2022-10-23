@@ -8,9 +8,7 @@ namespace PQ.Common.Fsm
     /*
     Representation of the states and transitions in a finite state machine.
 
-
     Note that it's effectively readonly - no new states or transitions after construction.
-
     Also, states cannot have edges that loop directly back to itself.
     */
     internal sealed class FsmGraph<StateId, SharedData>

@@ -1,30 +1,21 @@
 ﻿/*
 Lightweight event primitives for game wide usage that's used for triggering and receiving event payloads.
 
-
-Intended to provide a unified 'single source of truth' for any game event, rather than an inconsistent mix
-of C# delegates, animation events, ui events, input actions, and so forth.
-
-Instead, by triggering a GameEvent when those specific external events occur - eg from an adapter class for
-processing player input commands - we have a consistent interface for events throughout the rest of the game.
-
+Intended to provide a unified 'single source of truth' for any game event, rather than an inconsistent mix of C# delegates,
+animation events, ui events, input actions, and so forth. Instead, by triggering a GameEvent when those specific external
+events occur - eg from an adapter class for processing player input commands - we have a consistent interface for events
+throughout the rest of the game.
 
 Most importantly, these events can be passed around as first class objects, used in collections,
 etc unlike the built in delegates!
 
-
 Features
-
-- Equality: Equality and hashing are supported out of the box, so unlike actions they can be freely used as dictionary keys
-
-- Stateless forwarding: Event data is forwarded to subscribers on trigger rather than stored within the instance
-
-- Cache friendly: Since data is directly forwarded to subscribers, events only need to be newed up once, relieving the GC
-
-- Intentionally restricted to a single param data payload made available to any subscribing actions
-
-- Lightweight: Built on top of native C# event actions, so far more performant than eg UnityEngine.Event as there is
-  no need for reflection, serializing, and constant polling in its implementation
+- Equality             : Equality and hashing supported out of box, so unlike actions they can be freely used as map keys
+- Stateless forwarding : Event data is forwarded to subscribers on trigger rather than stored within the instance
+- Cache friendly       : Since data is directly forwarded to subscribers, events only need to be newed up once, relieving the GC
+- Streamlined          : Intentionally restricted to a single param data payload made available to any subscribing actions
+- Lightweight          : Built on top of native C# event actions, so far more performant than eg UnityEngine.Event as there is
+                         no need for reflection, serializing, and constant polling in its implementation
 */
 using System;
 
