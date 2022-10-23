@@ -4,7 +4,7 @@ using UnityEngine;
 namespace PQ.Common.Fsm
 {
     /*
-    Generic, persistent blob of components that can be used by state machine.
+    Generic, persistent blob of components that intended as a blackboard for the finite state machine.
     */
     [ExecuteAlways]
     public abstract class FsmSharedData : MonoBehaviour

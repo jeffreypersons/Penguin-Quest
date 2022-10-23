@@ -6,17 +6,11 @@ using PQ.Common.Events;
 namespace PQ.Common.Fsm
 {
     /*
-    Representation of a state in a finite state machine.
+    Representation of a node in a finite state machine that encapsulates state-specific logic.
 
-    Intended to fully encapsulate graphics, animation, and physics needed for any specific state.
-    State is entered and exited without any transitional checks - that is, it is entirely up to the call site to
-    handle when transition is/is-not allowed to occur. Instead, it's up to the state to determine what the
-    per-frame behavior is (or isn't) as callbacks are provided for regular, fixed, and late updates.
-
-    
-    Note that active, initialized etc are not checked everytime - it's up to the machinery
-    of the module that handles the correct ordering of states. If it was done here, there would be tons
-    of unnecessary and slow validation littered throughout the template hooks (eg Enter()).
+    Note that is it up to the call site to do any transition validation (or similar) - and that all states have a
+    single unified entry point, with a blackboard instance (SharedData) that can be asked for data relevant to the
+    specific state implementation.
     */
     public abstract class FsmState<StateId, SharedData>
         : IEquatable<FsmState<StateId, SharedData>>,
@@ -61,11 +55,9 @@ namespace PQ.Common.Fsm
 
         /*** External Facing Methods for Driving State Logic ***/
 
-        // Public dummy state constructor so that we can constrain generics to new(), for use in factories
         public FsmState() { }
 
-        // External entry point factory for constructing the state
-        // Note that this is our uniform single access point for creating the state, no public constructors
+
         public static StateSubclassInstance Create<StateSubclassInstance>(StateId id, SharedData blob)
             where StateSubclassInstance : FsmState<StateId, SharedData>, new()
         {
@@ -82,7 +74,6 @@ namespace PQ.Common.Fsm
             return instance;
         }
 
-        // Entry point for client code utilizing state instances
         public void Enter()
         {
             OnEnter();
@@ -90,7 +81,6 @@ namespace PQ.Common.Fsm
             _eventRegistry.SubscribeToAllRegisteredEvents();
         }
 
-        // Exit point for client code utilizing state instances
         public void Exit()
         {
             OnExit();
@@ -119,9 +109,6 @@ namespace PQ.Common.Fsm
 
         /*** Internal Hooks for Defining State Specific Logic ***/
 
-        // Mechanism for hooking up events to handlers such that they can automatically be subscribed on state enter
-        // and unsubscribed on state exit.
-        // Can only be invoked in OnInitialize.
         protected void SignalMoveToPreviousState()                                      => _moveToPreviousStateSignal.Raise();
         protected void SignalMoveToNextState(StateId dest)                              => _moveToNextStateSignal.Raise(dest);
         protected void RegisterEvent(IPqEventReceiver event_, Action handler_)          => _eventRegistry.Add(event_, handler_);
@@ -129,13 +116,17 @@ namespace PQ.Common.Fsm
 
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
+
         protected abstract void OnIntialize();
 
+
         // Required entry/exit point callbacks
+
         protected abstract void OnEnter();
         protected abstract void OnExit();
 
         // Optional recurring callbacks
+
         protected virtual void OnFixedUpdate()                        { }
         protected virtual void OnAnimatorRootMotionUpdate()           { }
         protected virtual void OnAnimatorIkPassUpdate(int layerIndex) { }
