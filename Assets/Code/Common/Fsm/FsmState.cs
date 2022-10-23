@@ -8,6 +8,7 @@ namespace PQ.Common.Fsm
     /*
     Representation of a node in a finite state machine that encapsulates state-specific logic.
 
+
     Note that is it up to the call site to do any transition validation (or similar) - and that all states have a
     single unified entry point, with a blackboard instance (SharedData) that can be asked for data relevant to the
     specific state implementation.
@@ -46,7 +47,8 @@ namespace PQ.Common.Fsm
 
         static FsmState()
         {
-            // note that since enums are processed during compile time, we cache the comparers once per static id type
+            // note that since enums are processed during compile time, we cache the comparers once per static id type,
+            // since unfortunately we can't just == to compare generic enum structs
             idValueComparer    = Comparer<StateId>.Default;
             idEqualityComparer = EqualityComparer<StateId>.Default;
         }

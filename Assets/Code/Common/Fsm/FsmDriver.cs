@@ -8,9 +8,9 @@ namespace PQ.Common.Fsm
     /*
     Driver for state machine that hooks up state callbacks to MonoBehaviour.
 
+
     Note that while there is transition validation, the conditions that trigger those
     state changes are up to the specific fsm state implementation.
-
 
     Note that exceptions are thrown EARLY for invalid driver setup, meaning that if it made it past start
     with no exceptions, we have unique keys, no nulls in the graph, non empty graphs, explicitly set initial state,
