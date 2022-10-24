@@ -35,10 +35,32 @@ namespace PQ.Game.Entities.Penguin
             Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
         }
 
+
+        protected override void OnFixedUpdate()
+        {
+            // no op
+        }
+
+        protected override void OnAnimatorRootMotionUpdate()
+        {
+            // no op
+        }
+
+        protected override void OnAnimatorIkPassUpdate(int layerIndex)
+        {
+            // no op
+        }
+
         protected override void OnUpdate()
         {
             HandleHorizontalMovement();
         }
+
+        protected override void OnLateUpdate()
+        {
+            // no op
+        }
+
 
 
         // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
