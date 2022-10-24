@@ -121,6 +121,7 @@ namespace PQ.Game.Entities.Penguin
             {
                 // todo: move rigidbody force/movement calls to character controller 2d
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
+                Blob.CharacterController.MoveForward();
             }
 
             Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
