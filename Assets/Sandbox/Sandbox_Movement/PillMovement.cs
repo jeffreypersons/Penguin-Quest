@@ -40,7 +40,8 @@ namespace PQ.TestScenes.Movement
         {
             _body = gameObject.GetComponent<KinematicBody2D>();
             _caster = new RayCasterBox(_body);
-            _amountToMoveForward = 0f;
+            _caster.CastOffset   = -5f;
+            _amountToMoveForward =  0f;
         }
 
         void Start()

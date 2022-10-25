@@ -27,39 +27,47 @@ namespace PQ.Common.Casts
         {
             return Cast(
                 origin:    from,
+                offset:    0f,
                 direction: (to - from).normalized,
                 layerMask: layerMask,
-                distance:  Vector2.Distance(from, to));
+                maxDistanceFromOrigin:  Vector2.Distance(from, to));
         }
 
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromPoint(Vector2 point, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
+        public RayHit CastFromPoint(Vector2 point, float offset, Vector2 direction, int layerMask = AllLayers,
+            float distance = MaxDistance)
         {
             return Cast(
                 origin:    point,
+                offset:    offset,
                 direction: direction.normalized,
                 layerMask: layerMask,
-                distance:  distance);
+                maxDistanceFromOrigin:  distance);
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromCollider(Collider2D collider, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
+        public RayHit CastFromCollider(Collider2D collider, float offset, Vector2 direction, int layerMask = AllLayers,
+            float distance = MaxDistance)
         {
             return Cast(
                 origin:    FindPositionOnColliderEdgeInGivenDirection(collider, direction),
+                offset:    offset,
                 direction: direction.normalized,
                 layerMask: layerMask,
-                distance:  distance);
+                maxDistanceFromOrigin: distance);
         }
 
 
-        private RayHit Cast(Vector2 origin, Vector2 direction, LayerMask layerMask, float distance)
+        private RayHit Cast(Vector2 origin, float offset, Vector2 direction, LayerMask layerMask, float maxDistanceFromOrigin)
         {
-            RaycastHit2D castHit2D = Physics2D.Raycast(origin, direction, distance, layerMask);
+            float offsetCompensation = -1f * offset;
+
+            Vector2 offsetAmount = offset * direction;
+            RaycastHit2D castHit2D = Physics2D.Raycast(origin + offsetAmount, direction, maxDistanceFromOrigin, layerMask);
 
             #if UNITY_EDITOR
             if (DrawCastInEditor)
-                DrawCastResultAsLineInEditor(origin, direction, distance, castHit2D);
+                DrawCastResultAsLineInEditor(origin, offset, direction, maxDistanceFromOrigin, castHit2D);
             #endif
 
             if (!castHit2D)
@@ -70,7 +78,7 @@ namespace PQ.Common.Casts
             return new RayHit(
                 point:    castHit2D.point,
                 normal:   castHit2D.normal,
-                distance: castHit2D.distance,
+                distance: castHit2D.distance + offsetCompensation,
                 collider: castHit2D.collider
             );
         }
@@ -84,21 +92,17 @@ namespace PQ.Common.Casts
         }
         
         #if UNITY_EDITOR
-        private static void DrawCastResultAsLineInEditor(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit)
+        private static void DrawCastResultAsLineInEditor(Vector2 origin, float offset, Vector2 direction, float distance, RaycastHit2D hit)
         {
             float duration = Time.deltaTime;
-            Vector2 terminal = origin + distance * direction;
+            Vector2 start = origin + (offset   * direction);
+            Vector2 end   = origin + (distance * direction);
 
+            Debug.DrawLine(start, end,    Color.red,     duration);
+            Debug.DrawLine(start, origin, Color.magenta, duration);
             if (hit)
             {
-                // draw the ray past the hit point all the way to max distance,
-                // making optimization easier since excessively long cast distance becomes obvious
                 Debug.DrawLine(origin, hit.point, Color.green, duration);
-                Debug.DrawLine(hit.point, terminal, Color.red, duration);
-            }
-            else
-            {
-                Debug.DrawLine(origin, terminal, Color.red, duration);
             }
         }
         #endif
