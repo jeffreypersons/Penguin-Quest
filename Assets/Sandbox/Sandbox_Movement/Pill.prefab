@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 1438510890908960824}
   - component: {fileID: 1438510890908960825}
   - component: {fileID: 1438510890908960828}
-  - component: {fileID: 1438510890908960826}
   - component: {fileID: 1438510890908960827}
+  - component: {fileID: 1438510890908960826}
   m_Layer: 9
   m_Name: Pill
   m_TagString: Untagged
@@ -139,6 +139,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28484ee5f1151f4dae5545688b2f5ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1438510890908960827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1438510890908960805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7f512c4e4b9a649ac970fc732f7707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1438510890908960826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,15 +164,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterSettings: {fileID: 11400000, guid: af118c8163dccc84f9720666967cbabd, type: 2}
---- !u!114 &1438510890908960827
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1438510890908960805}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b7f512c4e4b9a649ac970fc732f7707, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
