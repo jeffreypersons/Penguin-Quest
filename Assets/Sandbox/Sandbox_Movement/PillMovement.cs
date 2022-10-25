@@ -54,7 +54,7 @@ namespace PQ.TestScenes.Movement
 
             if (!_isGrounded)
             {
-                _body.MoveBy(0.10f * Settings.GravityStrength * Vector2.down);
+                _body.MoveBy(Settings.GravityStrength * Vector2.down);
             }
             _body.MoveBy(_amountToMoveForward * _body.Forward);
             _amountToMoveForward = 0f;
@@ -65,20 +65,13 @@ namespace PQ.TestScenes.Movement
 
         private void UpdateGroundContactInfo(bool force = false)
         {
-            // collider is turned off - check back later
-            if (!_body.Bounds.HasValue)
-            {
-                Debug.Log("Collider is turned off - skipping");
-                return;
-            }
-
             // todo: use a scriptable object or something for these variables
-            var groundLayer = LayerMask.GetMask("Platform");
-            var groundDistanceToCheck   = 10.00f;
-            var groundDistanceTolerated = 2.00f;
+            var result = _caster.CastBelow(
+                t:        0.50f,
+                mask:     LayerMask.GetMask("Platform"),
+                distance: 5);
 
-            var result = _caster.CastBelow(0.50f, groundLayer, groundDistanceToCheck);
-            bool isInContactWithGround = result.distance <= groundDistanceTolerated;
+            bool isInContactWithGround = result.HitWithin(Settings.MaxToleratedDistanceFromGround);
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;

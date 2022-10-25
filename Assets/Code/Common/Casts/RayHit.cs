@@ -11,6 +11,8 @@ namespace PQ.Common.Casts
         public readonly float      distance;
         public readonly Collider2D collider;
         
+        public bool HitWithin(float tolerance) => collider != null && distance <= tolerance;
+
         public override string ToString() =>
             $"{GetType().Name}:{{" +
                 $"point:{point}," +
