@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1438510890908960826}
   - component: {fileID: 1438510890908960827}
   m_Layer: 9
-  m_Name: Penguin
+  m_Name: Pill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1438510890908960806
 SpriteRenderer:
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1438510890908960805}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a520695c85c1f924e93271585a03e0b6, type: 3}
+  m_Script: {fileID: 11500000, guid: bcdaf7dae673c4043aab6c069a19101e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _characterSettings: {fileID: 11400000, guid: af118c8163dccc84f9720666967cbabd, type: 2}

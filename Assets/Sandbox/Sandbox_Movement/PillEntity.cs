@@ -5,18 +5,18 @@ using PQ.Game.Entities;
 
 namespace PQ.TestScenes.Movement
 {
-    public class Entity : MonoBehaviour
+    public class PillEntity : MonoBehaviour
     {
         [SerializeField] private CharacterEntitySettings _characterSettings;
 
         private GameEventCenter _eventCenter;
-        private MovementController _controller;
+        private PillMovement _controller;
 
         private HorizontalInput _horizontalInput;
 
         void Awake()
         {
-            _controller = gameObject.GetComponent<MovementController>();
+            _controller = gameObject.GetComponent<PillMovement>();
             _eventCenter = GameEventCenter.Instance;
             _horizontalInput = new(HorizontalInput.Type.None);
 

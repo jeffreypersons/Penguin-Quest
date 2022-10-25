@@ -6,7 +6,7 @@ using PQ.Game.Entities;
 
 namespace PQ.TestScenes.Movement
 {
-    public class MovementController : MonoBehaviour
+    public class PillMovement : MonoBehaviour
     {
         private RayCasterBox _caster;
         private KinematicBody2D _body;
