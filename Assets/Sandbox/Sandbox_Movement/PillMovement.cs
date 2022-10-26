@@ -55,12 +55,11 @@ namespace PQ.TestScenes.Movement
 
             if (!_isGrounded)
             {
+                Debug.Log($"{Settings.GravityStrength * Vector2.down}");
                 _body.MoveBy(Settings.GravityStrength * Vector2.down);
             }
             _body.MoveBy(_amountToMoveForward * _body.Forward);
             _amountToMoveForward = 0f;
-
-            UpdateGroundContactInfo();
         }
 
 
@@ -72,7 +71,7 @@ namespace PQ.TestScenes.Movement
                 mask:     LayerMask.GetMask("Platform"),
                 distance: 5);
 
-            bool isInContactWithGround = result.HitWithin(Settings.MaxToleratedDistanceFromGround);
+            bool isInContactWithGround = result.HitInRange(0f, Settings.MaxToleratedDistanceFromGround);
             if (_isGrounded != isInContactWithGround || force)
             {
                 _isGrounded = isInContactWithGround;
