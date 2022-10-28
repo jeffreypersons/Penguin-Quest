@@ -58,7 +58,9 @@ namespace PQ.Common.Casts
         }
 
 
-        private RayHit Cast(Vector2 origin, Vector2 direction, LayerMask layerMask, float maxDistanceFromOrigin, float offsetFromOrigin)
+
+        private RayHit Cast(Vector2 origin, Vector2 direction, LayerMask layerMask,
+            float maxDistanceFromOrigin, float offsetFromOrigin)
         {
             float offsetCompensation = -1f * offsetFromOrigin;
 
@@ -92,9 +94,10 @@ namespace PQ.Common.Casts
         }
         
         #if UNITY_EDITOR
-        private static void DrawCastResultAsLineInEditor(Vector2 origin, float offset, Vector2 direction, float distance, RaycastHit2D hit)
+        private static void DrawCastResultAsLineInEditor(Vector2 origin, float offset, Vector2 direction,
+            float distance, RaycastHit2D hit)
         {
-            float duration = Time.deltaTime;
+            float duration = Time.fixedDeltaTime;
             Vector2 start = origin + (offset   * direction);
             Vector2 end   = origin + (distance * direction);
 
