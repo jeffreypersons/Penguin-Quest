@@ -14,12 +14,7 @@ namespace PQ.Common.Physics
             public readonly Vector2 start;
             public readonly Vector2 end;
             public readonly Vector2 normal;
-
-            public override string ToString() =>
-                $"{GetType().Name}(" +
-                    $"center:{start}," +
-                    $"xAxis:{end}," +
-                    $"yAxis:{normal})";
+            public override string ToString() => $"{GetType().Name}(start:{start}, end:{end}, normal:{normal})";
 
             public Side(in Vector2 start, in Vector2 end, in Vector2 normal)
             {
@@ -43,8 +38,8 @@ namespace PQ.Common.Physics
                 $"xAxis:{XAxis}," +
                 $"yAxis:{YAxis})";
         
-
         public OrientedBounds2D() { }
+
 
         /* Given position and axes, adjust such that it's aligned and scaled with given forward and up vectors. */
         public void Update(Vector2 center, Vector2 xAxis, Vector2 yAxis)
