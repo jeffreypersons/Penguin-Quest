@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
-using PQ.Common.Casts;
 
 
 namespace PQ.Common.Physics
@@ -9,7 +8,7 @@ namespace PQ.Common.Physics
     /*
     Represents an orientation aligned bounding box, centered at position, oriented and sized according to forward/up axes.
     */
-    public sealed class OrientedBounds2D
+    public sealed class OrientedBounds2D : IEquatable<OrientedBounds2D>
     {
         public struct Side
         {
@@ -60,7 +59,7 @@ namespace PQ.Common.Physics
             {
                 throw new ArgumentException($"Axes must be orthorgonal - received forward {xAxis} and up {yAxis} axes");
             }
-            if (Center == center && XAxis == xAxis && YAxis == yAxis)
+            if (AreEqual(center, xAxis, yAxis))
             {
                 return;
             }
@@ -77,5 +76,14 @@ namespace PQ.Common.Physics
             Bottom = new(start: rearBottom,  end: frontBottom, normal: (-yAxis).normalized);
             Top    = new(start: rearTop,     end: frontTop,    normal: yAxis.normalized);
         }
+
+        
+        bool IEquatable<OrientedBounds2D>.Equals(OrientedBounds2D other) => AreEqual(other.Center, other.XAxis, other.YAxis);
+        public override bool Equals(object obj) => ((IEquatable<OrientedBounds2D>)this).Equals(obj as OrientedBounds2D);
+        public override int GetHashCode() => HashCode.Combine(GetType(), Center, XAxis, YAxis);
+
+
+        [Pure] private bool AreEqual(Vector2 center, Vector2 xAxis, Vector2 yAxis) =>
+            Center == center && XAxis == xAxis && YAxis == yAxis;
     }
 }
