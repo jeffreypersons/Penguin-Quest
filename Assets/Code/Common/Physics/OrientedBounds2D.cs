@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using UnityEngine;
+using PQ.Common.Casts;
 
 
 namespace PQ.Common.Physics
@@ -16,11 +18,17 @@ namespace PQ.Common.Physics
             public readonly Vector2 normal;
             public override string ToString() => $"{GetType().Name}(start:{start}, end:{end}, normal:{normal})";
 
-            public Side(in Vector2 start, in Vector2 end, in Vector2 normal)
+            public Side(Vector2 start, Vector2 end, Vector2 normal)
             {
                 this.start  = start;
                 this.end    = end;
                 this.normal = normal;
+            }
+
+            [Pure]
+            public Vector2 PointAt(float t)
+            {
+                return Vector2.Lerp(start, end, t);
             }
         }
 

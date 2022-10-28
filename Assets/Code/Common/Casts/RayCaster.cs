@@ -46,11 +46,11 @@ namespace PQ.Common.Casts
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromColliderBounds(Collider2D collider, Vector2 direction, int layerMask = AllLayers,
+        public RayHit CastFromColliderBounds(Bounds bounds, Vector2 direction, int layerMask = AllLayers,
             float distance = MaxDistance, float offset = 0f)
         {
             return Cast(
-                origin:                FindPositionOnColliderEdgeInGivenDirection(collider, direction),
+                origin:                FindPositionOnColliderEdgeInGivenDirection(bounds, direction),
                 direction:             direction.normalized,
                 layerMask:             layerMask,
                 maxDistanceFromOrigin: distance,
@@ -86,10 +86,10 @@ namespace PQ.Common.Casts
         }
 
 
-        private static Vector2 FindPositionOnColliderEdgeInGivenDirection(Collider2D collider, Vector2 direction)
+        private static Vector2 FindPositionOnColliderEdgeInGivenDirection(in Bounds bounds, Vector2 direction)
         {
-            Vector2 center = collider.bounds.center;
-            collider.bounds.IntersectRay(new Ray(center, direction), out float distanceFromCenterToEdge);
+            Vector2 center = bounds.center;
+            bounds.IntersectRay(new Ray(center, direction), out float distanceFromCenterToEdge);
             return center - (distanceFromCenterToEdge * direction);
         }
         
