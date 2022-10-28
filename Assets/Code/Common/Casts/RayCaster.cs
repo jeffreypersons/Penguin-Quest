@@ -46,7 +46,7 @@ namespace PQ.Common.Casts
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromCollider(Collider2D collider, Vector2 direction, int layerMask = AllLayers,
+        public RayHit CastFromColliderBounds(Collider2D collider, Vector2 direction, int layerMask = AllLayers,
             float distance = MaxDistance, float offset = 0f)
         {
             return Cast(
