@@ -1,9 +1,8 @@
 using UnityEngine;
 using PQ.Common.Casts;
 using PQ.Common.Physics;
-using PQ.Game.Entities;
 using PQ.Common.Events;
-using PQ.Common.Extensions;
+using PQ.Game.Entities;
 
 
 namespace PQ.TestScenes.Movement
@@ -78,25 +77,5 @@ namespace PQ.TestScenes.Movement
                 _groundContactChangedEvent.Raise(_isGrounded);
             }
         }
-
-        #if UNITY_EDITOR
-        void OnDrawGizmos()
-        {
-            if (!Application.IsPlaying(this) || !enabled)
-            {
-                return;
-            }
-
-            // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window
-            GizmoExtensions.DrawLine(_caster.BackSide,   Color.gray);
-            GizmoExtensions.DrawLine(_caster.FrontSide,  Color.gray);
-            GizmoExtensions.DrawLine(_caster.BottomSide, Color.gray);
-            GizmoExtensions.DrawLine(_caster.TopSide,    Color.gray);
-
-            // draw a pair of arrows from the that should be identical to the transform's axes in the editor window
-            GizmoExtensions.DrawArrow(from: _caster.Center, to: _caster.Center + _caster.ForwardAxis, color: Color.red);
-            GizmoExtensions.DrawArrow(from: _caster.Center, to: _caster.Center + _caster.UpAxis,      color: Color.green);
-        }
-        #endif
     }
 }
