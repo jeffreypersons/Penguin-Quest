@@ -86,7 +86,7 @@ namespace PQ.Common.Casts
             UpdateBoundsIfChanged();
 
             Vector2 rayOrigin = Vector2.LerpUnclamped(side.start, side.end, t);
-            return _caster.CastFromPoint(rayOrigin, _castOffset, side.normal, layerMask, distance);
+            return _caster.CastFromPoint(rayOrigin, side.normal, layerMask, distance, _castOffset);
         }
 
 
