@@ -59,7 +59,7 @@ namespace PQ.Common.Physics
             {
                 throw new ArgumentException($"Axes must be orthorgonal - received forward {xAxis} and up {yAxis} axes");
             }
-            if (AreEqual(center, xAxis, yAxis))
+            if (Center == center && XAxis == xAxis && YAxis == yAxis)
             {
                 return;
             }
@@ -77,13 +77,10 @@ namespace PQ.Common.Physics
             Top    = new(start: rearTop,     end: frontTop,    normal: yAxis.normalized);
         }
 
-        
-        bool IEquatable<OrientedBounds2D>.Equals(OrientedBounds2D other) => AreEqual(other.Center, other.XAxis, other.YAxis);
+
+        bool IEquatable<OrientedBounds2D>.Equals(OrientedBounds2D other) =>
+            Center == other.Center && XAxis == other.XAxis && YAxis == other.YAxis;
         public override bool Equals(object obj) => ((IEquatable<OrientedBounds2D>)this).Equals(obj as OrientedBounds2D);
         public override int GetHashCode() => HashCode.Combine(GetType(), Center, XAxis, YAxis);
-
-
-        [Pure] private bool AreEqual(Vector2 center, Vector2 xAxis, Vector2 yAxis) =>
-            Center == center && XAxis == xAxis && YAxis == yAxis;
     }
 }
