@@ -31,13 +31,15 @@ namespace PQ.Common.Physics
             }
         }
 
-        public Vector2 Center { get; private set; }
-        public Vector2 XAxis  { get; private set; }
-        public Vector2 YAxis  { get; private set; }
-        public Side    Back   { get; private set; }
-        public Side    Front  { get; private set; }
-        public Side    Bottom { get; private set; }
-        public Side    Top    { get; private set; }
+        public Vector2 Center   { get; private set; }
+        public Vector2 Size     { get; private set; }
+        public float   Rotation { get; private set; }
+        public Vector2 XAxis    { get; private set; }
+        public Vector2 YAxis    { get; private set; }
+        public Side    Back     { get; private set; }
+        public Side    Front    { get; private set; }
+        public Side    Bottom   { get; private set; }
+        public Side    Top      { get; private set; }
 
         public override string ToString() =>
             $"{GetType().Name}(" +
@@ -49,7 +51,7 @@ namespace PQ.Common.Physics
 
 
         /* Given position and axes, adjust such that it's aligned and scaled with given forward and up vectors. */
-        public void Update(Vector2 center, Vector2 xAxis, Vector2 yAxis)
+        public bool Update(Vector2 center, Vector2 xAxis, Vector2 yAxis)
         {
             if (xAxis == Vector2.zero || yAxis == Vector2.zero)
             {
@@ -61,20 +63,27 @@ namespace PQ.Common.Physics
             }
             if (Center == center && XAxis == xAxis && YAxis == yAxis)
             {
-                return;
+                return false;
             }
             
             Vector2 min = center - xAxis - yAxis;
             Vector2 max = center + xAxis + yAxis;
+            Vector2 size = new(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
             Vector2 rearBottom  = new(min.x, min.y);
             Vector2 rearTop     = new(min.x, max.y);
             Vector2 frontBottom = new(max.x, min.y);
             Vector2 frontTop    = new(max.x, max.y);
 
+            Center = center;
+            Size   = size;
+            XAxis  = xAxis;
+            YAxis  = yAxis;
+            Rotation = Vector2.Angle(Vector2.right, xAxis);
             Back   = new(start: rearBottom,  end: rearTop,     normal: (-xAxis).normalized);
             Front  = new(start: frontBottom, end: frontTop,    normal: xAxis.normalized);
             Bottom = new(start: rearBottom,  end: frontBottom, normal: (-yAxis).normalized);
             Top    = new(start: rearTop,     end: frontTop,    normal: yAxis.normalized);
+            return true;
         }
 
 
@@ -82,5 +91,20 @@ namespace PQ.Common.Physics
             Center == other.Center && XAxis == other.XAxis && YAxis == other.YAxis;
         public override bool Equals(object obj) => ((IEquatable<OrientedBounds2D>)this).Equals(obj as OrientedBounds2D);
         public override int GetHashCode() => HashCode.Combine(GetType(), Center, XAxis, YAxis);
+
+
+        // computed the unsigned degrees (between [0, 90]) between given vec and y axis
+        private static float AngleFromYAxis(Vector2 vector)
+        {
+            if (Mathf.Approximately(vector.x, 0.00f))
+            {
+                return 0.00f;
+            }
+            if (Mathf.Approximately(vector.y, 0.00f))
+            {
+                return 90.00f;
+            }
+            return vector.y < 0.00f ? Vector2.Angle(Vector2.down, vector) : Vector2.Angle(Vector2.up, vector);
+        }
     }
 }

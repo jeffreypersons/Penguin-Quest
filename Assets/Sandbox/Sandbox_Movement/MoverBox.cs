@@ -115,9 +115,13 @@ namespace PQ.Common.Physics
             _boundsLastFixedUpdate = _bounds;
         }
 
+        private void ApplyBounds()
+        {
+            if (_boundsLastFixedUpdate.XAxis == _bounds.XAxis)
+            _boundsLastFixedUpdate = _bounds;
+        }
 
-
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || !enabled)
