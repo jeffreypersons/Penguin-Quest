@@ -27,6 +27,7 @@ namespace PQ.Common.Casts
         }
 
 
+        private float _castOffset;
         private RayCaster _caster;
         private KinematicBody2D _body;
 
@@ -57,6 +58,7 @@ namespace PQ.Common.Casts
 
         public RayCasterBox(KinematicBody2D body)
         {
+            _castOffset = 0.0f;
             _body       = body;
             _caster     = new();
             _backSide   = new();
@@ -65,6 +67,7 @@ namespace PQ.Common.Casts
             _topSide    = new();
         }
 
+        public float CastOffset { get => _castOffset; set => _castOffset = value; }
         public bool DrawCastInEditor { get => _caster.DrawCastInEditor; set => _caster.DrawCastInEditor = value; }
 
         public RayHit CastBehind(float t, in LayerMask mask, float distance) => CastFromSideAt(_backSide,   t, mask, distance);
@@ -83,7 +86,7 @@ namespace PQ.Common.Casts
             UpdateBoundsIfChanged();
 
             Vector2 rayOrigin = Vector2.LerpUnclamped(side.start, side.end, t);
-            return _caster.CastFromPoint(rayOrigin, side.normal, layerMask, distance);
+            return _caster.CastFromPoint(rayOrigin, side.normal, layerMask, distance, _castOffset);
         }
 
 

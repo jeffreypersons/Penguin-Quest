@@ -26,40 +26,50 @@ namespace PQ.Common.Casts
         public RayHit CastBetween(Vector2 from, Vector2 to, int layerMask = AllLayers)
         {
             return Cast(
-                origin:    from,
-                direction: (to - from).normalized,
-                layerMask: layerMask,
-                distance:  Vector2.Distance(from, to));
+                origin:                from,
+                direction:             (to - from).normalized,
+                layerMask:             layerMask,
+                maxDistanceFromOrigin: Vector2.Distance(from, to),
+                offsetFromOrigin:      0f);
         }
 
         /* Shoot out a line from point to max distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromPoint(Vector2 point, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
+        public RayHit CastFromPoint(Vector2 point, Vector2 direction, int layerMask = AllLayers,
+            float distance = MaxDistance, float offset = 0f)
         {
             return Cast(
-                origin:    point,
-                direction: direction.normalized,
-                layerMask: layerMask,
-                distance:  distance);
+                origin:                point,
+                direction:             direction.normalized,
+                layerMask:             layerMask,
+                maxDistanceFromOrigin: distance,
+                offsetFromOrigin:      offset);
         }
 
         /* Shoot out a line from edge of collider to distance from that point until a TargetLayer is hit. */
-        public RayHit CastFromCollider(Collider2D collider, Vector2 direction, int layerMask = AllLayers, float distance = MaxDistance)
+        public RayHit CastFromColliderBounds(Bounds bounds, Vector2 direction, int layerMask = AllLayers,
+            float distance = MaxDistance, float offset = 0f)
         {
             return Cast(
-                origin:    FindPositionOnColliderEdgeInGivenDirection(collider, direction),
-                direction: direction.normalized,
-                layerMask: layerMask,
-                distance:  distance);
+                origin:                FindPositionOnColliderEdgeInGivenDirection(bounds, direction),
+                direction:             direction.normalized,
+                layerMask:             layerMask,
+                maxDistanceFromOrigin: distance,
+                offsetFromOrigin:      offset);
         }
 
 
-        private RayHit Cast(Vector2 origin, Vector2 direction, LayerMask layerMask, float distance)
+
+        private RayHit Cast(Vector2 origin, Vector2 direction, LayerMask layerMask,
+            float maxDistanceFromOrigin, float offsetFromOrigin)
         {
-            RaycastHit2D castHit2D = Physics2D.Raycast(origin, direction, distance, layerMask);
+            float offsetCompensation = -1f * offsetFromOrigin;
+
+            Vector2 offsetAmount = offsetFromOrigin * direction;
+            RaycastHit2D castHit2D = Physics2D.Raycast(origin + offsetAmount, direction, maxDistanceFromOrigin, layerMask);
 
             #if UNITY_EDITOR
             if (DrawCastInEditor)
-                DrawCastResultAsLineInEditor(origin, direction, distance, castHit2D);
+                DrawCastResultAsLineInEditor(origin, offsetFromOrigin, direction, maxDistanceFromOrigin, castHit2D);
             #endif
 
             if (!castHit2D)
@@ -70,35 +80,32 @@ namespace PQ.Common.Casts
             return new RayHit(
                 point:    castHit2D.point,
                 normal:   castHit2D.normal,
-                distance: castHit2D.distance,
+                distance: castHit2D.distance + offsetCompensation,
                 collider: castHit2D.collider
             );
         }
 
 
-        private static Vector2 FindPositionOnColliderEdgeInGivenDirection(Collider2D collider, Vector2 direction)
+        private static Vector2 FindPositionOnColliderEdgeInGivenDirection(in Bounds bounds, Vector2 direction)
         {
-            Vector2 center = collider.bounds.center;
-            collider.bounds.IntersectRay(new Ray(center, direction), out float distanceFromCenterToEdge);
+            Vector2 center = bounds.center;
+            bounds.IntersectRay(new Ray(center, direction), out float distanceFromCenterToEdge);
             return center - (distanceFromCenterToEdge * direction);
         }
         
         #if UNITY_EDITOR
-        private static void DrawCastResultAsLineInEditor(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit)
+        private static void DrawCastResultAsLineInEditor(Vector2 origin, float offset, Vector2 direction,
+            float distance, RaycastHit2D hit)
         {
-            float duration = Time.deltaTime;
-            Vector2 terminal = origin + distance * direction;
+            float duration = Time.fixedDeltaTime;
+            Vector2 start = origin + (offset   * direction);
+            Vector2 end   = origin + (distance * direction);
 
+            Debug.DrawLine(start, end,    Color.red,     duration);
+            Debug.DrawLine(start, origin, Color.magenta, duration);
             if (hit)
             {
-                // draw the ray past the hit point all the way to max distance,
-                // making optimization easier since excessively long cast distance becomes obvious
                 Debug.DrawLine(origin, hit.point, Color.green, duration);
-                Debug.DrawLine(hit.point, terminal, Color.red, duration);
-            }
-            else
-            {
-                Debug.DrawLine(origin, terminal, Color.red, duration);
             }
         }
         #endif
