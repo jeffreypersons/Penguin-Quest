@@ -15,7 +15,7 @@ namespace PQ.Common.Physics
     For example, is there something X distance in front of me?
     What about the front half of the box's bottom side?
     */
-    public sealed class MoverBox : MonoBehaviour
+    public sealed class KinematicMover2D : MonoBehaviour
     {
         private float            _castOffset;
         private RayCaster        _caster;
