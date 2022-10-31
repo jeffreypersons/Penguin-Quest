@@ -13,9 +13,6 @@ namespace PQ.Common.Physics
     */
     public sealed class MoverBox : MonoBehaviour
     {
-        private float   _degreesDelta;
-        private Vector2 _positionDelta;
-
         private float            _castOffset;
         private RayCaster        _caster;
         private Rigidbody2D      _rigidBody;
@@ -34,7 +31,6 @@ namespace PQ.Common.Physics
                 $"current:{Current}," +
                 $"extrapolated:{Extrapolated})";
 
-
         public void PlaceAt(Vector2 position, float rotation)
         {
             _rigidBody.transform.position = position;
@@ -46,9 +42,26 @@ namespace PQ.Common.Physics
             _rigidBody.transform.localEulerAngles = new Vector3(xDegrees, yDegrees, zDegrees);
         }
 
+
+        public void MoveBy(Vector2 delta)
+        {
+            /*
+            _bounds.
+            _bounds.Update(delta, );
+            
         
-        public void MoveBy(Vector2 delta)   => _positionDelta += delta;
-        public void RotateBy(float degrees) => _degreesDelta  += degrees;
+            var transform = _collider.transform;
+            var bounds    = _collider.bounds;
+
+            var center = bounds.center;
+            var xAxis  = bounds.extents.x * transform.right.normalized;
+            var yAxis  = bounds.extents.x * transform.up.normalized;
+            */
+        }
+        public void RotateBy(float degrees)
+        {
+
+        }
 
         public RayHit CastBehind(float t, in LayerMask mask, float distance) => CastFromSideAt(_bounds.Back,   t, mask, distance);
         public RayHit CastFront(float t,  in LayerMask mask, float distance) => CastFromSideAt(_bounds.Front,  t, mask, distance);
@@ -82,10 +95,9 @@ namespace PQ.Common.Physics
 
         void Awake()
         {
-            _castOffset = 0.0f;
-            _collider   = gameObject.GetComponent<Collider2D>();
-            _rigidBody  = gameObject.GetComponent<Rigidbody2D>();
-
+            _caster    = new RayCaster { DrawCastInEditor = true };
+            _collider  = gameObject.GetComponent<Collider2D>();
+            _rigidBody = gameObject.GetComponent<Rigidbody2D>();
             if (_collider == null)
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
@@ -95,33 +107,36 @@ namespace PQ.Common.Physics
                 throw new MissingComponentException($"Expected attached rigidbody2D - not found on {gameObject}");
             }
 
-            _caster = new();
-
+            _castOffset = 0.0f;
             _rigidBody.isKinematic = true;
         }
 
         void FixedUpdate()
         {
-            if (!Mathf.Approximately(_degreesDelta, 0f))
+            if (_bounds == _boundsLastFixedUpdate)
             {
-                _rigidBody.MoveRotation(_rigidBody.rotation + _degreesDelta);
-                _degreesDelta = 0f;
+                return;
             }
-            if (!Mathf.Approximately(_positionDelta.x, 0f) || !Mathf.Approximately(_positionDelta.x, 0f))
+
+            var currentRotation = _bounds.Rotation;
+            var currentPosition = _bounds.Center;
+            var timeDelta       = Time.fixedDeltaTime;
+            var rotationDelta   = OrientedBounds2D.ComputeRotationDelta(_boundsLastFixedUpdate, _bounds);
+            var positionDelta   = OrientedBounds2D.ComputePositionDelta(_boundsLastFixedUpdate, _bounds);
+
+            if (!Mathf.Approximately(rotationDelta, 0f))
             {
-                _rigidBody.MovePosition(_rigidBody.position + _positionDelta);
-                _positionDelta = Vector2.zero;
+                _rigidBody.MoveRotation(currentRotation + (rotationDelta * timeDelta));
+            }
+            if (!Mathf.Approximately(positionDelta.x, 0f) || !Mathf.Approximately(positionDelta.y, 0f))
+            {
+                _rigidBody.MovePosition(currentPosition + (positionDelta * timeDelta));
             }
             _boundsLastFixedUpdate = _bounds;
         }
 
-        private void ApplyBounds()
-        {
-            if (_boundsLastFixedUpdate.XAxis == _bounds.XAxis)
-            _boundsLastFixedUpdate = _bounds;
-        }
-
-#if UNITY_EDITOR
+        
+        #if UNITY_EDITOR
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || !enabled)
