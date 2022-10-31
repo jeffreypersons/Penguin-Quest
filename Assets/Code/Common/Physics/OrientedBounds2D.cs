@@ -24,11 +24,7 @@ namespace PQ.Common.Physics
                 this.normal = normal;
             }
 
-            [Pure]
-            public Vector2 PointAt(float t)
-            {
-                return Vector2.Lerp(start, end, t);
-            }
+            [Pure] public Vector2 PointAt(float t) => Vector2.Lerp(start, end, t);
         }
 
         private Bounds _aab;
@@ -50,9 +46,11 @@ namespace PQ.Common.Physics
         
         public OrientedBounds2D() { }
 
-        [Pure] public bool IsPositionAligned(OrientedBounds2D other) => ApproximatelyEqual(Center,   other.Center);
-        [Pure] public bool IsRotationAligned(OrientedBounds2D other) => ApproximatelyEqual(Rotation, other.Rotation);
-        [Pure] public bool IsSizeAligned(OrientedBounds2D other)     => ApproximatelyEqual(Size,     other.Size);
+        [Pure] public static Vector2 ComputePositionDelta(OrientedBounds2D from, OrientedBounds2D to) =>
+            to.Center - from.Center;
+
+        [Pure] public static float   ComputeRotationDelta(OrientedBounds2D from, OrientedBounds2D to) =>
+            Vector2.SignedAngle(from.XAxis, to.XAxis);
 
 
         /* Given position and axes, adjust such that it's aligned and scaled with given forward and up vectors. */
@@ -66,45 +64,49 @@ namespace PQ.Common.Physics
             {
                 throw new ArgumentException($"Axes must be orthorgonal - received forward {xAxis} and up {yAxis} axes");
             }
-
-            Vector2 min  = center - xAxis - yAxis;
-            Vector2 max  = center + xAxis + yAxis;
-            Vector2 size = new(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
-            float rotation = Vector2.SignedAngle(Vector2.right, xAxis);
-            if (ApproximatelyEqual(Center,   center) &&
-                ApproximatelyEqual(Size,     size)   &&
-                ApproximatelyEqual(Rotation, rotation))
+            if (AreBoundsApproximatelyEqual(center, xAxis, yAxis))
             {
                 return false;
             }
 
+            Vector2 min         = center - xAxis - yAxis;
+            Vector2 max         = center + xAxis + yAxis;
+            Vector2 size        = new(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
+            float   rotation    = Vector2.SignedAngle(Vector2.right, xAxis);
             Vector2 rearBottom  = new(min.x, min.y);
             Vector2 rearTop     = new(min.x, max.y);
             Vector2 frontBottom = new(max.x, min.y);
             Vector2 frontTop    = new(max.x, max.y);
-            _aab = new Bounds(center, size);
-            Center = center;
-            Size   = size;
-            XAxis  = xAxis;
-            YAxis  = yAxis;
+
+            _aab     = new Bounds(center, size);
+            Center   = center;
+            Size     = size;
+            XAxis    = xAxis;
+            YAxis    = yAxis;
             Rotation = rotation;
-            Back   = new(start: rearBottom,  end: rearTop,     normal: (-xAxis).normalized);
-            Front  = new(start: frontBottom, end: frontTop,    normal: xAxis.normalized);
-            Bottom = new(start: rearBottom,  end: frontBottom, normal: (-yAxis).normalized);
-            Top    = new(start: rearTop,     end: frontTop,    normal: yAxis.normalized);
+            Back     = new(start: rearBottom,  end: rearTop,     normal: (-xAxis).normalized);
+            Front    = new(start: frontBottom, end: frontTop,    normal: xAxis.normalized);
+            Bottom   = new(start: rearBottom,  end: frontBottom, normal: (-yAxis).normalized);
+            Top      = new(start: rearTop,     end: frontTop,    normal: yAxis.normalized);
             return true;
         }
         
 
         public override int GetHashCode() => HashCode.Combine(GetType(), Center, XAxis, YAxis);
         public override bool Equals(object obj) => ((IEquatable<OrientedBounds2D>)this).Equals(obj as OrientedBounds2D);
-        bool IEquatable<OrientedBounds2D>.Equals(OrientedBounds2D other) =>
-            ApproximatelyEqual(Center,   other.Center) &&
-            ApproximatelyEqual(Size,     other.Size)   &&
-            ApproximatelyEqual(Rotation, other.Rotation);
+        bool IEquatable<OrientedBounds2D>.Equals(OrientedBounds2D other) => Equal(this, other);
+
+        public static bool operator ==(OrientedBounds2D left, OrientedBounds2D right) =>  Equal(left, right);
+        public static bool operator !=(OrientedBounds2D left, OrientedBounds2D right) => !Equal(left, right);
 
 
-        [Pure] private static bool ApproximatelyEqual(float a, float b)     => Mathf.Approximately(a, b);
-        [Pure] private static bool ApproximatelyEqual(Vector2 a, Vector2 b) => Mathf.Approximately(a.x, b.x) && Mathf.Approximately(a.y, b.y);
+        [Pure] private static bool Equal(OrientedBounds2D left, OrientedBounds2D right) =>
+            ReferenceEquals(left, right) ||
+            (left is not null && right is not null && left.AreBoundsApproximatelyEqual(right.Center, right.XAxis, right.YAxis));
+        
+        [Pure] private bool AreBoundsApproximatelyEqual(Vector2 center, Vector2 xAxis, Vector2 yAxis) =>
+            Mathf.Approximately(Center.x, center.x) && Mathf.Approximately(Center.y, center.y) &&
+            Mathf.Approximately(XAxis.x,  xAxis.x)  && Mathf.Approximately(XAxis.y,  xAxis.y)  &&
+            Mathf.Approximately(YAxis.x,  yAxis.x)  && Mathf.Approximately(YAxis.y,  yAxis.y);
     }
 }
