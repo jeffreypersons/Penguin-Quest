@@ -3,6 +3,10 @@ using PQ.Common.Extensions;
 using PQ.Common.Casts;
 
 
+// ----- todo -----
+// - figure out a way to sync any changes to transform/rigidbody/collider made in editor or elsewhere..
+//   maybe try just applying it as just another force?? Or skipping updating for the frame that occurs..or just ignore it?
+//
 namespace PQ.Common.Physics
 {
     /*
@@ -17,11 +21,11 @@ namespace PQ.Common.Physics
         private RayCaster        _caster;
         private Rigidbody2D      _rigidBody;
         private Collider2D       _collider;
-        private OrientedBounds2D _boundsLastFixedUpdate;
-        private OrientedBounds2D _bounds;
+        private OrientedBounds2D _currentBounds;
+        private OrientedBounds2D _extrapolatedBounds;
 
-        public OrientedBounds2D Current      => _boundsLastFixedUpdate;
-        public OrientedBounds2D Extrapolated => _bounds;
+        public OrientedBounds2D Current      => _currentBounds;
+        public OrientedBounds2D Extrapolated => _extrapolatedBounds;
 
         public float CastOffset       { get => _castOffset;              set => _castOffset = value;              }
         public bool  DrawCastInEditor { get => _caster.DrawCastInEditor; set => _caster.DrawCastInEditor = value; }
@@ -42,31 +46,12 @@ namespace PQ.Common.Physics
             _rigidBody.transform.localEulerAngles = new Vector3(xDegrees, yDegrees, zDegrees);
         }
 
-
-        public void MoveBy(Vector2 delta)
-        {
-            /*
-            _bounds.
-            _bounds.Update(delta, );
-            
-        
-            var transform = _collider.transform;
-            var bounds    = _collider.bounds;
-
-            var center = bounds.center;
-            var xAxis  = bounds.extents.x * transform.right.normalized;
-            var yAxis  = bounds.extents.x * transform.up.normalized;
-            */
-        }
-        public void RotateBy(float degrees)
-        {
-
-        }
-
-        public RayHit CastBehind(float t, in LayerMask mask, float distance) => CastFromSideAt(_bounds.Back,   t, mask, distance);
-        public RayHit CastFront(float t,  in LayerMask mask, float distance) => CastFromSideAt(_bounds.Front,  t, mask, distance);
-        public RayHit CastBelow(float t,  in LayerMask mask, float distance) => CastFromSideAt(_bounds.Bottom, t, mask, distance);
-        public RayHit CastAbove(float t,  in LayerMask mask, float distance) => CastFromSideAt(_bounds.Top,    t, mask, distance);
+        public void MoveBy(Vector2 amount)  => _extrapolatedBounds.MoveBy(amount);
+        public void RotateBy(float degrees) => _extrapolatedBounds.RotateBy(degrees);
+        public RayHit CastBehind(float t, in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Back,   t, mask, distance);
+        public RayHit CastFront(float t,  in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Front,  t, mask, distance);
+        public RayHit CastBelow(float t,  in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Bottom, t, mask, distance);
+        public RayHit CastAbove(float t,  in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Top,    t, mask, distance);
 
         // more expensive cast in arbitrary direction as it has to account for any angle of intersection with bounds
         public RayHit Cast(Vector2 direction, in LayerMask layerMask, float distance)
@@ -79,13 +64,12 @@ namespace PQ.Common.Physics
                 offset:    _castOffset);
         }
 
-
         // cheap cast in a direction perpendicular to bounds, with t clamped to [0,1], and mapped to relative minimum on that side
         // for example, front side with t = 1 is the top of the forward facing side, aka top right corner relative to orientation
         private RayHit CastFromSideAt(OrientedBounds2D.Side side, float t, in LayerMask layerMask, float distance)
         {
             return _caster.CastFromPoint(
-                point:     _bounds.Back.PointAt(t),
+                point:     _extrapolatedBounds.Back.PointAt(t),
                 direction: side.normal,
                 layerMask: layerMask,
                 distance:  distance,
@@ -109,33 +93,40 @@ namespace PQ.Common.Physics
 
             _castOffset = 0.0f;
             _rigidBody.isKinematic = true;
+            _currentBounds.SetFromCollider(_collider);
+            _extrapolatedBounds.SetFromCollider(_collider);
         }
 
         void FixedUpdate()
         {
-            if (_bounds == _boundsLastFixedUpdate)
+            ApplyAnyAccumulatedChanges(_rigidBody, _currentBounds, _extrapolatedBounds);
+        }
+
+
+        private static bool ApplyAnyAccumulatedChanges(Rigidbody2D rigidBody,
+            OrientedBounds2D current, OrientedBounds2D extrapolated)
+        {
+            if (current == extrapolated)
             {
-                return;
+                return false;
             }
 
-            var currentRotation = _bounds.Rotation;
-            var currentPosition = _bounds.Center;
-            var timeDelta       = Time.fixedDeltaTime;
-            var rotationDelta   = OrientedBounds2D.ComputeRotationDelta(_boundsLastFixedUpdate, _bounds);
-            var positionDelta   = OrientedBounds2D.ComputePositionDelta(_boundsLastFixedUpdate, _bounds);
+            var timeDelta     = Time.fixedDeltaTime;
+            var rotationDelta = OrientedBounds2D.ComputeRotationDelta(current, extrapolated);
+            var positionDelta = OrientedBounds2D.ComputePositionDelta(current, extrapolated);
 
             if (!Mathf.Approximately(rotationDelta, 0f))
             {
-                _rigidBody.MoveRotation(currentRotation + (rotationDelta * timeDelta));
+                rigidBody.MoveRotation(extrapolated.Rotation + (rotationDelta * timeDelta));
             }
             if (!Mathf.Approximately(positionDelta.x, 0f) || !Mathf.Approximately(positionDelta.y, 0f))
             {
-                _rigidBody.MovePosition(currentPosition + (positionDelta * timeDelta));
+                rigidBody.MovePosition(extrapolated.Center + (positionDelta * timeDelta));
             }
-            _boundsLastFixedUpdate = _bounds;
+            return current.SetFrom(extrapolated);
         }
-
         
+
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
@@ -144,8 +135,8 @@ namespace PQ.Common.Physics
                 return;
             }
 
-            // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window
-            // draw a pair of arrows from the that should be identical to the transform's axes in the editor window
+            // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window,
+            // then draw a pair of arrows from the that should be identical to the transform's axes in the editor window
             Vector2 center = Current.Center;
             Vector2 xAxis  = Current.XAxis;
             Vector2 yAxis  = Current.YAxis;

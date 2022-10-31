@@ -7,6 +7,11 @@ namespace PQ.Common.Physics
 {
     /*
     Represents an orientation aligned bounding box, centered at position, oriented and sized according to forward/up axes.
+
+    This construct is useful, as it can be used for extrapolation and other computations without having to work off of a
+    transform, rigidbody, or collider.
+    
+    Additionally, the orientation alignment means we can take rotation explicitly into account, unlike axis-aligned bounds.
     */
     public sealed class OrientedBounds2D : IEquatable<OrientedBounds2D>
     {
@@ -53,8 +58,35 @@ namespace PQ.Common.Physics
             Vector2.SignedAngle(from.XAxis, to.XAxis);
 
 
-        /* Given position and axes, adjust such that it's aligned and scaled with given forward and up vectors. */
-        public bool Update(Vector2 center, Vector2 xAxis, Vector2 yAxis)
+        public bool RotateBy(float degrees)
+        {
+            return SetFromOriginAndAxes(Center, Rotate(XAxis, degrees), Rotate(YAxis, degrees));
+        }
+
+        public bool MoveBy(Vector2 amount)
+        {
+            return SetFromOriginAndAxes(Center + amount, XAxis, YAxis);
+        }
+
+
+
+        public bool SetFrom(OrientedBounds2D other)
+        {
+            return SetFromOriginAndAxes(other.Center, other.XAxis, other.YAxis);
+        }
+
+        public bool SetFromCollider(Collider2D collider)
+        {
+            var bounds    = collider.bounds;
+            var transform = collider.transform;
+            return SetFromOriginAndAxes(
+                center: bounds.center,
+                xAxis:  bounds.extents.x * transform.right.normalized,
+                yAxis:  bounds.extents.y * transform.up.normalized
+            );
+        }
+
+        public bool SetFromOriginAndAxes(Vector2 center, Vector2 xAxis, Vector2 yAxis)
         {
             if (xAxis == Vector2.zero || yAxis == Vector2.zero)
             {
@@ -72,7 +104,7 @@ namespace PQ.Common.Physics
             Vector2 min         = center - xAxis - yAxis;
             Vector2 max         = center + xAxis + yAxis;
             Vector2 size        = new(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
-            float   rotation    = Vector2.SignedAngle(Vector2.right, xAxis);
+            float   rotation    = DegreesBetween(Vector2.right, xAxis);
             Vector2 rearBottom  = new(min.x, min.y);
             Vector2 rearTop     = new(min.x, max.y);
             Vector2 frontBottom = new(max.x, min.y);
@@ -108,5 +140,13 @@ namespace PQ.Common.Physics
             Mathf.Approximately(Center.x, center.x) && Mathf.Approximately(Center.y, center.y) &&
             Mathf.Approximately(XAxis.x,  xAxis.x)  && Mathf.Approximately(XAxis.y,  xAxis.y)  &&
             Mathf.Approximately(YAxis.x,  yAxis.x)  && Mathf.Approximately(YAxis.y,  yAxis.y);
+
+
+        // todo: lots of room for optimization here, since if we assume normalized vectors in a 2d plane,
+        //       we can avoid quaternions and square roots and more
+        [Pure] private static float DegreesBetween(Vector2 from, Vector2 to) =>
+            Vector2.SignedAngle(from, to);
+        [Pure] private static Vector2 Rotate(Vector2 vector, float degrees) =>
+            Quaternion.AngleAxis(degrees, vector) * vector;
     }
 }
