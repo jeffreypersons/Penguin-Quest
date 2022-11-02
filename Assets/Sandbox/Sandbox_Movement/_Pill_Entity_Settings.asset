@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: _Pill_Entity_Settings
   m_EditorClassIdentifier: 
   _locomotionBlendStep: 0.1
-  _horizontalMovementPeakSpeed: 100
+  _horizontalMovementPeakSpeed: 10
   _jumpLengthToApex: 10
   _jumpHeightToApex: 10
   _gravityStrength: 10
@@ -22,6 +22,3 @@ MonoBehaviour:
   _maintainPerpendicularityToSurface: 1
   _surfaceAlignmentRotationalStrength: 0.1
   _degreesFromSurfaceNormalThreshold: 0.01
-  _enableAutomaticAxisLockingForSmallVelocities: 1
-  _linearVelocityThreshold: 5
-  _angularVelocityThreshold: 5

@@ -17,6 +17,8 @@ namespace PQ.Common.Physics
     */
     public sealed class KinematicMover2D : MonoBehaviour
     {
+        private bool             _flippedHorizontal;
+        private bool             _flippedVertical;
         private float            _castOffset;
         private RayCaster        _caster;
         private Rigidbody2D      _rigidBody;
@@ -26,6 +28,8 @@ namespace PQ.Common.Physics
 
         public OrientedBounds2D Current      => _currentBounds;
         public OrientedBounds2D Extrapolated => _extrapolatedBounds;
+        public bool FlippedHorizontal        => _flippedHorizontal;
+        public bool FlippedVertical          => _flippedVertical;
 
         public float CastOffset       { get => _castOffset;              set => _castOffset = value;              }
         public bool  DrawCastInEditor { get => _caster.DrawCastInEditor; set => _caster.DrawCastInEditor = value; }
@@ -35,26 +39,41 @@ namespace PQ.Common.Physics
                 $"current:{Current}," +
                 $"extrapolated:{Extrapolated})";
 
+        /* Force a move to current position and rotation, discarding any extrapolated movement. */
         public void PlaceAt(Vector2 position, float rotation)
         {
             _rigidBody.transform.position = position;
             _rigidBody.transform.localEulerAngles = new Vector3(0, 0, rotation);
+            _currentBounds.SetFromCollider(_collider);
+            _extrapolatedBounds.SetFromCollider(_collider);
         }
 
-        public void SetLocalOrientation3D(float xDegrees, float yDegrees, float zDegrees)
+        /* Force a move to current position and rotation, discarding any extrapolated movement. */
+        public void Flip(bool horizontal, bool vertical)
         {
-            _rigidBody.transform.localEulerAngles = new Vector3(xDegrees, yDegrees, zDegrees);
+            Vector3 orientation = _rigidBody.transform.localEulerAngles;
+            _rigidBody.transform.localEulerAngles = new Vector3(
+                vertical?   -180 : 0,
+                horizontal? -180 : 0,
+                orientation.z
+            );
+
+            _currentBounds     .SetFromCollider(_collider);
+            _extrapolatedBounds.SetFromCollider(_collider);
+            _flippedHorizontal = horizontal;
+            _flippedVertical   = vertical;
         }
+
 
         public void MoveBy(Vector2 amount)  => _extrapolatedBounds.MoveBy(amount);
         public void RotateBy(float degrees) => _extrapolatedBounds.RotateBy(degrees);
-        public RayHit CastBehind(float t, in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Back,   t, mask, distance);
-        public RayHit CastFront(float t,  in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Front,  t, mask, distance);
-        public RayHit CastBelow(float t,  in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Bottom, t, mask, distance);
-        public RayHit CastAbove(float t,  in LayerMask mask, float distance) => CastFromSideAt(_extrapolatedBounds.Top,    t, mask, distance);
+        public RayHit CastBehind(float yOffset, LayerMask mask, float distance) => Cast(-1f, yOffset, _extrapolatedBounds.Back,    mask, distance);
+        public RayHit CastFront(float yOffset,  LayerMask mask, float distance) => Cast( 1f, yOffset, _extrapolatedBounds.Forward, mask, distance);
+        public RayHit CastBelow(float xOffset,  LayerMask mask, float distance) => Cast(xOffset, -1f, _extrapolatedBounds.Below,   mask, distance);
+        public RayHit CastAbove(float xOffset,  LayerMask mask, float distance) => Cast(xOffset,  1f, _extrapolatedBounds.Above,   mask, distance);
 
         // more expensive cast in arbitrary direction as it has to account for any angle of intersection with bounds
-        public RayHit Cast(Vector2 direction, in LayerMask layerMask, float distance)
+        public RayHit Cast(Vector2 direction, LayerMask layerMask, float distance)
         {
             return _caster.CastFromColliderBounds(
                 bounds:    _collider.bounds,
@@ -66,11 +85,11 @@ namespace PQ.Common.Physics
 
         // cheap cast in a direction perpendicular to bounds, with t clamped to [0,1], and mapped to relative minimum on that side
         // for example, front side with t = 1 is the top of the forward facing side, aka top right corner relative to orientation
-        private RayHit CastFromSideAt(OrientedBounds2D.Side side, float t, in LayerMask layerMask, float distance)
+        private RayHit Cast(float tXAxis, float tYAxis, Vector2 direction, LayerMask layerMask, float distance)
         {
             return _caster.CastFromPoint(
-                point:     _extrapolatedBounds.Back.PointAt(t),
-                direction: side.normal,
+                point:     _extrapolatedBounds.InterpolateAlongAxes(tXAxis, tYAxis),
+                direction: direction,
                 layerMask: layerMask,
                 distance:  distance,
                 offset:    _castOffset);
@@ -79,8 +98,10 @@ namespace PQ.Common.Physics
 
         void Awake()
         {
-            _caster    = new RayCaster { DrawCastInEditor = true };
-            _collider  = gameObject.GetComponent<Collider2D>();
+            _caster = new();
+            _currentBounds = new();
+            _extrapolatedBounds = new();
+            _collider = gameObject.GetComponent<Collider2D>();
             _rigidBody = gameObject.GetComponent<Rigidbody2D>();
             if (_collider == null)
             {
@@ -92,6 +113,7 @@ namespace PQ.Common.Physics
             }
 
             _castOffset = 0.0f;
+            _caster.DrawCastInEditor = true;
             _rigidBody.isKinematic = true;
             _currentBounds.SetFromCollider(_collider);
             _extrapolatedBounds.SetFromCollider(_collider);
@@ -99,31 +121,31 @@ namespace PQ.Common.Physics
 
         void FixedUpdate()
         {
-            ApplyAnyAccumulatedChanges(_rigidBody, _currentBounds, _extrapolatedBounds);
+            ApplyAnyAccumulatedChanges();
         }
 
 
-        private static bool ApplyAnyAccumulatedChanges(Rigidbody2D rigidBody,
-            OrientedBounds2D current, OrientedBounds2D extrapolated)
+        public bool ApplyAnyAccumulatedChanges()
         {
-            if (current == extrapolated)
+            if (_currentBounds == _extrapolatedBounds)
             {
                 return false;
             }
 
             var timeDelta     = Time.fixedDeltaTime;
-            var rotationDelta = OrientedBounds2D.ComputeRotationDelta(current, extrapolated);
-            var positionDelta = OrientedBounds2D.ComputePositionDelta(current, extrapolated);
-
+            var rotationDelta = _currentBounds.ComputeRotationDelta(_extrapolatedBounds.Forward);
+            var positionDelta = _currentBounds.ComputePositionDelta(_extrapolatedBounds.Center);
             if (!Mathf.Approximately(rotationDelta, 0f))
             {
-                rigidBody.MoveRotation(extrapolated.Rotation + (rotationDelta * timeDelta));
+                Vector2 referenceAxis = _flippedHorizontal? Vector2.left : Vector2.right;
+                float currentRotation = _extrapolatedBounds.ComputeRotationDelta(referenceAxis);
+                _rigidBody.MoveRotation(currentRotation + (rotationDelta * timeDelta));
             }
             if (!Mathf.Approximately(positionDelta.x, 0f) || !Mathf.Approximately(positionDelta.y, 0f))
             {
-                rigidBody.MovePosition(extrapolated.Center + (positionDelta * timeDelta));
+                _rigidBody.MovePosition(_extrapolatedBounds.Center + (positionDelta * timeDelta));
             }
-            return current.SetFrom(extrapolated);
+            return _currentBounds.SetFrom(_extrapolatedBounds);
         }
         
 
