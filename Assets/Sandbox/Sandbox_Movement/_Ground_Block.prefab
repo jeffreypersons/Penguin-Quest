@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3204818302733060352}
   - component: {fileID: -4625578252248657165}
   m_Layer: 9
-  m_Name: Platform_Block
+  m_Name: _Ground_Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,8 +74,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d0bfddec8989acc45be655b7a9190ce5, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 4788ee14891a78a4485d9050de04f822, type: 3}
+  m_Color: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
