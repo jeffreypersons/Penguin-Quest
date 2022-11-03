@@ -40,7 +40,7 @@ namespace PQ.TestScenes.Minimal
         {
             var negativePressedCount = negativeKeys.Count(key => Keyboard.current[key].isPressed);
             var positivePressedCount = positiveKeys.Count(key => Keyboard.current[key].isPressed);
-            return negativePressedCount.CompareTo(positivePressedCount);
+            return positivePressedCount.CompareTo(negativePressedCount);
         }
     }
 }
