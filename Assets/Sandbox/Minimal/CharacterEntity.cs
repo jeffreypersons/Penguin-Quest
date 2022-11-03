@@ -41,10 +41,10 @@ namespace PQ.TestScenes.Minimal
                 _mover.Flip();
             }
 
-            float deltaX = _input.Horizontal * _horizontalSpeed * Time.fixedDeltaTime;
-            if (!Mathf.Approximately(deltaX, 0f))
+            float distance = Mathf.Abs(_input.Horizontal * _horizontalSpeed * Time.fixedDeltaTime);
+            if (!Mathf.Approximately(distance, 0f))
             {
-                _mover.Move(deltaX * _mover.Forward);
+                _mover.Move(distance * _mover.Forward);
             }
         }
     }
