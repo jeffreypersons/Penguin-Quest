@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace PQ.TestScenes.Minimal
 {
-    public class PlayerInput
+    public sealed class GameplayInput
     {
         public float Horizontal { get; private set; }
         public float Vertical   { get; private set; }
@@ -16,14 +16,14 @@ namespace PQ.TestScenes.Minimal
 
         private bool WasPressedThisFrame(Key key) => Keyboard.current[key].wasPressedThisFrame;
 
-        public PlayerInput()
+        public GameplayInput()
         {
             Horizontal = 0f;
             Vertical   = 0f;
         }
 
 
-        public void Update()
+        public void ReadInput()
         {
             Horizontal = ReadAxis(negativeKeys: leftButtons, positiveKeys: rightButtons);
             Vertical   = ReadAxis(negativeKeys: downButtons, positiveKeys: upButtons);
