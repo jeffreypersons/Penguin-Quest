@@ -6,11 +6,11 @@ namespace PQ.TestScenes.Minimal
 {
     public class SimpleCharacterController2D : ICharacterController2D
     {
-        private bool _flipped;
-        private bool _isGrounded;
         private Vector2 _position;
         private Vector2 _forward;
         private Vector2 _up;
+        private bool    _flipped;
+        private bool    _isGrounded;
 
         private const int HitBufferSize = 16;
 
@@ -44,6 +44,7 @@ namespace PQ.TestScenes.Minimal
             _contactFilter.useLayerMask = true;
 
             _flipped = false;
+            _isGrounded = false;
             SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: 0f);
             SyncPropertiesFromRigidBody();
         }
@@ -57,7 +58,7 @@ namespace PQ.TestScenes.Minimal
         void ICharacterController2D.Flip()
         {
             _flipped = !_flipped;
-            SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: _flipped ? -180f : 0f);
+            SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: _flipped ? 180f : 0f);
             SyncPropertiesFromRigidBody();
         }
 
