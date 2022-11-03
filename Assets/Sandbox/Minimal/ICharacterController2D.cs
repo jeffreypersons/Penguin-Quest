@@ -1,11 +1,17 @@
+using UnityEngine;
 
 
 namespace PQ.TestScenes.Minimal
 {
     public interface ICharacterController2D
     {
-        public bool IsGrounded { get; }
+        public Vector2 Position   { get; }
+        public Vector2 Forward    { get; }
+        public Vector2 Up         { get; }
+        public bool    IsGrounded { get; }
+        public bool    Flipped    { get; }
 
-        public void Move(float deltaX, float deltaY);
+        public void Flip();
+        public void Move(Vector2 deltaPosition);
     }
 }

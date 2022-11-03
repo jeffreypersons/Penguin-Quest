@@ -29,10 +29,23 @@ namespace PQ.TestScenes.Minimal
 
         private void FixedUpdate()
         {
-            _mover.Move(
-                deltaX: _input.Horizontal * _horizontalSpeed * Time.fixedDeltaTime,
-                deltaY: 0
-            );
+            if (Mathf.Approximately(_input.Horizontal, 0f))
+            {
+                return;
+            }
+
+            bool characterMovingLeft = _input.Horizontal < 0;
+            bool characterFacingLeft = _mover.Flipped;
+            if (characterFacingLeft != characterMovingLeft)
+            {
+                _mover.Flip();
+            }
+
+            float deltaX = _input.Horizontal * _horizontalSpeed * Time.fixedDeltaTime;
+            if (!Mathf.Approximately(deltaX, 0f))
+            {
+                _mover.Move(deltaX * _mover.Forward);
+            }
         }
     }
 }

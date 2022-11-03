@@ -4,8 +4,14 @@ using UnityEngine;
 
 namespace PQ.TestScenes.Minimal
 {
-    public sealed class SimpleCharacterController2D : ICharacterController2D
+    public class SimpleCharacterController2D : ICharacterController2D
     {
+        private bool _flipped;
+        private bool _isGrounded;
+        private Vector2 _position;
+        private Vector2 _forward;
+        private Vector2 _up;
+
         private const int HitBufferSize = 16;
 
         private readonly ContactFilter2D   _contactFilter;
@@ -36,18 +42,43 @@ namespace PQ.TestScenes.Minimal
             _rigidBody.isKinematic = true;
             _contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
             _contactFilter.useLayerMask = true;
+
+            _flipped = false;
+            SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: 0f);
+            SyncPropertiesFromRigidBody();
         }
 
-        bool ICharacterController2D.IsGrounded { get; }
+        Vector2 ICharacterController2D.Position   => _position;
+        Vector2 ICharacterController2D.Forward    => _forward;
+        Vector2 ICharacterController2D.Up         => _up;
+        bool    ICharacterController2D.IsGrounded => _isGrounded;
+        bool    ICharacterController2D.Flipped    => _flipped;
 
-        void ICharacterController2D.Move(float deltaX, float deltaY)
+        void ICharacterController2D.Flip()
         {
-            if (Mathf.Approximately(deltaX, 0f) && Mathf.Approximately(deltaY, 0f))
-            {
-                return;
-            }
+            _flipped = !_flipped;
+            SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: _flipped ? -180f : 0f);
+            SyncPropertiesFromRigidBody();
+        }
 
-            _rigidBody.position += new Vector2(deltaX, deltaY);
+        void ICharacterController2D.Move(Vector2 deltaPosition)
+        {
+            _rigidBody.position += new Vector2(deltaPosition.x, deltaPosition.y);
+            SyncPropertiesFromRigidBody();
+        }
+
+        
+        private void SetXYOrientation(float degreesAroundXAxis, float degreesAroundYAxis)
+        {
+            _rigidBody.transform.localEulerAngles =
+                new Vector3(degreesAroundXAxis, degreesAroundYAxis, _rigidBody.transform.localEulerAngles.z);
+        }
+        
+        private void SyncPropertiesFromRigidBody()
+        {
+            _position = _rigidBody.transform.position;
+            _forward  = _rigidBody.transform.right.normalized;
+            _up       = _rigidBody.transform.up.normalized;
         }
     }
 }
