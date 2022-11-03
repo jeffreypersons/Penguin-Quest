@@ -30,8 +30,8 @@ namespace PQ.TestScenes.Minimal
             );
             if (_axis != axis)
             {
+                Debug.Log($"input-axis changed from {_axis} to {axis}");
                 _axis = axis;
-                Debug.Log($"input-axis changed from ({axis}) to ({_axis})");
             }
         }
 
