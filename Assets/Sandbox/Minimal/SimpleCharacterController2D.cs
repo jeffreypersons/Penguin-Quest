@@ -6,30 +6,21 @@ namespace PQ.TestScenes.Minimal
 {
     public class SimpleCharacterController2D : ICharacterController2D
     {
-        public struct Settings
-        {
-            public readonly int   hitBufferSize;
-            public readonly float contactOffset;
-            public Settings(int hitBufferSize, float contactOffset)
-            {
-                this.hitBufferSize = hitBufferSize;
-                this.contactOffset = contactOffset;
-            }
-        }
-
-        private Vector2  _position;
-        private Vector2  _forward;
-        private Vector2  _up;
-        private bool     _flipped;
-        private bool     _isGrounded;
-        private Settings _settings;
+        private Vector2 _position;
+        private Bounds  _bounds;
+        private Vector2 _forward;
+        private Vector2 _up;
+        private bool    _flipped;
+        private bool    _isGrounded;
+        private float   _contactOffset;
 
         private readonly ContactFilter2D   _contactFilter;
-        private readonly RaycastHit2D[]    _hitBuffer;
+        private readonly RaycastHit2D[]    _horizontalHits;
+        private readonly RaycastHit2D[]    _verticalHits;
         private readonly Rigidbody2D       _rigidBody;
         private readonly CapsuleCollider2D _capsule;
 
-        public SimpleCharacterController2D(GameObject gameObject, Settings settings)
+        public SimpleCharacterController2D(GameObject gameObject)
         {
             if (gameObject == null)
             {
@@ -44,27 +35,32 @@ namespace PQ.TestScenes.Minimal
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
             }
 
-            _contactFilter = new();
-            _hitBuffer     = new RaycastHit2D[settings.hitBufferSize];
-            _rigidBody     = rigidBody;
-            _capsule       = capsule;
-            _settings      = settings;
+            
+            _flipped        = false;
+            _isGrounded     = false;
+            _contactOffset  = 0f;
+            _rigidBody      = rigidBody;
+            _capsule        = capsule;
+            _contactFilter  = new();
+            _horizontalHits = new RaycastHit2D[rigidBody.attachedColliderCount];
+            _verticalHits   = new RaycastHit2D[rigidBody.attachedColliderCount];
 
             _rigidBody.isKinematic = true;
             _contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
             _contactFilter.useLayerMask = true;
 
-            _flipped = false;
-            _isGrounded = false;
             SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: 0f);
             SyncPropertiesFromRigidBody();
         }
 
         Vector2 ICharacterController2D.Position   => _position;
+        Bounds  ICharacterController2D.Bounds     => _capsule.bounds;
         Vector2 ICharacterController2D.Forward    => _forward;
         Vector2 ICharacterController2D.Up         => _up;
         bool    ICharacterController2D.IsGrounded => _isGrounded;
         bool    ICharacterController2D.Flipped    => _flipped;
+        float   ICharacterController2D.ContactOffset { get => _contactOffset; set => _contactOffset = value; }
+
         public static bool DrawCastsInEditor { get; set; } = true;
 
         void ICharacterController2D.Flip()
@@ -76,15 +72,13 @@ namespace PQ.TestScenes.Minimal
 
         void ICharacterController2D.Move(Vector2 deltaPosition)
         {
-            Vector2 horizontal = new(deltaPosition.x, 0);
-            Vector2 vertical   = new(0, deltaPosition.y);
-            CastAndMove(_rigidBody, horizontal, _contactFilter, _hitBuffer, _settings.contactOffset);
-            CastAndMove(_rigidBody, vertical,   _contactFilter, _hitBuffer, _settings.contactOffset);
-
+            CastAndMove(_rigidBody, new(deltaPosition.x, 0), _contactFilter, _contactOffset, _horizontalHits);
+            CastAndMove(_rigidBody, new(0, deltaPosition.y), _contactFilter, _contactOffset, _verticalHits);
             SyncPropertiesFromRigidBody();
         }
         
-        private static void CastAndMove(Rigidbody2D body, Vector2 delta, in ContactFilter2D filter, RaycastHit2D[] results, float skinWidth)
+        private static void CastAndMove(Rigidbody2D body, Vector2 delta, in ContactFilter2D filter, float skinWidth,
+            RaycastHit2D[] results)
         {
             if (delta == Vector2.zero)
             {
@@ -93,9 +87,8 @@ namespace PQ.TestScenes.Minimal
 
             var distance  = delta.magnitude;
             var direction = delta / distance;
-            Debug.Log($"dis={distance},dir={direction}");
-            int hits = body.Cast(delta, filter, results, distance + skinWidth);
-            for (int i = 0; i < hits; i++)
+            int hitCount = body.Cast(delta, filter, results, distance + skinWidth);
+            for (int i = 0; i < hitCount; i++)
             {
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
@@ -116,9 +109,11 @@ namespace PQ.TestScenes.Minimal
         private void SyncPropertiesFromRigidBody()
         {
             _position = _rigidBody.transform.position;
+            _bounds   = _capsule.bounds;
             _forward  = _rigidBody.transform.right.normalized;
             _up       = _rigidBody.transform.up.normalized;
         }
+
         
         #if UNITY_EDITOR
         private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, float offset, Vector2 direction, float distance)
@@ -130,14 +125,13 @@ namespace PQ.TestScenes.Minimal
                 return;
             }
 
-            Vector2 origin = hit.point - (distance * direction);
-            Vector2 start  = origin    + (offset   * direction);
-            Vector2 end    = hit.point;
-
             float duration = Time.fixedDeltaTime;
-            Debug.DrawLine(start,  end,       Color.red,     duration);
-            Debug.DrawLine(start,  origin,    Color.magenta, duration);
-            Debug.DrawLine(origin, hit.point, Color.green,   duration);
+            var origin = hit.point - (distance * direction);
+            var start  = origin    + (offset   * direction);
+            var end    = hit.point;
+            Debug.DrawLine(start,  end,    Color.red,     duration);
+            Debug.DrawLine(start,  origin, Color.magenta, duration);
+            Debug.DrawLine(origin, end,    Color.green,   duration);
         }
         #endif
     }
