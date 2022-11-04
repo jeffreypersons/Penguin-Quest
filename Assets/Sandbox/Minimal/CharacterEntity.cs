@@ -13,7 +13,10 @@ namespace PQ.TestScenes.Minimal
         private void Awake()
         {
             _input = new();
-            _mover = new SimpleCharacterController2D(gameObject);
+            _mover = new SimpleCharacterController2D(gameObject, new SimpleCharacterController2D.Settings(
+                hitBufferSize: 16,
+                contactOffset: 3f
+            ));
         }
 
         private void Start()
