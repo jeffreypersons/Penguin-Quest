@@ -100,6 +100,30 @@ namespace PQ.TestScenes.Minimal
             body.position += direction.normalized * distance;
         }
 
+
+        /*
+        Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
+
+
+        In other words, collision parameters for an impact point, what's the adjusted position when taking into account
+        desired delta, using a simple linear model (similar to what Unity's dynamic physics material provides).
+
+        Note that bounciness is from 0 (no bounciness) to 1 (completely reflected),
+        and that friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance).
+        */
+        private static Vector2 ResolveCollision(Vector2 desiredPosition, Vector2 hitPosition, Vector2 hitNormal, float bounciness, float friction)
+        {
+            Vector2 delta  = desiredPosition - hitPosition;
+            float remainingDistance = delta.magnitude;
+            Vector2 reflected  = Vector2.Reflect(delta, hitNormal);
+            Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
+            Vector2 tangent    = reflected - projection;
+
+            Vector2 perpendicularContribution = bounciness      * remainingDistance * projection.normalized;
+            Vector2 tangentialContribution    = (1f - friction) * remainingDistance * tangent.normalized;
+            return hitPosition + perpendicularContribution + tangentialContribution;
+        }
+
         private void SetXYOrientation(float degreesAroundXAxis, float degreesAroundYAxis)
         {
             _rigidBody.transform.localEulerAngles =
