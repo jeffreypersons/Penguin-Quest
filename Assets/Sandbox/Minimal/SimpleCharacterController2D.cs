@@ -86,7 +86,7 @@ namespace PQ.TestScenes.Minimal
             while (currentDelta != Vector2.zero && iterations < maxIterations)
             {
                 // move body and attached colliders from our current position to next projected collision
-                CastResult hit = DetectCollision(body, currentDelta, filter, skinWidth, results);
+                CastResult hit = FindClosestCollisionAlongDelta(body, currentDelta, filter, skinWidth, results);
                 currentDelta = hit.distance * currentDelta.normalized;
 
                 // account for physics properties of that collision
@@ -101,7 +101,7 @@ namespace PQ.TestScenes.Minimal
 
 
         /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
-        private static CastResult DetectCollision(Rigidbody2D rigidBody, Vector2 delta,
+        private static CastResult FindClosestCollisionAlongDelta(Rigidbody2D rigidBody, Vector2 delta,
             in ContactFilter2D filter, float skinWidth, RaycastHit2D[] results)
         {
             var normal          = Vector2.zero;
