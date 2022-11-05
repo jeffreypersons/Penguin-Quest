@@ -6,6 +6,7 @@ namespace PQ.TestScenes.Minimal
 {
     public class SimpleCharacterController2D : ICharacterController2D
     {
+        private const int MaxIterations = 10;
         private Vector2 _position;
         private Bounds  _bounds;
         private Vector2 _forward;
@@ -72,34 +73,57 @@ namespace PQ.TestScenes.Minimal
 
         void ICharacterController2D.Move(Vector2 deltaPosition)
         {
-            CastAndMove(_rigidBody, new(deltaPosition.x, 0), _contactFilter, _contactOffset, _horizontalHits);
-            CastAndMove(_rigidBody, new(0, deltaPosition.y), _contactFilter, _contactOffset, _verticalHits);
+            CastAndMove(_rigidBody, deltaPosition, _contactFilter, _contactOffset, MaxIterations, _horizontalHits);
             SyncPropertiesFromRigidBody();
         }
-        
-        private static void CastAndMove(Rigidbody2D body, Vector2 delta, in ContactFilter2D filter, float skinWidth,
-            RaycastHit2D[] results)
-        {
-            if (delta == Vector2.zero)
-            {
-                return;
-            }
 
-            var distance  = delta.magnitude;
-            var direction = delta / distance;
-            int hitCount = body.Cast(delta, filter, results, distance + skinWidth);
+        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
+        private static void CastAndMove(Rigidbody2D body, Vector2 targetDelta, in ContactFilter2D filter,
+            float skinWidth, int maxIterations, RaycastHit2D[] results)
+        {
+            int iterations = 0;
+            Vector2 currentDelta = targetDelta;
+            while (currentDelta != Vector2.zero && iterations < maxIterations)
+            {
+                // move body and attached colliders from our current position to next projected collision
+                CastResult hit = DetectCollision(body, currentDelta, filter, skinWidth, results);
+                currentDelta = hit.distance * currentDelta.normalized;
+
+                // account for physics properties of that collision
+                currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, 0, 0);
+
+                // feed our adjusted movement back into Unity's physics
+                body.position += currentDelta;
+
+                iterations++;
+            }
+        }
+
+
+        /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest cast hit. */
+        private static CastResult DetectCollision(Rigidbody2D rigidBody, Vector2 delta,
+            in ContactFilter2D filter, float skinWidth, RaycastHit2D[] results)
+        {
+            var normal          = Vector2.zero;
+            var closestBody     = default(Rigidbody2D);
+            var closestDistance = delta.magnitude;
+            int hitCount = rigidBody.Cast(delta, filter, results, closestDistance + skinWidth);
             for (int i = 0; i < hitCount; i++)
             {
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
-                    DrawCastResultAsLineInEditor(results[i], skinWidth, direction, distance);
+                    DrawCastResultAsLineInEditor(results[i], skinWidth, delta, closestDistance);
                 #endif
                 float adjustedDistance = results[i].distance - skinWidth;
-                distance = adjustedDistance < distance ? adjustedDistance : distance;
+                if (adjustedDistance < closestDistance)
+                {
+                    closestBody     = results[i].rigidbody;
+                    normal          = results[i].normal;
+                    closestDistance = adjustedDistance;
+                }
             }
-            body.position += direction.normalized * distance;
+            return new CastResult(closestBody, normal, closestDistance);
         }
-
 
         /*
         Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
