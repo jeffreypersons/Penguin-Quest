@@ -62,7 +62,8 @@ namespace PQ.TestScenes.Minimal
         bool    ICharacterController2D.Flipped    => _flipped;
         float   ICharacterController2D.ContactOffset { get => _contactOffset; set => _contactOffset = value; }
 
-        public static bool DrawCastsInEditor { get; set; } = true;
+        public static bool DrawCastsInEditor              { get; set; } = true;
+        public static bool DrawMovementResolutionInEditor { get; set; } = true;
 
         void ICharacterController2D.Flip()
         {
@@ -91,6 +92,11 @@ namespace PQ.TestScenes.Minimal
 
                 // account for physics properties of that collision
                 currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, 0, 0);
+                
+                #if UNITY_EDITOR
+                if (DrawMovementResolutionInEditor)
+                    DrawMovementStepInEditor(body.position, currentDelta);
+                #endif
 
                 // feed our adjusted movement back into Unity's physics
                 body.position += currentDelta;
@@ -163,6 +169,11 @@ namespace PQ.TestScenes.Minimal
 
         
         #if UNITY_EDITOR
+        private static void DrawMovementStepInEditor(Vector2 position, Vector2 delta)
+        {
+            Debug.DrawLine(position, position + delta, Color.blue, Time.fixedDeltaTime);
+        }
+
         private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, float offset, Vector2 direction, float distance)
         {
             if (!hit)
@@ -176,9 +187,9 @@ namespace PQ.TestScenes.Minimal
             var origin = hit.point - (distance * direction);
             var start  = origin    + (offset   * direction);
             var end    = hit.point;
-            Debug.DrawLine(start,  end,    Color.red,     duration);
+            Debug.DrawLine(start,  end,    Color.red, duration);
             Debug.DrawLine(start,  origin, Color.magenta, duration);
-            Debug.DrawLine(origin, end,    Color.green,   duration);
+            Debug.DrawLine(origin, end,    Color.green, duration);
         }
         #endif
     }
