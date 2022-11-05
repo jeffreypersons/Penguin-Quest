@@ -55,7 +55,7 @@ namespace PQ.TestScenes.Minimal
         }
 
         Vector2 ICharacterController2D.Position   => _position;
-        Bounds  ICharacterController2D.Bounds     => _capsule.bounds;
+        Bounds  ICharacterController2D.Bounds     => _bounds;
         Vector2 ICharacterController2D.Forward    => _forward;
         Vector2 ICharacterController2D.Up         => _up;
         bool    ICharacterController2D.IsGrounded => _isGrounded;
@@ -100,7 +100,7 @@ namespace PQ.TestScenes.Minimal
         }
 
 
-        /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest cast hit. */
+        /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
         private static CastResult DetectCollision(Rigidbody2D rigidBody, Vector2 delta,
             in ContactFilter2D filter, float skinWidth, RaycastHit2D[] results)
         {
