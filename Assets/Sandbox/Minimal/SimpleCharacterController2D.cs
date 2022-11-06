@@ -1,26 +1,18 @@
 using System;
 using UnityEngine;
+using PQ.TestScenes.Minimal.Physics;
 
 
 namespace PQ.TestScenes.Minimal
 {
     public class SimpleCharacterController2D : ICharacterController2D
     {
-        private const int MaxIterations = 10;
-        private Vector2 _position;
-        private Bounds  _bounds;
-        private Vector2 _forward;
-        private Vector2 _up;
-        private bool    _flipped;
-        private bool    _isGrounded;
-        private float   _contactOffset;
+        private bool _flipped;
+        private bool _isGrounded;
+        private LinearPhysicsSolver2D _solver;
 
-        private readonly ContactFilter2D _contactFilter;
-        private readonly RaycastHit2D[]  _hits;
-        private readonly Rigidbody2D     _body;
-        private readonly BoxCollider2D   _box;
-
-        public SimpleCharacterController2D(GameObject gameObject)
+        public SimpleCharacterController2D(GameObject gameObject, ContactFilter2D contactFilter,
+            float contactOffset, int maxIterations)
         {
             if (gameObject == null)
             {
@@ -34,31 +26,19 @@ namespace PQ.TestScenes.Minimal
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
             }
-            
-            _flipped       = false;
-            _isGrounded    = false;
-            _contactOffset = 0f;
-            _body          = body;
-            _box           = box;
-            _contactFilter = new();
-            _hits          = new RaycastHit2D[body.attachedColliderCount];
 
-            _body.isKinematic = true;
-            _body.useFullKinematicContacts = true;
-            _contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
-            _contactFilter.useLayerMask = true;
-
-            SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: 0f);
-            SyncPropertiesFromRigidBody();
+            _flipped    = false;
+            _isGrounded = false;
+            _solver     = new(body, box, contactFilter, contactOffset, maxIterations);
         }
 
-        Vector2 ICharacterController2D.Position   => _position;
-        Bounds  ICharacterController2D.Bounds     => _bounds;
-        Vector2 ICharacterController2D.Forward    => _forward;
-        Vector2 ICharacterController2D.Up         => _up;
-        bool    ICharacterController2D.IsGrounded => _isGrounded;
-        bool    ICharacterController2D.Flipped    => _flipped;
-        float   ICharacterController2D.ContactOffset { get => _contactOffset; set => _contactOffset = value; }
+        Vector2 ICharacterController2D.Position      => _solver.Body.position;
+        Bounds  ICharacterController2D.Bounds        => _solver.AAB;
+        Vector2 ICharacterController2D.Forward       => _solver.Body.transform.right.normalized;
+        Vector2 ICharacterController2D.Up            => _solver.Body.transform.up.normalized;
+        bool    ICharacterController2D.IsGrounded    => _isGrounded;
+        bool    ICharacterController2D.Flipped       => _flipped;
+        float   ICharacterController2D.ContactOffset => _solver.ContactOffset;
 
         public static bool DrawCastsInEditor              { get; set; } = true;
         public static bool DrawMovementResolutionInEditor { get; set; } = true;
@@ -66,129 +46,12 @@ namespace PQ.TestScenes.Minimal
         void ICharacterController2D.Flip()
         {
             _flipped = !_flipped;
-            SetXYOrientation(degreesAroundXAxis: 0f, degreesAroundYAxis: _flipped ? 180f : 0f);
-            SyncPropertiesFromRigidBody();
+            _solver.Flip(horizontal: _flipped, vertical: false);
         }
 
         void ICharacterController2D.Move(Vector2 deltaPosition)
         {
-            CastAndMove(_body, deltaPosition, _contactFilter, _contactOffset, MaxIterations, _hits);
-            SyncPropertiesFromRigidBody();
+            _solver.Move(deltaPosition);
         }
-
-        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private static void CastAndMove(Rigidbody2D body, Vector2 targetDelta, in ContactFilter2D filter,
-            float skinWidth, int maxIterations, RaycastHit2D[] results)
-        {
-            int iterations = 0;
-            Vector2 currentDelta = targetDelta;
-            while (currentDelta != Vector2.zero && iterations < maxIterations)
-            {
-                // move body and attached colliders from our current position to next projected collision
-                CastResult hit = FindClosestCollisionAlongDelta(body, currentDelta, filter, skinWidth, results);
-                currentDelta = hit.distance * currentDelta.normalized;
-
-                // account for physics properties of that collision
-                currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, 0, 0);
-                
-                #if UNITY_EDITOR
-                if (DrawMovementResolutionInEditor)
-                    DrawMovementStepInEditor(body.position, currentDelta);
-                #endif
-
-                // feed our adjusted movement back into Unity's physics
-                body.position += currentDelta;
-
-                iterations++;
-            }
-        }
-
-
-        /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
-        private static CastResult FindClosestCollisionAlongDelta(Rigidbody2D rigidBody, Vector2 delta,
-            in ContactFilter2D filter, float skinWidth, RaycastHit2D[] results)
-        {
-            var normal          = Vector2.zero;
-            var closestBody     = default(Rigidbody2D);
-            var closestDistance = delta.magnitude;
-            int hitCount = rigidBody.Cast(delta, filter, results, closestDistance + skinWidth);
-            for (int i = 0; i < hitCount; i++)
-            {
-                #if UNITY_EDITOR
-                if (DrawCastsInEditor)
-                    DrawCastResultAsLineInEditor(results[i], skinWidth, delta, closestDistance);
-                #endif
-                float adjustedDistance = results[i].distance - skinWidth;
-                if (adjustedDistance < closestDistance)
-                {
-                    closestBody     = results[i].rigidbody;
-                    normal          = results[i].normal;
-                    closestDistance = adjustedDistance;
-                }
-            }
-            return new CastResult(closestBody, normal, closestDistance);
-        }
-
-        /*
-        Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
-
-        In other words, for a given collision what is the adjusted delta when taking impact angle, velocity, bounciness,
-        and friction into account (using a linear model similar to Unity's dynamic physics)?
-        
-        Note that collisions are resolved via: adjustedDelta = moveDistance * [(Sbounciness)Snormal + (1-Sfriction)Stangent]
-            * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
-            * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
-        */
-        private static Vector2 ComputeCollisionDelta(Vector2 desiredDelta, Vector2 hitNormal, float bounciness, float friction)
-        {
-            float remainingDistance = desiredDelta.magnitude;
-            Vector2 reflected  = Vector2.Reflect(desiredDelta, hitNormal);
-            Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
-            Vector2 tangent    = reflected - projection;
-
-            Vector2 perpendicularContribution = (bounciness      * remainingDistance) * projection.normalized;
-            Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
-            return perpendicularContribution + tangentialContribution;
-        }
-
-        private void SetXYOrientation(float degreesAroundXAxis, float degreesAroundYAxis)
-        {
-            _body.transform.localEulerAngles =
-                new Vector3(degreesAroundXAxis, degreesAroundYAxis, _body.transform.localEulerAngles.z);
-        }
-        
-        private void SyncPropertiesFromRigidBody()
-        {
-            _position = _body.transform.position;
-            _bounds   = _box.bounds;
-            _forward  = _body.transform.right.normalized;
-            _up       = _body.transform.up.normalized;
-        }
-
-        
-        #if UNITY_EDITOR
-        private static void DrawMovementStepInEditor(Vector2 position, Vector2 delta)
-        {
-            Debug.DrawLine(position, position + delta, Color.blue, Time.fixedDeltaTime);
-        }
-
-        private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, float offset, Vector2 direction, float distance)
-        {
-            if (!hit)
-            {
-                // unfortunately we can't reliably find the origin of the cast
-                // if there was no hit (as far as I'm aware), so nothing to draw
-                return;
-            }
-
-            float duration = Time.fixedDeltaTime;
-            var origin = hit.point - (distance * direction);
-            var start  = origin    + (offset   * direction);
-            var end    = hit.point;
-            Debug.DrawLine(start,  end,    Color.red, duration);
-            Debug.DrawLine(start,  origin, Color.magenta, duration);
-            Debug.DrawLine(origin, end,    Color.green, duration);
-        }
-        #endif
     }
 }

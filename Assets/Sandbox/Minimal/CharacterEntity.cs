@@ -1,13 +1,15 @@
-using PQ.Common.Extensions;
 using UnityEngine;
+using PQ.Common.Extensions;
 
 
 namespace PQ.TestScenes.Minimal
 {
     public class CharacterEntity : MonoBehaviour
     {
-        [SerializeField] private float _contactOffset   =  2.5f;
-        [SerializeField] private float _horizontalSpeed = 25.0f;
+        [SerializeField] private float           _walkSpeed        = 25.0f;
+        [SerializeField] private float           _skinWidth        =  2.5f;
+        [SerializeField] private int             _maxMovementSteps =    10;
+        [SerializeField] private ContactFilter2D _contactFilter    = default;
 
         private GameplayInput _input;
         private ICharacterController2D _mover;
@@ -16,8 +18,7 @@ namespace PQ.TestScenes.Minimal
         private void Awake()
         {
             _input = new();
-            _mover = new SimpleCharacterController2D(gameObject);
-            _mover.ContactOffset = _contactOffset;
+            _mover = new SimpleCharacterController2D(gameObject, _contactFilter, _skinWidth, _maxMovementSteps);
         }
 
 
@@ -41,12 +42,9 @@ namespace PQ.TestScenes.Minimal
                 _mover.Flip();
             }
 
-            float distance = Mathf.Abs(_input.Horizontal * _horizontalSpeed * Time.fixedDeltaTime);
-            if (!Mathf.Approximately(distance, 0f))
-            {
-                _mover.Move(distance * _mover.Forward);
-            }
+            _mover.Move(new(_input.Horizontal * _walkSpeed * Time.fixedDeltaTime, 0));
         }
+
         
         #if UNITY_EDITOR
         void OnDrawGizmos()
