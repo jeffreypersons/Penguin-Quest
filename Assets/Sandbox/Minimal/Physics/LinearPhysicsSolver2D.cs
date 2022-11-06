@@ -65,14 +65,20 @@ namespace PQ.TestScenes.Minimal.Physics
             _body.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
-        public void Move(Vector2 targetDelta)
+        public void Move(Vector2 deltaPosition)
         {
-            CastAndMove(targetDelta);
+            Vector2 up = Vector2.up;
+            Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
+            Vector2 horizontal = deltaPosition - vertical;
+
+            // note that we resolve horizontal first as the movement is simpler than vertical
+            MoveHorizontal(horizontal);
+            MoveVertical(vertical);
         }
 
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void CastAndMove(Vector2 targetDelta)
+        private void MoveHorizontal(Vector2 targetDelta)
         {
             int iterations = 0;
             Vector2 currentDelta = targetDelta;
@@ -96,7 +102,32 @@ namespace PQ.TestScenes.Minimal.Physics
                 iterations++;
             }
         }
+        
+        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
+        private void MoveVertical(Vector2 targetDelta)
+        {
+            int iterations = 0;
+            Vector2 currentDelta = targetDelta;
+            while (currentDelta != Vector2.zero && iterations < _maxIterations)
+            {
+                // move body and attached colliders from our current position to next projected collision
+                CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
+                currentDelta = hit.distance * currentDelta.normalized;
 
+                // account for physics properties of that collision
+                currentDelta = ComputeCollisionDelta(currentDelta, hit.normal);
+                
+                #if UNITY_EDITOR
+                if (DrawMovementResolutionInEditor)
+                    DrawMovementStepInEditor(_body.position, currentDelta);
+                #endif
+
+                // feed our adjusted movement back into Unity's physics
+                _body.position += currentDelta;
+
+                iterations++;
+            }
+        }
 
         /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
         private CastResult FindClosestCollisionAlongDelta(Vector2 delta)
