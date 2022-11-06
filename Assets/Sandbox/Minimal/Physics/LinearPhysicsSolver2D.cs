@@ -93,7 +93,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (currentDelta != Vector2.zero && iteration < _maxIterations)
+            while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
                 // move body and attached colliders from our current position to next projected collision
                 CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
@@ -119,7 +119,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (currentDelta != Vector2.zero && iteration < _maxIterations)
+            while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
                 // move body and attached colliders from our current position to next projected collision
                 CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
