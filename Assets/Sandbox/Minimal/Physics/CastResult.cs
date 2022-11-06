@@ -18,11 +18,11 @@ namespace PQ.TestScenes.Minimal.Physics
                 $"rigidBody:{body?.ToString() ?? "<None>"}}}";
 
 
-        public CastResult(Rigidbody2D rigidBody, Vector2 normal, float distance)
+        public CastResult(Rigidbody2D body, Vector2 normal, float distance)
         {
-            this.body = rigidBody;
-            this.normal    = normal;
-            this.distance  = distance;
+            this.body     = body;
+            this.normal   = normal;
+            this.distance = distance;
         }
 
         [Pure]
