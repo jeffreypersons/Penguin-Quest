@@ -15,11 +15,10 @@ namespace PQ.TestScenes.Minimal
         private bool    _isGrounded;
         private float   _contactOffset;
 
-        private readonly ContactFilter2D   _contactFilter;
-        private readonly RaycastHit2D[]    _horizontalHits;
-        private readonly RaycastHit2D[]    _verticalHits;
-        private readonly Rigidbody2D       _rigidBody;
-        private readonly CapsuleCollider2D _capsule;
+        private readonly ContactFilter2D _contactFilter;
+        private readonly RaycastHit2D[]  _hits;
+        private readonly Rigidbody2D     _body;
+        private readonly BoxCollider2D   _box;
 
         public SimpleCharacterController2D(GameObject gameObject)
         {
@@ -27,26 +26,25 @@ namespace PQ.TestScenes.Minimal
             {
                 throw new ArgumentNullException($"Expected non-null game object");
             }
-            if (!gameObject.TryGetComponent<Rigidbody2D>(out var rigidBody))
+            if (!gameObject.TryGetComponent<Rigidbody2D>(out var body))
             {
                 throw new MissingComponentException($"Expected attached rigidbody2D - not found on {gameObject}");
             }
-            if (!gameObject.TryGetComponent<CapsuleCollider2D>(out var capsule))
+            if (!gameObject.TryGetComponent<BoxCollider2D>(out var box))
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
             }
-
             
-            _flipped        = false;
-            _isGrounded     = false;
-            _contactOffset  = 0f;
-            _rigidBody      = rigidBody;
-            _capsule        = capsule;
-            _contactFilter  = new();
-            _horizontalHits = new RaycastHit2D[rigidBody.attachedColliderCount];
-            _verticalHits   = new RaycastHit2D[rigidBody.attachedColliderCount];
+            _flipped       = false;
+            _isGrounded    = false;
+            _contactOffset = 0f;
+            _body          = body;
+            _box           = box;
+            _contactFilter = new();
+            _hits          = new RaycastHit2D[body.attachedColliderCount];
 
-            _rigidBody.isKinematic = true;
+            _body.isKinematic = true;
+            _body.useFullKinematicContacts = true;
             _contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
             _contactFilter.useLayerMask = true;
 
@@ -74,7 +72,7 @@ namespace PQ.TestScenes.Minimal
 
         void ICharacterController2D.Move(Vector2 deltaPosition)
         {
-            CastAndMove(_rigidBody, deltaPosition, _contactFilter, _contactOffset, MaxIterations, _horizontalHits);
+            CastAndMove(_body, deltaPosition, _contactFilter, _contactOffset, MaxIterations, _hits);
             SyncPropertiesFromRigidBody();
         }
 
@@ -155,16 +153,16 @@ namespace PQ.TestScenes.Minimal
 
         private void SetXYOrientation(float degreesAroundXAxis, float degreesAroundYAxis)
         {
-            _rigidBody.transform.localEulerAngles =
-                new Vector3(degreesAroundXAxis, degreesAroundYAxis, _rigidBody.transform.localEulerAngles.z);
+            _body.transform.localEulerAngles =
+                new Vector3(degreesAroundXAxis, degreesAroundYAxis, _body.transform.localEulerAngles.z);
         }
         
         private void SyncPropertiesFromRigidBody()
         {
-            _position = _rigidBody.transform.position;
-            _bounds   = _capsule.bounds;
-            _forward  = _rigidBody.transform.right.normalized;
-            _up       = _rigidBody.transform.up.normalized;
+            _position = _body.transform.position;
+            _bounds   = _box.bounds;
+            _forward  = _body.transform.right.normalized;
+            _up       = _body.transform.up.normalized;
         }
 
         

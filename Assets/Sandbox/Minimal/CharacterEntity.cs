@@ -6,8 +6,8 @@ namespace PQ.TestScenes.Minimal
 {
     public class CharacterEntity : MonoBehaviour
     {
-        [SerializeField] [Range(0, 1000f)] private float _horizontalSpeed = 25f;
-        [SerializeField] [Range(0, 5f)]    private float _contactOffset   = 5f;
+        [SerializeField] private float _contactOffset   =  2.5f;
+        [SerializeField] private float _horizontalSpeed = 25.0f;
 
         private GameplayInput _input;
         private ICharacterController2D _mover;
