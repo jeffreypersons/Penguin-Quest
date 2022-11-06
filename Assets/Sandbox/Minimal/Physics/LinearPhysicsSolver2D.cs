@@ -85,7 +85,12 @@ namespace PQ.TestScenes.Minimal.Physics
             while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
                 // move body and attached colliders from our current position to next projected collision
-                FindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal);
+                if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
+                {
+                    _body.position += currentDelta;
+                    return;
+                }
+
                 currentDelta = hitDistance * currentDelta.normalized;
 
                 // account for physics properties of that collision
@@ -111,7 +116,12 @@ namespace PQ.TestScenes.Minimal.Physics
             while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
                 // move body and attached colliders from our current position to next projected collision
-                FindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal);
+                if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
+                {
+                    _body.position += currentDelta;
+                    return;
+                }
+
                 currentDelta = hitDistance * currentDelta.normalized;
 
                 // account for physics properties of that collision
@@ -130,7 +140,7 @@ namespace PQ.TestScenes.Minimal.Physics
         }
 
         /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
-        private void FindClosestCollisionAlongDelta(Vector2 delta, out float hitDistance, out Vector2 hitNormal)
+        private bool TryFindClosestCollisionAlongDelta(Vector2 delta, out float hitDistance, out Vector2 hitNormal)
         {
             var closestHitNormal   = Vector2.zero;
             var closestHitDistance = delta.magnitude;
@@ -148,8 +158,16 @@ namespace PQ.TestScenes.Minimal.Physics
                     closestHitDistance = adjustedDistance;
                 }
             }
+
+            if (closestHitNormal == Vector2.zero)
+            {
+                hitDistance = default;
+                hitNormal   = default;
+                return false;
+            }
             hitDistance = closestHitDistance;
             hitNormal   = closestHitNormal;
+            return true;
         }
 
         /*
