@@ -87,9 +87,9 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
-                // move body and attached colliders from our current position to next projected collision
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
+                    // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.position += currentDelta;
                     return;
                 }
@@ -98,7 +98,7 @@ namespace PQ.TestScenes.Minimal.Physics
                 float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
                 if (slopeAngle <= _maxSlopeAngle)
                 {
-                    // move a linear step along our delta until the detected collision
+                    // move a single linear step along our delta until the detected collision
                     currentDelta = hitDistance * currentDelta.normalized;
                     currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
                 }
@@ -126,9 +126,9 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
-                // move body and attached colliders from our current position to next projected collision
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
+                    // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.position += currentDelta;
                     return;
                 }
