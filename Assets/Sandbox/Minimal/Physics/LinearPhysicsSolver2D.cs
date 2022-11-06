@@ -5,6 +5,17 @@ namespace PQ.TestScenes.Minimal.Physics
 {
     public class LinearPhysicsSolver2D
     {
+        public struct CastResult
+        {
+            public readonly Vector2 normal;
+            public readonly float distance;
+            public CastResult(Vector2 normal, float distance)
+            {
+                this.normal = normal;
+                this.distance = distance;
+            }
+        }
+
         private float _bounciness;
         private float _friction;
         private float _contactOffset;
@@ -133,7 +144,6 @@ namespace PQ.TestScenes.Minimal.Physics
         private CastResult FindClosestCollisionAlongDelta(Vector2 delta)
         {
             var normal          = Vector2.zero;
-            var closestBody     = default(Rigidbody2D);
             var closestDistance = delta.magnitude;
             int hitCount = _body.Cast(delta, _filter, _hits, closestDistance + _contactOffset);
             for (int i = 0; i < hitCount; i++)
@@ -145,12 +155,11 @@ namespace PQ.TestScenes.Minimal.Physics
                 float adjustedDistance = _hits[i].distance - _contactOffset;
                 if (adjustedDistance < closestDistance)
                 {
-                    closestBody     = _hits[i].rigidbody;
                     normal          = _hits[i].normal;
                     closestDistance = adjustedDistance;
                 }
             }
-            return new CastResult(closestBody, normal, closestDistance);
+            return new CastResult(normal, closestDistance);
         }
 
         /*
