@@ -94,10 +94,19 @@ namespace PQ.TestScenes.Minimal.Physics
                     return;
                 }
 
-                currentDelta = hitDistance * currentDelta.normalized;
-
-                // account for physics properties of that collision
-                currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
+                // unless there's an overly steep slope, move a linear step with properties taken into account
+                float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
+                Debug.Log(slopeAngle);
+                if (slopeAngle <= _maxSlopeAngle)
+                {
+                    // move a linear step along our delta until the detected collision
+                    currentDelta = hitDistance * currentDelta.normalized;
+                    currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
+                }
+                else
+                {
+                    currentDelta = Vector2.zero;
+                }
                 
                 #if UNITY_EDITOR
                 if (DrawMovementResolutionInEditor)
@@ -125,6 +134,7 @@ namespace PQ.TestScenes.Minimal.Physics
                     return;
                 }
 
+                // move a linear step along our delta until the detected collision
                 currentDelta = hitDistance * currentDelta.normalized;
 
                 // account for physics properties of that collision

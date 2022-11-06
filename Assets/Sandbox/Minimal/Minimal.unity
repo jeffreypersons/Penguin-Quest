@@ -739,6 +739,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
+      propertyPath: _maxSlopeAngle
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
       propertyPath: _horizontalSpeed
       value: 8
       objectReference: {fileID: 0}
