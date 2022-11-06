@@ -12,7 +12,7 @@ namespace PQ.TestScenes.Minimal
         private LinearPhysicsSolver2D _solver;
 
         public SimpleCharacterController2D(GameObject gameObject, ContactFilter2D contactFilter,
-            float contactOffset, int maxIterations)
+            float contactOffset, int maxIterations, float maxSlopeAngle)
         {
             if (gameObject == null)
             {
@@ -29,7 +29,7 @@ namespace PQ.TestScenes.Minimal
 
             _flipped    = false;
             _isGrounded = false;
-            _solver     = new(body, box, contactFilter, contactOffset, maxIterations);
+            _solver     = new(body, box, contactFilter, contactOffset, maxIterations, maxSlopeAngle);
         }
 
         Vector2 ICharacterController2D.Position      => _solver.Body.position;

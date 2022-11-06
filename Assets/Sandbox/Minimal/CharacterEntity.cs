@@ -9,6 +9,7 @@ namespace PQ.TestScenes.Minimal
         [SerializeField] private float           _walkSpeed        = 25.0f;
         [SerializeField] private float           _skinWidth        =  2.5f;
         [SerializeField] private int             _maxMovementSteps =    10;
+        [SerializeField] float                   _maxSlopeAngle    =   45f;
         [SerializeField] private ContactFilter2D _contactFilter    = default;
 
         private GameplayInput _input;
@@ -18,7 +19,7 @@ namespace PQ.TestScenes.Minimal
         private void Awake()
         {
             _input = new();
-            _mover = new SimpleCharacterController2D(gameObject, _contactFilter, _skinWidth, _maxMovementSteps);
+            _mover = new SimpleCharacterController2D(gameObject, _contactFilter, _skinWidth, _maxMovementSteps, _maxSlopeAngle);
         }
 
 

@@ -9,6 +9,7 @@ namespace PQ.TestScenes.Minimal.Physics
         private float _friction;
         private float _contactOffset;
         private int   _maxIterations;
+        private float _maxSlopeAngle;
 
         private readonly Rigidbody2D     _body;
         private readonly BoxCollider2D   _box;
@@ -33,13 +34,15 @@ namespace PQ.TestScenes.Minimal.Physics
                 $"Friction: {_friction}," +
                 $"ContactOffset: {_contactOffset}," +
                 $"MaxIterations: {_maxIterations}," +
+                $"MaxSlopeAngle: {_maxSlopeAngle}" +
             $")";
 
         public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, ContactFilter2D filter,
-            float contactOffset, int maxIterations)
+            float contactOffset, int maxIterations, float maxSlopeAngle)
         {
             _contactOffset = contactOffset;
             _maxIterations = maxIterations;
+            _maxSlopeAngle = maxSlopeAngle;
             _body          = body;
             _box           = box;
             _filter        = filter;
