@@ -152,7 +152,7 @@ namespace PQ.TestScenes.Minimal.Physics
                     DrawCastResultAsLineInEditor(_hits[i], _contactOffset, delta, closestHitDistance);
                 #endif
                 float adjustedDistance = _hits[i].distance - _contactOffset;
-                if (adjustedDistance < closestHitDistance)
+                if (adjustedDistance > 0f && adjustedDistance < closestHitDistance)
                 {
                     closestHitNormal   = _hits[i].normal;
                     closestHitDistance = adjustedDistance;
