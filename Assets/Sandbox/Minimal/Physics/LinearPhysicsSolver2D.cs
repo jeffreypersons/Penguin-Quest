@@ -91,9 +91,9 @@ namespace PQ.TestScenes.Minimal.Physics
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
         private void MoveHorizontal(Vector2 targetDelta)
         {
-            int iterations = 0;
+            int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (currentDelta != Vector2.zero && iterations < _maxIterations)
+            while (currentDelta != Vector2.zero && iteration < _maxIterations)
             {
                 // move body and attached colliders from our current position to next projected collision
                 CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
@@ -110,16 +110,16 @@ namespace PQ.TestScenes.Minimal.Physics
                 // feed our adjusted movement back into Unity's physics
                 _body.position += currentDelta;
 
-                iterations++;
+                iteration++;
             }
         }
         
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
         private void MoveVertical(Vector2 targetDelta)
         {
-            int iterations = 0;
+            int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (currentDelta != Vector2.zero && iterations < _maxIterations)
+            while (currentDelta != Vector2.zero && iteration < _maxIterations)
             {
                 // move body and attached colliders from our current position to next projected collision
                 CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
@@ -136,7 +136,7 @@ namespace PQ.TestScenes.Minimal.Physics
                 // feed our adjusted movement back into Unity's physics
                 _body.position += currentDelta;
 
-                iterations++;
+                iteration++;
             }
         }
 
