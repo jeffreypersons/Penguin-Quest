@@ -5,17 +5,6 @@ namespace PQ.TestScenes.Minimal.Physics
 {
     public class LinearPhysicsSolver2D
     {
-        public struct CastResult
-        {
-            public readonly Vector2 normal;
-            public readonly float distance;
-            public CastResult(Vector2 normal, float distance)
-            {
-                this.normal = normal;
-                this.distance = distance;
-            }
-        }
-
         private float _bounciness;
         private float _friction;
         private float _contactOffset;
@@ -96,11 +85,11 @@ namespace PQ.TestScenes.Minimal.Physics
             while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
                 // move body and attached colliders from our current position to next projected collision
-                CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
-                currentDelta = hit.distance * currentDelta.normalized;
+                FindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal);
+                currentDelta = hitDistance * currentDelta.normalized;
 
                 // account for physics properties of that collision
-                currentDelta = ComputeCollisionDelta(currentDelta, hit.normal);
+                currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
                 
                 #if UNITY_EDITOR
                 if (DrawMovementResolutionInEditor)
@@ -122,11 +111,11 @@ namespace PQ.TestScenes.Minimal.Physics
             while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
                 // move body and attached colliders from our current position to next projected collision
-                CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
-                currentDelta = hit.distance * currentDelta.normalized;
+                FindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal);
+                currentDelta = hitDistance * currentDelta.normalized;
 
                 // account for physics properties of that collision
-                currentDelta = ComputeCollisionDelta(currentDelta, hit.normal);
+                currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
                 
                 #if UNITY_EDITOR
                 if (DrawMovementResolutionInEditor)
@@ -141,25 +130,26 @@ namespace PQ.TestScenes.Minimal.Physics
         }
 
         /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
-        private CastResult FindClosestCollisionAlongDelta(Vector2 delta)
+        private void FindClosestCollisionAlongDelta(Vector2 delta, out float hitDistance, out Vector2 hitNormal)
         {
-            var normal          = Vector2.zero;
-            var closestDistance = delta.magnitude;
-            int hitCount = _body.Cast(delta, _filter, _hits, closestDistance + _contactOffset);
+            var closestHitNormal   = Vector2.zero;
+            var closestHitDistance = delta.magnitude;
+            int hitCount = _body.Cast(delta, _filter, _hits, closestHitDistance + _contactOffset);
             for (int i = 0; i < hitCount; i++)
             {
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
-                    DrawCastResultAsLineInEditor(_hits[i], _contactOffset, delta, closestDistance);
+                    DrawCastResultAsLineInEditor(_hits[i], _contactOffset, delta, closestHitDistance);
                 #endif
                 float adjustedDistance = _hits[i].distance - _contactOffset;
-                if (adjustedDistance < closestDistance)
+                if (adjustedDistance < closestHitDistance)
                 {
-                    normal          = _hits[i].normal;
-                    closestDistance = adjustedDistance;
+                    closestHitNormal   = _hits[i].normal;
+                    closestHitDistance = adjustedDistance;
                 }
             }
-            return new CastResult(normal, closestDistance);
+            hitDistance = closestHitDistance;
+            hitNormal   = closestHitNormal;
         }
 
         /*
