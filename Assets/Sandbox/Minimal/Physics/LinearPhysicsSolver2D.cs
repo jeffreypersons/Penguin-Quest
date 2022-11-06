@@ -96,7 +96,6 @@ namespace PQ.TestScenes.Minimal.Physics
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
-                Debug.Log(slopeAngle);
                 if (slopeAngle <= _maxSlopeAngle)
                 {
                     // move a linear step along our delta until the detected collision
