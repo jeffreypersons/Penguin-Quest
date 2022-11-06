@@ -731,6 +731,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
+      propertyPath: _walkSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
       propertyPath: _contactOffset
       value: 2
       objectReference: {fileID: 0}

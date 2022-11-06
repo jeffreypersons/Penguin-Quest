@@ -65,25 +65,36 @@ namespace PQ.TestScenes.Minimal.Physics
             _body.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
-        public void Move(Vector2 targetDelta)
+        public void Move(Vector2 deltaPosition)
         {
-            CastAndMove(targetDelta);
+            Vector2 up = Vector2.up;
+            Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
+            Vector2 horizontal = deltaPosition - vertical;
+
+            // note that we resolve horizontal first as the movement is simpler than vertical
+            MoveHorizontal(horizontal);
+            MoveVertical(vertical);
         }
 
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void CastAndMove(Vector2 targetDelta)
+        private void MoveHorizontal(Vector2 targetDelta)
         {
-            int iterations = 0;
+            int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (currentDelta != Vector2.zero && iterations < _maxIterations)
+            while (iteration < _maxIterations && currentDelta != Vector2.zero)
             {
                 // move body and attached colliders from our current position to next projected collision
-                CastResult hit = FindClosestCollisionAlongDelta(currentDelta);
-                currentDelta = hit.distance * currentDelta.normalized;
+                if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
+                {
+                    _body.position += currentDelta;
+                    return;
+                }
+
+                currentDelta = hitDistance * currentDelta.normalized;
 
                 // account for physics properties of that collision
-                currentDelta = ComputeCollisionDelta(currentDelta, hit.normal);
+                currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
                 
                 #if UNITY_EDITOR
                 if (DrawMovementResolutionInEditor)
@@ -93,33 +104,70 @@ namespace PQ.TestScenes.Minimal.Physics
                 // feed our adjusted movement back into Unity's physics
                 _body.position += currentDelta;
 
-                iterations++;
+                iteration++;
+            }
+        }
+        
+        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
+        private void MoveVertical(Vector2 targetDelta)
+        {
+            int iteration = 0;
+            Vector2 currentDelta = targetDelta;
+            while (iteration < _maxIterations && currentDelta != Vector2.zero)
+            {
+                // move body and attached colliders from our current position to next projected collision
+                if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
+                {
+                    _body.position += currentDelta;
+                    return;
+                }
+
+                currentDelta = hitDistance * currentDelta.normalized;
+
+                // account for physics properties of that collision
+                currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
+                
+                #if UNITY_EDITOR
+                if (DrawMovementResolutionInEditor)
+                    DrawMovementStepInEditor(_body.position, currentDelta);
+                #endif
+
+                // feed our adjusted movement back into Unity's physics
+                _body.position += currentDelta;
+
+                iteration++;
             }
         }
 
-
         /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
-        private CastResult FindClosestCollisionAlongDelta(Vector2 delta)
+        private bool TryFindClosestCollisionAlongDelta(Vector2 delta, out float hitDistance, out Vector2 hitNormal)
         {
-            var normal          = Vector2.zero;
-            var closestBody     = default(Rigidbody2D);
-            var closestDistance = delta.magnitude;
-            int hitCount = _body.Cast(delta, _filter, _hits, closestDistance + _contactOffset);
+            var closestHitNormal   = Vector2.zero;
+            var closestHitDistance = delta.magnitude;
+            int hitCount = _body.Cast(delta, _filter, _hits, closestHitDistance + _contactOffset);
             for (int i = 0; i < hitCount; i++)
             {
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
-                    DrawCastResultAsLineInEditor(_hits[i], _contactOffset, delta, closestDistance);
+                    DrawCastResultAsLineInEditor(_hits[i], _contactOffset, delta, closestHitDistance);
                 #endif
                 float adjustedDistance = _hits[i].distance - _contactOffset;
-                if (adjustedDistance < closestDistance)
+                if (adjustedDistance > 0f && adjustedDistance < closestHitDistance)
                 {
-                    closestBody     = _hits[i].rigidbody;
-                    normal          = _hits[i].normal;
-                    closestDistance = adjustedDistance;
+                    closestHitNormal   = _hits[i].normal;
+                    closestHitDistance = adjustedDistance;
                 }
             }
-            return new CastResult(closestBody, normal, closestDistance);
+
+            if (closestHitNormal == Vector2.zero)
+            {
+                hitDistance = default;
+                hitNormal   = default;
+                return false;
+            }
+            hitDistance = closestHitDistance;
+            hitNormal   = closestHitNormal;
+            return true;
         }
 
         /*
