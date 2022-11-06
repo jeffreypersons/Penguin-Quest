@@ -2,12 +2,12 @@
 using UnityEngine;
 
 
-namespace PQ.TestScenes.Minimal
+namespace PQ.TestScenes.Minimal.Physics
 {
     /* Result info of a single ray-surface intersection, with extra convenience methods over built in cast result struct. */
     public struct CastResult
     {
-        public readonly Rigidbody2D rigidBody;
+        public readonly Rigidbody2D body;
         public readonly Vector2     normal;
         public readonly float       distance;
 
@@ -15,25 +15,25 @@ namespace PQ.TestScenes.Minimal
             $"{GetType().Name}:{{" +
                 $"normal:{normal}," +
                 $"distance:{distance}," +
-                $"rigidBody:{rigidBody?.ToString() ?? "<None>"}}}";
+                $"rigidBody:{body?.ToString() ?? "<None>"}}}";
 
 
-        public CastResult(Rigidbody2D rigidBody, Vector2 normal, float distance)
+        public CastResult(Rigidbody2D body, Vector2 normal, float distance)
         {
-            this.rigidBody = rigidBody;
-            this.normal    = normal;
-            this.distance  = distance;
+            this.body     = body;
+            this.normal   = normal;
+            this.distance = distance;
         }
 
         [Pure]
         public bool HitInRange(float min, float max)
         {
-            return rigidBody != null && distance >= min && distance <= max;
+            return body != null && distance >= min && distance <= max;
         }
 
         public static implicit operator bool(CastResult hit)
         {
-            return hit.rigidBody != null;
+            return hit.body != null;
         }
     }
 }
