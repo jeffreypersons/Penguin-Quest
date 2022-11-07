@@ -9,6 +9,8 @@ namespace PQ.TestScenes.Minimal
     {
         private bool _flipped;
         private bool _isGrounded;
+        private bool _slideOnGround;
+        private bool _slideOnCeilings;
         private LinearPhysicsSolver2D _solver;
 
         public SimpleCharacterController2D(GameObject gameObject, ContactFilter2D contactFilter,
@@ -27,9 +29,11 @@ namespace PQ.TestScenes.Minimal
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
             }
 
-            _flipped    = false;
-            _isGrounded = false;
-            _solver     = new(body, box, contactFilter, contactOffset, maxIterations, maxSlopeAngle);
+            _flipped         = false;
+            _isGrounded      = false;
+            _slideOnGround   = false;
+            _slideOnCeilings = false;
+            _solver = new(body, box, contactFilter, contactOffset, maxIterations, maxSlopeAngle, _slideOnGround, _slideOnCeilings);
         }
 
         Vector2 ICharacterController2D.Position      => _solver.Body.position;

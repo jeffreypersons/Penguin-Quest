@@ -10,6 +10,8 @@ namespace PQ.TestScenes.Minimal.Physics
         private float _contactOffset;
         private int   _maxIterations;
         private float _maxSlopeAngle;
+        private bool  _slideOnGround;
+        private bool  _slideOnCeilings;
 
         private readonly Rigidbody2D     _body;
         private readonly BoxCollider2D   _box;
@@ -30,19 +32,22 @@ namespace PQ.TestScenes.Minimal.Physics
         public override string ToString() =>
             $"{GetType()}, " +
                 $"Position: {_body.position}, " +
-                $"Bounciness: {_bounciness}," +
-                $"Friction: {_friction}," +
+                $"Bounciness: {_bounciness}, " +
+                $"Friction: {_friction}, " +
                 $"ContactOffset: {_contactOffset}," +
                 $"MaxIterations: {_maxIterations}," +
                 $"MaxSlopeAngle: {_maxSlopeAngle}" +
             $")";
 
         public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, ContactFilter2D filter,
-            float contactOffset, int maxIterations, float maxSlopeAngle)
+            float contactOffset, int maxIterations, float maxSlopeAngle, bool slideOnGround, bool slideOnCeilings)
         {
-            _contactOffset = contactOffset;
-            _maxIterations = maxIterations;
-            _maxSlopeAngle = maxSlopeAngle;
+            _contactOffset   = contactOffset;
+            _maxIterations   = maxIterations;
+            _maxSlopeAngle   = maxSlopeAngle;
+            _slideOnGround   = slideOnGround;
+            _slideOnCeilings = slideOnCeilings;
+
             _body          = body;
             _box           = box;
             _filter        = filter;
@@ -132,12 +137,15 @@ namespace PQ.TestScenes.Minimal.Physics
                     _body.position += currentDelta;
                     return;
                 }
-
-                // move a linear step along our delta until the detected collision
-                currentDelta = hitDistance * currentDelta.normalized;
-
-                // account for physics properties of that collision
-                currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
+                
+                // only if there's an overly steep slope, do we want to take action (eg sliding down)
+                float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
+                if (slopeAngle > _maxSlopeAngle)
+                {
+                    // move a single linear step along our delta until the detected collision
+                    currentDelta = hitDistance * currentDelta.normalized;
+                    currentDelta = ComputeCollisionDelta(currentDelta, hitNormal);
+                }
                 
                 #if UNITY_EDITOR
                 if (DrawMovementResolutionInEditor)
