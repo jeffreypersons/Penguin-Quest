@@ -11,8 +11,7 @@ namespace PQ.TestScenes.Minimal
         private bool _isGrounded;
         private LinearPhysicsSolver2D _solver;
 
-        public SimpleCharacterController2D(GameObject gameObject, ContactFilter2D contactFilter,
-            float contactOffset, int maxIterations)
+        public SimpleCharacterController2D(GameObject gameObject, in SolverParams solverParams)
         {
             if (gameObject == null)
             {
@@ -29,7 +28,7 @@ namespace PQ.TestScenes.Minimal
 
             _flipped    = false;
             _isGrounded = false;
-            _solver     = new(body, box, contactFilter, contactOffset, maxIterations);
+            _solver     = new LinearPhysicsSolver2D(body, box, solverParams);
         }
 
         Vector2 ICharacterController2D.Position      => _solver.Body.position;
@@ -38,7 +37,7 @@ namespace PQ.TestScenes.Minimal
         Vector2 ICharacterController2D.Up            => _solver.Body.transform.up.normalized;
         bool    ICharacterController2D.IsGrounded    => _isGrounded;
         bool    ICharacterController2D.Flipped       => _flipped;
-        float   ICharacterController2D.ContactOffset => _solver.ContactOffset;
+        float   ICharacterController2D.ContactOffset => _solver.Params.ContactOffset;
 
         public static bool DrawCastsInEditor              { get; set; } = true;
         public static bool DrawMovementResolutionInEditor { get; set; } = true;

@@ -6,29 +6,46 @@ namespace PQ.TestScenes.Minimal
 {
     public class CharacterEntity : MonoBehaviour
     {
-        [SerializeField] private float           _walkSpeed        = 25.0f;
-        [SerializeField] private float           _skinWidth        =  2.5f;
-        [SerializeField] private int             _maxMovementSteps =    10;
-        [SerializeField] private ContactFilter2D _contactFilter    = default;
+        [SerializeField] private CharacterEntitySettings _settings;
 
+        private Physics.SolverParams _solverParams;
         private GameplayInput _input;
         private ICharacterController2D _mover;
+
+        private void SyncPropertiesFromSettings()
+        {
+            _solverParams = _solverParams with
+            {
+                MaxIterations   = _settings.solverIterationsPerPhysicsUpdate,
+
+                Bounciness      = _settings.collisionBounciness,
+                Friction        = _settings.collisionFriction,
+
+                ContactOffset   = _settings.skinWidth,
+                GroundLayerMask = _settings.groundLayerMask,
+                MaxSlopeAngle   = _settings.maxAscendableSlopeAngle,
+                Gravity         = _settings.gravityScale * Physics2D.gravity.y,
+            };
+        }
 
 
         private void Awake()
         {
-            _input = new();
-            _mover = new SimpleCharacterController2D(gameObject, _contactFilter, _skinWidth, _maxMovementSteps);
+            _solverParams = new Physics.SolverParams();
+            SyncPropertiesFromSettings();
+            _input = new GameplayInput();
+            _mover = new SimpleCharacterController2D(gameObject, _solverParams);
+
         }
 
 
-        private void Update()
+        void Update()
         {
             _input.ReadInput();
         }
 
 
-        private void FixedUpdate()
+        void FixedUpdate()
         {
             if (Mathf.Approximately(_input.Horizontal, 0f))
             {
@@ -42,11 +59,20 @@ namespace PQ.TestScenes.Minimal
                 _mover.Flip();
             }
 
-            _mover.Move(new(_input.Horizontal * _walkSpeed * Time.fixedDeltaTime, 0));
+            _mover.Move(new Vector2(_input.Horizontal * _settings.walkSpeed * Time.fixedDeltaTime, 0));
         }
-
         
         #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (_solverParams == null)
+            {
+                // only sync if solver params was already setup
+                return;
+            }
+            SyncPropertiesFromSettings();
+        }
+
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || !enabled)
