@@ -29,6 +29,12 @@ namespace PQ.TestScenes.Minimal.Physics
                 $"Position: {_body.position}" +
             $")";
 
+        
+        private void SyncPropertiesFromSettings()
+        {
+            _filter.SetLayerMask(_params.GroundLayerMask);
+        }
+
         public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, SolverParams solverParams)
         {
             _body   = body;
@@ -40,8 +46,7 @@ namespace PQ.TestScenes.Minimal.Physics
             _body.isKinematic = true;
             _body.useFullKinematicContacts = true;
             _body.constraints = RigidbodyConstraints2D.FreezeRotation;
-            _filter.SetLayerMask(Physics2D.GetLayerCollisionMask(body.gameObject.layer));
-            _filter.useLayerMask = true;
+            _filter.SetLayerMask(_params.GroundLayerMask);
 
             Flip(horizontal: false, vertical: false);
         }
@@ -59,7 +64,9 @@ namespace PQ.TestScenes.Minimal.Physics
 
         public void Move(Vector2 deltaPosition)
         {
-            Vector2 up = Vector2.up;
+            _filter.SetLayerMask(_params.GroundLayerMask);
+
+            Vector2 up         = Vector2.up;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
 
@@ -67,6 +74,7 @@ namespace PQ.TestScenes.Minimal.Physics
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
         }
+
 
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
