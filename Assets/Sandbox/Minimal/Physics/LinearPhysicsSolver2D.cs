@@ -3,55 +3,39 @@ using UnityEngine;
 
 namespace PQ.TestScenes.Minimal.Physics
 {
+    // todo: replace Params with a readonly ref to params when ref fields are added to C# 11 and supported by Unity
+    /*
+    Collide and slide style solver for 2D that works in linear steps.
+
+    Assumes always upright bounding box, with kinematic rigidbody.
+    */
     public class LinearPhysicsSolver2D
     {
-        private float _bounciness;
-        private float _friction;
-        private float _contactOffset;
-        private int   _maxIterations;
-        private float _maxSlopeAngle;
-        private bool  _slideOnGround;
-        private bool  _slideOnCeilings;
-
         private readonly Rigidbody2D     _body;
         private readonly BoxCollider2D   _box;
         private readonly ContactFilter2D _filter;
         private readonly RaycastHit2D[]  _hits;
+        private readonly SolverParams    _params;
 
-        public float Bounciness    => _bounciness;
-        public float Friction      => _friction;
-        public float ContactOffset => _contactOffset;
-        public int   MaxIterations => _maxIterations;
-
-        public Rigidbody2D Body => _body;
-        public Bounds      AAB  => _box.bounds;
+        public Rigidbody2D  Body   => _body;
+        public Bounds       AAB    => _box.bounds;
+        public SolverParams Params => _params;
 
         public bool DrawCastsInEditor              { get; set; } = true;
         public bool DrawMovementResolutionInEditor { get; set; } = true;
 
         public override string ToString() =>
             $"{GetType()}, " +
-                $"Position: {_body.position}, " +
-                $"Bounciness: {_bounciness}, " +
-                $"Friction: {_friction}, " +
-                $"ContactOffset: {_contactOffset}," +
-                $"MaxIterations: {_maxIterations}," +
-                $"MaxSlopeAngle: {_maxSlopeAngle}" +
+                $"Position: {_body.position}" +
             $")";
 
-        public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, ContactFilter2D filter,
-            float contactOffset, int maxIterations, float maxSlopeAngle, bool slideOnGround, bool slideOnCeilings)
+        public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, SolverParams solverParams)
         {
-            _contactOffset   = contactOffset;
-            _maxIterations   = maxIterations;
-            _maxSlopeAngle   = maxSlopeAngle;
-            _slideOnGround   = slideOnGround;
-            _slideOnCeilings = slideOnCeilings;
-
-            _body          = body;
-            _box           = box;
-            _filter        = filter;
-            _hits          = new RaycastHit2D[body.attachedColliderCount];
+            _body   = body;
+            _box    = box;
+            _filter = new ContactFilter2D();
+            _hits   = new RaycastHit2D[body.attachedColliderCount];
+            _params = solverParams;
 
             _body.isKinematic = true;
             _body.useFullKinematicContacts = true;
@@ -90,7 +74,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (iteration < _maxIterations && currentDelta != Vector2.zero)
+            while (iteration < _params.MaxIterations && currentDelta != Vector2.zero)
             {
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
@@ -101,7 +85,7 @@ namespace PQ.TestScenes.Minimal.Physics
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
-                if (slopeAngle <= _maxSlopeAngle)
+                if (slopeAngle <= _params.MaxSlopeAngle)
                 {
                     // move a single linear step along our delta until the detected collision
                     currentDelta = hitDistance * currentDelta.normalized;
@@ -129,7 +113,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (iteration < _maxIterations && currentDelta != Vector2.zero)
+            while (iteration < _params.MaxIterations && currentDelta != Vector2.zero)
             {
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
@@ -140,7 +124,7 @@ namespace PQ.TestScenes.Minimal.Physics
                 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
                 float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
-                if (slopeAngle > _maxSlopeAngle)
+                if (slopeAngle > _params.MaxSlopeAngle)
                 {
                     // move a single linear step along our delta until the detected collision
                     currentDelta = hitDistance * currentDelta.normalized;
@@ -164,14 +148,14 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             var closestHitNormal   = Vector2.zero;
             var closestHitDistance = delta.magnitude;
-            int hitCount = _body.Cast(delta, _filter, _hits, closestHitDistance + _contactOffset);
+            int hitCount = _body.Cast(delta, _filter, _hits, closestHitDistance + _params.ContactOffset);
             for (int i = 0; i < hitCount; i++)
             {
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
-                    DrawCastResultAsLineInEditor(_hits[i], _contactOffset, delta, closestHitDistance);
+                    DrawCastResultAsLineInEditor(_hits[i], _params.ContactOffset, delta, closestHitDistance);
                 #endif
-                float adjustedDistance = _hits[i].distance - _contactOffset;
+                float adjustedDistance = _hits[i].distance - _params.ContactOffset;
                 if (adjustedDistance > 0f && adjustedDistance < closestHitDistance)
                 {
                     closestHitNormal   = _hits[i].normal;
@@ -207,8 +191,8 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
             Vector2 tangent    = reflected - projection;
 
-            Vector2 perpendicularContribution = (_bounciness      * remainingDistance) * projection.normalized;
-            Vector2 tangentialContribution    = ((1f - _friction) * remainingDistance) * tangent.normalized;
+            Vector2 perpendicularContribution = (_params.Bounciness * remainingDistance) * projection.normalized;
+            Vector2 tangentialContribution    = ((1f - _params.Friction) * remainingDistance) * tangent.normalized;
             return perpendicularContribution + tangentialContribution;
         }        
         
