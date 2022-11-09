@@ -26,15 +26,12 @@ namespace PQ.TestScenes.Minimal.Physics
 
         public override string ToString() =>
             $"{GetType()}, " +
-                $"Position: {_body.position}" +
+                $"Params: {_params}," +
+                $"Position: {_body.position}," +
+                $"AAB: bounds(center:{_box.bounds.center}, extents:{_box.bounds.extents})," +
             $")";
 
         
-        private void SyncPropertiesFromSettings()
-        {
-            _filter.SetLayerMask(_params.GroundLayerMask);
-        }
-
         public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, SolverParams solverParams)
         {
             _body   = body;
