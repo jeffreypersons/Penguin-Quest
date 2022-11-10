@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
@@ -31,7 +32,15 @@ namespace PQ.TestScenes.Minimal.Physics
                 $"AAB: bounds(center:{_box.bounds.center}, extents:{_box.bounds.extents})," +
             $")";
 
-        
+        [Pure]
+        private bool HasReachedTarget(Vector2 delta)
+        {
+            // note that the epsilon used for equality checks handles small values far better than
+            // checking square magnitude with mathf/k epsilons
+            return delta == Vector2.zero;
+        }
+
+
         public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, SolverParams solverParams)
         {
             _body   = body;
@@ -79,7 +88,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (iteration < _params.MaxIterations && currentDelta != Vector2.zero)
+            while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
@@ -118,7 +127,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            while (iteration < _params.MaxIterations && currentDelta != Vector2.zero)
+            while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
