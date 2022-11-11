@@ -15,14 +15,13 @@ namespace PQ.TestScenes.Minimal.Physics
     */
     [AddComponentMenu("KinematicBody2DNew")]
     public sealed class KinematicBody2D : MonoBehaviour
-    {
-        private readonly Rigidbody2D     _rigidBody;
-        private readonly BoxCollider2D   _boxCollider;
-        private readonly ContactFilter2D _castFilter;
-        private readonly RaycastHit2D[]  _castHits;
-
+    {        
         private float _skinWidth;
         private int   _lastHitCount;
+        private Rigidbody2D     _rigidBody;
+        private BoxCollider2D   _boxCollider;
+        private ContactFilter2D _castFilter;
+        private RaycastHit2D[]  _castHits;
 
         public Vector2 Position  => _rigidBody.position;
         public float   Depth     => _rigidBody.transform.position.z;
@@ -54,17 +53,13 @@ namespace PQ.TestScenes.Minimal.Physics
             $")";
 
         
-        public KinematicBody2D(GameObject gameObject)
+        void Awake()
         {
-            if (gameObject == null)
-            {
-                throw new ArgumentNullException($"Expected non-null game object");
-            }
-            if (!gameObject.TryGetComponent<Rigidbody2D>(out var body))
+            if (!gameObject.TryGetComponent<Rigidbody2D>(out var rigidBody))
             {
                 throw new MissingComponentException($"Expected attached rigidbody2D - not found on {gameObject}");
             }
-            if (!gameObject.TryGetComponent<BoxCollider2D>(out var box))
+            if (!gameObject.TryGetComponent<BoxCollider2D>(out var boxCollider))
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
             }
@@ -72,10 +67,10 @@ namespace PQ.TestScenes.Minimal.Physics
             _skinWidth    = 0f;
             _lastHitCount = 0;
 
-            _rigidBody   = body;
-            _boxCollider = box;
+            _rigidBody   = rigidBody;
+            _boxCollider = boxCollider;
             _castFilter  = new ContactFilter2D();
-            _castHits    = new RaycastHit2D[body.attachedColliderCount];
+            _castHits    = new RaycastHit2D[rigidBody.attachedColliderCount];
             _castFilter.useLayerMask = true;
 
             _rigidBody.isKinematic = true;
@@ -111,6 +106,11 @@ namespace PQ.TestScenes.Minimal.Physics
         /* How much is our desired contact offset for collisions? */
         public void SetSkinWidth(float skinWidth)
         {
+            if (Mathf.Approximately(_skinWidth, skinWidth))
+            {
+                return;
+            }
+
             // todo: add depenetration algo here
             _skinWidth = skinWidth;
         }
