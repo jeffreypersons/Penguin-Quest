@@ -126,7 +126,11 @@ namespace PQ.TestScenes.Minimal.Physics
             var closestHitNormal   = Vector2.zero;
             var closestHitDistance = delta.magnitude;
             for (int i = 0; i < _lastHitCount; i++)
-            {
+            {                
+                #if UNITY_EDITOR
+                if (DrawCastsInEditor)
+                    DrawCastResultAsLineInEditor(_castHits[i], delta, _skinWidth);
+                #endif
                 float adjustedDistance = _castHits[i].distance - _skinWidth;
                 if (adjustedDistance > 0f && adjustedDistance < closestHitDistance)
                 {
@@ -143,11 +147,6 @@ namespace PQ.TestScenes.Minimal.Physics
             }
             hitDistance = closestHitDistance;
             hitNormal   = closestHitNormal;
-            
-            #if UNITY_EDITOR
-            if (DrawCastsInEditor)
-                DrawLastSuccessfulCasts(delta, new Vector2(_skinWidth, _skinWidth));
-            #endif
             return true;
         }
         
@@ -175,19 +174,22 @@ namespace PQ.TestScenes.Minimal.Physics
             GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
 
-        private void DrawLastSuccessfulCasts(Vector2 castDelta, Vector2 castOffset)
+        private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, Vector2 delta, float offset)
         {
-            float duration = Time.fixedDeltaTime;
-            for (int i = 0; i < _lastHitCount; i++)
+            if (!hit)
             {
-                var origin = _castHits[i].point - castDelta;
-                var start  = _castHits[i].point + castOffset;
-                var end    = _castHits[i].point;
-
-                Debug.DrawLine(start,  end,    Color.red,     duration);
-                Debug.DrawLine(start,  origin, Color.magenta, duration);
-                Debug.DrawLine(origin, end,    Color.green,   duration);
+                // unfortunately we can't reliably find the origin of the cast
+                // if there was no hit (as far as I'm aware), so nothing to draw
+                return;
             }
+
+            float duration = Time.fixedDeltaTime;
+            var origin = hit.point - delta;
+            var start  = origin    + (offset * delta.normalized);
+            var end    = hit.point;
+            Debug.DrawLine(start,  end,    Color.red,     duration);
+            Debug.DrawLine(start,  origin, Color.magenta, duration);
+            Debug.DrawLine(origin, end,    Color.green,   duration);
         }
         #endif
     }
