@@ -31,6 +31,11 @@ namespace PQ.TestScenes.Minimal
 
         private void Awake()
         {
+            if (_settings == null)
+            {
+                throw new MissingComponentException($"Reference to settings {_settings.GetType()} not attached to {gameObject.name}");
+            }
+
             _solverParams = new Physics.SolverParams();
             SyncPropertiesFromSettings();
             _input = new GameplayInput();
