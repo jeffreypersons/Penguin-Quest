@@ -125,7 +125,7 @@ namespace PQ.TestScenes.Minimal.Physics
 
             var closestHitNormal   = Vector2.zero;
             var closestHitDistance = delta.magnitude;
-            for (int i = 0; i < _castHits.Length; i++)
+            for (int i = 0; i < _lastHitCount; i++)
             {
                 float adjustedDistance = _castHits[i].distance - _skinWidth;
                 if (adjustedDistance > 0f && adjustedDistance < closestHitDistance)
