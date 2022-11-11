@@ -182,14 +182,17 @@ namespace PQ.TestScenes.Minimal.Physics
                 // if there was no hit (as far as I'm aware), so nothing to draw
                 return;
             }
+            
+            var duration  = Time.fixedDeltaTime;
+            var direction = delta.normalized;
+            var start    = hit.point - hit.distance * direction;
+            var origin   = hit.point - (hit.distance - offset) * direction;
+            var hitPoint = hit.point;
+            var end      = hit.point + (1f - hit.fraction) * (delta.magnitude + offset) * direction;
 
-            float duration = Time.fixedDeltaTime;
-            var origin = hit.point - delta;
-            var start  = origin    + (offset * delta.normalized);
-            var end    = hit.point;
-            Debug.DrawLine(start,  end,    Color.red,     duration);
-            Debug.DrawLine(start,  origin, Color.magenta, duration);
-            Debug.DrawLine(origin, end,    Color.green,   duration);
+            Debug.DrawLine(start,    origin,   Color.magenta, duration);
+            Debug.DrawLine(origin,   hitPoint, Color.green,   duration);
+            Debug.DrawLine(hitPoint, end,      Color.red,     duration);
         }
         #endif
     }
