@@ -4,6 +4,19 @@ using UnityEngine;
 
 namespace PQ.TestScenes.Minimal.Physics
 {
+    [System.Flags]
+    public enum CollisionFlags2D
+    {
+        None       = 0,
+        Front      = 1 << 1,
+        Bottom     = 1 << 2,
+        Back       = 1 << 3,
+        Top        = 1 << 4,
+        SteepPoly  = 1 << 5,
+        SlightPoly = 1 << 6,
+        All        = ~0,
+    }
+
     // todo: replace Params with a readonly ref to params when ref fields are added to C# 11 and supported by Unity
     /*
     Collide and slide style solver for 2D that works in linear steps.
@@ -12,11 +25,13 @@ namespace PQ.TestScenes.Minimal.Physics
     */
     public class LinearPhysicsSolver2D
     {
-        private readonly Rigidbody2D     _body;
-        private readonly BoxCollider2D   _box;
-        private readonly ContactFilter2D _filter;
-        private readonly RaycastHit2D[]  _hits;
-        private readonly SolverParams    _params;
+        private readonly Rigidbody2D      _body;
+        private readonly BoxCollider2D    _box;
+        private readonly ContactFilter2D  _filter;
+        private readonly RaycastHit2D[]   _hits;
+        private readonly SolverParams     _params;
+
+        private CollisionFlags2D _collisions;
 
         public Rigidbody2D  Body   => _body;
         public Bounds       AAB    => _box.bounds;
@@ -40,14 +55,14 @@ namespace PQ.TestScenes.Minimal.Physics
             return delta == Vector2.zero;
         }
 
-
         public LinearPhysicsSolver2D(Rigidbody2D body, BoxCollider2D box, SolverParams solverParams)
         {
-            _body   = body;
-            _box    = box;
-            _filter = new ContactFilter2D();
-            _hits   = new RaycastHit2D[body.attachedColliderCount];
-            _params = solverParams;
+            _body       = body;
+            _box        = box;
+            _filter     = new ContactFilter2D();
+            _hits       = new RaycastHit2D[body.attachedColliderCount];
+            _params     = solverParams;
+            _collisions = CollisionFlags2D.None;
 
             _body.isKinematic = true;
             _body.useFullKinematicContacts = true;
@@ -70,10 +85,11 @@ namespace PQ.TestScenes.Minimal.Physics
 
         public void Move(Vector2 deltaPosition)
         {
+            _collisions = CollisionFlags2D.None;
             _filter.SetLayerMask(_params.GroundLayerMask);
 
-            Vector2 up         = Vector2.up;
-            Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
+            Vector2 up = Vector2.up;
+            Vector2 vertical = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
 
             // note that we resolve horizontal first as the movement is simpler than vertical
@@ -88,13 +104,14 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
+            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.position += currentDelta;
-                    return;
+                    break;
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
@@ -120,20 +137,23 @@ namespace PQ.TestScenes.Minimal.Physics
 
                 iteration++;
             }
+
+            _collisions |= flags;
         }
-        
+
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
         private void MoveVertical(Vector2 targetDelta)
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
+            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
                 if (!TryFindClosestCollisionAlongDelta(currentDelta, out float hitDistance, out Vector2 hitNormal))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.position += currentDelta;
-                    return;
+                    break;
                 }
                 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
@@ -155,6 +175,8 @@ namespace PQ.TestScenes.Minimal.Physics
 
                 iteration++;
             }
+
+            _collisions |= flags;
         }
 
         /* Project rigidbody forward, taking skin width and attached colliders into account, and return the closest rigidbody hit. */
@@ -183,6 +205,7 @@ namespace PQ.TestScenes.Minimal.Physics
                 hitNormal   = default;
                 return false;
             }
+
             hitDistance = closestHitDistance;
             hitNormal   = closestHitNormal;
             return true;
