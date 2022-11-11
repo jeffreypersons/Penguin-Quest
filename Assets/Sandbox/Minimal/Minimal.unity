@@ -730,31 +730,6 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
-      propertyPath: _settings
-      value: 
-      objectReference: {fileID: 11400000, guid: e4b244f5d53039347814ddb4b7ebce2b,
-        type: 2}
-    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
-      propertyPath: _walkSpeed
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
-      propertyPath: _contactOffset
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
-      propertyPath: _maxSlopeAngle
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
-      propertyPath: _horizontalSpeed
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 710134267, guid: dd5a67d8713f6b749bec88fb637937fe, type: 3}
-      propertyPath: _contactFilter.layerMask.m_Bits
-      value: 256
-      objectReference: {fileID: 0}
     - target: {fileID: 1438510890908960805, guid: dd5a67d8713f6b749bec88fb637937fe,
         type: 3}
       propertyPath: m_Name
