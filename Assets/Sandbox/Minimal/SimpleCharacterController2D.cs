@@ -4,12 +4,12 @@ using PQ.TestScenes.Minimal.Physics;
 
 namespace PQ.TestScenes.Minimal
 {
-    public class SimpleCharacterController2D : ICharacterController2D
+    public sealed class SimpleCharacterController2D : ICharacterController2D
     {
         private bool _flipped;
         private bool _isGrounded;
         private readonly KinematicBody2D _body;
-        private readonly LinearPhysicsSolver2D _solver;
+        private readonly CollideAndSlideSolver2D _solver;
 
         public SimpleCharacterController2D(GameObject gameObject, in SolverParams solverParams)
         {
@@ -21,7 +21,7 @@ namespace PQ.TestScenes.Minimal
             _flipped    = false;
             _isGrounded = false;
             _body       = body;
-            _solver     = new LinearPhysicsSolver2D(body, solverParams);
+            _solver     = new CollideAndSlideSolver2D(body, solverParams);
 
             body.SetSkinWidth(solverParams.ContactOffset);
         }

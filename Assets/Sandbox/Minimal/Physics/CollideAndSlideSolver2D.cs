@@ -18,16 +18,14 @@ namespace PQ.TestScenes.Minimal.Physics
     }
 
 
-
-    // todo: replace Params with a readonly ref to params when ref fields are added to C# 11 and supported by Unity
     /*
     Collide and slide style solver for 2D that works in linear steps.
 
     Assumes always upright bounding box, with kinematic rigidbody.
-    Basically, this class is all about projecting rigidbody along desired delta, taking skin width, surface collisions,
-    and attached colliders into account.
+    Basically, this class is all about projecting rigidbody along desired delta,
+    taking skin width, surface collisions, and attached colliders into account.
     */
-    public class LinearPhysicsSolver2D
+    public sealed class CollideAndSlideSolver2D
     {
         private CollisionFlags2D _collisions;
         private readonly KinematicBody2D _body;
@@ -51,7 +49,7 @@ namespace PQ.TestScenes.Minimal.Physics
             return delta == Vector2.zero;
         }
 
-        public LinearPhysicsSolver2D(KinematicBody2D body, in SolverParams solverParams)
+        public CollideAndSlideSolver2D(KinematicBody2D body, in SolverParams solverParams)
         {
             _body       = body;
             _params     = solverParams;
