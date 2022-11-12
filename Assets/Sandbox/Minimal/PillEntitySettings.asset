@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: PillEntitySettings
   m_EditorClassIdentifier: 
   walkSpeed: 50
+  jumpSpeed: 500
   jumpLengthToApex: 10
   jumpHeightToApex: 10
   solverIterationsPerPhysicsUpdate: 10

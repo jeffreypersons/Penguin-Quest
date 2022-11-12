@@ -44,6 +44,10 @@ namespace PQ.TestScenes.Minimal.Physics
 
         public void Move(Vector2 deltaPosition)
         {
+            // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
+            _collisions = CollisionFlags2D.None;
+
+            // scale deltas in proportion to the y-axis
             Vector2 up         = _body.Up;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
@@ -52,7 +56,8 @@ namespace PQ.TestScenes.Minimal.Physics
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
 
-            _collisions = CollisionFlags2D.None;
+            // now that we have solved for both movement independently, get our flags up to date
+            _collisions = _body.CheckForOverlappingContacts(_params.LayerMask);
         }
 
 

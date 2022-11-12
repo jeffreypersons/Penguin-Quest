@@ -9,6 +9,7 @@ namespace PQ.TestScenes.Minimal
         [SerializeField] private CharacterEntitySettings _settings;
 
         private float _walkSpeed;
+        private float _jumpSpeed;
         private Vector2 _jumpDisplacementToPeak;
         private Physics.SolverParams _characterSolverParams;
 
@@ -17,8 +18,9 @@ namespace PQ.TestScenes.Minimal
 
         private void SyncPropertiesFromSettings()
         {
-            _walkSpeed                          = _settings.walkSpeed;
-            _jumpDisplacementToPeak             = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
+            _walkSpeed                           = _settings.walkSpeed;
+            _jumpSpeed                           = _settings.jumpSpeed;
+            _jumpDisplacementToPeak              = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
 
             _characterSolverParams.MaxIterations = _settings.solverIterationsPerPhysicsUpdate;
 
@@ -28,10 +30,11 @@ namespace PQ.TestScenes.Minimal
             _characterSolverParams.ContactOffset = _settings.skinWidth;
             _characterSolverParams.LayerMask     = _settings.groundLayerMask;
             _characterSolverParams.MaxSlopeAngle = _settings.maxAscendableSlopeAngle;
-            _characterSolverParams.Gravity       = _settings.gravityScale * Physics2D.gravity.y;
+            _characterSolverParams.Gravity       = Mathf.Abs(_settings.gravityScale * Physics2D.gravity.y);
 
             Debug.Log($"Updated fields according to {_settings} {{" +
-                $"WalkVelocity: {_walkSpeed}, " +
+                $"WalkSpeed: {_walkSpeed}, " +
+                $"JumpSpeed: {_jumpSpeed}, " +
                 $"JumpDisplacementToPeak: {_jumpDisplacementToPeak}, " +
                 $"SolverParams: {_characterSolverParams}}}");
         }
@@ -62,16 +65,30 @@ namespace PQ.TestScenes.Minimal
 
         void FixedUpdate()
         {
-            Vector2 currentWalkVelocity = new (_characterInput.Horizontal * _walkSpeed, 0f);
-
+            Vector2 velocity = Vector2.zero;
             if (RequestedMoveInOppositeDirection(_characterInput, _characterController))
             {
                 _characterController.Flip();
             }
 
+            if (!Mathf.Approximately(_characterInput.Horizontal, 0f))
+            {
+                velocity.x += _characterInput.Horizontal * _walkSpeed;
+            }
 
-            Vector2 totalVelocity = currentWalkVelocity;
-            _characterController.Move(Time.fixedDeltaTime * totalVelocity);
+            if (_characterController.IsGrounded && _characterInput.Vertical > 0f)
+            {
+                // todo: replace with 'real' jump calculations
+                velocity.y += _characterInput.Vertical * _jumpSpeed;
+            }
+            
+            if (!_characterController.IsGrounded)
+            {
+                // todo: move this stuff into the solver, so it can do things like faster steep-slope-sliding
+                velocity.y -= _characterSolverParams.Gravity;
+            }
+
+            _characterController.Move(Time.fixedDeltaTime * velocity);
         }
 
 

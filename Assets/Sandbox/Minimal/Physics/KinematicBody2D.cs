@@ -134,15 +134,49 @@ namespace PQ.TestScenes.Minimal.Physics
             }
         }
 
-        /* Project AAB along delta, taking skin width into account, and return the closest distance/normal. */
-        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask, out float hitDistance, out Vector2 hitNormal)
+        
+        /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
+        public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask)
         {
-            var deltaLength = delta.magnitude;
             _castFilter.SetLayerMask(layerMask);
-            int hitCount = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength + _skinWidth);
 
-            var closestHitNormal   = Vector2.zero;
-            var closestHitDistance = deltaLength;
+            Transform transform = _rigidBody.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
+
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            if (_boxCollider.Cast(right, _castFilter, _castHits, _skinWidth) >= 1)
+            {
+                flags |= CollisionFlags2D.Front;
+            }
+            if (_boxCollider.Cast(up, _castFilter, _castHits, _skinWidth) >= 1)
+            {
+                flags |= CollisionFlags2D.Above;
+            }
+            if (_boxCollider.Cast(left, _castFilter, _castHits, _skinWidth) >= 1)
+            {
+                flags |= CollisionFlags2D.Behind;
+            }
+            if (_boxCollider.Cast(down, _castFilter, _castHits, _skinWidth) >= 1)
+            {
+                flags |= CollisionFlags2D.Below;
+            }
+            return flags;
+        }
+
+        /* Project AAB along delta, taking skin width into account, and return the closest distance/normal. */
+        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask,
+            out float hitDistance, out Vector2 hitNormal)
+        {
+            _castFilter.SetLayerMask(layerMask);
+
+            float deltaLength = delta.magnitude;
+            int   hitCount    = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength + _skinWidth);
+
+            Vector2 closestHitNormal   = Vector2.zero;
+            float   closestHitDistance = deltaLength;
             for (int i = 0; i < hitCount; i++)
             {
                 #if UNITY_EDITOR
@@ -182,10 +216,10 @@ namespace PQ.TestScenes.Minimal.Physics
             // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
             // should be identical to the transform's axes in the editor window
             Bounds box = Bounds;
-            Vector2 center    = box.center;
+            Vector2 center    = new(box.center.x, box.center.y);
+            Vector2 skinRatio = new(1f + (_skinWidth / box.extents.x), 1f + (_skinWidth / box.extents.y));
             Vector2 xAxis     = box.extents.x * Forward;
             Vector2 yAxis     = box.extents.y * Up;
-            Vector2 skinRatio = new(1f + (_skinWidth / box.extents.x), 1f + (_skinWidth / box.extents.y));
 
             GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
             GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.magenta);
@@ -202,12 +236,12 @@ namespace PQ.TestScenes.Minimal.Physics
                 return;
             }
             
-            var duration  = Time.fixedDeltaTime;
-            var direction = delta.normalized;
-            var start    = hit.point - hit.distance * direction;
-            var origin   = hit.point - (hit.distance - offset) * direction;
-            var hitPoint = hit.point;
-            var end      = hit.point + (1f - hit.fraction) * (delta.magnitude + offset) * direction;
+            float duration  = Time.fixedDeltaTime;
+            Vector2 direction = delta.normalized;
+            Vector2 start     = hit.point - hit.distance * direction;
+            Vector2 origin    = hit.point - (hit.distance - offset) * direction;
+            Vector2 hitPoint  = hit.point;
+            Vector2 end       = hit.point + (1f - hit.fraction) * (delta.magnitude + offset) * direction;
 
             Debug.DrawLine(start,    origin,   Color.magenta, duration);
             Debug.DrawLine(origin,   hitPoint, Color.green,   duration);

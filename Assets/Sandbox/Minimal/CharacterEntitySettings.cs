@@ -21,6 +21,9 @@ namespace PQ.TestScenes.Minimal
         [Tooltip("At what speed does the character walk along the horizontal?")]
         [Range(0, 1000)][SerializeField] public float walkSpeed = 50f;
 
+        [Tooltip("At what speed does the character move upwards?")]
+        [Range(0, 1000)][SerializeField] public float jumpSpeed = 500f;
+
         [Tooltip("Horizontal distance from jump origin to bottom center of arc")]
         [Range(0, 100)][SerializeField] public float jumpLengthToApex = 10f;
 
