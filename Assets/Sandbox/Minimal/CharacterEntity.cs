@@ -7,13 +7,18 @@ namespace PQ.TestScenes.Minimal
     {
         [SerializeField] private CharacterEntitySettings _settings;
 
-        private Physics.SolverParams   _solverParams;
-        private GameplayInput          _input;
+        private Vector2 _walkVelocity;
+        private Vector2 _jumpDisplacementToPeak;
+        private Physics.SolverParams _characterSolverParams;
+
+        private GameplayInput _characterInput;
         private ICharacterController2D _characterController;
 
         private void SyncPropertiesFromSettings()
         {
-            _solverParams = _solverParams with
+            _walkVelocity           = new Vector2(_settings.walkSpeed, 0);
+            _jumpDisplacementToPeak = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
+            _characterSolverParams = _characterSolverParams with
             {
                 MaxIterations = _settings.solverIterationsPerPhysicsUpdate,
 
@@ -26,6 +31,10 @@ namespace PQ.TestScenes.Minimal
                 Gravity       = _settings.gravityScale * Physics2D.gravity.y,
             };
 
+            Debug.Log($"Updated fields according to {_settings} {{" +
+                $"WalkVelocity: {_walkVelocity}, " +
+                $"JumpDisplacementToPeak: {_jumpDisplacementToPeak}, " +
+                $"SolverParams: {_characterSolverParams}}}");
         }
 
 
@@ -33,50 +42,40 @@ namespace PQ.TestScenes.Minimal
         {
             if (_settings == null)
             {
-                throw new MissingComponentException($"Reference to settings {_settings.GetType()} not attached to {gameObject.name}");
+                throw new MissingComponentException($"Settings required - " +
+                    $"no instance of {_settings.name} found attached to {gameObject.name}");
             }
 
-            _solverParams = new Physics.SolverParams();
-            SyncPropertiesFromSettings();
-            _input = new GameplayInput();
+            _characterSolverParams = new Physics.SolverParams();
+            _characterInput        = new GameplayInput();
+            _characterController   = new SimpleCharacterController2D(gameObject, _characterSolverParams);
 
-            _characterController = new SimpleCharacterController2D(gameObject, _solverParams);
+            SyncPropertiesFromSettings();
+            _settings.RegisterOnChanged(SyncPropertiesFromSettings);
         }
 
 
         void Update()
         {
-            _input.ReadInput();
+            _characterInput.ReadInput();
         }
 
 
         void FixedUpdate()
         {
-            if (Mathf.Approximately(_input.Horizontal, 0f))
+            if (Mathf.Approximately(_characterInput.Horizontal, 0f))
             {
                 return;
             }
 
-            bool characterMovingLeft = _input.Horizontal < 0;
+            bool characterMovingLeft = _characterInput.Horizontal < 0;
             bool characterFacingLeft = _characterController.Flipped;
             if (characterFacingLeft != characterMovingLeft)
             {
                 _characterController.Flip();
             }
 
-            _characterController.Move(new Vector2(_input.Horizontal * _settings.walkSpeed * Time.fixedDeltaTime, 0));
+            _characterController.Move(new Vector2(_characterInput.Horizontal * _settings.walkSpeed * Time.fixedDeltaTime, 0));
         }
-        
-        #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (_solverParams == null)
-            {
-                // only sync if solver params was already setup
-                return;
-            }
-            SyncPropertiesFromSettings();
-        }
-        #endif
     }
 }

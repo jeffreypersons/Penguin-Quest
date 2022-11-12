@@ -10,6 +10,23 @@ namespace PQ.TestScenes.Minimal
         order    = 1)]
     public class CharacterEntitySettings : ScriptableObject
     {
+        private Action _onChanged;
+
+        /*
+        What should I notify when this script is loaded or (if in editor) a value changes?
+
+        Note that since scriptable objects are available the lifetime of the program, explicit unsubscribe is not needed.
+        */
+        public void RegisterOnChanged(Action onScriptLoadOrInspectorChanged)
+        {
+            _onChanged = onScriptLoadOrInspectorChanged;
+        }
+
+        private void OnValidate()
+        {
+            _onChanged?.Invoke();
+        }
+
         [Header("Character Movement Settings")]
 
         [Tooltip("At what speed does the character walk along the horizontal?")]
