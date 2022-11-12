@@ -44,8 +44,6 @@ namespace PQ.TestScenes.Minimal.Physics
 
         public void Move(Vector2 deltaPosition)
         {
-            _collisions = CollisionFlags2D.None;
-
             Vector2 up         = _body.Up;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
@@ -53,6 +51,8 @@ namespace PQ.TestScenes.Minimal.Physics
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
+
+            _collisions = CollisionFlags2D.None;
         }
 
 
@@ -62,10 +62,9 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.TryFindClosestCollisionAlongDelta(currentDelta, _params.LayerMask,
+                if (!_body.Cast(currentDelta, _params.LayerMask,
                         out float hitDistance, out Vector2 hitNormal))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
@@ -89,8 +88,6 @@ namespace PQ.TestScenes.Minimal.Physics
                 _body.MoveBy(currentDelta);
                 iteration++;
             }
-
-            _collisions |= flags;
         }
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
@@ -98,11 +95,9 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.TryFindClosestCollisionAlongDelta(currentDelta, _params.LayerMask,
-                        out float hitDistance, out Vector2 hitNormal))
+                if (!_body.Cast(currentDelta, _params.LayerMask, out float hitDistance, out Vector2 hitNormal))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
@@ -121,10 +116,7 @@ namespace PQ.TestScenes.Minimal.Physics
                 _body.MoveBy(currentDelta);
                 iteration++;
             }
-
-            _collisions |= flags;
         }
-
 
         /*
         Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.

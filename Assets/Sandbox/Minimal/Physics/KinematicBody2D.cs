@@ -30,7 +30,7 @@ namespace PQ.TestScenes.Minimal.Physics
         public float   Depth             => _rigidBody.transform.position.z;
         public Bounds  Bounds            => _boxCollider.bounds;
         public float   SkinWidth         => _skinWidth;
-        public Vector2 Right             => _rigidBody.transform.right.normalized;
+        public Vector2 Forward           => _rigidBody.transform.right.normalized;
         public Vector2 Up                => _rigidBody.transform.up.normalized;
 
         public bool DrawCastsInEditor { get; set; } = true;
@@ -49,7 +49,7 @@ namespace PQ.TestScenes.Minimal.Physics
             $"{GetType()}(" +
                 $"Position:{Position}," +
                 $"Depth:{Depth}," +
-                $"Forward:{Right}," +
+                $"Forward:{Forward}," +
                 $"Up:{Up}," +
                 $"SkinWidth:{SkinWidth}," +
                 $"AAB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
@@ -123,14 +123,14 @@ namespace PQ.TestScenes.Minimal.Physics
 
 
         /* Cast along delta, taking skin width and attached colliders into account, and return the closest distance/normal. */
-        public bool TryFindClosestCollisionAlongDelta(Vector2 delta, LayerMask layerMask,
-            out float hitDistance, out Vector2 hitNormal)
+        public bool Cast(Vector2 delta, in LayerMask layerMask, out float hitDistance, out Vector2 hitNormal)
         {
+            var deltaLength = delta.magnitude;
             _castFilter.SetLayerMask(layerMask);
-            _lastHitCount = _rigidBody.Cast(delta, _castFilter, _castHits, delta.magnitude + _skinWidth);
+            _lastHitCount = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength + _skinWidth);
 
             var closestHitNormal   = Vector2.zero;
-            var closestHitDistance = delta.magnitude;
+            var closestHitDistance = deltaLength;
             for (int i = 0; i < _lastHitCount; i++)
             {
                 #if UNITY_EDITOR
@@ -157,6 +157,7 @@ namespace PQ.TestScenes.Minimal.Physics
         }
         
 
+
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
@@ -170,7 +171,7 @@ namespace PQ.TestScenes.Minimal.Physics
             // should be identical to the transform's axes in the editor window
             Bounds box = Bounds;
             Vector2 center    = box.center;
-            Vector2 xAxis     = box.extents.x * Right;
+            Vector2 xAxis     = box.extents.x * Forward;
             Vector2 yAxis     = box.extents.y * Up;
             Vector2 skinRatio = new(1f + (_skinWidth / box.extents.x), 1f + (_skinWidth / box.extents.y));
 

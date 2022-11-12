@@ -23,7 +23,7 @@ namespace PQ.TestScenes.Minimal
         }
 
         Vector2 ICharacterController2D.Position   => _body.Position;
-        Vector2 ICharacterController2D.Forward    => _body.Right;
+        Vector2 ICharacterController2D.Forward    => _body.Forward;
         Vector2 ICharacterController2D.Up         => _body.Up;
         bool    ICharacterController2D.IsGrounded => (_solver.Flags & CollisionFlags2D.Bottom) != 0;
         bool    ICharacterController2D.Flipped    => _body.FlippedHorizontal;
