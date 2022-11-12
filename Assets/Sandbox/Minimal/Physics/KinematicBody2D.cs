@@ -14,7 +14,7 @@ namespace PQ.TestScenes.Minimal.Physics
     */
     [AddComponentMenu("KinematicBody2DNew")]
     public sealed class KinematicBody2D : MonoBehaviour
-    {        
+    {
         private float _skinWidth;
         private int   _lastHitCount;
         private Rigidbody2D     _rigidBody;
@@ -125,7 +125,7 @@ namespace PQ.TestScenes.Minimal.Physics
             var closestHitNormal   = Vector2.zero;
             var closestHitDistance = delta.magnitude;
             for (int i = 0; i < _lastHitCount; i++)
-            {                
+            {
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
                     DrawCastResultAsLineInEditor(_castHits[i], delta, _skinWidth);

@@ -102,7 +102,7 @@ namespace PQ.Game.Entities.Penguin
         }
         
         void Start()
-        {            
+        {
             #if UNITY_EDITOR
             if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
             {
