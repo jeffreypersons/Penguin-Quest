@@ -134,7 +134,7 @@ namespace PQ.TestScenes.Minimal.Physics
             }
         }
 
-        /* Cast along delta, taking skin width and attached colliders into account, and return the closest distance/normal. */
+        /* Project AAB along delta, taking skin width into account, and return the closest distance/normal. */
         public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask, out float hitDistance, out Vector2 hitNormal)
         {
             var deltaLength = delta.magnitude;
