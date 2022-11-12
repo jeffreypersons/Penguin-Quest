@@ -12,7 +12,7 @@ namespace PQ.TestScenes.Minimal.Physics
 
     Note there is no caching of positions (but there is for casts).
     */
-    [AddComponentMenu("KinematicBody2DNew")]
+    [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
         private float _skinWidth;
