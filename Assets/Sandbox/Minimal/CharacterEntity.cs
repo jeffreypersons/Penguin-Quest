@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
@@ -7,7 +8,7 @@ namespace PQ.TestScenes.Minimal
     {
         [SerializeField] private CharacterEntitySettings _settings;
 
-        private Vector2 _walkVelocity;
+        private float _walkSpeed;
         private Vector2 _jumpDisplacementToPeak;
         private Physics.SolverParams _characterSolverParams;
 
@@ -16,8 +17,8 @@ namespace PQ.TestScenes.Minimal
 
         private void SyncPropertiesFromSettings()
         {
-            _walkVelocity                        = new Vector2(_settings.walkSpeed, 0);
-            _jumpDisplacementToPeak              = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
+            _walkSpeed                          = _settings.walkSpeed;
+            _jumpDisplacementToPeak             = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
 
             _characterSolverParams.MaxIterations = _settings.solverIterationsPerPhysicsUpdate;
 
@@ -30,7 +31,7 @@ namespace PQ.TestScenes.Minimal
             _characterSolverParams.Gravity       = _settings.gravityScale * Physics2D.gravity.y;
 
             Debug.Log($"Updated fields according to {_settings} {{" +
-                $"WalkVelocity: {_walkVelocity}, " +
+                $"WalkVelocity: {_walkSpeed}, " +
                 $"JumpDisplacementToPeak: {_jumpDisplacementToPeak}, " +
                 $"SolverParams: {_characterSolverParams}}}");
         }
@@ -61,19 +62,30 @@ namespace PQ.TestScenes.Minimal
 
         void FixedUpdate()
         {
-            if (Mathf.Approximately(_characterInput.Horizontal, 0f))
-            {
-                return;
-            }
+            Vector2 currentWalkVelocity = new (_characterInput.Horizontal * _walkSpeed, 0f);
 
-            bool characterMovingLeft = _characterInput.Horizontal < 0;
-            bool characterFacingLeft = _characterController.Flipped;
-            if (characterFacingLeft != characterMovingLeft)
+            if (RequestedMoveInOppositeDirection(_characterInput, _characterController))
             {
                 _characterController.Flip();
             }
 
-            _characterController.Move(new Vector2(_characterInput.Horizontal * _settings.walkSpeed * Time.fixedDeltaTime, 0));
+
+            Vector2 totalVelocity = currentWalkVelocity;
+            _characterController.Move(Time.fixedDeltaTime * totalVelocity);
+        }
+
+
+        [Pure]
+        private static bool RequestedMoveInOppositeDirection(
+            GameplayInput input, ICharacterController2D controller)
+        {
+            if (Mathf.Approximately(input.Horizontal, 0f))
+            {
+                return false;
+            }
+            bool characterMovingLeft = input.Horizontal < 0;
+            bool characterFacingLeft = controller.Flipped;
+            return characterFacingLeft != characterMovingLeft;
         }
     }
 }
