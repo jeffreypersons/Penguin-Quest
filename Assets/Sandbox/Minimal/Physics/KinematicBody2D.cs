@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using PQ.Common.Extensions;
 
@@ -15,10 +16,11 @@ namespace PQ.TestScenes.Minimal.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
+        private const int PreallocatedHitBufferSize = 16;
+
         private bool  _flippedHorizontal;
         private bool  _flippedVertical;
         private float _skinWidth;
-        private int   _lastHitCount;
         private Rigidbody2D     _rigidBody;
         private BoxCollider2D   _boxCollider;
         private ContactFilter2D _castFilter;
@@ -67,13 +69,11 @@ namespace PQ.TestScenes.Minimal.Physics
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
             }
 
-            _skinWidth    = 0f;
-            _lastHitCount = 0;
-
+            _skinWidth   = 0f;
             _rigidBody   = rigidBody;
             _boxCollider = boxCollider;
             _castFilter  = new ContactFilter2D();
-            _castHits    = new RaycastHit2D[rigidBody.attachedColliderCount];
+            _castHits    = new RaycastHit2D[PreallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
 
             _rigidBody.isKinematic = true;
@@ -121,17 +121,29 @@ namespace PQ.TestScenes.Minimal.Physics
             _skinWidth = skinWidth;
         }
 
+        /* Resize preallocated raycast hit buffer to given amount (warning: causes allocations!). */
+        public void ResizeHitBuffer(int size)
+        {
+            if (size <= 0)
+            {
+                throw new ArgumentException($"Buffer size must be at least 1 - received {size} instead");
+            }
+            if (_castHits.Length != size)
+            {
+                _castHits = new RaycastHit2D[size];
+            }
+        }
 
         /* Cast along delta, taking skin width and attached colliders into account, and return the closest distance/normal. */
         public bool Cast(Vector2 delta, in LayerMask layerMask, out float hitDistance, out Vector2 hitNormal)
         {
             var deltaLength = delta.magnitude;
             _castFilter.SetLayerMask(layerMask);
-            _lastHitCount = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength + _skinWidth);
+            int hitCount = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength + _skinWidth);
 
             var closestHitNormal   = Vector2.zero;
             var closestHitDistance = deltaLength;
-            for (int i = 0; i < _lastHitCount; i++)
+            for (int i = 0; i < hitCount; i++)
             {
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
