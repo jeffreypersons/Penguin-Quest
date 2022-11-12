@@ -47,6 +47,7 @@ namespace PQ.TestScenes.Minimal
             _characterSolverParams = new Physics.SolverParams();
             _characterInput        = new GameplayInput();
             _characterController   = new SimpleCharacterController2D(gameObject, _characterSolverParams);
+
             _settings.OnChanged = SyncPropertiesFromSettings;
             SyncPropertiesFromSettings();
         }
