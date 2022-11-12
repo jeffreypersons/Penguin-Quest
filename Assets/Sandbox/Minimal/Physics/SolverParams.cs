@@ -1,24 +1,19 @@
 using UnityEngine;
 
 
-// since Unity doesn't support .net 5 yet, we enable init field properties via the following:
-namespace System.Runtime.CompilerServices
-{
-    internal static class IsExternalInit { }
-}
-
 namespace PQ.TestScenes.Minimal.Physics
 {
+    // todo: replace with struct and store as `ref readonly struct` when we finally get C#11
     public record SolverParams
     {
-        public int       MaxIterations { get; init; }
+        public int       MaxIterations { get; set; }
 
-        public float     Bounciness    { get; init; }
-        public float     Friction      { get; init; }
+        public float     Bounciness    { get; set; }
+        public float     Friction      { get; set; }
 
-        public float     ContactOffset { get; init; }
-        public LayerMask LayerMask     { get; init; }
-        public float     MaxSlopeAngle { get; init; }
-        public float     Gravity       { get; init; }
+        public float     ContactOffset { get; set; }
+        public LayerMask LayerMask     { get; set; }
+        public float     MaxSlopeAngle { get; set; }
+        public float     Gravity       { get; set; }
     }
 }

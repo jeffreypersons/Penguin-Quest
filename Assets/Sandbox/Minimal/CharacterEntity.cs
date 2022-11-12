@@ -16,20 +16,15 @@ namespace PQ.TestScenes.Minimal
 
         private void SyncPropertiesFromSettings()
         {
-            _walkVelocity           = new Vector2(_settings.walkSpeed, 0);
-            _jumpDisplacementToPeak = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
-            _characterSolverParams = _characterSolverParams with
-            {
-                MaxIterations = _settings.solverIterationsPerPhysicsUpdate,
-
-                Bounciness    = _settings.collisionBounciness,
-                Friction      = _settings.collisionFriction,
-
-                ContactOffset = _settings.skinWidth,
-                LayerMask     = _settings.groundLayerMask,
-                MaxSlopeAngle = _settings.maxAscendableSlopeAngle,
-                Gravity       = _settings.gravityScale * Physics2D.gravity.y,
-            };
+            _walkVelocity                        = new Vector2(_settings.walkSpeed, 0);
+            _jumpDisplacementToPeak              = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
+            _characterSolverParams.MaxIterations = _settings.solverIterationsPerPhysicsUpdate;
+            _characterSolverParams.Bounciness    = _settings.collisionBounciness;
+            _characterSolverParams.Friction      = _settings.collisionFriction;
+            _characterSolverParams.ContactOffset = _settings.skinWidth;
+            _characterSolverParams.LayerMask     = _settings.groundLayerMask;
+            _characterSolverParams.MaxSlopeAngle = _settings.maxAscendableSlopeAngle;
+            _characterSolverParams.Gravity       = _settings.gravityScale * Physics2D.gravity.y;
 
             Debug.Log($"Updated fields according to {_settings} {{" +
                 $"WalkVelocity: {_walkVelocity}, " +
@@ -47,11 +42,10 @@ namespace PQ.TestScenes.Minimal
             }
 
             _characterSolverParams = new Physics.SolverParams();
-            SyncPropertiesFromSettings();
             _characterInput        = new GameplayInput();
             _characterController   = new SimpleCharacterController2D(gameObject, _characterSolverParams);
-
             _settings.OnChanged = SyncPropertiesFromSettings;
+            SyncPropertiesFromSettings();
         }
 
 
