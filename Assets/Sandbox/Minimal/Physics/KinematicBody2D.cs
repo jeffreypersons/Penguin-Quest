@@ -135,7 +135,7 @@ namespace PQ.TestScenes.Minimal.Physics
         }
 
         /* Cast along delta, taking skin width and attached colliders into account, and return the closest distance/normal. */
-        public bool Cast(Vector2 delta, in LayerMask layerMask, out float hitDistance, out Vector2 hitNormal)
+        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask, out float hitDistance, out Vector2 hitNormal)
         {
             var deltaLength = delta.magnitude;
             _castFilter.SetLayerMask(layerMask);

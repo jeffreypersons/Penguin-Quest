@@ -64,7 +64,7 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.Cast(currentDelta, _params.LayerMask,
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask,
                         out float hitDistance, out Vector2 hitNormal))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
@@ -97,7 +97,7 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.Cast(currentDelta, _params.LayerMask, out float hitDistance, out Vector2 hitNormal))
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out float hitDistance, out Vector2 hitNormal))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
