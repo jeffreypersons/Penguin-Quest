@@ -94,7 +94,7 @@ namespace PQ.TestScenes.Minimal.Physics
             _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
 
             _flippedHorizontal = horizontal;
-            _flippedHorizontal = vertical;
+            _flippedVertical   = vertical;
         }
 
         /* Immediately move body by given amount. */
