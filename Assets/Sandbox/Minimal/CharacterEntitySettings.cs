@@ -10,22 +10,11 @@ namespace PQ.TestScenes.Minimal
         order    = 1)]
     public class CharacterEntitySettings : ScriptableObject
     {
-        private Action _onChanged;
+        // Any time script is loaded, or field values are modified, where do we want that input to go?
+        // Note that since we treat there editor-configured settings as input, we deliberately expose a single listener at a time
+        public Action OnChanged { set; get; }
+        private void OnValidate() => OnChanged?.Invoke();
 
-        /*
-        What should I notify when this script is loaded or (if in editor) a value changes?
-
-        Note that since scriptable objects are available the lifetime of the program, explicit unsubscribe is not needed.
-        */
-        public void RegisterOnChanged(Action onScriptLoadOrInspectorChanged)
-        {
-            _onChanged = onScriptLoadOrInspectorChanged;
-        }
-
-        private void OnValidate()
-        {
-            _onChanged?.Invoke();
-        }
 
         [Header("Character Movement Settings")]
 
