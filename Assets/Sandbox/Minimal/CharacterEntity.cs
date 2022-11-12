@@ -18,9 +18,12 @@ namespace PQ.TestScenes.Minimal
         {
             _walkVelocity                        = new Vector2(_settings.walkSpeed, 0);
             _jumpDisplacementToPeak              = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
+
             _characterSolverParams.MaxIterations = _settings.solverIterationsPerPhysicsUpdate;
+
             _characterSolverParams.Bounciness    = _settings.collisionBounciness;
             _characterSolverParams.Friction      = _settings.collisionFriction;
+
             _characterSolverParams.ContactOffset = _settings.skinWidth;
             _characterSolverParams.LayerMask     = _settings.groundLayerMask;
             _characterSolverParams.MaxSlopeAngle = _settings.maxAscendableSlopeAngle;
