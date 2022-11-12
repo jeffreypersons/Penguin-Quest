@@ -40,10 +40,13 @@ namespace PQ.TestScenes.Minimal.Physics
             _body       = body;
             _params     = solverParams;
             _collisions = CollisionFlags2D.None;
+            _body.SetSkinWidth(_params.ContactOffset);
         }
 
         public void Move(Vector2 deltaPosition)
         {
+            _body.SetSkinWidth(_params.ContactOffset);
+
             // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
             _collisions = CollisionFlags2D.None;
 
@@ -57,7 +60,7 @@ namespace PQ.TestScenes.Minimal.Physics
             MoveVertical(vertical);
 
             // now that we have solved for both movement independently, get our flags up to date
-            _collisions = _body.CheckForOverlappingContacts(_params.LayerMask);
+            _collisions = _body.CheckForOverlappingContacts(_params.LayerMask, _params.MaxSlopeAngle);
         }
 
 
@@ -69,8 +72,7 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask,
-                        out float hitDistance, out Vector2 hitNormal))
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
@@ -78,12 +80,12 @@ namespace PQ.TestScenes.Minimal.Physics
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                float slopeAngle = Vector2.Angle(_body.Up, hitNormal);
+                float slopeAngle = Vector2.Angle(_body.Up, hit.normal);
                 if (slopeAngle <= _params.MaxSlopeAngle)
                 {
                     // move a single linear step along our delta until the detected collision
-                    currentDelta = hitDistance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hitNormal, _params.Bounciness, _params.Friction);
+                    currentDelta = hit.distance * currentDelta.normalized;
+                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
                 else
                 {
@@ -102,7 +104,7 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out float hitDistance, out Vector2 hitNormal))
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
@@ -110,12 +112,12 @@ namespace PQ.TestScenes.Minimal.Physics
                 }
                 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
+                float slopeAngle = Vector2.Angle(Vector2.up, hit.normal);
                 if (slopeAngle > _params.MaxSlopeAngle)
                 {
                     // move a single linear step along our delta until the detected collision
-                    currentDelta = hitDistance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hitNormal, _params.Bounciness, _params.Friction);
+                    currentDelta = hit.distance * currentDelta.normalized;
+                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
 
                 _body.MoveBy(currentDelta);

@@ -136,7 +136,7 @@ namespace PQ.TestScenes.Minimal.Physics
 
         
         /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
-        public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask)
+        public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
         {
             _castFilter.SetLayerMask(layerMask);
 
@@ -167,38 +167,32 @@ namespace PQ.TestScenes.Minimal.Physics
         }
 
         /* Project AAB along delta, taking skin width into account, and return the closest distance/normal. */
-        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask,
-            out float hitDistance, out Vector2 hitNormal)
+        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask, out RaycastHit2D hit)
         {
             _castFilter.SetLayerMask(layerMask);
 
             float deltaLength = delta.magnitude;
-            int   hitCount    = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength + _skinWidth);
+            int   hitCount    = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength);
+            if (hitCount <= 0)
+            {
+                hit = default;
+                return false;
+            }
 
-            Vector2 closestHitNormal   = Vector2.zero;
-            float   closestHitDistance = deltaLength;
+            int closestHitIndex = 0;
             for (int i = 0; i < hitCount; i++)
             {
+                if (_castHits[i].distance < _castHits[closestHitIndex].distance)
+                {
+                    closestHitIndex = i;
+                }
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
                     DrawCastResultAsLineInEditor(_castHits[i], delta, _skinWidth);
                 #endif
-                float adjustedDistance = _castHits[i].distance - _skinWidth;
-                if (adjustedDistance > 0f && adjustedDistance < closestHitDistance)
-                {
-                    closestHitNormal   = _castHits[i].normal;
-                    closestHitDistance = adjustedDistance;
-                }
             }
 
-            if (closestHitNormal == Vector2.zero)
-            {
-                hitDistance = default;
-                hitNormal   = default;
-                return false;
-            }
-            hitDistance = closestHitDistance;
-            hitNormal   = closestHitNormal;
+            hit = _castHits[closestHitIndex];
             return true;
         }
         
