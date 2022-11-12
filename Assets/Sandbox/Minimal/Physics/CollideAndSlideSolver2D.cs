@@ -4,20 +4,6 @@ using UnityEngine;
 
 namespace PQ.TestScenes.Minimal.Physics
 {
-    [System.Flags]
-    public enum CollisionFlags2D
-    {
-        None       = 0,
-        Front      = 1 << 1,
-        Bottom     = 1 << 2,
-        Back       = 1 << 3,
-        Top        = 1 << 4,
-        SteepPoly  = 1 << 5,
-        SlightPoly = 1 << 6,
-        All        = ~0,
-    }
-
-
     /*
     Collide and slide style solver for 2D that works in linear steps.
 
@@ -54,12 +40,17 @@ namespace PQ.TestScenes.Minimal.Physics
             _body       = body;
             _params     = solverParams;
             _collisions = CollisionFlags2D.None;
+            _body.SetSkinWidth(_params.ContactOffset);
         }
 
         public void Move(Vector2 deltaPosition)
         {
+            _body.SetSkinWidth(_params.ContactOffset);
+
+            // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
             _collisions = CollisionFlags2D.None;
 
+            // scale deltas in proportion to the y-axis
             Vector2 up         = _body.Up;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
@@ -67,6 +58,9 @@ namespace PQ.TestScenes.Minimal.Physics
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
+
+            // now that we have solved for both movement independently, get our flags up to date
+            _collisions = _body.CheckForOverlappingContacts(_params.LayerMask, _params.MaxSlopeAngle);
         }
 
 
@@ -76,11 +70,9 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.TryFindClosestCollisionAlongDelta(currentDelta, _params.LayerMask,
-                        out float hitDistance, out Vector2 hitNormal))
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
@@ -88,12 +80,12 @@ namespace PQ.TestScenes.Minimal.Physics
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                float slopeAngle = Vector2.Angle(_body.Up, hitNormal);
+                float slopeAngle = Vector2.Angle(_body.Up, hit.normal);
                 if (slopeAngle <= _params.MaxSlopeAngle)
                 {
                     // move a single linear step along our delta until the detected collision
-                    currentDelta = hitDistance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hitNormal, _params.Bounciness, _params.Friction);
+                    currentDelta = hit.distance * currentDelta.normalized;
+                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
                 else
                 {
@@ -103,8 +95,6 @@ namespace PQ.TestScenes.Minimal.Physics
                 _body.MoveBy(currentDelta);
                 iteration++;
             }
-
-            _collisions |= flags;
         }
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
@@ -112,11 +102,9 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
-            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.TryFindClosestCollisionAlongDelta(currentDelta, _params.LayerMask,
-                        out float hitDistance, out Vector2 hitNormal))
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
@@ -124,21 +112,18 @@ namespace PQ.TestScenes.Minimal.Physics
                 }
                 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                float slopeAngle = Vector2.Angle(Vector2.up, hitNormal);
+                float slopeAngle = Vector2.Angle(Vector2.up, hit.normal);
                 if (slopeAngle > _params.MaxSlopeAngle)
                 {
                     // move a single linear step along our delta until the detected collision
-                    currentDelta = hitDistance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hitNormal, _params.Bounciness, _params.Friction);
+                    currentDelta = hit.distance * currentDelta.normalized;
+                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
 
                 _body.MoveBy(currentDelta);
                 iteration++;
             }
-
-            _collisions |= flags;
         }
-
 
         /*
         Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.

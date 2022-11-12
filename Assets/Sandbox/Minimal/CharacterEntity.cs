@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
@@ -7,7 +8,8 @@ namespace PQ.TestScenes.Minimal
     {
         [SerializeField] private CharacterEntitySettings _settings;
 
-        private Vector2 _walkVelocity;
+        private float _walkSpeed;
+        private float _jumpSpeed;
         private Vector2 _jumpDisplacementToPeak;
         private Physics.SolverParams _characterSolverParams;
 
@@ -16,7 +18,8 @@ namespace PQ.TestScenes.Minimal
 
         private void SyncPropertiesFromSettings()
         {
-            _walkVelocity                        = new Vector2(_settings.walkSpeed, 0);
+            _walkSpeed                           = _settings.walkSpeed;
+            _jumpSpeed                           = _settings.jumpSpeed;
             _jumpDisplacementToPeak              = new Vector2(_settings.jumpLengthToApex, _settings.jumpHeightToApex);
 
             _characterSolverParams.MaxIterations = _settings.solverIterationsPerPhysicsUpdate;
@@ -27,10 +30,11 @@ namespace PQ.TestScenes.Minimal
             _characterSolverParams.ContactOffset = _settings.skinWidth;
             _characterSolverParams.LayerMask     = _settings.groundLayerMask;
             _characterSolverParams.MaxSlopeAngle = _settings.maxAscendableSlopeAngle;
-            _characterSolverParams.Gravity       = _settings.gravityScale * Physics2D.gravity.y;
+            _characterSolverParams.Gravity       = Mathf.Abs(_settings.gravityScale * Physics2D.gravity.y);
 
             Debug.Log($"Updated fields according to {_settings} {{" +
-                $"WalkVelocity: {_walkVelocity}, " +
+                $"WalkSpeed: {_walkSpeed}, " +
+                $"JumpSpeed: {_jumpSpeed}, " +
                 $"JumpDisplacementToPeak: {_jumpDisplacementToPeak}, " +
                 $"SolverParams: {_characterSolverParams}}}");
         }
@@ -61,19 +65,44 @@ namespace PQ.TestScenes.Minimal
 
         void FixedUpdate()
         {
-            if (Mathf.Approximately(_characterInput.Horizontal, 0f))
-            {
-                return;
-            }
-
-            bool characterMovingLeft = _characterInput.Horizontal < 0;
-            bool characterFacingLeft = _characterController.Flipped;
-            if (characterFacingLeft != characterMovingLeft)
+            Vector2 velocity = Vector2.zero;
+            if (RequestedMoveInOppositeDirection(_characterInput, _characterController))
             {
                 _characterController.Flip();
             }
 
-            _characterController.Move(new Vector2(_characterInput.Horizontal * _settings.walkSpeed * Time.fixedDeltaTime, 0));
+            if (!Mathf.Approximately(_characterInput.Horizontal, 0f))
+            {
+                velocity.x += _characterInput.Horizontal * _walkSpeed;
+            }
+
+            if (_characterController.IsGrounded && _characterInput.Vertical > 0f)
+            {
+                // todo: replace with 'real' jump calculations
+                velocity.y += _characterInput.Vertical * _jumpSpeed;
+            }
+            
+            if (!_characterController.IsGrounded)
+            {
+                // todo: move this stuff into the solver, so it can do things like faster steep-slope-sliding
+                velocity.y -= _characterSolverParams.Gravity;
+            }
+
+            _characterController.Move(Time.fixedDeltaTime * velocity);
+        }
+
+
+        [Pure]
+        private static bool RequestedMoveInOppositeDirection(
+            GameplayInput input, ICharacterController2D controller)
+        {
+            if (Mathf.Approximately(input.Horizontal, 0f))
+            {
+                return false;
+            }
+            bool characterMovingLeft = input.Horizontal < 0;
+            bool characterFacingLeft = controller.Flipped;
+            return characterFacingLeft != characterMovingLeft;
         }
     }
 }

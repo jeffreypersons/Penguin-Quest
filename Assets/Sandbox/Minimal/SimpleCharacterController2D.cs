@@ -6,8 +6,6 @@ namespace PQ.TestScenes.Minimal
 {
     public sealed class SimpleCharacterController2D : ICharacterController2D
     {
-        private bool _flipped;
-        private bool _isGrounded;
         private readonly KinematicBody2D _body;
         private readonly CollideAndSlideSolver2D _solver;
 
@@ -18,25 +16,22 @@ namespace PQ.TestScenes.Minimal
                 throw new MissingComponentException($"Expected non-null {nameof(KinematicBody2D)}");
             }
 
-            _flipped    = false;
-            _isGrounded = false;
             _body       = body;
             _solver     = new CollideAndSlideSolver2D(body, solverParams);
 
-            body.SetSkinWidth(solverParams.ContactOffset);
+            _body.SetSkinWidth(_solver.Params.ContactOffset);
         }
 
         Vector2 ICharacterController2D.Position   => _body.Position;
-        Vector2 ICharacterController2D.Forward    => _body.Right;
+        Vector2 ICharacterController2D.Forward    => _body.Forward;
         Vector2 ICharacterController2D.Up         => _body.Up;
-        bool    ICharacterController2D.IsGrounded => _isGrounded;
-        bool    ICharacterController2D.Flipped    => _flipped;
+        bool    ICharacterController2D.IsGrounded => (_solver.Flags & CollisionFlags2D.Below) != 0;
+        bool    ICharacterController2D.Flipped    => _body.FlippedHorizontal;
 
         void ICharacterController2D.Flip()
         {
             _body.SetSkinWidth(_solver.Params.ContactOffset);
-            _flipped = !_flipped;
-            _body.Flip(horizontal: _flipped, vertical: false);
+            _body.Flip(horizontal: !_body.FlippedHorizontal, vertical: false);
         }
 
         void ICharacterController2D.Move(Vector2 deltaPosition)

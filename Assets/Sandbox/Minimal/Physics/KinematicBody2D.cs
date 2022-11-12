@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using PQ.Common.Extensions;
 
@@ -15,19 +16,24 @@ namespace PQ.TestScenes.Minimal.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
+        private const int PreallocatedHitBufferSize = 16;
+
+        private bool  _flippedHorizontal;
+        private bool  _flippedVertical;
         private float _skinWidth;
-        private int   _lastHitCount;
         private Rigidbody2D     _rigidBody;
         private BoxCollider2D   _boxCollider;
         private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _castHits;
 
-        public Vector2 Position  => _rigidBody.position;
-        public float   Depth     => _rigidBody.transform.position.z;
-        public Bounds  Bounds    => _boxCollider.bounds;
-        public float   SkinWidth => _skinWidth;
-        public Vector2 Right     => _rigidBody.transform.right.normalized;
-        public Vector2 Up        => _rigidBody.transform.up.normalized;
+        public bool    FlippedHorizontal => _flippedHorizontal;
+        public bool    FlippedVertical   => _flippedVertical;
+        public Vector2 Position          => _rigidBody.position;
+        public float   Depth             => _rigidBody.transform.position.z;
+        public Bounds  Bounds            => _boxCollider.bounds;
+        public float   SkinWidth         => _skinWidth;
+        public Vector2 Forward           => _rigidBody.transform.right.normalized;
+        public Vector2 Up                => _rigidBody.transform.up.normalized;
 
         public bool DrawCastsInEditor { get; set; } = true;
 
@@ -45,7 +51,7 @@ namespace PQ.TestScenes.Minimal.Physics
             $"{GetType()}(" +
                 $"Position:{Position}," +
                 $"Depth:{Depth}," +
-                $"Forward:{Right}," +
+                $"Forward:{Forward}," +
                 $"Up:{Up}," +
                 $"SkinWidth:{SkinWidth}," +
                 $"AAB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
@@ -63,13 +69,11 @@ namespace PQ.TestScenes.Minimal.Physics
                 throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
             }
 
-            _skinWidth    = 0f;
-            _lastHitCount = 0;
-
+            _skinWidth   = 0f;
             _rigidBody   = rigidBody;
             _boxCollider = boxCollider;
             _castFilter  = new ContactFilter2D();
-            _castHits    = new RaycastHit2D[rigidBody.attachedColliderCount];
+            _castHits    = new RaycastHit2D[PreallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
 
             _rigidBody.isKinematic = true;
@@ -88,6 +92,9 @@ namespace PQ.TestScenes.Minimal.Physics
                 y: horizontal? 180f : 0f,
                 z: 0f);
             _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
+
+            _flippedHorizontal = horizontal;
+            _flippedVertical   = vertical;
         }
 
         /* Immediately move body by given amount. */
@@ -114,41 +121,82 @@ namespace PQ.TestScenes.Minimal.Physics
             _skinWidth = skinWidth;
         }
 
+        /* Resize preallocated raycast hit buffer to given amount (warning: causes allocations!). */
+        public void ResizeHitBuffer(int size)
+        {
+            if (size <= 0)
+            {
+                throw new ArgumentException($"Buffer size must be at least 1 - received {size} instead");
+            }
+            if (_castHits.Length != size)
+            {
+                _castHits = new RaycastHit2D[size];
+            }
+        }
 
-        /* Cast along delta, taking skin width and attached colliders into account, and return the closest distance/normal. */
-        public bool TryFindClosestCollisionAlongDelta(Vector2 delta, LayerMask layerMask,
-            out float hitDistance, out Vector2 hitNormal)
+        
+        /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
+        public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
         {
             _castFilter.SetLayerMask(layerMask);
-            _lastHitCount = _rigidBody.Cast(delta, _castFilter, _castHits, delta.magnitude + _skinWidth);
 
-            var closestHitNormal   = Vector2.zero;
-            var closestHitDistance = delta.magnitude;
-            for (int i = 0; i < _lastHitCount; i++)
+            Transform transform = _rigidBody.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
+
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            if (_boxCollider.Cast(right, _castFilter, _castHits, _skinWidth) >= 1)
             {
+                flags |= CollisionFlags2D.Front;
+            }
+            if (_boxCollider.Cast(up, _castFilter, _castHits, _skinWidth) >= 1)
+            {
+                flags |= CollisionFlags2D.Above;
+            }
+            if (_boxCollider.Cast(left, _castFilter, _castHits, _skinWidth) >= 1)
+            {
+                flags |= CollisionFlags2D.Behind;
+            }
+            if (_boxCollider.Cast(down, _castFilter, _castHits, _skinWidth) >= 1)
+            {
+                flags |= CollisionFlags2D.Below;
+            }
+            return flags;
+        }
+
+        /* Project AAB along delta, taking skin width into account, and return the closest distance/normal. */
+        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask, out RaycastHit2D hit)
+        {
+            _castFilter.SetLayerMask(layerMask);
+
+            float deltaLength = delta.magnitude;
+            int   hitCount    = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength);
+            if (hitCount <= 0)
+            {
+                hit = default;
+                return false;
+            }
+
+            int closestHitIndex = 0;
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_castHits[i].distance < _castHits[closestHitIndex].distance)
+                {
+                    closestHitIndex = i;
+                }
                 #if UNITY_EDITOR
                 if (DrawCastsInEditor)
                     DrawCastResultAsLineInEditor(_castHits[i], delta, _skinWidth);
                 #endif
-                float adjustedDistance = _castHits[i].distance - _skinWidth;
-                if (adjustedDistance > 0f && adjustedDistance < closestHitDistance)
-                {
-                    closestHitNormal   = _castHits[i].normal;
-                    closestHitDistance = adjustedDistance;
-                }
             }
 
-            if (closestHitNormal == Vector2.zero)
-            {
-                hitDistance = default;
-                hitNormal   = default;
-                return false;
-            }
-            hitDistance = closestHitDistance;
-            hitNormal   = closestHitNormal;
+            hit = _castHits[closestHitIndex];
             return true;
         }
         
+
 
         #if UNITY_EDITOR
         void OnDrawGizmos()
@@ -162,10 +210,10 @@ namespace PQ.TestScenes.Minimal.Physics
             // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
             // should be identical to the transform's axes in the editor window
             Bounds box = Bounds;
-            Vector2 center    = box.center;
-            Vector2 xAxis     = box.extents.x * Right;
-            Vector2 yAxis     = box.extents.y * Up;
+            Vector2 center    = new(box.center.x, box.center.y);
             Vector2 skinRatio = new(1f + (_skinWidth / box.extents.x), 1f + (_skinWidth / box.extents.y));
+            Vector2 xAxis     = box.extents.x * Forward;
+            Vector2 yAxis     = box.extents.y * Up;
 
             GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
             GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.magenta);
@@ -182,12 +230,12 @@ namespace PQ.TestScenes.Minimal.Physics
                 return;
             }
             
-            var duration  = Time.fixedDeltaTime;
-            var direction = delta.normalized;
-            var start    = hit.point - hit.distance * direction;
-            var origin   = hit.point - (hit.distance - offset) * direction;
-            var hitPoint = hit.point;
-            var end      = hit.point + (1f - hit.fraction) * (delta.magnitude + offset) * direction;
+            float duration  = Time.fixedDeltaTime;
+            Vector2 direction = delta.normalized;
+            Vector2 start     = hit.point - hit.distance * direction;
+            Vector2 origin    = hit.point - (hit.distance - offset) * direction;
+            Vector2 hitPoint  = hit.point;
+            Vector2 end       = hit.point + (1f - hit.fraction) * (delta.magnitude + offset) * direction;
 
             Debug.DrawLine(start,    origin,   Color.magenta, duration);
             Debug.DrawLine(origin,   hitPoint, Color.green,   duration);
