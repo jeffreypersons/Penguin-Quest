@@ -15,6 +15,8 @@ namespace PQ.TestScenes.Minimal.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
+        private bool  _flippedHorizontal;
+        private bool  _flippedVertical;
         private float _skinWidth;
         private int   _lastHitCount;
         private Rigidbody2D     _rigidBody;
@@ -22,12 +24,14 @@ namespace PQ.TestScenes.Minimal.Physics
         private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _castHits;
 
-        public Vector2 Position  => _rigidBody.position;
-        public float   Depth     => _rigidBody.transform.position.z;
-        public Bounds  Bounds    => _boxCollider.bounds;
-        public float   SkinWidth => _skinWidth;
-        public Vector2 Right     => _rigidBody.transform.right.normalized;
-        public Vector2 Up        => _rigidBody.transform.up.normalized;
+        public bool    FlippedHorizontal => _flippedHorizontal;
+        public bool    FlippedVertical   => _flippedVertical;
+        public Vector2 Position          => _rigidBody.position;
+        public float   Depth             => _rigidBody.transform.position.z;
+        public Bounds  Bounds            => _boxCollider.bounds;
+        public float   SkinWidth         => _skinWidth;
+        public Vector2 Right             => _rigidBody.transform.right.normalized;
+        public Vector2 Up                => _rigidBody.transform.up.normalized;
 
         public bool DrawCastsInEditor { get; set; } = true;
 
@@ -88,6 +92,9 @@ namespace PQ.TestScenes.Minimal.Physics
                 y: horizontal? 180f : 0f,
                 z: 0f);
             _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
+
+            _flippedHorizontal = horizontal;
+            _flippedHorizontal = vertical;
         }
 
         /* Immediately move body by given amount. */
