@@ -71,6 +71,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
+            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
                 if (!_body.CastAAB(currentDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
@@ -102,6 +103,8 @@ namespace PQ.TestScenes.Minimal.Physics
                 _body.MoveBy(currentDelta);
                 iteration++;
             }
+
+            _collisions |= flags;
         }
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
@@ -109,6 +112,7 @@ namespace PQ.TestScenes.Minimal.Physics
         {
             int iteration = 0;
             Vector2 currentDelta = targetDelta;
+            CollisionFlags2D flags = CollisionFlags2D.None;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
                 if (!_body.CastAAB(currentDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
@@ -136,6 +140,8 @@ namespace PQ.TestScenes.Minimal.Physics
                 _body.MoveBy(currentDelta);
                 iteration++;
             }
+
+            _collisions |= flags;
         }
 
         /*
