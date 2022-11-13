@@ -196,9 +196,15 @@ namespace PQ.TestScenes.Minimal.Physics
             return true;
         }
         
-
-
+        
         #if UNITY_EDITOR
+        void OnGUI()
+        {
+            GUI.Label(new Rect(0,  0, 100, 20), "Stat1");
+            GUI.Label(new Rect(0, 20, 100, 20), "Stat2");
+            GUI.Label(new Rect(0, 40, 100, 20), "Stat3");
+        }
+
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || !enabled)
