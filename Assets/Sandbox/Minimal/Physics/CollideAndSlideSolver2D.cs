@@ -72,20 +72,24 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out RaycastHit2D hit))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
                     break;
                 }
 
+                // move a single linear step along our delta until the detected collision
+                if (hit.distance > _params.ContactOffset)
+                {
+                    currentDelta = hit.distance * currentDelta.normalized;
+                }
+
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 float slopeAngle = Vector2.Angle(_body.Up, hit.normal);
                 if (slopeAngle <= _params.MaxSlopeAngle)
                 {
-                    // move a single linear step along our delta until the detected collision
-                    currentDelta = hit.distance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
+                    currentDelta += ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
                 else
                 {
@@ -104,20 +108,24 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
+                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out RaycastHit2D hit))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
                     break;
                 }
-                
+
+                // move a single linear step along our delta until the detected collision
+                if (hit.distance > _params.ContactOffset)
+                {
+                    currentDelta = hit.distance * currentDelta.normalized;
+                }
+
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
                 float slopeAngle = Vector2.Angle(Vector2.up, hit.normal);
                 if (slopeAngle > _params.MaxSlopeAngle)
                 {
-                    // move a single linear step along our delta until the detected collision
-                    currentDelta = hit.distance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
+                    currentDelta += ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
 
                 _body.MoveBy(currentDelta);
