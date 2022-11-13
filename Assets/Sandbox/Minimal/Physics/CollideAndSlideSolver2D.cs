@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
 
@@ -72,7 +73,7 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out RaycastHit2D hit))
+                if (!_body.CastAAB(currentDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
@@ -80,9 +81,11 @@ namespace PQ.TestScenes.Minimal.Physics
                 }
 
                 // move a single linear step along our delta until the detected collision
-                if (hit.distance > _params.ContactOffset)
+                RaycastHit2D hit = FindClosest(hits);
+                if (hit.distance < _params.ContactOffset)
                 {
-                    currentDelta = hit.distance * currentDelta.normalized;
+                    currentDelta = hit.distance <= _params.ContactOffset?
+                        Vector2.zero : hit.distance * currentDelta.normalized;
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
@@ -108,7 +111,7 @@ namespace PQ.TestScenes.Minimal.Physics
             Vector2 currentDelta = targetDelta;
             while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out RaycastHit2D hit))
+                if (!_body.CastAAB(currentDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
                     _body.MoveBy(currentDelta);
@@ -116,9 +119,11 @@ namespace PQ.TestScenes.Minimal.Physics
                 }
 
                 // move a single linear step along our delta until the detected collision
-                if (hit.distance > _params.ContactOffset)
+                RaycastHit2D hit = FindClosest(hits);
+                if (hit.distance < _params.ContactOffset)
                 {
-                    currentDelta = hit.distance * currentDelta.normalized;
+                    currentDelta = hit.distance <= _params.ContactOffset ?
+                        Vector2.zero : hit.distance * currentDelta.normalized;
                 }
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
@@ -131,6 +136,22 @@ namespace PQ.TestScenes.Minimal.Physics
                 _body.MoveBy(currentDelta);
                 iteration++;
             }
+        }
+
+        /*
+        Assuming successful ray casts, what's our closest hit?
+        */
+        private static RaycastHit2D FindClosest(ReadOnlySpan<RaycastHit2D> hits)
+        {
+            int closestHitIndex = 0;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].distance < hits[closestHitIndex].distance)
+                {
+                    closestHitIndex = i;
+                }
+            }
+            return hits[closestHitIndex];
         }
 
         /*

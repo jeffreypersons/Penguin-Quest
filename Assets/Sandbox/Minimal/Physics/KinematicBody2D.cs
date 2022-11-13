@@ -83,6 +83,22 @@ namespace PQ.TestScenes.Minimal.Physics
             Flip(horizontal: false, vertical: false);
         }
 
+        bool ground;
+        float angle;
+
+        void OnCollisionStay2D(Collision2D collision)
+        {
+            //onGround = true;
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                if (contact.point.y < transform.position.y - _skinWidth)
+                {
+                    ground = true;
+                    angle = Vector2.Angle(Up, contact.normal);
+                    Debug.DrawRay(contact.point, contact.normal, Color.white);
+                }
+            }
+        }
 
         public void Flip(bool horizontal, bool vertical)
         {
@@ -165,44 +181,26 @@ namespace PQ.TestScenes.Minimal.Physics
             }
             return flags;
         }
-
-        /* Project AAB along delta, taking skin width into account, and return the closest distance/normal. */
-        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask, out RaycastHit2D hit)
+        
+        /*
+        Project AAB along delta, taking skin width into account, and return the closest distance/normal.
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
+        public bool CastAAB(Vector2 delta, in LayerMask layerMask, out ReadOnlySpan<RaycastHit2D> hits)
         {
             _castFilter.SetLayerMask(layerMask);
 
-            float deltaLength = delta.magnitude;
-            int   hitCount    = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength);
-            if (hitCount <= 0)
-            {
-                hit = default;
-                return false;
-            }
-
-            int closestHitIndex = 0;
-            for (int i = 0; i < hitCount; i++)
-            {
-                if (_castHits[i].distance < _castHits[closestHitIndex].distance)
-                {
-                    closestHitIndex = i;
-                }
-                #if UNITY_EDITOR
-                if (DrawCastsInEditor)
-                    DrawCastResultAsLineInEditor(_castHits[i], delta, _skinWidth);
-                #endif
-            }
-
-            hit = _castHits[closestHitIndex];
-            return true;
+            int hitCount = _boxCollider.Cast(delta, _castFilter, _castHits, delta.magnitude);
+            hits = _castHits.AsSpan(0, hitCount);
+            return hitCount >= 1;
         }
-        
-        
+
         #if UNITY_EDITOR
         void OnGUI()
         {
-            GUI.Label(new Rect(0,  0, 100, 20), "Stat1");
-            GUI.Label(new Rect(0, 20, 100, 20), "Stat2");
-            GUI.Label(new Rect(0, 40, 100, 20), "Stat3");
+            GUI.Label(new Rect(0,  0, 100, 20), $"grounded={ground}");
+            GUI.Label(new Rect(0, 20, 100, 20), $"angle={angle}");
         }
 
         void OnDrawGizmos()
