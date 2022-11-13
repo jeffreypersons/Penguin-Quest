@@ -67,88 +67,68 @@ namespace PQ.TestScenes.Minimal.Physics
 
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void MoveHorizontal(Vector2 targetDelta)
+        private void MoveHorizontal(Vector2 desiredDelta)
         {
-            int iteration = 0;
-            Vector2 currentDelta = targetDelta;
+            Vector2 currentDelta = desiredDelta;
             CollisionFlags2D flags = CollisionFlags2D.None;
-            while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
+            for (int i = 0; i < _params.MaxIterations; i++)
             {
-                if (!_body.CastAAB(currentDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
-                {
-                    // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
-                    _body.MoveBy(currentDelta);
-                    break;
-                }
-
                 // move a single linear step along our delta until the detected collision
-                RaycastHit2D hit = FindClosest(hits);
-                if (hit.distance < _params.ContactOffset)
-                {
-                    currentDelta = hit.distance <= _params.ContactOffset?
-                        Vector2.zero : hit.distance * currentDelta.normalized;
-                }
+                ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                float slopeAngle = Vector2.Angle(_body.Up, hit.normal);
-                if (slopeAngle <= _params.MaxSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
                 {
-                    currentDelta += ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
-                }
-                else
-                {
-                    currentDelta = Vector2.zero;
+                    step += ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
 
-                _body.MoveBy(currentDelta);
-                iteration++;
+                _body.MoveBy(step);
             }
 
             _collisions |= flags;
         }
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void MoveVertical(Vector2 targetDelta)
+        private void MoveVertical(Vector2 desiredDelta)
         {
-            int iteration = 0;
-            Vector2 currentDelta = targetDelta;
+            Vector2 currentDelta = desiredDelta;
             CollisionFlags2D flags = CollisionFlags2D.None;
-            while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
+            for (int i = 0; i < _params.MaxIterations; i++)
             {
-                if (!_body.CastAAB(currentDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
+                // move a single linear step along our delta until the detected collision
+                ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
+
+                if (!hit)
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
-                    _body.MoveBy(currentDelta);
+                    _body.MoveBy(step);
                     break;
                 }
 
-                // move a single linear step along our delta until the detected collision
-                RaycastHit2D hit = FindClosest(hits);
-                if (hit.distance < _params.ContactOffset)
-                {
-                    currentDelta = hit.distance <= _params.ContactOffset ?
-                        Vector2.zero : hit.distance * currentDelta.normalized;
-                }
-
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                float slopeAngle = Vector2.Angle(Vector2.up, hit.normal);
-                if (slopeAngle > _params.MaxSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
                 {
                     currentDelta += ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
                 }
-
-                _body.MoveBy(currentDelta);
-                iteration++;
             }
 
             _collisions |= flags;
         }
 
+
         /*
-        Assuming successful ray casts, what's our closest hit?
+        Given ray cast results, how far (if at all) can we move until that collision?
+        If no collision, return false.
         */
-        private static RaycastHit2D FindClosest(ReadOnlySpan<RaycastHit2D> hits)
+        private void ExtrapolateLinearStep(Vector2 desiredDelta, out Vector2 step, out RaycastHit2D hit)
         {
+            if (!_body.CastAAB(desiredDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
+            {
+                step = desiredDelta;
+                hit  = default;
+                return;
+            }
+
             int closestHitIndex = 0;
             for (int i = 0; i < hits.Length; i++)
             {
@@ -157,7 +137,16 @@ namespace PQ.TestScenes.Minimal.Physics
                     closestHitIndex = i;
                 }
             }
-            return hits[closestHitIndex];
+
+            hit = hits[closestHitIndex];
+            if (hit.distance <= _params.ContactOffset || Mathf.Approximately(_params.ContactOffset, 0f))
+            {
+                step = Vector2.zero;
+            }
+            else
+            {
+                step = hit.point - hit.centroid - _body.ComputeContactOffset(direction: desiredDelta);
+            }
         }
 
         /*

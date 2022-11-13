@@ -37,7 +37,7 @@ namespace PQ.TestScenes.Minimal.Physics
 
         public bool DrawCastsInEditor { get; set; } = true;
 
-        public Bounds BoundsWithSkinWidth
+        public Bounds BoundsOuter
         {
             get
             {
@@ -150,7 +150,26 @@ namespace PQ.TestScenes.Minimal.Physics
             }
         }
 
-        
+        /* What's the delta between the AAB and the expanded AAB (with skin width) from center in given direction? */
+        public Vector2 ComputeContactOffset(Vector2 direction)
+        {
+            if (Mathf.Approximately(_skinWidth, 0f))
+            {
+                return Vector2.zero;
+            }
+
+            Vector2 center    = Vector2.zero;
+            Vector2 size      = new(_boxCollider.bounds.size.x, _boxCollider.bounds.size.y);
+            Vector2 maxOffset = new(_skinWidth, _skinWidth);
+
+            Ray    ray   = new(center, direction);
+            Bounds inner = new(center, size);
+            Bounds outer = new(center, size + maxOffset);
+            inner.IntersectRay(ray, out float distanceToInner);
+            outer.IntersectRay(ray, out float distanceToOuter);
+            return (distanceToOuter - distanceToInner) * direction.normalized;
+        }
+
         /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
         public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
         {
