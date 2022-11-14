@@ -76,6 +76,13 @@ namespace PQ.TestScenes.Minimal.Physics
                 // move a single linear step along our delta until the detected collision
                 ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
 
+                if (!hit)
+                {
+                    // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
+                    _body.MoveBy(step);
+                    break;
+                }
+
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
                 {
@@ -108,8 +115,9 @@ namespace PQ.TestScenes.Minimal.Physics
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
                 if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
                 {
-                    currentDelta += ComputeCollisionDelta(currentDelta, hit.normal);
+                    step += ComputeCollisionDelta(currentDelta, hit.normal);
                 }
+
                 _body.MoveBy(step);
             }
 
