@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
 
@@ -66,62 +67,91 @@ namespace PQ.TestScenes.Minimal.Physics
 
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void MoveHorizontal(Vector2 targetDelta)
+        private void MoveHorizontal(Vector2 desiredDelta)
         {
-            int iteration = 0;
-            Vector2 currentDelta = targetDelta;
-            while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
+            Vector2 currentDelta = desiredDelta;
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            for (int i = 0; i < _params.MaxIterations; i++)
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
+                // move a single linear step along our delta until the detected collision
+                ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
+
+                if (!hit)
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
-                    _body.MoveBy(currentDelta);
+                    _body.MoveBy(step);
                     break;
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                float slopeAngle = Vector2.Angle(_body.Up, hit.normal);
-                if (slopeAngle <= _params.MaxSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
                 {
-                    // move a single linear step along our delta until the detected collision
-                    currentDelta = hit.distance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
-                }
-                else
-                {
-                    currentDelta = Vector2.zero;
+                    step += ComputeCollisionDelta(currentDelta, hit.normal);
                 }
 
-                _body.MoveBy(currentDelta);
-                iteration++;
+                _body.MoveBy(step);
             }
+
+            _collisions |= flags;
         }
 
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void MoveVertical(Vector2 targetDelta)
+        private void MoveVertical(Vector2 desiredDelta)
         {
-            int iteration = 0;
-            Vector2 currentDelta = targetDelta;
-            while (iteration < _params.MaxIterations && !HasReachedTarget(currentDelta))
+            Vector2 currentDelta = desiredDelta;
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            for (int i = 0; i < _params.MaxIterations; i++)
             {
-                if (!_body.FindClosestCollisionAlongDelta(currentDelta, _params.LayerMask, out var hit))
+                // move a single linear step along our delta until the detected collision
+                ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
+
+                if (!hit)
                 {
                     // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
-                    _body.MoveBy(currentDelta);
+                    _body.MoveBy(step);
                     break;
                 }
-                
+
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                float slopeAngle = Vector2.Angle(Vector2.up, hit.normal);
-                if (slopeAngle > _params.MaxSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
                 {
-                    // move a single linear step along our delta until the detected collision
-                    currentDelta = hit.distance * currentDelta.normalized;
-                    currentDelta = ComputeCollisionDelta(currentDelta, hit.normal, _params.Bounciness, _params.Friction);
+                    step += ComputeCollisionDelta(currentDelta, hit.normal);
                 }
 
-                _body.MoveBy(currentDelta);
-                iteration++;
+                _body.MoveBy(step);
+            }
+
+            _collisions |= flags;
+        }
+
+
+        /* How far can we move unobstructed along given vector without being hit? */
+        private void ExtrapolateLinearStep(Vector2 desiredDelta, out Vector2 step, out RaycastHit2D hit)
+        {
+            if (!_body.CastAAB(desiredDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
+            {
+                step = desiredDelta;
+                hit  = default;
+                return;
+            }
+
+            int closestHitIndex = 0;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].distance < hits[closestHitIndex].distance)
+                {
+                    closestHitIndex = i;
+                }
+            }
+
+            hit = hits[closestHitIndex];
+            if (hit.distance <= _params.ContactOffset || Mathf.Approximately(_params.ContactOffset, 0f))
+            {
+                step = Vector2.zero;
+            }
+            else
+            {
+                step = hit.point - hit.centroid - _body.ComputeContactOffset(direction: desiredDelta);
             }
         }
 
@@ -135,15 +165,15 @@ namespace PQ.TestScenes.Minimal.Physics
             * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
             * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
         */
-        private static Vector2 ComputeCollisionDelta(Vector2 desiredDelta, Vector2 hitNormal, float bounciness, float friction)
+        private Vector2 ComputeCollisionDelta(Vector2 desiredDelta, Vector2 hitNormal)
         {
             float remainingDistance = desiredDelta.magnitude;
             Vector2 reflected  = Vector2.Reflect(desiredDelta, hitNormal);
             Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
             Vector2 tangent    = reflected - projection;
 
-            Vector2 perpendicularContribution = (bounciness      * remainingDistance) * projection.normalized;
-            Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
+            Vector2 perpendicularContribution = (_params.Bounciness      * remainingDistance) * projection.normalized;
+            Vector2 tangentialContribution    = ((1f - _params.Friction) * remainingDistance) * tangent.normalized;
             return perpendicularContribution + tangentialContribution;
         }
     }

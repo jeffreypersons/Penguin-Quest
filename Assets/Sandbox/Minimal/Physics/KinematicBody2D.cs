@@ -37,7 +37,7 @@ namespace PQ.TestScenes.Minimal.Physics
 
         public bool DrawCastsInEditor { get; set; } = true;
 
-        public Bounds BoundsWithSkinWidth
+        public Bounds BoundsOuter
         {
             get
             {
@@ -83,6 +83,22 @@ namespace PQ.TestScenes.Minimal.Physics
             Flip(horizontal: false, vertical: false);
         }
 
+        bool ground;
+        float angle;
+
+        void OnCollisionStay2D(Collision2D collision)
+        {
+            //onGround = true;
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                if (contact.point.y < transform.position.y - _skinWidth)
+                {
+                    ground = true;
+                    angle = Vector2.Angle(Up, contact.normal);
+                    Debug.DrawRay(contact.point, contact.normal, Color.white);
+                }
+            }
+        }
 
         public void Flip(bool horizontal, bool vertical)
         {
@@ -134,7 +150,26 @@ namespace PQ.TestScenes.Minimal.Physics
             }
         }
 
-        
+        /* What's the delta between the AAB and the expanded AAB (with skin width) from center in given direction? */
+        public Vector2 ComputeContactOffset(Vector2 direction)
+        {
+            if (Mathf.Approximately(_skinWidth, 0f))
+            {
+                return Vector2.zero;
+            }
+
+            Vector2 center    = Vector2.zero;
+            Vector2 size      = new(_boxCollider.bounds.size.x, _boxCollider.bounds.size.y);
+            Vector2 maxOffset = new(_skinWidth, _skinWidth);
+
+            Ray    ray   = new(center, direction);
+            Bounds inner = new(center, size);
+            Bounds outer = new(center, size + maxOffset);
+            inner.IntersectRay(ray, out float distanceToInner);
+            outer.IntersectRay(ray, out float distanceToOuter);
+            return (distanceToOuter - distanceToInner) * direction.normalized;
+        }
+
         /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
         public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
         {
@@ -165,40 +200,28 @@ namespace PQ.TestScenes.Minimal.Physics
             }
             return flags;
         }
-
-        /* Project AAB along delta, taking skin width into account, and return the closest distance/normal. */
-        public bool FindClosestCollisionAlongDelta(Vector2 delta, in LayerMask layerMask, out RaycastHit2D hit)
+        
+        /*
+        Project AAB along delta, taking skin width into account, and return the closest distance/normal.
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
+        public bool CastAAB(Vector2 delta, in LayerMask layerMask, out ReadOnlySpan<RaycastHit2D> hits)
         {
             _castFilter.SetLayerMask(layerMask);
 
-            float deltaLength = delta.magnitude;
-            int   hitCount    = _boxCollider.Cast(delta, _castFilter, _castHits, deltaLength);
-            if (hitCount <= 0)
-            {
-                hit = default;
-                return false;
-            }
-
-            int closestHitIndex = 0;
-            for (int i = 0; i < hitCount; i++)
-            {
-                if (_castHits[i].distance < _castHits[closestHitIndex].distance)
-                {
-                    closestHitIndex = i;
-                }
-                #if UNITY_EDITOR
-                if (DrawCastsInEditor)
-                    DrawCastResultAsLineInEditor(_castHits[i], delta, _skinWidth);
-                #endif
-            }
-
-            hit = _castHits[closestHitIndex];
-            return true;
+            int hitCount = _boxCollider.Cast(delta, _castFilter, _castHits, delta.magnitude);
+            hits = _castHits.AsSpan(0, hitCount);
+            return hitCount >= 1;
         }
-        
-
 
         #if UNITY_EDITOR
+        void OnGUI()
+        {
+            GUI.Label(new Rect(0,  0, 100, 20), $"grounded={ground}");
+            GUI.Label(new Rect(0, 20, 100, 20), $"angle={angle}");
+        }
+
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || !enabled)

@@ -16,7 +16,7 @@ MonoBehaviour:
   jumpSpeed: 500
   jumpLengthToApex: 10
   jumpHeightToApex: 10
-  solverIterationsPerPhysicsUpdate: 10
+  solverIterationsPerPhysicsUpdate: 1
   collisionBounciness: 0
   collisionFriction: 0
   maxAscendableSlopeAngle: 70
