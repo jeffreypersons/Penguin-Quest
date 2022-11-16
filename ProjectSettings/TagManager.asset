@@ -3,29 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Scripter
-  - Label
-  - Canvas
-  - Banner
-  - Button
-  - Audio
-  - Menu
-  - EventSystem
-  - Camera
-  - Title
-  - AdjustableSetting
-  - ContinueButton
-  - CancelButton
-  - Subtitle
-  - Panel
-  - Character
-  - Bone
-  - Bodypart
-  - IkSolver
-  - IkTarget
-  - IkEffector
-  - Scenery
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -35,10 +13,10 @@ TagManager:
   - UI
   - 
   - 
-  - Platform
-  - Living Things
-  - Background
-  - Weather
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -62,19 +40,4 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: Background
-    uniqueID: 155862943
-    locked: 0
-  - name: Foreground
-    uniqueID: 4253425129
-    locked: 0
-  - name: Living Things
-    uniqueID: 2890183213
-    locked: 0
-  - name: Objects
-    uniqueID: 4241911695
-    locked: 0
-  - name: Overlay
-    uniqueID: 1826290595
     locked: 0
