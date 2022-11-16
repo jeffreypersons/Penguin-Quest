@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4cfdff3a313d574e8e345f7538539da, type: 3}
+  m_Name: PillEntitySettings
+  m_EditorClassIdentifier: 
+  walkSpeed: 50
+  jumpSpeed: 500
+  jumpLengthToApex: 10
+  jumpHeightToApex: 10
+  solverIterationsPerPhysicsUpdate: 1
+  collisionBounciness: 0
+  collisionFriction: 0
+  maxAscendableSlopeAngle: 70
+  skinWidth: 2.5
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  gravityScale: 2.5
