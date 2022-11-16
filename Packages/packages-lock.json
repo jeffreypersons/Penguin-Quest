@@ -101,6 +101,15 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.cinemachine": {
+      "version": "2.8.9",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.31"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
@@ -120,6 +129,16 @@
         "com.unity.2d.spriteshape": "8.0.1",
         "com.unity.2d.tilemap": "1.0.0",
         "com.unity.2d.tilemap.extras": "3.0.2"
+      }
+    },
+    "com.unity.feature.gameplay-storytelling": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.cinemachine": "2.8.9",
+        "com.unity.timeline": "1.7.2",
+        "com.unity.visualscripting": "1.7.8"
       }
     },
     "com.unity.ide.visualstudio": {
@@ -265,6 +284,16 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "com.unity.visualscripting": {
+      "version": "1.7.8",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",
