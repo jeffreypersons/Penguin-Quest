@@ -648,23 +648,23 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: CT_TPB
-    EmbeddedLinux: CT_TPB
-    GameCoreScarlett: CT_TPB
-    GameCoreXboxOne: CT_TPB
-    LinuxHeadlessSimulation: CT_TPB
-    Lumin: CT_TPB
-    Nintendo Switch: CT_TPB
-    PS4: CT_TPB
-    PS5: CT_TPB
-    QNX: CT_TPB
-    Stadia: CT_TPB
-    Standalone: CT_TPB
-    WebGL: CT_TPB
-    Windows Store Apps: CT_TPB
-    XboxOne: CT_TPB
-    iPhone: CT_TPB
-    tvOS: CT_TPB
+    Android: CT_TPB;CT_TPS
+    EmbeddedLinux: CT_TPB;CT_TPS
+    GameCoreScarlett: CT_TPB;CT_TPS
+    GameCoreXboxOne: CT_TPB;CT_TPS
+    LinuxHeadlessSimulation: CT_TPB;CT_TPS
+    Lumin: CT_TPB;CT_TPS
+    Nintendo Switch: CT_TPB;CT_TPS
+    PS4: CT_TPB;CT_TPS
+    PS5: CT_TPB;CT_TPS
+    QNX: CT_TPB;CT_TPS
+    Stadia: CT_TPB;CT_TPS
+    Standalone: CT_TPB;CT_TPS
+    WebGL: CT_TPB;CT_TPS
+    Windows Store Apps: CT_TPB;CT_TPS
+    XboxOne: CT_TPB;CT_TPS
+    iPhone: CT_TPB;CT_TPS
+    tvOS: CT_TPB;CT_TPS
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
