@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using PQ.Common.Extensions;
 
 
 namespace PQ.TestScenes.Minimal.Physics
