@@ -29,38 +29,38 @@ namespace PQ.Game.Camera
         
         [Header("Follow Position Relative to Subject")]
         [Tooltip("x offset from subject (subject is on left of camera if positive, right if negative)")]
-        [Range(-1000.00f, 1000.00f)] [SerializeField] private float _xOffset = 0.00f;
+        [Range(-1000, 1000)] [SerializeField] private float _xOffset = 0f;
 
         [Tooltip("y offset from subject (subject is bellow camera if positive, above if negative)")]
-        [Range(-1000.00f, 1000.00f)] [SerializeField] private float _yOffset = 0.00f;
+        [Range(-1000, 1000)] [SerializeField] private float _yOffset = 0f;
 
         [Tooltip("z offset from subject (subject is 'into' screen camera if positive, 'out' of screen if negative)")]
-        [Range(-1000.00f, 1000.00f)] [SerializeField] private float _zOffset = 0.00f;
+        [Range(-1000, 1000)] [SerializeField] private float _zOffset = 0f;
         
 
         [Header("Follow Behavior")]
         [Tooltip("Toggle for actively following")]
-        [SerializeField] private bool _isActivelyRunning = true;
+        [SerializeField] private bool _isActivelyFollowing = true;
 
         [Tooltip("Should we clamp offsets to prevent subject's collider from leaving camera viewport")]
         [SerializeField] private bool _keepSubjectInView = true;
         
         [Tooltip("How fast can the camera follow the subject?")]
-        [Range(10, 10000)] [SerializeField] private float _maxFollowSpeed = 1000.00f;
+        [Range(10, 10000)] [SerializeField] private float _maxFollowSpeed = 10f;
 
         [Tooltip("How far can the subject be from the camera before we update our position?")]
-        [Range(0.01f, 10f)] [SerializeField] private float _followDistanceTolerance = 0.20f;
+        [Range(0.0001f, 1.0000f)] [SerializeField] private float _followDistanceTolerance = 0.20f;
 
 
         [Header("Zoom Settings")]
         [Tooltip("Adjust orthographic size (how 'zoomed in' the camera is, by changing the viewport's half height)")]
-        [Range(15.00f, 500.0f)][SerializeField] private float _orthographicSize = 50.00f;
+        [Range(10, 500)][SerializeField] private float _orthographicSize = 50.00f;
 
         [Tooltip("How fast (at maximum) can the camera's field of view be adjusted?")]
-        [Range(0.10f, 50.00f)] [SerializeField] private float _zoomSpeed = 10.00f;
+        [Range(0.10f, 100.00f)] [SerializeField] private float _zoomSpeed = 10.00f;
 
         [Tooltip("How sensitive to adjustments in zoom are we?")]
-        [Range(0.01f, 10f)] [SerializeField] private float _zoomTolerance = 0.20f;
+        [Range(0.0001f, 1.0000f)] [SerializeField] private float _zoomTolerance = 0.20f;
         
         public override string ToString() =>
             $"{GetType().Name}:{{" +
@@ -135,7 +135,7 @@ namespace PQ.Game.Camera
             }
             #endif
 
-            if (_isActivelyRunning && _subject)
+            if (_isActivelyFollowing && _subject)
             {
                 SmoothedUpdate();
             }

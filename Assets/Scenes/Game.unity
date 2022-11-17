@@ -135,18 +135,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 7110129387491571184}
-    - target: {fileID: 6209392992845193032, guid: 4fa0445a7556ddc4ca0b26fd1ecbc204, type: 3}
-      propertyPath: m_SortingOrder
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6209392992845193032, guid: 4fa0445a7556ddc4ca0b26fd1ecbc204, type: 3}
-      propertyPath: m_PlaneDistance
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 6209392992845193032, guid: 4fa0445a7556ddc4ca0b26fd1ecbc204, type: 3}
-      propertyPath: m_UpdateRectTransformForStandalone
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6209392992845193033, guid: 4fa0445a7556ddc4ca0b26fd1ecbc204, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1302,15 +1290,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.1090894
+      value: -5.9274826
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 39.624573
+      value: 39.726727
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1344,10 +1332,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraSystem
       objectReference: {fileID: 0}
-    - target: {fileID: 1543372937319591303, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
-      propertyPath: field of view
-      value: 53
-      objectReference: {fileID: 0}
     - target: {fileID: 6670867744661504147, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
       propertyPath: subject
       value: 
@@ -1357,12 +1341,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1528079835}
     - target: {fileID: 6670867744661504147, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
-      propertyPath: _xOffset
-      value: 304
+      propertyPath: _zoomTolerance
+      value: 0.0001
       objectReference: {fileID: 0}
     - target: {fileID: 6670867744661504147, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
-      propertyPath: _yOffset
-      value: 299
+      propertyPath: _followDistanceTolerance
+      value: 0.0001
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects:
