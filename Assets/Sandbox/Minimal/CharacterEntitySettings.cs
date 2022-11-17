@@ -19,10 +19,10 @@ namespace PQ.TestScenes.Minimal
         [Header("Character Movement Settings")]
 
         [Tooltip("At what speed does the character walk along the horizontal?")]
-        [Range(0, 1000)][SerializeField] public float walkSpeed = 50f;
+        [Range(0, 250)][SerializeField] public float walkSpeed = 20f;
 
         [Tooltip("At what speed does the character move upwards?")]
-        [Range(0, 1000)][SerializeField] public float jumpSpeed = 500f;
+        [Range(0, 500)][SerializeField] public float jumpSpeed = 100f;
 
         [Tooltip("Horizontal distance from jump origin to bottom center of arc")]
         [Range(0, 100)][SerializeField] public float jumpLengthToApex = 10f;
@@ -50,7 +50,7 @@ namespace PQ.TestScenes.Minimal
         [SerializeField][Range(0, 90)] public float maxAscendableSlopeAngle = 45f;
 
         [Tooltip("What's the buffer (aka skin width) that we offset collisions and casts with?")]
-        [SerializeField] [Range(0, 100)] public float skinWidth = 2.5f;
+        [SerializeField] [Range(0, 1)] public float skinWidth = 0.25f;
 
         [Tooltip("What layers do we consider to make up ceilings, obstacles, ground, platforms, etc?")]
         [SerializeField] public LayerMask groundLayerMask = default;

@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4cfdff3a313d574e8e345f7538539da, type: 3}
   m_Name: PillEntitySettings
   m_EditorClassIdentifier: 
-  walkSpeed: 50
-  jumpSpeed: 500
+  walkSpeed: 20
+  jumpSpeed: 150
   jumpLengthToApex: 10
   jumpHeightToApex: 10
   solverIterationsPerPhysicsUpdate: 1
   collisionBounciness: 0
   collisionFriction: 0
   maxAscendableSlopeAngle: 70
-  skinWidth: 2.5
+  skinWidth: 0.1
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 4096
