@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 3204818302733060353}
   - component: {fileID: 3204818302733060352}
   - component: {fileID: -4625578252248657165}
-  m_Layer: 8
-  m_Name: _Ground_Block
+  m_Layer: 12
+  m_Name: _Platform_Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,11 +27,11 @@ Transform:
   m_GameObject: {fileID: 3204818302733060367}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 10, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3204818302733060352
 SpriteRenderer:

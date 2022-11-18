@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Camera
+  - EventSystem
   layers:
   - Default
   - TransparentFX
@@ -12,13 +14,13 @@ TagManager:
   - Water
   - UI
   - 
+  - Actors
+  - Items
   - 
+  - Props
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Solids
+  - Semi Solids
   - 
   - 
   - 
