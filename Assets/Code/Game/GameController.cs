@@ -1,69 +1,82 @@
 ﻿using UnityEngine;
+using PQ.Common.Extensions;
+using PQ.Game.Entities;
+using PQ.Game.Sound;
 
 
+// todo: replace config settings with scriptable objects
+// todo: replace this placeholder with a game state machine
+// todo: separate out blobs from fsm data and game blob and player blob and penguin blob
 namespace PQ.Game
 {
-    /*
-    Handles game level logic/event handling.
-    
-    Notes
-    - relies on startNewGameEvent being triggered (from main menu), so if running in editor
-    - expect null parameters, and just run from main menu instead
-    */
     public class GameController : MonoBehaviour
     {
-        private GameEventCenter _gameEventCenter;
-        private PlayerProgressionInfo _playerInfo;
+        [SerializeField] private GameObject            _playerPenguin;
+        [SerializeField] private SoundEffectController _soundEffectController;
+        [SerializeField] private SoundTrackController  _soundTrackController;
 
-        [SerializeField] private GameObject _playerPenguin;
+        private GameEventCenter _gameEventCenter;
+
+        private CharacterStatus _characterStatus;
+
 
         void Awake()
         {
-            _gameEventCenter = GameEventCenter.Instance;
-            _playerPenguin.SetActive(true);
-            _gameEventCenter.startNewGame.AddHandler(StartNewGame);
+            _characterStatus = new CharacterStatus(
+                lives:   1,
+                stamina: 1.0f,
+                health:  1.0f
+             );
 
+            _gameEventCenter = GameEventCenter.Instance;
+
+            _playerPenguin.SetActive(true);
             _playerPenguin.GetComponent<Entities.Penguin.PenguinBlob>().EventBus = _gameEventCenter;
+        }
+
+        void Start()
+        {
+            // for now, we just trigger game start here, but in future this may be in a separate menu
+            _gameEventCenter.startGame.Raise();
+        }
+
+        void Update()
+        {
+            // todo: replace these placeholders with our real state machine 
+            if (WinConditionMet())
+            {
+                _gameEventCenter.levelWon.Raise();
+            }
+            else if (LoseConditionMet())
+            {
+                _gameEventCenter.levelLost.Raise();
+            }
         }
 
         void OnEnable()
         {
-            _gameEventCenter.startNewGame.AddHandler(StartNewGame);
-            _gameEventCenter.restartGame.AddHandler(RestartGame);
+            _gameEventCenter.startGame .AddHandler(RestartGame);
+            _gameEventCenter.endGame   .AddHandler(ResumeGame);
+            _gameEventCenter.pauseGame .AddHandler(PauseGame);
+            _gameEventCenter.resumeGame.AddHandler(ResumeGame);
         }
+
         void OnDisable()
         {
-            _gameEventCenter.restartGame.RemoveHandler(RestartGame);
+            _gameEventCenter.startGame .RemoveHandler(RestartGame);
+            _gameEventCenter.endGame   .RemoveHandler(ResumeGame);
+            _gameEventCenter.pauseGame .RemoveHandler(PauseGame);
+            _gameEventCenter.resumeGame.RemoveHandler(ResumeGame);
+
+            _gameEventCenter.resumeGame.RemoveHandler(ResumeGame);
+            _gameEventCenter.resumeGame.RemoveHandler(ResumeGame);
         }
 
 
-        private void StartNewGame(PlayerSettingsInfo gameSettings)
-        {
-            _playerInfo = new PlayerProgressionInfo(gameSettings.NumberOfLives);
-            _gameEventCenter.scoreChange.Raise(_playerInfo);
-        }
-
-        private void RestartGame()
-        {
-            ResetMovingObjects();
-            _playerInfo = new PlayerProgressionInfo(_playerInfo.Lives);
-            _gameEventCenter.scoreChange.Raise(_playerInfo);
-        }
-
-        // placeholders for gameover conditions (will be based on level progression, score etc in future)
-        private bool LoseConditionMet()
-        {
-            return false;
-        }
-
-        private bool WinConditionMet()
-        {
-            return false;
-        }
-
-        private void ResetMovingObjects()
-        {
-            // no op placeholder
-        }
+        private void PauseGame()        => Time.timeScale = 0f;
+        private void ResumeGame()       => Time.timeScale = 1f;
+        private void RestartGame()      => SceneExtensions.LoadScene("Game");
+        private bool WinConditionMet()  => false;
+        private bool LoseConditionMet() => false;
     }
 }
