@@ -36,8 +36,7 @@ namespace PQ.Game
 
         void Start()
         {
-            // for now, we just trigger game start here, but in future this may be in a separate menu
-            _gameEventCenter.startGame.Raise();
+            // no op
         }
 
         void Update()
