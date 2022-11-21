@@ -22,19 +22,24 @@ namespace PQ.Game.UI
 
         void OnEnable()
         {
-            _eventCenter.characterStatusChanged.AddHandler(HandleCharacterStatusChanged);
-            _menuButton.onClick.AddListener(_eventCenter.pauseGame.Raise);
+            //_eventCenter.characterStatusChanged.AddHandler(HandleCharacterStatusChanged);
+            //_menuButton.onClick.AddListener(_eventCenter.pauseGame.Raise);
         }
 
         void OnDisable()
         {
-            _eventCenter.characterStatusChanged.RemoveHandler(HandleCharacterStatusChanged);
-            _menuButton.onClick.RemoveListener(_eventCenter.pauseGame.Raise);
+            //_eventCenter.characterStatusChanged.RemoveHandler(HandleCharacterStatusChanged);
+            //_menuButton.onClick.RemoveListener(_eventCenter.pauseGame.Raise);
+        }
+
+        public void UpdateStaminaBar()
+        {
+
         }
 
         private void HandleCharacterStatusChanged(CharacterStatus characterStatus)
         {
-            UpdateStamina(characterStatus.Stamina);
+            //UpdateStamina(characterStatus.Stamina);
         }
 
 
