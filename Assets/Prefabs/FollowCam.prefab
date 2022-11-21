@@ -102,13 +102,13 @@ MonoBehaviour:
   _xOffset: 50
   _yOffset: 100
   _zOffset: -100
-  _isActivelyRunning: 1
+  _isActivelyFollowing: 1
   _keepSubjectInView: 1
   _maxFollowSpeed: 100
-  _followDistanceTolerance: 10
+  _followDistanceTolerance: 0.0001
   _orthographicSize: 100
   _zoomSpeed: 10
-  _zoomTolerance: 2
+  _zoomTolerance: 0.0001
 --- !u!114 &846810656
 MonoBehaviour:
   m_ObjectHideFlags: 0
