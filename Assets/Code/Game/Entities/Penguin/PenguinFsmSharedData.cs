@@ -19,7 +19,7 @@ namespace PQ.Game.Entities.Penguin
     Note that this always is running, so that gizmos and editor scripts can reference any of its properties
     without worry about when things are valid and active.
     */
-    public class PenguinFsmSharedData : FsmSharedData
+    public sealed class PenguinFsmSharedData : FsmSharedData
     {
         [Header("Setting Bundles")]
         [SerializeField] private PenguinEntitySettings _penguinOnFeetSettings;
@@ -27,26 +27,36 @@ namespace PQ.Game.Entities.Penguin
 
         [Header("Component References")]
         [SerializeField] private PenguinAnimationDriver   _penguinAnimation;
-        [SerializeField] private PenguinEntity            _characterController;
         [SerializeField] private PenguinSkeletalStructure _penguinSkeleton;
+
+        private PenguinEntity _penguinEntity;
 
         public PenguinEntitySettings    OnFeetSettings       => _penguinOnFeetSettings;
         public PenguinEntitySettings    OnBellySettings      => _penguinOnBellySettings;
 
         public PenguinAnimationDriver   Animation            => _penguinAnimation;
         public PenguinSkeletalStructure Skeleton             => _penguinSkeleton;
-        public PenguinEntity            CharacterController  => _characterController;
+        public PenguinEntity            CharacterController  => _penguinEntity;
         public Vector2                  SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
 
         // todo: think of a better way of doing this hooking up..
         public GameEventCenter EventBus { get; set; }
 
+        void Awake()
+        {
+            _penguinEntity = new PenguinEntity(gameObject);
+        }
 
         void Start()
         {
             #if UNITY_EDITOR
-            if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
+            if (!UnityEditor.EditorApplication.isPlaying)
+            {
+                return;
+            }
+
+            if (EventBus == null)
             {
                 throw new NullReferenceException("Caution: Event bus of penguin blob is disconnected");
             }

@@ -16,8 +16,8 @@ namespace PQ.Game.Entities
                 throw new MissingComponentException($"Expected non-null {nameof(KinematicBody2D)}");
             }
 
-            _body       = body;
-            _solver     = new CollideAndSlideSolver2D(body, solverParams);
+            _body   = body;
+            _solver = new CollideAndSlideSolver2D(body, solverParams);
 
             _body.SetSkinWidth(_solver.Params.ContactOffset);
         }

@@ -1035,7 +1035,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Penguin
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 331518940653301218, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
 --- !u!4 &1528079835 stripped
@@ -1243,7 +1244,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.927334
+      value: -5.92787
       objectReference: {fileID: 0}
     - target: {fileID: 1543372937319591288, guid: 0d871c89d4c3229449c3ffe9396b216f, type: 3}
       propertyPath: m_LocalPosition.y

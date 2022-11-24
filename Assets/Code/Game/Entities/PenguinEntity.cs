@@ -5,18 +5,38 @@ using PQ.Common.Physics;
 
 namespace PQ.Game.Entities
 {
-    public class PenguinEntity : MonoBehaviour
+    public sealed class PenguinEntity
     {
-        public System.Action OnGroundInputChanged { get; set; }
-        public PenguinEntitySettings Settings { get; set; }
+        public System.Action OnGroundContactChanged { get; set; }
+        public PenguinEntitySettings Settings
+        {
+            get
+            {
+                return _settings;
+            }
+            set
+            {
+                if (!ReferenceEquals(_settings, value))
+                {
+                    return;
+                }
 
+                _settings = value;
+                _settings.OnChanged = SyncPropertiesFromSettings;
+                SyncPropertiesFromSettings();
+            }
+        }
+
+        public float HorizontalInput { get => _horizontalInput; set => _horizontalInput = Mathf.Clamp01(value); }
+
+        private PenguinEntitySettings _settings;
+        private float _horizontalInput;
         private bool  _isGrounded;
         private float _walkSpeed;
         private float _jumpSpeed;
         private Vector2 _jumpDisplacementToPeak;
         private SolverParams _characterSolverParams;
         private ICharacterController2D _characterController;
-        private GameplayInput _characterInput;
 
         private void SyncPropertiesFromSettings()
         {
@@ -42,57 +62,38 @@ namespace PQ.Game.Entities
         }
 
 
-        private void Awake()
+        public PenguinEntity(GameObject gameObject)
         {
-            _characterInput        = new GameplayInput();
+            if (!gameObject.TryGetComponent<KinematicBody2D>(out var body))
+            {
+                throw new MissingComponentException($"Expected non-null {nameof(KinematicBody2D)}");
+            }
+
+            _horizontalInput       = 0f;
             _characterSolverParams = new SolverParams();
             _characterController   = new SimpleCharacterController2D(gameObject, _characterSolverParams);
         }
 
-        private void Start()
-        {
-            if (Settings == null)
-            {
-                throw new MissingComponentException($"Settings required - " +
-                    $"no instance of {Settings.name} found attached to {gameObject.name}");
-            }
-
-            Settings.OnChanged = SyncPropertiesFromSettings;
-            SyncPropertiesFromSettings();
-        }
-
-        void Update()
-        {
-            _characterInput.ReadInput();
-        }
-
-
-        void FixedUpdate()
+        public void UpdatePhysics()
         {
             Vector2 velocity = Vector2.zero;
-            if (RequestedMoveInOppositeDirection(_characterInput, _characterController))
+            if (RequestedMoveInOppositeDirection(HorizontalInput, _characterController))
             {
                 _characterController.Flip();
             }
 
-            if (!Mathf.Approximately(_characterInput.Horizontal, 0f))
+            if (!Mathf.Approximately(HorizontalInput, 0f))
             {
-                velocity.x += _characterInput.Horizontal * _walkSpeed;
+                velocity.x += _horizontalInput * _walkSpeed;
             }
 
 
             if (_isGrounded != _characterController.IsGrounded)
             {
                 _isGrounded = _characterController.IsGrounded;
-                OnGroundInputChanged?.Invoke();
+                OnGroundContactChanged?.Invoke();
             }
-
-            if (_characterController.IsGrounded && _characterInput.Vertical > 0f)
-            {
-                // todo: replace with 'real' jump calculations
-                velocity.y += _characterInput.Vertical * _jumpSpeed;
-            }
-            
+                        
             if (!_characterController.IsGrounded)
             {
                 // todo: move this stuff into the solver, so it can do things like faster steep-slope-sliding
@@ -104,14 +105,13 @@ namespace PQ.Game.Entities
 
 
         [Pure]
-        private static bool RequestedMoveInOppositeDirection(
-            GameplayInput input, ICharacterController2D controller)
+        private static bool RequestedMoveInOppositeDirection(float horizontalInput, ICharacterController2D controller)
         {
-            if (Mathf.Approximately(input.Horizontal, 0f))
+            if (Mathf.Approximately(horizontalInput, 0f))
             {
                 return false;
             }
-            bool characterMovingLeft = input.Horizontal < 0;
+            bool characterMovingLeft = horizontalInput < 0;
             bool characterFacingLeft = controller.Flipped;
             return characterFacingLeft != characterMovingLeft;
         }
