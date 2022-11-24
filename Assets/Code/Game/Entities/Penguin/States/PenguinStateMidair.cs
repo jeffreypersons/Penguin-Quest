@@ -10,7 +10,7 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnIntialize()
         {
-            RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
+            //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()

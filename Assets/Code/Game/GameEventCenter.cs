@@ -22,7 +22,7 @@ namespace PQ.Game
     Note that events are triggered and handled ENTIRELY programmatically (via listeners and invocations).
     */
     public class GameEventCenter
-    {        
+    {
         public readonly PqEvent startGame      = new("game.restart");
         public readonly PqEvent pauseGame      = new("game.pause");
         public readonly PqEvent resumeGame     = new("game.resume");

@@ -54,24 +54,16 @@ namespace PQ.Game.Entities.Penguin
             _horizontalInput = state;
             if (_horizontalInput.value == HorizontalInput.Type.Right)
             {
-                Blob.CharacterController.FaceRight();
+                //Blob.CharacterController.FaceRight();
             }
             else if (_horizontalInput.value == HorizontalInput.Type.Left)
             {
-                Blob.CharacterController.FaceLeft();
+                //Blob.CharacterController.FaceLeft();
             }
         }
 
         private void HandleHorizontalMovement()
         {
-            if (_horizontalInput.value == HorizontalInput.Type.None)
-            {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnBellySettings.LocomotionBlendStep);
-            }
-            else
-            {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnBellySettings.LocomotionBlendStep);
-            }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
             // in this case, comparing floats is okay since we assume that values are _only_ adjusted via clamp01

@@ -86,7 +86,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleJumpLiftOff()
         {
-            Blob.CharacterController.Jump();
+            //Blob.CharacterController.Jump();
         }
 
 
@@ -96,11 +96,11 @@ namespace PQ.Game.Entities.Penguin
             _horizontalInput = state;
             if (_horizontalInput.value == HorizontalInput.Type.Right)
             {
-                Blob.CharacterController.FaceRight();
+                //Blob.CharacterController.FaceRight();
             }
             else if (_horizontalInput.value == HorizontalInput.Type.Left)
             {
-                Blob.CharacterController.FaceLeft();
+                //Blob.CharacterController.FaceLeft();
             }
         }
 
@@ -108,11 +108,11 @@ namespace PQ.Game.Entities.Penguin
         {
             if (_horizontalInput.value == HorizontalInput.Type.None)
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.LocomotionBlendStep);
+                //_locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.LocomotionBlendStep);
             }
             else
             {
-                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.LocomotionBlendStep);
+                //_locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.LocomotionBlendStep);
             }
 
             // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
@@ -121,7 +121,7 @@ namespace PQ.Game.Entities.Penguin
             {
                 // todo: move rigidbody force/movement calls to character controller 2d
                 //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
-                Blob.CharacterController.MoveForward();
+                //Blob.CharacterController.MoveForward();
             }
 
             Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
