@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinStateLyingDown : FsmState<PenguinStateId, PenguinBlob>
+    public class PenguinStateLyingDown : FsmState<PenguinStateId, PenguinFsmSharedData>
     {
         public PenguinStateLyingDown() : base() { }
 
@@ -29,15 +29,15 @@ namespace PQ.Game.Entities.Penguin
         private void HandleLieDownAnimationStarted()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            Blob.ColliderConstraints =
+            Blob.Skeleton.ColliderConstraints =
                 PenguinColliderConstraints.DisableFeet;
         }
 
         private void HandleLieDownAnimationMidpoint()
         {
             // disable our box and feet, to prevent catching on edges when changing posture from OnFeet to OnBelly
-            Blob.ColliderConstraints =
-                PenguinColliderConstraints.DisableFeet  |
+            Blob.Skeleton.ColliderConstraints =
+                PenguinColliderConstraints.DisableFeet |
                 PenguinColliderConstraints.DisableFlippers;
         }
 
@@ -45,12 +45,12 @@ namespace PQ.Game.Entities.Penguin
         {
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
             // but enable everything else including bounding box
-            Blob.ColliderConstraints =
+            Blob.Skeleton.ColliderConstraints =
                  PenguinColliderConstraints.DisableFeet |
                  PenguinColliderConstraints.DisableFlippers;
 
             Blob.CharacterController.Settings = Blob.OnBellySettings;
-            Blob.ReadjustBoundingBox(
+            Blob.Skeleton.ReadjustBoundingBox(
                 offset:     new Vector2( 0,  5),
                 size:       new Vector2(25, 10),
                 edgeRadius: 1.25f

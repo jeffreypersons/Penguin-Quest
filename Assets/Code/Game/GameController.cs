@@ -31,7 +31,7 @@ namespace PQ.Game
             _gameEventCenter = GameEventCenter.Instance;
 
             _playerPenguin.SetActive(true);
-            _playerPenguin.GetComponent<Entities.Penguin.PenguinBlob>().EventBus = _gameEventCenter;
+            _playerPenguin.GetComponent<Entities.Penguin.PenguinFsmSharedData>().EventBus = _gameEventCenter;
         }
 
         void Start()

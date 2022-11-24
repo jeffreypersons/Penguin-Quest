@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Game.Entities.Penguin
 {
-    public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinBlob>
+    public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinFsmSharedData>
     {
         protected override void OnInitialStateEntered(PenguinStateId initial) =>
             Debug.Log($"Intialized {this}");
@@ -15,7 +15,7 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnInitialize()
         {
-            if (!gameObject.TryGetComponent<PenguinBlob>(out var penguinBlob))
+            if (!gameObject.TryGetComponent<PenguinFsmSharedData>(out var penguinBlob))
             {
                 throw new System.InvalidOperationException(
                     $"PenguinBlob not found - driver must be attached to same gameObject as PenguinFsmDriver");
