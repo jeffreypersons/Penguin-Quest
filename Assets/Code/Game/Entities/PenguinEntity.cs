@@ -99,7 +99,7 @@ namespace PQ.Game.Entities
                 velocity.y -= _characterSolverParams.Gravity;
             }
 
-            //_characterController.Move(Time.fixedDeltaTime * velocity);
+            _characterController.Move(Time.fixedDeltaTime * velocity);
         }
 
 
