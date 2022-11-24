@@ -66,9 +66,6 @@ namespace PQ.Game
             _gameEventCenter.endGame   .RemoveHandler(ResumeGame);
             _gameEventCenter.pauseGame .RemoveHandler(PauseGame);
             _gameEventCenter.resumeGame.RemoveHandler(ResumeGame);
-
-            _gameEventCenter.resumeGame.RemoveHandler(ResumeGame);
-            _gameEventCenter.resumeGame.RemoveHandler(ResumeGame);
         }
 
 
