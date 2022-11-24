@@ -35,7 +35,7 @@ namespace PQ.Game.Entities.Penguin
 
         [Header("Component References")]
         [SerializeField] private PenguinAnimationDriver _penguinAnimation;
-        [SerializeField] private PenguinEntity        _characterController;
+        [SerializeField] private PenguinEntity          _characterController;
 
         [Header("Collider References")]
         [SerializeField] private CapsuleCollider2D _outerCollider;
@@ -47,20 +47,20 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _backFootCollider;
         
         
-        public PenguinEntitySettings OnFeetSettings  => _penguinOnFeetSettings;
-        public PenguinEntitySettings OnBellySettings => _penguinOnBellySettings;
+        public PenguinEntitySettings  OnFeetSettings       => _penguinOnFeetSettings;
+        public PenguinEntitySettings  OnBellySettings      => _penguinOnBellySettings;
 
         public PenguinAnimationDriver Animation            => _penguinAnimation;
         public PenguinEntity          CharacterController  => _characterController;
         public Vector2                SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
-        public CapsuleCollider2D OuterCollider             => _outerCollider;
-        public Collider2D        ColliderHead              => _headCollider;
-        public Collider2D        ColliderTorso             => _torsoCollider;
-        public Collider2D        ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
-        public Collider2D        ColliderFrontFlipperLower => _frontFlipperLowerCollider;
-        public Collider2D        ColliderFrontFoot         => _frontFootCollider;
-        public Collider2D        ColliderBackFoot          => _backFootCollider;
+        public Collider2D OuterCollider             => _outerCollider;
+        public Collider2D ColliderHead              => _headCollider;
+        public Collider2D ColliderTorso             => _torsoCollider;
+        public Collider2D ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
+        public Collider2D ColliderFrontFlipperLower => _frontFlipperLowerCollider;
+        public Collider2D ColliderFrontFoot         => _frontFootCollider;
+        public Collider2D ColliderBackFoot          => _backFootCollider;
            
         public PenguinColliderConstraints ColliderConstraints
         {
