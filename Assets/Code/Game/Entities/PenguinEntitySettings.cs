@@ -18,6 +18,10 @@ namespace PQ.Game.Entities
 
         [Header("Character Movement Settings")]
 
+        [Tooltip("Step size used to adjust blend percent when transitioning between idle/moving states" +
+                 "(ie 0.05 for blended delayed transition taking at least 20 frames, 1 for instant transition)")]
+        [Range(0.01f, 1.00f)][SerializeField] public float locomotionBlendStep = 0.10f;
+
         [Tooltip("At what speed does the character walk along the horizontal?")]
         [Range(0, 250)][SerializeField] public float walkSpeed = 20f;
 

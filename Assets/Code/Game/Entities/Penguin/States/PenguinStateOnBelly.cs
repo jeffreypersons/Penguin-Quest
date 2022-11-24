@@ -51,29 +51,12 @@ namespace PQ.Game.Entities.Penguin
         // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void HandleMoveHorizontalChanged(HorizontalInput state)
         {
-            _horizontalInput = state;
-            if (_horizontalInput.value == HorizontalInput.Type.Right)
-            {
-                //Blob.CharacterController.FaceRight();
-            }
-            else if (_horizontalInput.value == HorizontalInput.Type.Left)
-            {
-                //Blob.CharacterController.FaceLeft();
-            }
+            // no op
         }
 
         private void HandleHorizontalMovement()
         {
-
-            // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
-            // in this case, comparing floats is okay since we assume that values are _only_ adjusted via clamp01
-            if (_locomotionBlend != 0.00f)
-            {
-                // todo: move rigidbody force/movement calls to character controller 2d
-                //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
-            }
-
-            Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
+            // no op
         }
     }
 }

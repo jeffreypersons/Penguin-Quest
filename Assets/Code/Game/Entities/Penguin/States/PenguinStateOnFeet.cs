@@ -108,20 +108,16 @@ namespace PQ.Game.Entities.Penguin
         {
             if (_horizontalInput.value == HorizontalInput.Type.None)
             {
-                //_locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.locomotionBlendStep);
             }
             else
             {
-                //_locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.LocomotionBlendStep);
+                _locomotionBlend = Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.locomotionBlendStep);
             }
 
-            // todo: abstract locomotion blend as some sort of max speed blend with damping and put in character controller
-            // in this case, comparing floats is okay since we assume that values are _only_ adjusted via clamp01
             if (_locomotionBlend != 0.00f)
             {
-                // todo: move rigidbody force/movement calls to character controller 2d
-                //MoveHorizontal(penguinRigidbody, _xMotionIntensity * _maxInputSpeed, Time.deltaTime);
-                //Blob.CharacterController.MoveForward();
+                // no op
             }
 
             Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
