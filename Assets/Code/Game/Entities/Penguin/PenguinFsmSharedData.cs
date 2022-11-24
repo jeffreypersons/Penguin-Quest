@@ -42,6 +42,7 @@ namespace PQ.Game.Entities.Penguin
         // todo: think of a better way of doing this hooking up..
         public GameEventCenter EventBus { get; set; }
 
+
         void Start()
         {
             #if UNITY_EDITOR
@@ -51,7 +52,7 @@ namespace PQ.Game.Entities.Penguin
             }
             #endif
         }
-                
+
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
