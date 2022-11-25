@@ -718,9 +718,9 @@ MonoBehaviour:
   m_Spline:
     m_IsOpenEnded: 0
     m_ControlPoints:
-    - position: {x: -1365.9453, y: -190.44511, z: 0}
+    - position: {x: -1455.4171, y: -249.24739, z: 0}
       leftTangent: {x: 0, y: 0, z: 0}
-      rightTangent: {x: 0, y: 0.034698486, z: 0}
+      rightTangent: {x: 0, y: 0.034729004, z: 0}
       mode: 2
       height: 1
       spriteIndex: 0
@@ -734,16 +734,40 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: -546.65625, y: -97.063644, z: 0}
+    - position: {x: -516.8136, y: -65.04317, z: 0}
       leftTangent: {x: -94.65759, y: 11.381012, z: 0}
-      rightTangent: {x: 38.489197, y: -4.627838, z: 0}
+      rightTangent: {x: 9.917847, y: -1.1924896, z: 0}
       mode: 1
       height: 1
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: 840.7589, y: -207.69582, z: 0}
-      leftTangent: {x: -1.8048706, y: 7.3680725, z: 0}
+    - position: {x: -225.87994, y: -101.675964, z: 0}
+      leftTangent: {x: -167.18784, y: 11.958504, z: 0}
+      rightTangent: {x: 129.13052, y: -9.236595, z: 0}
+      mode: 1
+      height: 1
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 216.96887, y: -111.802124, z: 0}
+      leftTangent: {x: -148.80542, y: 2.9170685, z: 0}
+      rightTangent: {x: 185.78287, y: -3.6418762, z: 0}
+      mode: 1
+      height: 1
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 690.395, y: -92.63995, z: 0}
+      leftTangent: {x: -140.23438, y: 11.201202, z: 0}
+      rightTangent: {x: 166.38904, y: -13.290161, z: 0}
+      mode: 1
+      height: 1
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 870.613, y: -282.19812, z: 0}
+      leftTangent: {x: -0.5321045, y: 2.1721802, z: 0}
       rightTangent: {x: 0, y: 0, z: 0}
       mode: 2
       height: 1
@@ -824,8 +848,8 @@ SpriteShapeRenderer:
   - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
   - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
   m_LocalAABB:
-    m_Center: {x: -262.59546, y: -136.98892, z: 0}
-    m_Extent: {x: 1103.8442, y: 70.95884, z: 0}
+    m_Center: {x: -292.5088, y: -168.38123, z: 0}
+    m_Extent: {x: 1163.3947, y: 114.12457, z: 0}
   m_SpriteSortPoint: 0
 --- !u!1 &471649636
 GameObject:
@@ -969,6 +993,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &598438828 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5121901046953082800, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
+  m_PrefabInstance: {fileID: 5121901046034502936}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1281f07940613ac4a9c9c450de2fcae3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &651691922
 GameObject:
   m_ObjectHideFlags: 0
@@ -1049,8 +1084,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerPenguin: {fileID: 439218191}
-  _soundEffectController: {fileID: 0}
-  _soundTrackController: {fileID: 0}
+  _soundEffectController: {fileID: 598438828}
+  _soundTrackController: {fileID: 1764307190}
 --- !u!1 &931390865
 GameObject:
   m_ObjectHideFlags: 0
@@ -1775,6 +1810,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4753795910216235723, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
   m_PrefabInstance: {fileID: 1528079834}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1764307190 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5121901045983317109, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
+  m_PrefabInstance: {fileID: 5121901046034502936}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee58eee13cf475e4591f0a454fc6cf81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &1813933554
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -2102,6 +2148,14 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5121901045983317107, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5121901045983317107, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: b4626f547c5154c4ca85733a040bc922, type: 3}
     - target: {fileID: 5121901046628408876, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
       propertyPath: m_Name
       value: SoundSystem

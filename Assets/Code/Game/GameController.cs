@@ -36,7 +36,7 @@ namespace PQ.Game
 
         void Start()
         {
-            // no op
+            _soundTrackController.PlayTrack();
         }
 
         void Update()
