@@ -16,7 +16,7 @@ namespace PQ.Game.Entities
             }
             set
             {
-                if (!ReferenceEquals(_settings, value))
+                if (ReferenceEquals(_settings, value))
                 {
                     return;
                 }
@@ -27,7 +27,7 @@ namespace PQ.Game.Entities
             }
         }
 
-        public float HorizontalInput { get => _horizontalInput; set => _horizontalInput = Mathf.Clamp01(value); }
+        public float HorizontalInput { get => _horizontalInput; set => _horizontalInput = Mathf.Clamp(value, -1f, 1f); }
 
         private PenguinEntitySettings _settings;
         private float _horizontalInput;
@@ -74,15 +74,14 @@ namespace PQ.Game.Entities
             _characterController   = new SimpleCharacterController2D(gameObject, _characterSolverParams);
         }
 
-        public void UpdatePhysics()
+        public void UpdateMovement()
         {
             Vector2 velocity = Vector2.zero;
             if (RequestedMoveInOppositeDirection(HorizontalInput, _characterController))
             {
                 _characterController.Flip();
             }
-
-            if (!Mathf.Approximately(HorizontalInput, 0f))
+            if (!Mathf.Approximately(_horizontalInput, 0f))
             {
                 velocity.x += _horizontalInput * _walkSpeed;
             }
@@ -93,7 +92,7 @@ namespace PQ.Game.Entities
                 _isGrounded = _characterController.IsGrounded;
                 OnGroundContactChanged?.Invoke();
             }
-                        
+
             if (!_characterController.IsGrounded)
             {
                 // todo: move this stuff into the solver, so it can do things like faster steep-slope-sliding
