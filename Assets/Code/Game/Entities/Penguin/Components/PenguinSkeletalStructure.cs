@@ -1,41 +1,18 @@
-using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
-using PQ.Common.Fsm;
-using PQ.Common.Extensions;
 
 
 namespace PQ.Game.Entities.Penguin
 {
     /*
-    Collection of penguin components.
+    Collection of penguin components, such as colliders and bones.
 
-    Serves as the collection of the components that make up a penguin in our game,
-    including rigidbody, animator, and colliders, with centralized support for changing mass,
-    disabling/enabling colliders, etc.
-
-    The purpose in all this is to centralize component and child object access, so that other
-    scripts don't have to worry about caching.
-
-    Note that this always is running, so that gizmos and editor scripts can reference any of its properties
-    without worry about when things are valid and active.
+    This is intended to keep all that skeletal animation sort of book-keeping code out of the core game logic.
     */
-    [AddComponentMenu("PenguinBlob")]
-    public class PenguinBlob : FsmSharedData
+    public class PenguinSkeletalStructure : MonoBehaviour
     {
-        // todo: think of a better way of doing this hooking up..
-        public GameEventCenter EventBus { get; set; }
-
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.None;
-        
-        [Header("Setting Bundles")]
-        [SerializeField] private CharacterEntitySettings _penguinOnFeetSettings;
-        [SerializeField] private CharacterEntitySettings _penguinOnBellySettings;
-
-        [Header("Component References")]
-        [SerializeField] private PenguinAnimationDriver _penguinAnimation;
-        [SerializeField] private CharacterEntity        _characterController;
 
         [Header("Collider References")]
         [SerializeField] private CapsuleCollider2D _outerCollider;
@@ -45,22 +22,14 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _frontFlipperLowerCollider;
         [SerializeField] private CapsuleCollider2D _frontFootCollider;
         [SerializeField] private CapsuleCollider2D _backFootCollider;
-        
-        
-        public CharacterEntitySettings OnFeetSettings  => _penguinOnFeetSettings;
-        public CharacterEntitySettings OnBellySettings => _penguinOnBellySettings;
-
-        public PenguinAnimationDriver Animation            => _penguinAnimation;
-        public CharacterEntity        CharacterController  => _characterController;
-        public Vector2                SkeletalRootPosition => _penguinAnimation.SkeletalRootPosition;
 
         public CapsuleCollider2D OuterCollider             => _outerCollider;
-        public Collider2D        ColliderHead              => _headCollider;
-        public Collider2D        ColliderTorso             => _torsoCollider;
-        public Collider2D        ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
-        public Collider2D        ColliderFrontFlipperLower => _frontFlipperLowerCollider;
-        public Collider2D        ColliderFrontFoot         => _frontFootCollider;
-        public Collider2D        ColliderBackFoot          => _backFootCollider;
+        public CapsuleCollider2D ColliderHead              => _headCollider;
+        public CapsuleCollider2D ColliderTorso             => _torsoCollider;
+        public CapsuleCollider2D ColliderFrontFlipperUpper => _frontFlipperUpperCollider;
+        public CapsuleCollider2D ColliderFrontFlipperLower => _frontFlipperLowerCollider;
+        public CapsuleCollider2D ColliderFrontFoot         => _frontFootCollider;
+        public CapsuleCollider2D ColliderBackFoot          => _backFootCollider;
 
         public PenguinColliderConstraints ColliderConstraints
         {
@@ -101,28 +70,11 @@ namespace PQ.Game.Entities.Penguin
             _colliderConstraints = GetConstraintsAccordingToDisabledColliders();
         }
         
-        void Start()
-        {
-            #if UNITY_EDITOR
-            if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
-            {
-                throw new NullReferenceException("Caution: Event bus of penguin blob is disconnected");
-            }
-            #endif
-        }
-
         void Update()
         {
             UpdateColliderConstraints();
         }
-        
-        #if UNITY_EDITOR
-        void OnDrawGizmos()
-        {
-            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
-        }
-        #endif
-        
+
         private PenguinColliderConstraints? _previousConstraints = null;
 
         private void UpdateColliderConstraints()

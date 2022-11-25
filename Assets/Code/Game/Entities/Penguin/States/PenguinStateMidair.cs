@@ -4,13 +4,13 @@
 namespace PQ.Game.Entities.Penguin
 {
     // todo: add some sort of free fall check that forces a respawn/death
-    public class PenguinStateMidair : FsmState<PenguinStateId, PenguinBlob>
+    public class PenguinStateMidair : FsmState<PenguinStateId, PenguinFsmSharedData>
     {
         public PenguinStateMidair() : base() { }
 
         protected override void OnIntialize()
         {
-            RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
+            //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }
 
         protected override void OnEnter()

@@ -126,8 +126,9 @@ namespace PQ.Common.Fsm
         protected abstract void OnEnter();
         protected abstract void OnExit();
 
-        // Optional recurring callbacks
 
+        // Optional recurring callbacks
+        
         protected virtual void OnFixedUpdate()                        { }
         protected virtual void OnAnimatorRootMotionUpdate()           { }
         protected virtual void OnAnimatorIkPassUpdate(int layerIndex) { }

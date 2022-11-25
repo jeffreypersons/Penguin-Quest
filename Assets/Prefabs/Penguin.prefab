@@ -263,10 +263,10 @@ GameObject:
   - component: {fileID: 4183406586119580578}
   - component: {fileID: 7859832108952071242}
   - component: {fileID: 2138608317391900897}
-  - component: {fileID: 331518940653301218}
   - component: {fileID: 1728887597599890734}
-  - component: {fileID: 4753795910216235732}
-  - component: {fileID: 9188869225720279910}
+  - component: {fileID: 1528079844}
+  - component: {fileID: 1528079845}
+  - component: {fileID: 1528079846}
   m_Layer: 7
   m_Name: Penguin
   m_TagString: Player
@@ -288,7 +288,7 @@ Transform:
   m_Children:
   - {fileID: 8190429023145774807}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &4753795910216235720
 Rigidbody2D:
@@ -359,18 +359,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28484ee5f1151f4dae5545688b2f5ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &331518940653301218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4753795910216235740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97c2a621b9eb0104e90dd99e3a9a3122, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1728887597599890734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,7 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d843ab528b90ca24986ff473f5abc37e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4753795910216235732
+--- !u!114 &1528079844
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -395,11 +383,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c415f633318d75347abc38dc748c8bc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _colliderConstraints: 0
   _penguinOnFeetSettings: {fileID: 11400000, guid: 06315a86b522e2e47b0e1a7cf2b82ee8, type: 2}
   _penguinOnBellySettings: {fileID: 11400000, guid: 18187a383bafbcb439199a3912f5c3a2, type: 2}
   _penguinAnimation: {fileID: 1728887597599890734}
-  _characterController: {fileID: 331518940653301218}
+  _penguinSkeleton: {fileID: 1528079845}
+--- !u!114 &1528079845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753795910216235740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e015a34e387fff42b232af4a5040dbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colliderConstraints: 0
   _outerCollider: {fileID: 4183406586119580578}
   _headCollider: {fileID: 4753795911533567600}
   _torsoCollider: {fileID: 4753795910448514483}
@@ -407,7 +407,7 @@ MonoBehaviour:
   _frontFlipperLowerCollider: {fileID: 4753795911143785397}
   _frontFootCollider: {fileID: 4753795910722719825}
   _backFootCollider: {fileID: 4753795910764276095}
---- !u!114 &9188869225720279910
+--- !u!114 &1528079846
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
