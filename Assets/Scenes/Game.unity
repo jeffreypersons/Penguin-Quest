@@ -1722,10 +1722,6 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1528079845, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
-      propertyPath: _outerCollider
-      value: 
-      objectReference: {fileID: 1528079844}
     - target: {fileID: 4753795910216235723, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -1774,18 +1770,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: Penguin
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 331518940653301218, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
+    m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
 --- !u!4 &1528079835 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4753795910216235723, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
-  m_PrefabInstance: {fileID: 1528079834}
-  m_PrefabAsset: {fileID: 0}
---- !u!61 &1528079844 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 3519149377576298697, guid: 6d76bc27df941db4d96760c2af2147ca, type: 3}
   m_PrefabInstance: {fileID: 1528079834}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1764307190 stripped

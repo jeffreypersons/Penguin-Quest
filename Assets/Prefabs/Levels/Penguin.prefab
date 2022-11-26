@@ -288,7 +288,7 @@ Transform:
   m_Children:
   - {fileID: 8190429023145774807}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &4753795910216235720
 Rigidbody2D:
@@ -410,7 +410,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _colliderConstraints: 0
-  _outerCollider: {fileID: 0}
+  _outerCollider: {fileID: 3519149377576298697}
   _headCollider: {fileID: 4753795911533567600}
   _torsoCollider: {fileID: 4753795910448514483}
   _frontFlipperUpperCollider: {fileID: 4753795910921302243}
