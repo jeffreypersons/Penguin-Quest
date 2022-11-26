@@ -2541,7 +2541,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8715041716411336930, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 8715041716411336930, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2584,6 +2584,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8715041716557673020, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
+      propertyPath: CollisionModule.type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8715041716557673020, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
       propertyPath: LightsModule.enabled
       value: 0
       objectReference: {fileID: 0}
@@ -2596,12 +2600,24 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8715041716557673020, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
+      propertyPath: CollisionModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8715041716557673020, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
+      propertyPath: CollisionModule.quality
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8715041716557673020, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
       propertyPath: CustomDataModule.enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8715041716557673020, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
       propertyPath: InitialModule.gravitySource
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8715041716557673020, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
+      propertyPath: CollisionModule.collidesWith.m_Bits
+      value: 12688
       objectReference: {fileID: 0}
     - target: {fileID: 8715041716557673022, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
       propertyPath: m_Name
