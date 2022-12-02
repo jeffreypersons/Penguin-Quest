@@ -66,6 +66,11 @@ namespace PQ.Game.Entities.Penguin
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
+            if (!UnityEditor.EditorApplication.isPlaying)
+            {
+                return;
+            }
+
             GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
         }
         #endif
