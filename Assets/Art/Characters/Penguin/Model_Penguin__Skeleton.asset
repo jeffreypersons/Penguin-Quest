@@ -1,0 +1,321 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec8da9418a6bf493e93ef4c7b7575847, type: 3}
+  m_Name: Model_Penguin__Skeleton
+  m_EditorClassIdentifier: 
+  m_SpriteBones:
+  - m_Name: SkeletonRoot
+    m_Guid: 
+    m_Position: {x: 613.4271, y: 37.057766, z: 0}
+    m_Rotation: {x: 0, y: 0, z: 0.7069727, w: 0.7072408}
+    m_Length: 98.3138
+    m_ParentId: -1
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Torso_Pivot
+    m_Guid: 
+    m_Position: {x: 214.05157, y: 187.43764, z: 0}
+    m_Rotation: {x: 0, y: 0, z: -0.008567829, w: 0.9999633}
+    m_Length: 32.520954
+    m_ParentId: 0
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Torso_Tail
+    m_Guid: 
+    m_Position: {x: 29.30528, y: 277.80844, z: 0}
+    m_Rotation: {x: 0, y: 0, z: 0.8558406, w: 0.51723963}
+    m_Length: 31.465525
+    m_ParentId: 25
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: BackLeg_Shin
+    m_Guid: 
+    m_Position: {x: 340.48654, y: 93.05091, z: -3}
+    m_Rotation: {x: 0, y: -0, z: -0.9999693, w: 0.007835264}
+    m_Length: 289.53018
+    m_ParentId: 1
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: BackLeg_Ankle
+    m_Guid: 
+    m_Position: {x: 289.53012, y: -0.00034082204, z: -3}
+    m_Rotation: {x: 0, y: 0, z: 0.055005923, w: 0.99848604}
+    m_Length: 193.82515
+    m_ParentId: 3
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: BackLeg_Foot
+    m_Guid: 
+    m_Position: {x: 193.82516, y: -0.000052226278, z: 1}
+    m_Rotation: {x: 0, y: 0, z: 0.6652944, w: 0.7465812}
+    m_Length: 394.95673
+    m_ParentId: 4
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: FrontLeg_Shin
+    m_Guid: 
+    m_Position: {x: 340.2532, y: -86.867, z: -3}
+    m_Rotation: {x: 0, y: -0, z: -0.9999436, w: 0.01062345}
+    m_Length: 288.64832
+    m_ParentId: 1
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: FrontLeg_Ankle
+    m_Guid: 
+    m_Position: {x: 288.64838, y: 0.00081158825, z: -3}
+    m_Rotation: {x: 0, y: 0, z: 0.052404717, w: 0.99862593}
+    m_Length: 192.86005
+    m_ParentId: 6
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: FrontLeg_Foot
+    m_Guid: 
+    m_Position: {x: 192.86005, y: -0.00011068435, z: 1}
+    m_Rotation: {x: 0, y: 0, z: 0.6651932, w: 0.7466713}
+    m_Length: 400.85626
+    m_ParentId: 7
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Torso_LowerSpine
+    m_Guid: 
+    m_Position: {x: 275.1969, y: 0.0012224091, z: 0}
+    m_Rotation: {x: 0, y: 0, z: -0.037286036, w: 0.99930465}
+    m_Length: 556.9218
+    m_ParentId: 25
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Torso_Shoulders
+    m_Guid: 
+    m_Position: {x: 791.89594, y: 0.00014484247, z: 0}
+    m_Rotation: {x: 0, y: 0, z: -0.103590034, w: 0.9946201}
+    m_Length: 128.30267
+    m_ParentId: 19
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Neck_Lower
+    m_Guid: 
+    m_Position: {x: 56.938038, y: -0.0000013607751, z: 1}
+    m_Rotation: {x: 0, y: 0, z: -0.09010361, w: 0.9959324}
+    m_Length: 293.07944
+    m_ParentId: 26
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Neck_Middle
+    m_Guid: 
+    m_Position: {x: 293.07947, y: -0.00006139725, z: 2}
+    m_Rotation: {x: 0, y: 0, z: 0.13265814, w: 0.9911619}
+    m_Length: 262.3408
+    m_ParentId: 11
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Neck_Upper
+    m_Guid: 
+    m_Position: {x: 262.3409, y: 0.0000049932178, z: 3}
+    m_Rotation: {x: 0, y: 0, z: -0.4310487, w: 0.90232867}
+    m_Length: 86.79858
+    m_ParentId: 12
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Head_Center
+    m_Guid: 
+    m_Position: {x: 86.79855, y: -0.0000070785754, z: 3}
+    m_Rotation: {x: 0, y: 0, z: -0.45819503, w: 0.8888517}
+    m_Length: 140.25232
+    m_ParentId: 13
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: UpperBeak
+    m_Guid: 
+    m_Position: {x: 171.46353, y: 46.406925, z: 2}
+    m_Rotation: {x: 0, y: 0, z: 0.077337705, w: 0.997005}
+    m_Length: 309.17786
+    m_ParentId: 14
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: LowerBeak
+    m_Guid: 
+    m_Position: {x: 192.62294, y: -28.088238, z: 1}
+    m_Rotation: {x: 0, y: 0, z: 0.14922997, w: 0.98880255}
+    m_Length: 299.17654
+    m_ParentId: 14
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: _SkinClamp_FrontNeck
+    m_Guid: 
+    m_Position: {x: 236.791, y: -286.62228, z: 0}
+    m_Rotation: {x: 0, y: 0, z: 0.26710725, w: 0.96366686}
+    m_Length: 80.581184
+    m_ParentId: 11
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: _SkinClamp_BackNeck
+    m_Guid: 
+    m_Position: {x: 119.53625, y: 231.9505, z: 0}
+    m_Rotation: {x: 0, y: 0, z: -0.12133335, w: 0.9926118}
+    m_Length: 90.97704
+    m_ParentId: 11
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Torso_UpperSpine
+    m_Guid: 
+    m_Position: {x: 556.9218, y: 0.0000005597758, z: 0}
+    m_Rotation: {x: 0, y: 0, z: 0.016633853, w: 0.99986166}
+    m_Length: 791.89594
+    m_ParentId: 9
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: FrontFlipper_Upper
+    m_Guid: 
+    m_Position: {x: 130.14642, y: 0.00008047889, z: 7}
+    m_Rotation: {x: 0, y: 0, z: 0.22180006, w: 0.9750922}
+    m_Length: 589.0634
+    m_ParentId: 27
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: FrontFlipper_Lower
+    m_Guid: 
+    m_Position: {x: 589.06335, y: -0.00007578441, z: 6}
+    m_Rotation: {x: 0, y: 0, z: 0.13846402, w: 0.99036753}
+    m_Length: 504.91382
+    m_ParentId: 20
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: BackFlipper_Pivot
+    m_Guid: 
+    m_Position: {x: -153.96284, y: -300.67535, z: -6}
+    m_Rotation: {x: 0, y: -0, z: 0.9893385, w: 0.14563422}
+    m_Length: 117.91123
+    m_ParentId: 10
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: BackFlipper_Upper
+    m_Guid: 
+    m_Position: {x: 117.9112, y: -0.000046403904, z: -5}
+    m_Rotation: {x: 0, y: 0, z: 0.174541, w: 0.9846499}
+    m_Length: 436.87256
+    m_ParentId: 22
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: BackFlipper_Lower
+    m_Guid: 
+    m_Position: {x: 436.87262, y: -0.000014520636, z: -4}
+    m_Rotation: {x: 0, y: 0, z: 0.12274923, w: 0.9924377}
+    m_Length: 457.23138
+    m_ParentId: 23
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Torso_Hips
+    m_Guid: 
+    m_Position: {x: 32.52096, y: -0.000073566065, z: 0}
+    m_Rotation: {x: 0, y: 0, z: 0.0056995326, w: 0.9999838}
+    m_Length: 275.1969
+    m_ParentId: 1
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Neck_Pivot
+    m_Guid: 
+    m_Position: {x: 128.30269, y: 0.000014386656, z: -3}
+    m_Rotation: {x: 0, y: 0, z: 0.10701524, w: 0.9942574}
+    m_Length: 56.938034
+    m_ParentId: 10
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: FrontFlipper_Pivot
+    m_Guid: 
+    m_Position: {x: -62.53834, y: 75.252495, z: 2}
+    m_Rotation: {x: 0, y: -0, z: 0.9798559, w: 0.19970623}
+    m_Length: 130.14656
+    m_ParentId: 10
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: _SkinClamp_UpperBeak
+    m_Guid: 
+    m_Position: {x: 165.47119, y: 96.9093, z: 0}
+    m_Rotation: {x: 0, y: 0, z: -0.06622154, w: 0.99780494}
+    m_Length: 23.263742
+    m_ParentId: 14
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: _SkinClamp_LowerBeak
+    m_Guid: 
+    m_Position: {x: 229.53381, y: -112.17826, z: 0}
+    m_Rotation: {x: 0, y: 0, z: 0.52703035, w: 0.84984654}
+    m_Length: 14.697852
+    m_ParentId: 14
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: _SkinClamp_FrontFlipper
+    m_Guid: 
+    m_Position: {x: -13.887457, y: 17.836117, z: 0}
+    m_Rotation: {x: 0, y: -0, z: 0.82589513, w: 0.56382376}
+    m_Length: 175.90097
+    m_ParentId: 10
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Eye_Pivot
+    m_Guid: 
+    m_Position: {x: 84.99118, y: 40.487995, z: 4}
+    m_Rotation: {x: 0, y: 0, z: 0.12804589, w: 0.99176824}
+    m_Length: 9.043413
+    m_ParentId: 14
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Eye_Lower
+    m_Guid: 
+    m_Position: {x: -21.944357, y: -15.905894, z: 4}
+    m_Rotation: {x: 0, y: 0, z: 0.024578158, w: 0.9996979}
+    m_Length: 56.22445
+    m_ParentId: 31
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
+  - m_Name: Eye_Upper
+    m_Guid: 
+    m_Position: {x: -24.333393, y: 14.243469, z: 4}
+    m_Rotation: {x: 0, y: 0, z: -0.04042203, w: 0.9991827}
+    m_Length: 60.53371
+    m_ParentId: 31
+    m_Color:
+      serializedVersion: 2
+      rgba: 0
