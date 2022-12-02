@@ -1,5 +1,10 @@
 fileFormatVersion: 2
-guid: 1e99c3b861b099f43a27980bba1565c8
+guid: 3839691539692d042beb771797047292
+importerOverride:
+  nativeImporterType: 2089858483
+  scriptedImporterType:
+    serializedVersion: 2
+    Hash: b10b55a1aa6a1aa32521bc0cab59632e
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -9,7 +14,7 @@ ScriptedImporter:
   assetBundleVariant: 
   script: {fileID: 11500000, guid: b2a9591990af98743ba3ff7cf1000886, type: 3}
   textureImporterSettings:
-    alphaSource: 0
+    alphaSource: 1
     mipMapMode: 0
     enableMipMap: 1
     fadeOut: 0
@@ -41,7 +46,7 @@ ScriptedImporter:
     generateCubemap: 6
     cubemapConvolution: 0
     seamlessCubemap: 0
-    alphaIsTransparency: 0
+    alphaIsTransparency: 1
     spriteTessellationDetail: -1
     textureType: 8
     textureShape: 1
@@ -50,8 +55,8 @@ ScriptedImporter:
     flipbookColumns: 0
     ignorePngGamma: 0
     cookieMode: 0
-    filterMode: 0
-    aniso: 4
+    filterMode: 1
+    aniso: 1
     mipBias: 0
     wrapU: 0
     wrapV: 0
@@ -102,10 +107,10 @@ ScriptedImporter:
     rect:
       serializedVersion: 2
       x: 4
-      y: 2156
-      width: 380
-      height: 1303
-    spriteID: 41e9adcbaa37b8a4c89559b3ff74d0a8
+      y: 2032
+      width: 379
+      height: 1229
+    spriteID: c4257dc75a0f86d4d87b5adf572bac25
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -113,8 +118,8 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 2156}
-    spritePosition: {x: 114, y: 623}
+    uvTransform: {x: 4, y: 2032}
+    spritePosition: {x: 89, y: 608}
   - name: Torso
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -124,9 +129,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 928
-      height: 2144
-    spriteID: 27fec58261ba160468807523f5b4701a
+      width: 924
+      height: 2020
+    spriteID: fcd0403e939e4a94e9e90a97c7361739
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -134,8 +139,8 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 4}
-    spritePosition: {x: 30, y: 187}
+    uvTransform: {x: 3, y: 3}
+    spritePosition: {x: -1, y: 148}
   - name: Eye
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -143,11 +148,11 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 1572
-      y: 974
+      x: 477
+      y: 3953
       width: 110
-      height: 95
-    spriteID: be0c38eacfac0d547b91c371c9c88bb9
+      height: 89
+    spriteID: 6e9480fcb0160f4438f1865e8c6c2055
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -155,8 +160,8 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 1572, y: 974}
-    spritePosition: {x: 706, y: 2662}
+    uvTransform: {x: 477, y: 3953}
+    spritePosition: {x: 672, y: 2507}
   - name: Head
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -164,11 +169,11 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 940
-      y: 4
-      width: 543
-      height: 717
-    spriteID: 079d8dc508bf5e24fbbb80406faf43d9
+      x: 4
+      y: 3269
+      width: 541
+      height: 676
+    spriteID: d6394a033d734504eae07392fbc16807
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -176,50 +181,8 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 940, y: 4}
-    spritePosition: {x: 342, y: 2113}
-  - name: Beak_Upper
-    originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
-    border: {x: 0, y: 0, z: 0, w: 0}
-    rect:
-      serializedVersion: 2
-      x: 1572
-      y: 870
-      width: 468
-      height: 96
-    spriteID: 7a485879bea7a24478dea6f5023e97dc
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 1572, y: 870}
-    spritePosition: {x: 762, y: 2656}
-  - name: Beak_Lower
-    originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
-    border: {x: 0, y: 0, z: 0, w: 0}
-    rect:
-      serializedVersion: 2
-      x: 1572
-      y: 729
-      width: 468
-      height: 133
-    spriteID: 0c121fc7e9d8c1b4a8209951cacb1250
-    spriteBone: []
-    spriteOutline: []
-    vertices: []
-    spritePhysicsOutline: []
-    indices: 
-    edges: []
-    tessellationDetail: 0
-    uvTransform: {x: 1572, y: 729}
-    spritePosition: {x: 762, y: 2530}
+    uvTransform: {x: 3, y: 3268}
+    spritePosition: {x: 311, y: 1964}
   - name: Foot_Front
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -227,11 +190,11 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 940
-      y: 729
-      width: 624
-      height: 600
-    spriteID: 96b1a4294da9a34468977aac4cedf29d
+      x: 936
+      y: 4
+      width: 622
+      height: 566
+    spriteID: 9cf03bba79f739c4aad3bc49efbe3d8b
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -239,8 +202,50 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 940, y: 729}
-    spritePosition: {x: 404, y: 30}
+    uvTransform: {x: 936, y: 3}
+    spritePosition: {x: 374, y: 0}
+  - name: Beak_Upper
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 3953
+      width: 465
+      height: 88
+    spriteID: 8f5869897cabec54fb61a3e75d6ef968
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 3, y: 3953}
+    spritePosition: {x: 734, y: 2480}
+  - name: Beak_Lower
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 391
+      y: 3109
+      width: 466
+      height: 125
+    spriteID: b765f3e67c2c8bc49b5af5d34d258845
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 391, y: 3109}
+    spritePosition: {x: 734, y: 2360}
   - name: Foot_Back
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -248,11 +253,11 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 940
-      y: 1337
-      width: 624
-      height: 600
-    spriteID: e673c74de0cf4fc46b52c99c28df813a
+      x: 936
+      y: 578
+      width: 621
+      height: 566
+    spriteID: aff2c9e98f72bc046aafae47ccfd3d64
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -260,8 +265,8 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 940, y: 1337}
-    spritePosition: {x: 228, y: 30}
+    uvTransform: {x: 936, y: 577}
+    spritePosition: {x: 173, y: 0}
   - name: Flipper_Back
     originalName: 
     pivot: {x: 0.5, y: 0.5}
@@ -269,11 +274,11 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 392
-      y: 2156
-      width: 338
-      height: 1134
-    spriteID: 1644089242f694d43b6c959170d2d53c
+      x: 391
+      y: 2032
+      width: 336
+      height: 1069
+    spriteID: a5cc7cceaaca6c1488e36a690a36f3f7
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -281,8 +286,8 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 392, y: 2156}
-    spritePosition: {x: 514, y: 629}
+    uvTransform: {x: 391, y: 2032}
+    spritePosition: {x: 424, y: 635}
   characterData:
     bones: []
     parts: []
@@ -348,11 +353,11 @@ ScriptedImporter:
   documentPivot: {x: 0, y: 0}
   documentAlignment: 7
   importHiddenLayers: 0
-  layerMappingOption: 1
+  layerMappingOption: 2
   generatePhysicsShape: 0
   paperDollMode: 0
-  keepDupilcateSpriteName: 0
-  skeletonAssetReferenceID: 00000000000000000000000000000000
+  keepDupilcateSpriteName: 1
+  skeletonAssetReferenceID: 
   padding: 4
   spriteCategoryList:
     categories: []
@@ -364,9 +369,9 @@ ScriptedImporter:
     spriteName: Flipper_Front
     isGroup: 0
     parentIndex: -1
-    spriteID: 41e9adcbaa37b8a4c89559b3ff74d0a8
-    layerID: 14
-    mosaicPosition: {x: 4, y: 2156}
+    spriteID: c4257dc75a0f86d4d87b5adf572bac25
+    layerID: 18
+    mosaicPosition: {x: 4, y: 2032}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -374,8 +379,8 @@ ScriptedImporter:
     spriteName: Torso
     isGroup: 0
     parentIndex: -1
-    spriteID: 27fec58261ba160468807523f5b4701a
-    layerID: 7
+    spriteID: fcd0403e939e4a94e9e90a97c7361739
+    layerID: 20
     mosaicPosition: {x: 4, y: 4}
     flatten: 0
     isImported: 1
@@ -384,9 +389,9 @@ ScriptedImporter:
     spriteName: Eye
     isGroup: 0
     parentIndex: -1
-    spriteID: be0c38eacfac0d547b91c371c9c88bb9
-    layerID: 13
-    mosaicPosition: {x: 1572, y: 974}
+    spriteID: 6e9480fcb0160f4438f1865e8c6c2055
+    layerID: 19
+    mosaicPosition: {x: 477, y: 3953}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -394,29 +399,9 @@ ScriptedImporter:
     spriteName: Head
     isGroup: 0
     parentIndex: -1
-    spriteID: 079d8dc508bf5e24fbbb80406faf43d9
-    layerID: 12
-    mosaicPosition: {x: 940, y: 4}
-    flatten: 0
-    isImported: 1
-    isVisible: 1
-  - name: Beak_Upper
-    spriteName: Beak_Upper
-    isGroup: 0
-    parentIndex: -1
-    spriteID: 7a485879bea7a24478dea6f5023e97dc
+    spriteID: d6394a033d734504eae07392fbc16807
     layerID: 9
-    mosaicPosition: {x: 1572, y: 870}
-    flatten: 0
-    isImported: 1
-    isVisible: 1
-  - name: Beak_Lower
-    spriteName: Beak_Lower
-    isGroup: 0
-    parentIndex: -1
-    spriteID: 0c121fc7e9d8c1b4a8209951cacb1250
-    layerID: 8
-    mosaicPosition: {x: 1572, y: 729}
+    mosaicPosition: {x: 4, y: 3269}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -424,9 +409,29 @@ ScriptedImporter:
     spriteName: Foot_Front
     isGroup: 0
     parentIndex: -1
-    spriteID: 96b1a4294da9a34468977aac4cedf29d
+    spriteID: 9cf03bba79f739c4aad3bc49efbe3d8b
+    layerID: 8
+    mosaicPosition: {x: 936, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Beak_Upper
+    spriteName: Beak_Upper
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 8f5869897cabec54fb61a3e75d6ef968
+    layerID: 7
+    mosaicPosition: {x: 4, y: 3953}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Beak_Lower
+    spriteName: Beak_Lower
+    isGroup: 0
+    parentIndex: -1
+    spriteID: b765f3e67c2c8bc49b5af5d34d258845
     layerID: 6
-    mosaicPosition: {x: 940, y: 729}
+    mosaicPosition: {x: 391, y: 3109}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -434,9 +439,9 @@ ScriptedImporter:
     spriteName: Foot_Back
     isGroup: 0
     parentIndex: -1
-    spriteID: e673c74de0cf4fc46b52c99c28df813a
+    spriteID: aff2c9e98f72bc046aafae47ccfd3d64
     layerID: 5
-    mosaicPosition: {x: 940, y: 1337}
+    mosaicPosition: {x: 936, y: 578}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -444,9 +449,9 @@ ScriptedImporter:
     spriteName: Flipper_Back
     isGroup: 0
     parentIndex: -1
-    spriteID: 1644089242f694d43b6c959170d2d53c
+    spriteID: a5cc7cceaaca6c1488e36a690a36f3f7
     layerID: 4
-    mosaicPosition: {x: 392, y: 2156}
+    mosaicPosition: {x: 391, y: 2032}
     flatten: 0
     isImported: 1
     isVisible: 1
