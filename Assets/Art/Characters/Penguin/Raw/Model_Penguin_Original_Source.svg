@@ -33,18 +33,6 @@
      inkscape:current-layer="svg33" />
   <defs
      id="defs11">
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient1104">
-      <stop
-         style="stop-color:#525252;stop-opacity:1;"
-         offset="0"
-         id="stop1100" />
-      <stop
-         style="stop-color:#525252;stop-opacity:0;"
-         offset="1"
-         id="stop1102" />
-    </linearGradient>
     <radialGradient
        r="28.390963"
        fy="414.26337"
@@ -241,15 +229,6 @@
        is_visible="true"
        id="path-effect1606"
        effect="bspline" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient1104"
-       id="linearGradient1106"
-       x1="63.127171"
-       y1="110.25684"
-       x2="124.12727"
-       y2="110.25684"
-       gradientUnits="userSpaceOnUse" />
   </defs>
   <style
      id="style13" />
@@ -364,7 +343,7 @@
      inkscape:export-xdpi="300"
      inkscape:export-filename="C:\Users\jperm\Dropbox\Art\Exports\FlipperFront.png"
      id="Flipper_Front"
-     style="display:inline;mix-blend-mode:normal;fill:url(#linearGradient1106);fill-opacity:1;stroke:none;stroke-width:1.75017;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality"
+     style="display:inline;mix-blend-mode:normal;fill:#525252;fill-opacity:1;stroke:none;stroke-width:1.75017;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality"
      inkscape:transform-center-x="-22.707035"
      inkscape:transform-center-y="120.54789"
      d="m 65.260004,155.44373 c 1.2963,12.85549 2.0095,25.90008 5.5976,38.39375 1.4807,5.15514 2.9367,10.62024 6.5064,14.85453 2.0981,2.48877 4.8468,5.89161 8.2947,5.64291 3.8042,-0.27438 6.3119,-4.33814 7.947,-7.45931 7.253396,-13.84779 4.6865,-30.37546 5.9918,-45.65523 1.004196,-11.75229 -0.2159,-23.64414 1.411196,-35.33919 1.657,-11.90887 5.6756,-23.44977 8.4648,-35.184172 4.1474,-17.44596 10.9086,-34.52542 12.2975,-52.36581 1.7872,-14.11464 4.8538,-27.87344 -1.3407,-31.7922705 -8.7238,-1.79535 -17.9579,3.29786 -26.407196,6.5718205 -6.6067,2.4538 -9.9073,5.51169 -13.043,9.75469 -4.9826,6.74151 -6.2267,15.2884 -7.9178,23.25367 -1.5412,7.26138 -1.0541,14.76357 -1.9769,22.1105 -0.853,6.79497 -2.2445,13.52586 -3.2883,20.299 -1.5968,10.35878 -4.0832,20.655222 -4.5498,31.105822 -0.5334,11.94209 0.8123,23.90689 2.0127,35.80929 z"
