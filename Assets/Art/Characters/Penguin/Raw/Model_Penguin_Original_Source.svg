@@ -34,6 +34,18 @@
      shape-rendering="crispEdges" />
   <defs
      id="defs156">
+    <linearGradient
+       inkscape:collect="always"
+       id="Gradient_Beak_Upper">
+      <stop
+         style="stop-color:#646464;stop-opacity:1;"
+         offset="0"
+         id="stop8464" />
+      <stop
+         style="stop-color:#afafaf;stop-opacity:1;"
+         offset="1"
+         id="stop8466" />
+    </linearGradient>
     <filter
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
@@ -55,11 +67,11 @@
        x1="2528.0066"
        gradientUnits="userSpaceOnUse"
        id="linearGradient1614"
-       xlink:href="#linearGradient1211"
+       xlink:href="#Gradient_Torso_Belly"
        inkscape:collect="always" />
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient1211">
+       id="Gradient_Torso_Belly">
       <stop
          style="stop-color:#fafafa;stop-opacity:1"
          offset="0"
@@ -92,11 +104,11 @@
        gradientTransform="matrix(0.93603625,0,0,0.93721071,1335.0489,-6.049578)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient1610-6-2"
-       xlink:href="#linearGradient5394"
+       xlink:href="#Gradient_Eye_Outer"
        inkscape:collect="always" />
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient5394">
+       id="Gradient_Eye_Outer">
       <stop
          style="stop-color:#ffffff;stop-opacity:1"
          offset="0"
@@ -127,10 +139,10 @@
        gradientTransform="matrix(0.93603625,0,0,0.74052051,1335.0489,21.750355)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient1612-1-1"
-       xlink:href="#linearGradient1312"
+       xlink:href="#Gradient_Eye_Inner"
        inkscape:collect="always" />
     <linearGradient
-       id="linearGradient1312"
+       id="Gradient_Eye_Inner"
        inkscape:collect="always">
       <stop
          style="stop-color:#19191a;stop-opacity:1;"
@@ -154,7 +166,7 @@
        effect="bspline" />
     <radialGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient1195"
+       xlink:href="#Gradient_Foot"
        id="radialGradient1620"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(2.4550757,0.01583455,-0.00586588,1.6880502,-2219.8,-411.29717)"
@@ -165,7 +177,7 @@
        r="28.390963" />
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient1195">
+       id="Gradient_Foot">
       <stop
          style="stop-color:#414141;stop-opacity:1;"
          offset="0"
@@ -176,49 +188,37 @@
          id="stop1193" />
     </linearGradient>
     <linearGradient
-       y2="94.328964"
-       x2="493.42761"
-       y1="60.179031"
-       x1="493.61612"
+       y2="75.632477"
+       x2="499.0903"
+       y1="42.585503"
+       x1="499.81174"
        gradientTransform="matrix(0.56287861,0,0,0.48287431,27.957799,-142.58079)"
        gradientUnits="userSpaceOnUse"
        id="linearGradient1616"
-       xlink:href="#linearGradient1403"
+       xlink:href="#Gradient_Beak_Upper"
        inkscape:collect="always" />
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient1403">
+       id="Gradient_Beak_Lower">
       <stop
-         style="stop-color:#cccccc;stop-opacity:1"
+         style="stop-color:#646464;stop-opacity:1;"
          offset="0"
          id="stop1399" />
       <stop
-         style="stop-color:#808080;stop-opacity:1"
+         style="stop-color:#c8c8c8;stop-opacity:1;"
          offset="1"
          id="stop1401" />
     </linearGradient>
     <linearGradient
-       y2="84.30088"
-       x2="494.80939"
-       y1="137.14357"
-       x1="495.28391"
+       y2="98.155113"
+       x2="493.49493"
+       y1="142.04501"
+       x1="495.19058"
        gradientTransform="matrix(0.29252672,0,0,0.26661906,2000.7334,161.57677)"
        gradientUnits="userSpaceOnUse"
        id="linearGradient1618"
-       xlink:href="#linearGradient1411"
+       xlink:href="#Gradient_Beak_Lower"
        inkscape:collect="always" />
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient1411">
-      <stop
-         style="stop-color:#737373;stop-opacity:1"
-         offset="0"
-         id="stop1407" />
-      <stop
-         style="stop-color:#bfbfbf;stop-opacity:1"
-         offset="1"
-         id="stop1409" />
-    </linearGradient>
     <radialGradient
        r="28.390963"
        fy="414.26337"
@@ -228,7 +228,7 @@
        gradientTransform="matrix(2.4555395,0.01583465,-0.005867,1.6880554,-2252.7569,-411.29941)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient1100"
-       xlink:href="#linearGradient1195"
+       xlink:href="#Gradient_Foot"
        inkscape:collect="always" />
   </defs>
   <path
@@ -270,7 +270,7 @@
      inkscape:label="Beak_Upper"
      id="Beak_Upper"
      style="display:inline;mix-blend-mode:normal;fill:url(#linearGradient1616);fill-opacity:1;stroke:none;stroke-width:1.84287;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;image-rendering:optimizeQuality"
-     d="m 256.40109,-99.232265 c 28.47482,0.624029 57.89499,0.791331 83.30322,1.044594 0,0 0.46297,-0.299164 0.46439,-0.298456 -0.004,-0.258867 -0.26324,-0.898712 -0.52056,-1.093816 -1.21515,-0.928847 -2.42946,-1.758687 -3.64555,-2.500757 -3.69501,-2.25474 -7.3228,-4.3539 -11.37543,-5.29201 -7.47354,-1.72999 -14.94812,-0.0182 -22.96136,-0.41199 -7.05897,-0.34692 -15.70913,-1.87232 -22.04554,-4.31845 -10.26284,5.72382 -16.77476,8.39442 -23.21917,12.870885 z"
+     d="m 256.40109,-99.232265 c 28.47482,0.624029 57.89499,0.791331 83.30322,1.044594 0,0 0.46297,-0.299164 0.46439,-0.298456 -0.004,-0.258867 -0.26324,-0.898712 -0.52056,-1.093816 -1.21515,-0.928847 -2.42946,-1.758687 -3.64555,-2.500757 -3.69501,-2.25474 -7.46096,-3.60483 -11.46293,-4.38271 -7.52444,-1.46255 -14.94812,-0.0182 -22.96136,-0.41199 -7.05897,-0.34692 -15.62163,-2.78162 -21.95804,-5.22775 -10.26284,5.72382 -16.77476,8.39442 -23.21917,12.870885 z"
      sodipodi:nodetypes="ccccsascc"
      transform="matrix(0.68593653,0,0,0.66004044,-102.36545,82.623312)" />
   <path
