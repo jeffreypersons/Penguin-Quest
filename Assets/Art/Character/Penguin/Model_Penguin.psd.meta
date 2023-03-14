@@ -4141,13 +4141,607 @@ ScriptedImporter:
     characterGroups: []
     pivot: {x: 0.48, y: 0.04}
     boneReadOnly: 0
-  sharedRigSpriteImportData: []
+  sharedRigSpriteImportData:
+  - name: Flipper_Front
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 1620
+      y: 4
+      width: 691
+      height: 2133
+    spriteID: 4f15f5c4c90d21e4b8200e162a904d5a
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 1620, y: 4}
+    spritePosition: {x: 328, y: 1435}
+  - name: Torso_Base
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 4
+      width: 1608
+      height: 3499
+    spriteID: ad0d2fd4e4ad6ae489c2d4d5c9cf54a6
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 4}
+    spritePosition: {x: 208, y: 459}
+  - name: Eye_Front
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 970
+      y: 3511
+      width: 185
+      height: 162
+    spriteID: 9fcddf25c315f164fb2a9ef62e58aab7
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 970, y: 3511}
+    spritePosition: {x: 1341, y: 4550}
+  - name: Head_Base
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 2319
+      y: 2094
+      width: 897
+      height: 1105
+    spriteID: 2057354633f3f5a43b28028a898b5c90
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 2319, y: 2094}
+    spritePosition: {x: 763, y: 3687}
+  - name: Foot_Front
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 2319
+      y: 1049
+      width: 1164
+      height: 1037
+    spriteID: 48cefe563fba9e3479e40e9ebd81da92
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 2319, y: 1049}
+    spritePosition: {x: 792, y: 208}
+  - name: Beak_Upper
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 3730
+      width: 958
+      height: 149
+    spriteID: b7c9c054a13bc46498650f11aa02a667
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 3, y: 3729}
+    spritePosition: {x: 1334, y: 4503}
+  - name: Beak_Lower
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 3511
+      width: 958
+      height: 211
+    spriteID: a0efa1fbe76479648976be77d5727da6
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 3, y: 3511}
+    spritePosition: {x: 1334, y: 4312}
+  - name: Foot_Back
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 2319
+      y: 4
+      width: 1165
+      height: 1037
+    spriteID: 995d3c83f0113bd419b592021e3b6a3c
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 2319, y: 4}
+    spritePosition: {x: 425, y: 208}
+  - name: Flipper_Back
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 1620
+      y: 2145
+      width: 621
+      height: 1919
+    spriteID: 37c73727a7bd9304e9b273d0fb354522
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 1620, y: 2145}
+    spritePosition: {x: 889, y: 1487}
   sharedRigCharacterData:
-    bones: []
-    parts: []
+    bones:
+    - name: SkeletonRoot
+      guid: ed8cc9aa4aab32f468649e7ef00bc6d3
+      position: {x: 1190, y: 215, z: 0}
+      rotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+      length: 133.7998
+      parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 4294902015
+    - name: Torso_Pivot
+      guid: 8d809ec281831a34f87473eed8f8185b
+      position: {x: 992.2822, y: 509.30603, z: 0}
+      rotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+      length: 81.1654
+      parentId: -1
+      color:
+        serializedVersion: 2
+        rgba: 4279505940
+    - name: Torso_Lower
+      guid: bd0909de5ce6729458b669e157dc0774
+      position: {x: 81.1654, y: -0.000013135561, z: 0}
+      rotation: {x: 0, y: 0, z: 0.013375476, w: 0.99991053}
+      length: 579.50507
+      parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 4278255360
+    - name: Torso_Middle
+      guid: 05d9fa90521e1dc4c9bec5ce7353642c
+      position: {x: 579.50507, y: 0.00033121643, z: 0}
+      rotation: {x: 0, y: 0, z: -0.03127669, w: 0.99951077}
+      length: 907.238
+      parentId: 2
+      color:
+        serializedVersion: 2
+        rgba: 4294967040
+    - name: Torso_Upper
+      guid: a09f1ca701fd36b49b2ab835cfe6cd34
+      position: {x: 907.238, y: 0.00022724962, z: 0}
+      rotation: {x: 0, y: 0, z: 0.0048398995, w: 0.9999883}
+      length: 1396.0801
+      parentId: 3
+      color:
+        serializedVersion: 2
+        rgba: 4294901760
+    - name: Torso_Shoulders
+      guid: 648dcbfba2b7ad344ac53ec513d90d1d
+      position: {x: 1396.0801, y: 0.0025023178, z: 0}
+      rotation: {x: 0, y: 0, z: -0.1803641, w: 0.98359996}
+      length: 244.52858
+      parentId: 4
+      color:
+        serializedVersion: 2
+        rgba: 4294902015
+    - name: Neck_Pivot
+      guid: ccc28f7d6c1f2ba43be9bf3ebda7042b
+      position: {x: 244.5286, y: 0.00006405992, z: -3}
+      rotation: {x: 0, y: 0, z: 0.16508964, w: 0.9862786}
+      length: 89.31033
+      parentId: 5
+      color:
+        serializedVersion: 2
+        rgba: 4279505940
+    - name: Neck_Lower
+      guid: f89062564cef59d49a2126121ad347c2
+      position: {x: 89.31038, y: 0.0000217009, z: 2}
+      rotation: {x: 0, y: 0, z: -0.06931789, w: 0.99759465}
+      length: 345.85803
+      parentId: 6
+      color:
+        serializedVersion: 2
+        rgba: 4278255488
+    - name: Neck_Middle
+      guid: b199396bf747e09449090e3b90416675
+      position: {x: 345.85803, y: -0.000033567027, z: 2}
+      rotation: {x: 0, y: 0, z: 0.14341554, w: 0.9896626}
+      length: 383.3481
+      parentId: 7
+      color:
+        serializedVersion: 2
+        rgba: 4286643968
+    - name: Neck_Upper
+      guid: 9d178d73b1fafb44e977f1ecf2210418
+      position: {x: 383.34793, y: -0.000016369951, z: 2}
+      rotation: {x: 0, y: 0, z: -0.43886447, w: 0.8985533}
+      length: 149.86197
+      parentId: 8
+      color:
+        serializedVersion: 2
+        rgba: 4294934528
+    - name: Head_Center
+      guid: dc395de296697194da6c8730d0fc5447
+      position: {x: 149.8621, y: 0.00013840108, z: 2}
+      rotation: {x: 0, y: 0, z: -0.50533456, w: 0.86292356}
+      length: 203.41025
+      parentId: 9
+      color:
+        serializedVersion: 2
+        rgba: 4294901888
+    - name: _SkinClamp_FrontNeck
+      guid: b1c32748b6dc93e4da46325f4b532f81
+      position: {x: 201.544, y: -485.36804, z: 0}
+      rotation: {x: 0, y: 0, z: 0.2309595, w: 0.9729634}
+      length: 88.59509
+      parentId: 7
+      color:
+        serializedVersion: 2
+        rgba: 4291348680
+    - name: _SkinClamp_NeckBack
+      guid: 7ca0a6e1e1ae58849a74d00a9415f214
+      position: {x: 56.74152, y: 404.87476, z: 0}
+      rotation: {x: 0, y: 0, z: -0.15554807, w: 0.9878283}
+      length: 78.95141
+      parentId: 7
+      color:
+        serializedVersion: 2
+        rgba: 4291348680
+    - name: _SkinClamp_LowerBeak
+      guid: f60523d486b567d4385a4c70a5fbfcd2
+      position: {x: 385.9077, y: -197.97893, z: 0}
+      rotation: {x: 0, y: 0, z: 0.50797176, w: 0.8613737}
+      length: 25.568846
+      parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 4291348680
+    - name: _SkinClamp_UpperBeak
+      guid: c55b57d3a28c10e4c99873562578d52c
+      position: {x: 269.37833, y: 127.993515, z: 0}
+      rotation: {x: 0, y: 0, z: -0.02313933, w: 0.99973226}
+      length: 37.709885
+      parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 4291348680
+    - name: Beak_Lower
+      guid: 823ff6db65b041c42b9ad5f677d8dfa7
+      position: {x: 322.41266, y: -78.46251, z: 1}
+      rotation: {x: 0, y: 0, z: 0.1792403, w: 0.98380536}
+      length: 596.9166
+      parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 4294901760
+    - name: Beak_Upper
+      guid: 3d3bf43b105f7cf41b3f5bbd0414830a
+      position: {x: 278.98926, y: 52.75293, z: 2}
+      rotation: {x: 0, y: 0, z: 0.1163236, w: 0.9932114}
+      length: 594.8944
+      parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 4294902015
+    - name: Eye_Pivot
+      guid: 1f032722954f3074bae33c81ec04ba67
+      position: {x: 128.60101, y: 66.09771, z: 4}
+      rotation: {x: 0, y: 0, z: 0.15214808, w: 0.9883578}
+      length: 15.079574
+      parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 4278190335
+    - name: Eye_Upper
+      guid: 2906b3dbb444ae142bf344ea5f72e35c
+      position: {x: -51.28369, y: 22.769157, z: 2}
+      rotation: {x: 0, y: 0, z: -0.03202014, w: 0.9994872}
+      length: 111.185005
+      parentId: 17
+      color:
+        serializedVersion: 2
+        rgba: 4278255488
+    - name: Eye_Lower
+      guid: f00ef0f4adb87814ebfcb8a5d2bffd93
+      position: {x: -44.112926, y: -27.796751, z: 2}
+      rotation: {x: 0, y: 0, z: 0.030242411, w: 0.9995426}
+      length: 100.99674
+      parentId: 17
+      color:
+        serializedVersion: 2
+        rgba: 4286643968
+    - name: Torso_Tail
+      guid: c74dace437e08b040ba1adee3c60725b
+      position: {x: 230.15778, y: 545.4201, z: 0}
+      rotation: {x: 0, y: 0, z: 0.93828773, w: 0.3458559}
+      length: 91.08506
+      parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 4294934528
+    - name: FrontFlipper_Pivot
+      guid: 8e320cfc52bca1e4ca7493ef05d1d7d5
+      position: {x: -74.72588, y: 112.798744, z: 2}
+      rotation: {x: 0, y: -0, z: 0.9862213, w: 0.16543157}
+      length: 242.94588
+      parentId: 5
+      color:
+        serializedVersion: 2
+        rgba: 4278190335
+    - name: FrontFlipper_Upper
+      guid: 2e3851a4765f6f24fa5c00a281fa3d3f
+      position: {x: 242.94615, y: -0.00013647834, z: 7}
+      rotation: {x: 0, y: 0, z: 0.25664344, w: 0.9665062}
+      length: 996.7541
+      parentId: 21
+      color:
+        serializedVersion: 2
+        rgba: 4294901760
+    - name: FrontFlipper_Lower
+      guid: af767d3734ecf1a40908e34561ff2333
+      position: {x: 996.7541, y: -0.00011232565, z: 6}
+      rotation: {x: 0, y: 0, z: 0.114476554, w: 0.993426}
+      length: 706.7305
+      parentId: 22
+      color:
+        serializedVersion: 2
+        rgba: 4294901888
+    - name: BackFlipper_Pivot
+      guid: d5ce3956bdaa197459150d6b9a77a24f
+      position: {x: -40.886883, y: -424.2272, z: -6}
+      rotation: {x: 0, y: -0, z: 0.97842747, w: 0.20659082}
+      length: 198.05354
+      parentId: 5
+      color:
+        serializedVersion: 2
+        rgba: 4278190335
+    - name: BackFlipper_Upper
+      guid: b8f13d105bd74e14380fe27338805eea
+      position: {x: 198.05339, y: 0.000036252663, z: -5}
+      rotation: {x: 0, y: 0, z: 0.2957942, w: 0.9552517}
+      length: 901.26276
+      parentId: 24
+      color:
+        serializedVersion: 2
+        rgba: 4294901760
+    - name: BackFlipper_Lower
+      guid: 10f4e6e0a6b8352459dd456692a34492
+      position: {x: 901.26276, y: -0.000020738327, z: -4}
+      rotation: {x: 0, y: 0, z: 0.10350381, w: 0.9946291}
+      length: 619.2678
+      parentId: 25
+      color:
+        serializedVersion: 2
+        rgba: 4294901888
+    - name: _SkinClamp_FrontFlipper
+      guid: ac23e1b60449de241a7232e01a0db0b9
+      position: {x: 24.810865, y: 45.479404, z: 0}
+      rotation: {x: 0, y: -0, z: 0.8584383, w: 0.5129168}
+      length: 333.23682
+      parentId: 5
+      color:
+        serializedVersion: 2
+        rgba: 4291348680
+    - name: BackLeg_Hip
+      guid: cac04e86bdeaaa04b83a6ccb4700edff
+      position: {x: 580.694, y: 337.2821, z: -3}
+      rotation: {x: 0, y: -0, z: 1, w: -0.00000004371139}
+      length: 493.2096
+      parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 4278190335
+    - name: BackLeg_Ankle
+      guid: 79a5ceafd1b19fe499f54220d4f737db
+      position: {x: 493.20963, y: -0.0006871879, z: -3}
+      rotation: {x: 0, y: 0, z: 0.043619607, w: 0.99904823}
+      length: 264.44916
+      parentId: 28
+      color:
+        serializedVersion: 2
+        rgba: 4294901760
+    - name: BackLeg_FootHeel
+      guid: 2e110ac7679514944a3c05ad43290a79
+      position: {x: 264.4492, y: -0.00023593618, z: 1}
+      rotation: {x: 0, y: 0, z: 0.6755899, w: 0.7372776}
+      length: 359.8243
+      parentId: 29
+      color:
+        serializedVersion: 2
+        rgba: 4286643968
+    - name: BackLeg_FootArch
+      guid: b360329d4ee2df348a44f7bcbbf38749
+      position: {x: 359.82428, y: 0.000018152292, z: 1}
+      rotation: {x: 0, y: 0, z: -0.026176846, w: 0.99965733}
+      length: 389.94882
+      parentId: 30
+      color:
+        serializedVersion: 2
+        rgba: 4294934528
+    - name: FrontLeg_Hip
+      guid: aa5c8078db4567b4bbba43c964ade64b
+      position: {x: 580.6939, y: -17.717844, z: -3}
+      rotation: {x: 0, y: -0, z: -1, w: -0.00000004371139}
+      length: 495.2895
+      parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 4278190335
+    - name: FrontLeg_Ankle
+      guid: f079eabe391baca4887eec9f251c454d
+      position: {x: 495.28952, y: 0.00008160783, z: -3}
+      rotation: {x: 0, y: 0, z: 0.04361995, w: 0.99904823}
+      length: 260.24323
+      parentId: 32
+      color:
+        serializedVersion: 2
+        rgba: 4294901760
+    - name: FrontLeg_FootHeel
+      guid: 447ed7580b720ca43815d63428978339
+      position: {x: 260.24323, y: -0.00019683268, z: 1}
+      rotation: {x: 0, y: 0, z: 0.69462013, w: 0.71937674}
+      length: 423.921
+      parentId: 33
+      color:
+        serializedVersion: 2
+        rgba: 4286643968
+    - name: FrontLeg_FootArch
+      guid: 411f33e0426326f41b93e017c43705f2
+      position: {x: 423.9209, y: -0.000061350554, z: 1}
+      rotation: {x: 0, y: 0, z: 0.052283373, w: -0.9986324}
+      length: 347.61172
+      parentId: 34
+      color:
+        serializedVersion: 2
+        rgba: 4294934528
+    parts:
+    - spritePosition:
+        x: 328
+        y: 1435
+        width: 691
+        height: 2133
+      spriteId: 4f15f5c4c90d21e4b8200e162a904d5a
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 208
+        y: 459
+        width: 1608
+        height: 3499
+      spriteId: ad0d2fd4e4ad6ae489c2d4d5c9cf54a6
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 1341
+        y: 4550
+        width: 185
+        height: 162
+      spriteId: 9fcddf25c315f164fb2a9ef62e58aab7
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 763
+        y: 3687
+        width: 897
+        height: 1105
+      spriteId: 2057354633f3f5a43b28028a898b5c90
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 792
+        y: 208
+        width: 1164
+        height: 1037
+      spriteId: 48cefe563fba9e3479e40e9ebd81da92
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 1334
+        y: 4503
+        width: 958
+        height: 149
+      spriteId: b7c9c054a13bc46498650f11aa02a667
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 1334
+        y: 4312
+        width: 958
+        height: 211
+      spriteId: a0efa1fbe76479648976be77d5727da6
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 425
+        y: 208
+        width: 1165
+        height: 1037
+      spriteId: 995d3c83f0113bd419b592021e3b6a3c
+      bones: 
+      parentGroup: 0
+      order: 0
+    - spritePosition:
+        x: 889
+        y: 1487
+        width: 621
+        height: 1919
+      spriteId: 37c73727a7bd9304e9b273d0fb354522
+      bones: 
+      parentGroup: 0
+      order: 0
     dimension: {x: 0, y: 0}
     characterGroups: []
-    pivot: {x: 0, y: 0}
+    pivot: {x: 0.48, y: 0.04}
     boneReadOnly: 0
   platformSettings:
   - name: DefaultTexturePlatform
@@ -4214,7 +4808,7 @@ ScriptedImporter:
   generatePhysicsShape: 0
   paperDollMode: 0
   keepDupilcateSpriteName: 0
-  skeletonAssetReferenceID: 
+  skeletonAssetReferenceID: f4370d85ede128b4bbf3f3e5f73b7b63
   padding: 4
   spriteSizeExpand: 0
   spriteCategoryList:
@@ -4313,7 +4907,97 @@ ScriptedImporter:
     flatten: 0
     isImported: 1
     isVisible: 1
-  sharedRigPSDLayers: []
+  sharedRigPSDLayers:
+  - name: Flipper_Front
+    spriteName: Flipper_Front
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 4f15f5c4c90d21e4b8200e162a904d5a
+    layerID: 26
+    mosaicPosition: {x: 1620, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Torso_Base
+    spriteName: Torso_Base
+    isGroup: 0
+    parentIndex: -1
+    spriteID: ad0d2fd4e4ad6ae489c2d4d5c9cf54a6
+    layerID: 28
+    mosaicPosition: {x: 4, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Eye_Front
+    spriteName: Eye_Front
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 9fcddf25c315f164fb2a9ef62e58aab7
+    layerID: 29
+    mosaicPosition: {x: 970, y: 3511}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Head_Base
+    spriteName: Head_Base
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 2057354633f3f5a43b28028a898b5c90
+    layerID: 9
+    mosaicPosition: {x: 2319, y: 2094}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Foot_Front
+    spriteName: Foot_Front
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 48cefe563fba9e3479e40e9ebd81da92
+    layerID: 8
+    mosaicPosition: {x: 2319, y: 1049}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Beak_Upper
+    spriteName: Beak_Upper
+    isGroup: 0
+    parentIndex: -1
+    spriteID: b7c9c054a13bc46498650f11aa02a667
+    layerID: 7
+    mosaicPosition: {x: 4, y: 3730}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Beak_Lower
+    spriteName: Beak_Lower
+    isGroup: 0
+    parentIndex: -1
+    spriteID: a0efa1fbe76479648976be77d5727da6
+    layerID: 6
+    mosaicPosition: {x: 4, y: 3511}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Foot_Back
+    spriteName: Foot_Back
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 995d3c83f0113bd419b592021e3b6a3c
+    layerID: 5
+    mosaicPosition: {x: 2319, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Flipper_Back
+    spriteName: Flipper_Back
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 37c73727a7bd9304e9b273d0fb354522
+    layerID: 4
+    mosaicPosition: {x: 1620, y: 2145}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   pSDLayerImportSetting: []
   importFileNodeState: 1
   platformSettingsDirtyTick: 638142298117450580
