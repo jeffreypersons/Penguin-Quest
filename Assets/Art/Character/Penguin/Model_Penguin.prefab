@@ -10,11 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8653719598885068355, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
       propertyPath: m_Name
-      value: Model_Penguin Variant
+      value: Model_Penguin
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
       propertyPath: m_LocalPosition.x
@@ -59,5 +59,45 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -8653719598885068355, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1290102175939552292}
+    - targetCorrespondingSourceObject: {fileID: -8653719598885068355, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3731093923496165180}
   m_SourcePrefab: {fileID: 4843985084834002234, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+--- !u!1 &6791016545395270942 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8653719598885068355, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1290102175939552292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6791016545395270942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c29cff538c195c249b69c6f2236de67b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Library: []
+  m_SpriteLibraryAsset: {fileID: 0}
+--- !u!114 &3731093923496165180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6791016545395270942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097b551f2844b054290f18a39bf892e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Solvers: []
+  m_Weight: 1
+  m_SolverEditorData: []
