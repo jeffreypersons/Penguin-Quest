@@ -84,7 +84,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c29cff538c195c249b69c6f2236de67b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Library: []
+  m_Library:
+  - m_Name: Head
+    m_Hash: 0
+    m_CategoryList:
+    - m_Name: Base
+      m_Hash: 0
+      m_Sprite: {fileID: -5407695388569513958, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+    - m_Name: Eye
+      m_Hash: 0
+      m_Sprite: {fileID: 508705170520985841, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  - m_Name: Beak
+    m_Hash: 0
+    m_CategoryList:
+    - m_Name: Lower
+      m_Hash: 0
+      m_Sprite: {fileID: 7457542930166355958, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+    - m_Name: Upper
+      m_Hash: 0
+      m_Sprite: {fileID: 5429812670773508631, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  - m_Name: Torso
+    m_Hash: 0
+    m_CategoryList:
+    - m_Name: Base
+      m_Hash: 0
+      m_Sprite: {fileID: -7593622684026564538, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  - m_Name: Flipper
+    m_Hash: 0
+    m_CategoryList:
+    - m_Name: Front
+      m_Hash: 0
+      m_Sprite: {fileID: 7584227226123720531, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+    - m_Name: Back
+      m_Hash: 0
+      m_Sprite: {fileID: -7876641360801294555, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  - m_Name: Feet
+    m_Hash: 0
+    m_CategoryList:
+    - m_Name: Front
+      m_Hash: 0
+      m_Sprite: {fileID: -8929364221554076162, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+    - m_Name: Back
+      m_Hash: 0
+      m_Sprite: {fileID: 1837710407979066550, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
   m_SpriteLibraryAsset: {fileID: 0}
 --- !u!114 &3731093923496165180
 MonoBehaviour:
