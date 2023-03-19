@@ -49,8 +49,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1532958990653242465}
+    m_TargetTransform: {fileID: 1387983394548717024}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -169,8 +169,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 4683583938175106672}
+    m_TargetTransform: {fileID: 4771502033537071280}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -391,6 +391,37 @@ Transform:
   m_Father: {fileID: 2937814112319572918}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2536159580233503730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1337498153389967783}
+  m_Layer: 0
+  m_Name: IK_Effector__Tail
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1337498153389967783
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2536159580233503730}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1697646509851211852}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2966853877478723792
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,8 +471,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 3435937505285826451}
+    m_TargetTransform: {fileID: 951947288877864225}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -560,8 +591,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1337498153389967783}
+    m_TargetTransform: {fileID: 6546720747890205868}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -649,8 +680,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1906056448221388415}
+    m_TargetTransform: {fileID: 7701308981767101274}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -862,8 +893,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 210492215761559990}
+    m_TargetTransform: {fileID: 4219382898857511504}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -1152,7 +1183,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8488038341032302888}
   m_Layer: 0
-  m_Name: IK_Effector__LowerEye
+  m_Name: IK_Effector__Eye_Lower
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1253,8 +1284,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 3709416228382431952}
+    m_TargetTransform: {fileID: 4771502033537071280}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -1404,8 +1435,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1334351829630194243}
+    m_TargetTransform: {fileID: 5060944566240922601}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -1454,7 +1485,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3435937505285826451}
   m_Layer: 0
-  m_Name: IK_Effector__UpperEye
+  m_Name: IK_Effector__Eye_Upper
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1524,8 +1555,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 1620888120635347138}
+    m_TargetTransform: {fileID: 2687399030477624747}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -1644,8 +1675,8 @@ MonoBehaviour:
   m_SolveFromDefaultPose: 1
   m_Weight: 0.25
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
+    m_EffectorTransform: {fileID: 8488038341032302888}
+    m_TargetTransform: {fileID: 8234829842132779276}
     m_TransformCount: 0
     m_Transforms: []
     m_DefaultLocalRotations: []
@@ -2053,6 +2084,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6113673436286858103, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7572108585095544450}
+    - targetCorrespondingSourceObject: {fileID: -3578665367580984081, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1337498153389967783}
     - targetCorrespondingSourceObject: {fileID: 4425851156576799599, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1532958990653242465}
@@ -2091,6 +2125,11 @@ Transform:
 --- !u!4 &1005705013854648677 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6065712283456765382, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1697646509851211852 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3578665367580984081, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
   m_PrefabInstance: {fileID: 6474283242803119267}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1824644188526834331 stripped
