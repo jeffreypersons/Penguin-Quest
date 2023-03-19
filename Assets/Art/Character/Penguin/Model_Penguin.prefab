@@ -129,7 +129,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2937814112319572918}
-  - component: {fileID: 102629741900994456}
+  - component: {fileID: 5871089289703156389}
   m_Layer: 0
   m_Name: IK_Solver__UpperBody
   m_TagString: IkSolver
@@ -153,7 +153,7 @@ Transform:
   m_Father: {fileID: 5689893807414230397}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &102629741900994456
+--- !u!114 &5871089289703156389
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1213,7 +1213,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5055015350392303281}
-  - component: {fileID: 7283126009460791948}
+  - component: {fileID: 3778812142841007327}
   m_Layer: 0
   m_Name: IK_Solver__LowerBody
   m_TagString: IkSolver
@@ -1237,7 +1237,7 @@ Transform:
   m_Father: {fileID: 5689893807414230397}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7283126009460791948
+--- !u!114 &3778812142841007327
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2071,7 +2071,7 @@ PrefabInstance:
       addedObject: {fileID: 1290102175939552292}
     - targetCorrespondingSourceObject: {fileID: -8653719598885068355, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3731093923496165180}
+      addedObject: {fileID: 229446553694465401}
   m_SourcePrefab: {fileID: 4843985084834002234, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
 --- !u!4 &312829226306316192 stripped
 Transform:
@@ -2179,7 +2179,7 @@ MonoBehaviour:
       m_Hash: 0
       m_Sprite: {fileID: 1837710407979066550, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
   m_SpriteLibraryAsset: {fileID: 0}
---- !u!114 &3731093923496165180
+--- !u!114 &229446553694465401
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2192,10 +2192,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Solvers:
-  - {fileID: 102629741900994456}
+  - {fileID: 5871089289703156389}
+  - {fileID: 6636607285568470125}
+  - {fileID: 3778812142841007327}
+  - {fileID: 2181400869719074746}
+  - {fileID: 716406703224942940}
+  - {fileID: 4701602633855953959}
+  - {fileID: 2767517921707592518}
+  - {fileID: 2442307849132297548}
+  - {fileID: 8104457382872936100}
+  - {fileID: 4303806631106944005}
+  - {fileID: 990572189754237919}
+  - {fileID: 6646795633499221120}
+  - {fileID: 8637240405976231494}
   m_Weight: 1
   m_SolverEditorData:
   - color: {r: 0, g: 1, b: 0, a: 1}
+    showGizmo: 1
+  - color: {r: 0, g: 0.5882353, b: 0, a: 1}
+    showGizmo: 1
+  - color: {r: 0, g: 0.3921569, b: 0, a: 1}
+    showGizmo: 1
+  - color: {r: 0.9803922, g: 0.6862745, b: 0, a: 1}
+    showGizmo: 1
+  - color: {r: 0.9803922, g: 0.29411766, b: 0, a: 1}
+    showGizmo: 1
+  - color: {r: 0, g: 0.882353, b: 0.9803922, a: 1}
+    showGizmo: 1
+  - color: {r: 0, g: 0.4901961, b: 0.9803922, a: 1}
+    showGizmo: 1
+  - color: {r: 0, g: 0.29411766, b: 0, a: 1}
+    showGizmo: 1
+  - color: {r: 0.5882353, g: 0, b: 0.7843138, a: 1}
+    showGizmo: 1
+  - color: {r: 0.29411766, g: 0, b: 0.4901961, a: 1}
+    showGizmo: 1
+  - color: {r: 0.9803922, g: 0.94117653, b: 0.5882353, a: 1}
+    showGizmo: 1
+  - color: {r: 0.9803922, g: 0.19607845, b: 0.19607845, a: 1}
+    showGizmo: 1
+  - color: {r: 0.9803922, g: 0.94117653, b: 0, a: 1}
     showGizmo: 1
 --- !u!4 &6911422681722776449 stripped
 Transform:
