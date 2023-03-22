@@ -143,7 +143,7 @@ GameObject:
   - component: {fileID: 2937814112319572918}
   - component: {fileID: 5871089289703156389}
   m_Layer: 0
-  m_Name: IK_Solver__UpperBody
+  m_Name: IK_Solver__Torso_Upper
   m_TagString: IkSolver
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Weight: 0.25
   m_Chain:
     m_EffectorTransform: {fileID: 4683583938175106672}
-    m_TargetTransform: {fileID: 4771502033537071280}
+    m_TargetTransform: {fileID: 8834903266337635519}
     m_TransformCount: 5
     m_Transforms:
     - {fileID: 312829226306316192}
@@ -412,7 +412,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8834903266337635519}
   m_Layer: 0
-  m_Name: IK_Target__UpperBody
+  m_Name: IK_Target__Torso_Upper
   m_TagString: IkTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -835,7 +835,7 @@ GameObject:
   - component: {fileID: 4189280789360473162}
   - component: {fileID: 4303806631106944005}
   m_Layer: 0
-  m_Name: IK_Solver__LowerBeak
+  m_Name: IK_Solver__Beak_Lower
   m_TagString: IkSolver
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -898,7 +898,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3709416228382431952}
   m_Layer: 0
-  m_Name: IK_Effector__LowerBody
+  m_Name: IK_Effector__Torso_Lower
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -929,7 +929,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7701308981767101274}
   m_Layer: 0
-  m_Name: IK_Target__LowerBeak
+  m_Name: IK_Target__Beak_Lower
   m_TagString: IkTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -991,7 +991,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5060944566240922601}
   m_Layer: 0
-  m_Name: IK_Target__UpperBeak
+  m_Name: IK_Target__Beak_Upper
   m_TagString: IkTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1022,7 +1022,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1334351829630194243}
   m_Layer: 0
-  m_Name: IK_Effector__UpperBeak
+  m_Name: IK_Effector__Beak_Upper
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1123,7 +1123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4683583938175106672}
   m_Layer: 0
-  m_Name: IK_Effector__UpperBody
+  m_Name: IK_Effector__Torso_Upper
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1517,7 +1517,7 @@ GameObject:
   - component: {fileID: 5055015350392303281}
   - component: {fileID: 3778812142841007327}
   m_Layer: 0
-  m_Name: IK_Solver__LowerBody
+  m_Name: IK_Solver__Torso_Lower
   m_TagString: IkSolver
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1713,7 +1713,7 @@ GameObject:
   - component: {fileID: 3480387313506350064}
   - component: {fileID: 8104457382872936100}
   m_Layer: 0
-  m_Name: IK_Solver__UpperBeak
+  m_Name: IK_Solver__Beak_Upper
   m_TagString: IkSolver
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1776,7 +1776,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4771502033537071280}
   m_Layer: 0
-  m_Name: IK_Target__LowerBody
+  m_Name: IK_Target__Torso_Lower
   m_TagString: IkTarget
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2064,7 +2064,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1906056448221388415}
   m_Layer: 0
-  m_Name: IK_Effector__LowerBeak
+  m_Name: IK_Effector__Beak_Lower
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
