@@ -47,18 +47,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
   m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_Weight: 1
   m_Chain:
     m_EffectorTransform: {fileID: 1532958990653242465}
     m_TargetTransform: {fileID: 1387983394548717024}
-    m_TransformCount: 2
+    m_TransformCount: 4
     m_Transforms:
+    - {fileID: 9046267369375803317}
+    - {fileID: 7256018506004058060}
     - {fileID: 1243763753598985663}
     - {fileID: 1532958990653242465}
     m_DefaultLocalRotations:
+    - {x: 0, y: -0, z: 1, w: -0.00000004371139}
+    - {x: 0, y: 0, z: 0.043619607, w: 0.99904823}
     - {x: 0, y: 0, z: 0.6755899, w: 0.7372777}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 15
@@ -177,14 +183,23 @@ MonoBehaviour:
   m_Chain:
     m_EffectorTransform: {fileID: 4683583938175106672}
     m_TargetTransform: {fileID: 4771502033537071280}
-    m_TransformCount: 2
+    m_TransformCount: 5
     m_Transforms:
+    - {fileID: 312829226306316192}
+    - {fileID: 1714979792655268879}
+    - {fileID: 3464876481017351662}
     - {fileID: 940678504897081857}
     - {fileID: 4683583938175106672}
     m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0.013375476, w: 0.99991053}
+    - {x: 0, y: 0, z: -0.03127669, w: 0.99951077}
+    - {x: 0, y: 0, z: 0.0048398995, w: 0.9999883}
     - {x: 0, y: 0, z: -0.18036392, w: 0.98359996}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 15
@@ -267,15 +282,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
-  m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_SolveFromDefaultPose: 0
+  m_Weight: 0.5
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
-    m_TransformCount: 2
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_EffectorTransform: {fileID: 3199409537120316779}
+    m_TargetTransform: {fileID: 1055000248523515919}
+    m_TransformCount: 5
+    m_Transforms:
+    - {fileID: 5543811910245152156}
+    - {fileID: 5571138842882104772}
+    - {fileID: 8445657544342422321}
+    - {fileID: 1005705013854648677}
+    - {fileID: 3199409537120316779}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0.16508937, w: 0.98627865}
+    - {x: 0, y: 0, z: -0.06931789, w: 0.99759465}
+    - {x: 0, y: 0, z: 0.14341532, w: 0.9896626}
+    - {x: 0, y: 0, z: -0.43886414, w: 0.89855343}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -289,7 +319,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6147713950649319694}
   m_Layer: 0
-  m_Name: IK_Effector__FrontFlipper_Tip
+  m_Name: IK_Effector__FrontFlipper
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -351,7 +381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3199409537120316779}
   m_Layer: 0
-  m_Name: IK_Effector__Beak_Tip
+  m_Name: IK_Effector__Head
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -479,9 +509,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef93bb9fe9d240e418a7fb8b476f3d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ConstrainRotation: 1
-  m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_ConstrainRotation: 0
+  m_SolveFromDefaultPose: 0
+  m_Weight: 0.5
   m_Chain:
     m_EffectorTransform: {fileID: 3435937505285826451}
     m_TargetTransform: {fileID: 951947288877864225}
@@ -642,7 +672,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7572108585095544450}
   m_Layer: 0
-  m_Name: IK_Effector__BackFlipper_Tip
+  m_Name: IK_Effector__BackFlipper
   m_TagString: IkEffector
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -841,7 +871,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
   m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_Weight: 1
   m_Chain:
     m_EffectorTransform: {fileID: 1906056448221388415}
     m_TargetTransform: {fileID: 7701308981767101274}
@@ -1060,18 +1090,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
   m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_Weight: 1
   m_Chain:
     m_EffectorTransform: {fileID: 210492215761559990}
     m_TargetTransform: {fileID: 4219382898857511504}
-    m_TransformCount: 2
+    m_TransformCount: 4
     m_Transforms:
+    - {fileID: 8338741188036071478}
+    - {fileID: 8486976130320532540}
     - {fileID: 2620209717344933600}
     - {fileID: 210492215761559990}
     m_DefaultLocalRotations:
+    - {x: 0, y: -0, z: -1, w: -0.00000004371139}
+    - {x: 0, y: 0, z: 0.04361995, w: 0.99904823}
     - {x: 0, y: 0, z: 0.6946202, w: 0.7193767}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 15
@@ -1313,16 +1349,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef93bb9fe9d240e418a7fb8b476f3d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ConstrainRotation: 1
+  m_ConstrainRotation: 0
   m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
-    m_TransformCount: 2
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_EffectorTransform: {fileID: 6147713950649319694}
+    m_TargetTransform: {fileID: 3096581913593945738}
+    m_TransformCount: 4
+    m_Transforms:
+    - {fileID: 4183570054856098572}
+    - {fileID: 3897343877971761725}
+    - {fileID: 4210547933476146192}
+    - {fileID: 6147713950649319694}
+    m_DefaultLocalRotations:
+    - {x: 0, y: -0, z: 0.9862213, w: 0.16543132}
+    - {x: 0, y: 0, z: 0.25664315, w: 0.96650624}
+    - {x: 0, y: 0, z: 0.11447661, w: 0.99342597}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -1371,16 +1419,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef93bb9fe9d240e418a7fb8b476f3d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ConstrainRotation: 1
+  m_ConstrainRotation: 0
   m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_Weight: 1
   m_Chain:
-    m_EffectorTransform: {fileID: 0}
-    m_TargetTransform: {fileID: 0}
-    m_TransformCount: 2
-    m_Transforms: []
-    m_DefaultLocalRotations: []
-    m_StoredLocalRotations: []
+    m_EffectorTransform: {fileID: 7572108585095544450}
+    m_TargetTransform: {fileID: 3463418738342357809}
+    m_TransformCount: 4
+    m_Transforms:
+    - {fileID: 5016298490465401742}
+    - {fileID: 937144374277830612}
+    - {fileID: 6170811392962135835}
+    - {fileID: 7572108585095544450}
+    m_DefaultLocalRotations:
+    - {x: 0, y: -0, z: 0.97842747, w: 0.20659083}
+    - {x: 0, y: 0, z: 0.29579416, w: 0.9552517}
+    - {x: 0, y: 0, z: 0.10350386, w: 0.9946291}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
+    - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -1492,19 +1552,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
-  m_SolveFromDefaultPose: 1
+  m_SolveFromDefaultPose: 0
   m_Weight: 0.25
   m_Chain:
     m_EffectorTransform: {fileID: 3709416228382431952}
     m_TargetTransform: {fileID: 4771502033537071280}
-    m_TransformCount: 2
+    m_TransformCount: 3
     m_Transforms:
     - {fileID: 312829226306316192}
+    - {fileID: 1714979792655268879}
     - {fileID: 3709416228382431952}
     m_DefaultLocalRotations:
     - {x: 0, y: 0, z: 0.013375476, w: 0.99991053}
+    - {x: 0, y: 0, z: -0.03127669, w: 0.99951077}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
   m_Iterations: 15
@@ -1686,7 +1749,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ConstrainRotation: 1
   m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_Weight: 1
   m_Chain:
     m_EffectorTransform: {fileID: 1334351829630194243}
     m_TargetTransform: {fileID: 5060944566240922601}
@@ -1810,9 +1873,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef93bb9fe9d240e418a7fb8b476f3d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ConstrainRotation: 1
-  m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_ConstrainRotation: 0
+  m_SolveFromDefaultPose: 0
+  m_Weight: 0.5
   m_Chain:
     m_EffectorTransform: {fileID: 1620888120635347138}
     m_TargetTransform: {fileID: 2687399030477624747}
@@ -1972,9 +2035,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef93bb9fe9d240e418a7fb8b476f3d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ConstrainRotation: 1
-  m_SolveFromDefaultPose: 1
-  m_Weight: 0.25
+  m_ConstrainRotation: 0
+  m_SolveFromDefaultPose: 0
+  m_Weight: 0.5
   m_Chain:
     m_EffectorTransform: {fileID: 8488038341032302888}
     m_TargetTransform: {fileID: 8234829842132779276}
@@ -2474,6 +2537,11 @@ MonoBehaviour:
   m_labelHash: 0
   m_SpriteKey: 0
   m_SpriteHash: 206308710
+--- !u!4 &937144374277830612 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6113673436286858103, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &940678504897081857 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3110667570555439454, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
@@ -2551,6 +2619,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9044807587753906755, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
   m_PrefabInstance: {fileID: 6474283242803119267}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &3464876481017351662 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7623732718407141709, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3897343877971761725 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -1166604011038073186, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
@@ -2580,6 +2653,11 @@ MonoBehaviour:
 --- !u!4 &4087483949054134358 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2206501376271266571, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4183570054856098572 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7194008382836279215, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
   m_PrefabInstance: {fileID: 6474283242803119267}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &4210547933476146192 stripped
@@ -2629,6 +2707,21 @@ MonoBehaviour:
   m_labelHash: 0
   m_SpriteKey: 0
   m_SpriteHash: 889956509
+--- !u!4 &5016298490465401742 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2036821826328330029, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5543811910245152156 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1528644151752962367, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5571138842882104772 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1479976788239391079, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5689893807414230397 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7552582706839291426, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
@@ -2801,6 +2894,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 446709588732063522, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
   m_PrefabInstance: {fileID: 6474283242803119267}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &7256018506004058060 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4425851156576799599, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7493402224153831813 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4477897244368235814, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
@@ -2809,6 +2907,21 @@ Transform:
 --- !u!4 &8263115901933562085 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3131473353956322374, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8338741188036071478 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6169809853670468459, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8445657544342422321 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5986332268716914798, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8486976130320532540 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3179134094675198111, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
   m_PrefabInstance: {fileID: 6474283242803119267}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8788782584902594248 stripped
@@ -2832,3 +2945,8 @@ MonoBehaviour:
   m_labelHash: 0
   m_SpriteKey: 0
   m_SpriteHash: 782597789
+--- !u!4 &9046267369375803317 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2617588025702572822, guid: 29ea2995aa2f79443a302434c30d4599, type: 3}
+  m_PrefabInstance: {fileID: 6474283242803119267}
+  m_PrefabAsset: {fileID: 0}
