@@ -9,6 +9,7 @@
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -34,6 +35,72 @@
      id="title2">Model_Penguin_Original_Source-svg</title>
   <defs
      id="defs42">
+    <linearGradient
+       id="linearGradient1082"
+       x1="451.79999"
+       y1="164.60001"
+       x2="457.89999"
+       y2="122.3"
+       gradientUnits="userSpaceOnUse"
+       spreadMethod="pad">
+      <stop
+         offset="0"
+         stop-color="#8c8c8c"
+         id="stop1078" />
+      <stop
+         offset="1"
+         stop-color="#bebebe"
+         id="stop1080" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient1076"
+       x1="451.79999"
+       y1="164.60001"
+       x2="457.89999"
+       y2="122.3"
+       gradientUnits="userSpaceOnUse"
+       spreadMethod="pad">
+      <stop
+         offset="0"
+         stop-color="#8c8c8c"
+         id="stop1072" />
+      <stop
+         offset="1"
+         stop-color="#bebebe"
+         id="stop1074" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient1070"
+       x1="451.79999"
+       y1="164.60001"
+       x2="457.89999"
+       y2="122.3"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#8c8c8c"
+         id="stop1066" />
+      <stop
+         offset="1"
+         stop-color="#bebebe"
+         id="stop1068" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient1016"
+       x1="451.79999"
+       y1="164.60001"
+       x2="457.89999"
+       y2="122.3"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#8c8c8c"
+         id="stop1012" />
+      <stop
+         offset="1"
+         stop-color="#bebebe"
+         id="stop1014" />
+    </linearGradient>
     <radialGradient
        id="g1"
        cx="158.89999"
@@ -55,7 +122,8 @@
        y1="164.60001"
        x2="457.89999"
        y2="122.3"
-       gradientUnits="userSpaceOnUse">
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient1082">
       <stop
          offset="0"
          stop-color="#8c8c8c"
@@ -149,6 +217,15 @@
          stop-color="#8c8c8c"
          id="stop39" />
     </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#g2"
+       id="linearGradient2490"
+       gradientUnits="userSpaceOnUse"
+       x1="446.74609"
+       y1="163.9241"
+       x2="446.74609"
+       y2="122.02691" />
   </defs>
   <style
      id="style44">
@@ -249,4 +326,11 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <path
+     id="path824"
+     style="display:inline;fill-opacity:1;fill:url(#linearGradient2490)"
+     class="s2"
+     d="m 313.63476,170.57169 250.01581,0 V 110.5719 l -250.01581,0 z"
+     transform="matrix(0.99993675,0,0,1.0000036,136.38508,89.427697)"
+     sodipodi:nodetypes="ccccc" />
 </svg>
