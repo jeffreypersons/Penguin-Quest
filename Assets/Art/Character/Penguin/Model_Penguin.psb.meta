@@ -3056,16 +3056,16 @@ ScriptedImporter:
     - name: Torso_Lower
       guid: 9065b8b0b53a30a47bc41634a10c0ffe
       position: {x: 20, y: -0.000016927715, z: 0}
-      rotation: {x: 0, y: 0, z: 0.021814754, w: 0.99976206}
-      length: 123.17469
+      rotation: {x: 0, y: 0, z: 0.021814073, w: 0.99976206}
+      length: 123.17468
       parentId: 1
       color:
         serializedVersion: 2
         rgba: 4278255360
     - name: Torso_Middle
       guid: 4ecb88670a282a540b57353193b0c718
-      position: {x: 123.17469, y: -0.000110205976, z: 0}
-      rotation: {x: 0, y: 0, z: -0.04797814, w: 0.9988484}
+      position: {x: 123.17468, y: 0.000031044736, z: 0}
+      rotation: {x: 0, y: 0, z: -0.047977515, w: 0.99884844}
       length: 272.51453
       parentId: 2
       color:
@@ -3073,67 +3073,94 @@ ScriptedImporter:
         rgba: 4294967040
     - name: Torso_Upper
       guid: 9a2c5de1609da5b4dab87f6e6f8e9b79
-      position: {x: 272.51453, y: -0.000043936932, z: 0}
+      position: {x: 272.51456, y: -0.00004342802, z: 0}
       rotation: {x: 0, y: 0, z: -0.011887919, w: 0.99992937}
-      length: 298.67093
+      length: 298.671
       parentId: 3
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: Torso_Shoulders
       guid: cbd2ce4ad8bdbfc4cb690322b1144730
-      position: {x: 298.671, y: 0.000017502618, z: 0}
-      rotation: {x: 0, y: 0, z: -0.13604166, w: 0.9907031}
-      length: 58.575104
+      position: {x: 298.67105, y: 0.00006023102, z: 0}
+      rotation: {x: 0, y: 0, z: -0.13604143, w: 0.99070317}
+      length: 58.57511
       parentId: 4
       color:
         serializedVersion: 2
         rgba: 4294902015
     - name: Neck_Pivot
       guid: c57fa391246e0564ab0143f8c8270632
-      position: {x: 58.575104, y: 0.00002292576, z: -3}
-      rotation: {x: 0, y: 0, z: 0.17364825, w: 0.9848077}
-      length: 15.529968
+      position: {x: 58.575157, y: 0.0000125991755, z: -3}
+      rotation: {x: 0, y: 0, z: 0.1736481, w: 0.9848078}
+      length: 15.529966
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4279505940
     - name: Neck_Lower
       guid: d790986524e589b46ac2522cd5a1ee67
-      position: {x: 15.5299425, y: -0.0000037322884, z: 2}
-      rotation: {x: 0, y: 0, z: -0.08258867, w: 0.99658376}
-      length: 87.146286
+      position: {x: 15.529958, y: 0.0000018278159, z: 2}
+      rotation: {x: 0, y: 0, z: -0.08258849, w: 0.99658376}
+      length: 87.14634
       parentId: 6
       color:
         serializedVersion: 2
         rgba: 4278255488
     - name: Neck_Middle
       guid: 49e7bd08f57b6184487186718ce87272
-      position: {x: 87.14631, y: 0.0000358521, z: 2}
-      rotation: {x: 0, y: 0, z: 0.16949418, w: 0.9855312}
-      length: 72.87282
+      position: {x: 87.1463, y: 0.000011759508, z: 2}
+      rotation: {x: 0, y: 0, z: 0.16949445, w: 0.98553115}
+      length: 72.872826
       parentId: 7
       color:
         serializedVersion: 2
         rgba: 4286643968
     - name: Neck_Upper
       guid: 4db4729467f12534b9c6a0cbb68f3345
-      position: {x: 72.87283, y: 0.000058392972, z: 2}
-      rotation: {x: 0, y: 0, z: -0.41577205, w: 0.9094689}
-      length: 30.818684
+      position: {x: 72.872826, y: -0.000011535829, z: 2}
+      rotation: {x: 0, y: 0, z: -0.4157729, w: 0.9094685}
+      length: 30.818546
       parentId: 8
       color:
         serializedVersion: 2
         rgba: 4294934528
     - name: Head_Center
       guid: 8bac9ca65b758ef40aefb0e10c589103
-      position: {x: 30.818592, y: 0.00001496472, z: 2}
-      rotation: {x: 0, y: 0, z: -0.50163215, w: 0.865081}
+      position: {x: 30.81854, y: -0.0000017793682, z: 2}
+      rotation: {x: 0, y: 0, z: -0.50163186, w: 0.8650812}
       length: 46.203938
       parentId: 9
       color:
         serializedVersion: 2
         rgba: 4294901888
+    - name: Head_Center
+      guid: d05ff8925d19d3d4fa38251f867a9cc8
+      position: {x: 37.447575, y: 31.16224, z: 4}
+      rotation: {x: 0, y: 0, z: 0.08115517, w: 0.99670154}
+      length: 5.4010115
+      parentId: 10
+      color:
+        serializedVersion: 2
+        rgba: 4278190335
+    - name: Eye_Upper
+      guid: 808ed57d815ac2249a166e270eb3e44f
+      position: {x: -10.6390915, y: 5.65972, z: 2}
+      rotation: {x: 0, y: 0, z: 0.030762557, w: -0.99952674}
+      length: 24.619127
+      parentId: 11
+      color:
+        serializedVersion: 2
+        rgba: 4278255488
+    - name: Eye_Lower
+      guid: 65cf724dbe2837843a5fd144edb61371
+      position: {x: -10.0364, y: -6.2268734, z: 2}
+      rotation: {x: 0, y: 0, z: 0.022523211, w: 0.9997463}
+      length: 24.105728
+      parentId: 11
+      color:
+        serializedVersion: 2
+        rgba: 4286643968
     parts:
     - spritePosition:
         x: 358
