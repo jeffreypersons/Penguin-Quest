@@ -3039,7 +3039,7 @@ ScriptedImporter:
       guid: fcd5d66069ab900429203d841778ff98
       position: {x: 570, y: 46, z: 0}
       rotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-      length: 31.61997
+      length: 31.619968
       parentId: -1
       color:
         serializedVersion: 2
@@ -3047,12 +3047,21 @@ ScriptedImporter:
     - name: Torso_Pivot
       guid: 900e57980dd09384aab6943d8330057c
       position: {x: 71, y: 62.999985, z: 0}
-      rotation: {x: 0, y: 0, z: 0, w: 1}
-      length: 20.129702
+      rotation: {x: 0, y: 0, z: -0, w: 1}
+      length: 20.129698
       parentId: 0
       color:
         serializedVersion: 2
         rgba: 4279505940
+    - name: Torso_Lower
+      guid: 9065b8b0b53a30a47bc41634a10c0ffe
+      position: {x: 20, y: -0.000016927715, z: 0}
+      rotation: {x: 0, y: 0, z: 0.021814873, w: 0.99976206}
+      length: 123.1747
+      parentId: 1
+      color:
+        serializedVersion: 2
+        rgba: 4278255360
     parts:
     - spritePosition:
         x: 358
