@@ -3056,12 +3056,21 @@ ScriptedImporter:
     - name: Torso_Lower
       guid: 9065b8b0b53a30a47bc41634a10c0ffe
       position: {x: 20, y: -0.000016927715, z: 0}
-      rotation: {x: 0, y: 0, z: 0.021814873, w: 0.99976206}
+      rotation: {x: 0, y: 0, z: 0.021814754, w: 0.99976206}
       length: 123.17469
       parentId: 1
       color:
         serializedVersion: 2
         rgba: 4278255360
+    - name: Torso_Middle
+      guid: db071a858d3bc8944b92f39337916f92
+      position: {x: 123.17469, y: -0.000018740391, z: 0}
+      rotation: {x: 0, y: 0, z: -0.039067376, w: 0.99923664}
+      length: 210.02669
+      parentId: 2
+      color:
+        serializedVersion: 2
+        rgba: 4294967040
     parts:
     - spritePosition:
         x: 358
