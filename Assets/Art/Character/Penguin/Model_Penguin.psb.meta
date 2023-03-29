@@ -3038,12 +3038,21 @@ ScriptedImporter:
     - name: SkeletonRoot
       guid: fcd5d66069ab900429203d841778ff98
       position: {x: 570, y: 46, z: 0}
-      rotation: {x: 0, y: 0, z: 0.7042917, w: 0.7099107}
-      length: 34.50238
+      rotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+      length: 31.61997
       parentId: -1
       color:
         serializedVersion: 2
         rgba: 4293658604
+    - name: Torso_Pivot
+      guid: 900e57980dd09384aab6943d8330057c
+      position: {x: 71, y: 62.999985, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      length: 20.129702
+      parentId: 0
+      color:
+        serializedVersion: 2
+        rgba: 4279505940
     parts:
     - spritePosition:
         x: 358
@@ -3128,7 +3137,7 @@ ScriptedImporter:
       order: 0
     dimension: {x: 0, y: 0}
     characterGroups: []
-    pivot: {x: 0.5, y: 0}
+    pivot: {x: 0.475, y: 0.025}
     boneReadOnly: 0
   sharedRigSpriteImportData: []
   sharedRigCharacterData:
@@ -3196,8 +3205,8 @@ ScriptedImporter:
     androidETC2FallbackOverride: 0
   mosaicLayers: 1
   characterMode: 1
-  documentPivot: {x: 0.5, y: 0}
-  documentAlignment: 7
+  documentPivot: {x: 0.475, y: 0.025}
+  documentAlignment: 9
   importHiddenLayers: 0
   layerMappingOption: 1
   generatePhysicsShape: 0
