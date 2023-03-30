@@ -3064,7 +3064,7 @@ ScriptedImporter:
         rgba: 4278255360
     - name: Torso_Middle
       guid: 4ecb88670a282a540b57353193b0c718
-      position: {x: 123.17468, y: -0.000029932326, z: 0}
+      position: {x: 123.17468, y: -0.00009090939, z: 0}
       rotation: {x: 0, y: 0, z: -0.047977515, w: 0.99884844}
       length: 272.51453
       parentId: 2
@@ -3073,53 +3073,53 @@ ScriptedImporter:
         rgba: 4294967040
     - name: Torso_Upper
       guid: 9a2c5de1609da5b4dab87f6e6f8e9b79
-      position: {x: 272.51453, y: -0.000104295876, z: 0}
+      position: {x: 272.51453, y: -0.00016516373, z: 0}
       rotation: {x: 0, y: 0, z: -0.011887919, w: 0.99992937}
-      length: 298.6711
+      length: 298.67117
       parentId: 3
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: Torso_Shoulders
       guid: cbd2ce4ad8bdbfc4cb690322b1144730
-      position: {x: 298.6712, y: 0.000069869704, z: 0}
-      rotation: {x: 0, y: 0, z: -0.13604134, w: 0.99070317}
-      length: 58.57517
+      position: {x: 298.6712, y: 0.00007486587, z: 0}
+      rotation: {x: 0, y: 0, z: -0.13604112, w: 0.9907032}
+      length: 58.575222
       parentId: 4
       color:
         serializedVersion: 2
         rgba: 4294902015
     - name: Neck_Pivot
       guid: c57fa391246e0564ab0143f8c8270632
-      position: {x: 58.57521, y: 0.000013100576, z: -3}
-      rotation: {x: 0, y: 0, z: 0.17364801, w: 0.9848078}
-      length: 15.529966
+      position: {x: 58.575233, y: -0.0000047762514, z: -3}
+      rotation: {x: 0, y: 0, z: 0.17364776, w: 0.98480785}
+      length: 15.530027
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4279505940
     - name: Neck_Lower
       guid: d790986524e589b46ac2522cd5a1ee67
-      position: {x: 15.529958, y: 0.0000018278614, z: 2}
+      position: {x: 15.530034, y: 0.000027048602, z: 2}
       rotation: {x: 0, y: 0, z: -0.08258867, w: 0.99658376}
-      length: 87.14621
+      length: 87.14609
       parentId: 6
       color:
         serializedVersion: 2
         rgba: 4278255488
     - name: Neck_Middle
       guid: 49e7bd08f57b6184487186718ce87272
-      position: {x: 87.14616, y: 0.000024773784, z: 2}
-      rotation: {x: 0, y: 0, z: 0.1694947, w: 0.9855311}
-      length: 72.87276
+      position: {x: 87.14606, y: -0.000021555996, z: 2}
+      rotation: {x: 0, y: 0, z: 0.16949463, w: 0.98553115}
+      length: 72.872826
       parentId: 7
       color:
         serializedVersion: 2
         rgba: 4286643968
     - name: Neck_Upper
       guid: 4db4729467f12534b9c6a0cbb68f3345
-      position: {x: 72.87273, y: -0.000045293003, z: 2}
-      rotation: {x: 0, y: 0, z: -0.4157741, w: 0.90946794}
+      position: {x: 72.87279, y: -0.000007795536, z: 2}
+      rotation: {x: 0, y: 0, z: -0.415774, w: 0.909468}
       length: 30.818453
       parentId: 8
       color:
@@ -3127,8 +3127,8 @@ ScriptedImporter:
         rgba: 4294934528
     - name: Head_Center
       guid: 8bac9ca65b758ef40aefb0e10c589103
-      position: {x: 30.818478, y: -0.000024198001, z: 2}
-      rotation: {x: 0, y: 0, z: -0.50163096, w: 0.8650817}
+      position: {x: 30.818419, y: 0.0000352434, z: 2}
+      rotation: {x: 0, y: 0, z: -0.5016311, w: 0.8650817}
       length: 46.203938
       parentId: 9
       color:
@@ -3172,8 +3172,8 @@ ScriptedImporter:
         rgba: 4291348680
     - name: Beak_Upper
       guid: ba495d2fe54f8074c9c19f93d351711b
-      position: {x: 72.990524, y: 21.120085, z: 2}
-      rotation: {x: 0, y: 0, z: 0.048698258, w: 0.99881357}
+      position: {x: 73.03399, y: 19.867323, z: 2}
+      rotation: {x: 0, y: 0, z: -0.055037122, w: -0.9984844}
       length: 139.28629
       parentId: 10
       color:
@@ -3181,9 +3181,9 @@ ScriptedImporter:
         rgba: 4294902015
     - name: Beak_Lower
       guid: cbebb42a959354b41a1ea82766008634
-      position: {x: 80.24885, y: -20.357023, z: 1}
-      rotation: {x: 0, y: 0, z: 0.15451422, w: 0.98799056}
-      length: 141.4388
+      position: {x: 79.27852, y: -12.04279, z: 1}
+      rotation: {x: 0, y: 0, z: 0.12455366, w: 0.9922129}
+      length: 139.03755
       parentId: 10
       color:
         serializedVersion: 2
