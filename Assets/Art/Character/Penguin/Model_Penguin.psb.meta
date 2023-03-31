@@ -109,36 +109,36 @@ ScriptedImporter:
     spriteBone:
     - name: FrontFlipper_Lower
       guid: b2681023e80ad3f41ae4d55f660d5be4
-      position: {x: 220.49982, y: -0.000064218075, z: 6}
-      rotation: {x: 0, y: 0, z: 0.1305264, w: 0.9914449}
-      length: 203.51913
+      position: {x: 220.49998, y: -0.000014770469, z: 6}
+      rotation: {x: 0, y: 0, z: 0.13052632, w: 0.9914448}
+      length: 203.51918
       parentId: 1
       color:
         serializedVersion: 2
         rgba: 4294901888
     - name: FrontFlipper_Upper
       guid: 6dac3bf0c26cc124fa7c3e9e392cac90
-      position: {x: 48.028122, y: -0.00002221913, z: 7}
-      rotation: {x: 0, y: 0, z: 0.20791094, w: 0.97814775}
-      length: 220.49986
+      position: {x: 48.02807, y: -0.000015320999, z: 7}
+      rotation: {x: 0, y: 0, z: 0.20791118, w: 0.9781477}
+      length: 220.49995
       parentId: 2
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: FrontFlipper_Pivot
       guid: 61a0ab27b9a8e1147ac9dc98b70cf3cd
-      position: {x: 130.00073, y: 481.00055, z: 2}
-      rotation: {x: 0, y: 0, z: 0.898794, w: -0.43837127}
-      length: 48.028126
+      position: {x: 130.00073, y: 481.0006, z: 2}
+      rotation: {x: 0, y: 0, z: 0.89879423, w: -0.4383709}
+      length: 48.02807
       parentId: -1
       color:
         serializedVersion: 2
         rgba: 4278848495
     - name: _SkinClamp_Shoulder
       guid: ac142cbcb2c4d2b4b9a2617b8f50d84b
-      position: {x: 167.0008, y: 499.0006, z: 0}
-      rotation: {x: 0, y: 0, z: 0.9975641, w: -0.069755845}
-      length: 69.81746
+      position: {x: 167.0008, y: 499.00067, z: 0}
+      rotation: {x: 0, y: 0, z: 0.9975642, w: -0.06975564}
+      length: 69.817444
       parentId: -1
       color:
         serializedVersion: 2
@@ -1134,10 +1134,10 @@ ScriptedImporter:
       parentId: 3
       color:
         serializedVersion: 2
-        rgba: 4294934528
+        rgba: 4278190335
     - name: BackLeg_Ankle
       guid: bd1f88cd690294e4ba887b6f89cf23e0
-      position: {x: 116.160736, y: 0.0020831716, z: -3}
+      position: {x: 116.160736, y: 0.0021136892, z: -3}
       rotation: {x: 0, y: 0, z: 0.08715639, w: 0.99619466}
       length: 65.48983
       parentId: 2
@@ -1161,30 +1161,30 @@ ScriptedImporter:
       parentId: -1
       color:
         serializedVersion: 2
-        rgba: 4279505940
+        rgba: 4278190335
     - name: FrontLeg_Upper
       guid: a031345b63643e24e867441309ad8b23
       position: {x: 116.160576, y: 0.000024668001, z: -3}
       rotation: {x: 0, y: 0, z: 0.08715596, w: 0.99619466}
-      length: 65.49013
+      length: 65.49012
       parentId: 17
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: FrontFlipper_Lower
       guid: b2681023e80ad3f41ae4d55f660d5be4
-      position: {x: 220.49988, y: 0.0000014277198, z: 6}
-      rotation: {x: 0, y: 0, z: 0.13052633, w: 0.9914449}
-      length: 203.51913
+      position: {x: 220.50002, y: 0.000033754444, z: 6}
+      rotation: {x: 0, y: 0, z: 0.13052632, w: 0.9914448}
+      length: 203.51918
       parentId: 16
       color:
         serializedVersion: 2
         rgba: 4294901888
     - name: BackFlipper_Lower
       guid: 96e9ce2a3166bb949b691f3032464bce
-      position: {x: 189.96231, y: 0.0000587756, z: -4}
-      rotation: {x: 0, y: 0, z: 0.13052614, w: 0.9914449}
-      length: 182.63855
+      position: {x: 189.96237, y: -0.000028849838, z: -4}
+      rotation: {x: 0, y: 0, z: 0.13052627, w: 0.9914448}
+      length: 182.63858
       parentId: 8
       color:
         serializedVersion: 2
@@ -1200,8 +1200,8 @@ ScriptedImporter:
         rgba: 4294967040
     - name: BackFlipper_Upper
       guid: 8b902a7d542608f43a26abbf3f1330a7
-      position: {x: 46.98192, y: -0.000012305035, z: -5}
-      rotation: {x: 0, y: 0, z: 0.20791341, w: 0.97814727}
+      position: {x: 46.981743, y: 0.000031909956, z: -5}
+      rotation: {x: 0, y: 0, z: 0.20791362, w: 0.97814727}
       length: 189.96239
       parentId: 11
       color:
@@ -1209,62 +1209,62 @@ ScriptedImporter:
         rgba: 4294901760
     - name: FrontFlipper_Pivot
       guid: 61a0ab27b9a8e1147ac9dc98b70cf3cd
-      position: {x: 158.0007, y: 716.00055, z: 2}
-      rotation: {x: 0, y: 0, z: 0.898794, w: -0.43837127}
-      length: 48.028126
+      position: {x: 158.0007, y: 716.0006, z: 2}
+      rotation: {x: 0, y: 0, z: 0.89879423, w: -0.4383709}
+      length: 48.02807
       parentId: -1
       color:
         serializedVersion: 2
         rgba: 4278848495
     - name: Neck_Lower
       guid: d790986524e589b46ac2522cd5a1ee67
-      position: {x: 15.530238, y: -0.000009452398, z: 2}
-      rotation: {x: 0, y: 0, z: -0.0825889, w: 0.9965837}
-      length: 87.145065
+      position: {x: 15.530279, y: -0.0000036270185, z: 2}
+      rotation: {x: 0, y: 0, z: -0.082588814, w: 0.9965837}
+      length: 87.14507
       parentId: 14
       color:
         serializedVersion: 2
         rgba: 4278255488
     - name: BackFlipper_Pivot
       guid: 0814b56beecfe10449f4459660f1026a
-      position: {x: 278.00067, y: 674.0004, z: -6}
-      rotation: {x: 0, y: 0, z: 0.89879507, w: -0.43836898}
-      length: 46.981888
+      position: {x: 278.0006, y: 674.0004, z: -6}
+      rotation: {x: 0, y: 0, z: 0.89879537, w: -0.43836853}
+      length: 46.98192
       parentId: -1
       color:
         serializedVersion: 2
         rgba: 4278848495
     - name: _SkinClamp_Shoulder
       guid: ac142cbcb2c4d2b4b9a2617b8f50d84b
-      position: {x: 195.0008, y: 734.0006, z: 0}
-      rotation: {x: 0, y: 0, z: 0.9975641, w: -0.069755845}
-      length: 69.81746
+      position: {x: 195.0008, y: 734.0007, z: 0}
+      rotation: {x: 0, y: 0, z: 0.9975642, w: -0.06975564}
+      length: 69.817444
       parentId: -1
       color:
         serializedVersion: 2
         rgba: 4291348680
     - name: _SkinClamp_FrontNeck
       guid: 7d42cbe25c7d4d546abf02827dd22ccd
-      position: {x: 29.95234, y: -123.357956, z: 2}
-      rotation: {x: 0, y: 0, z: 0.13052623, w: 0.99144495}
-      length: 54.990444
+      position: {x: 29.952402, y: -123.35795, z: 2}
+      rotation: {x: 0, y: 0, z: 0.13052621, w: 0.9914449}
+      length: 54.99044
       parentId: 14
       color:
         serializedVersion: 2
         rgba: 4291348680
     - name: Neck_Pivot
       guid: c57fa391246e0564ab0143f8c8270632
-      position: {x: 228.6427, y: 781.048, z: -3}
-      rotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071069}
+      position: {x: 228.6427, y: 781.04803, z: -3}
+      rotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710695}
       length: 15.53027
       parentId: -1
       color:
         serializedVersion: 2
-        rgba: 4279505940
+        rgba: 4278190335
     - name: _SkinClamp_BackNeck
       guid: 92d8f683e88dd524f99a2d69567f0f2c
-      position: {x: 26.452368, y: 112.64199, z: 2}
-      rotation: {x: 0, y: 0, z: -0.27144048, w: 0.9624553}
+      position: {x: 26.45245, y: 112.642, z: 2}
+      rotation: {x: 0, y: 0, z: -0.27144045, w: 0.9624552}
       length: 67.12655
       parentId: 14
       color:
@@ -1272,9 +1272,9 @@ ScriptedImporter:
         rgba: 4291348680
     - name: FrontFlipper_Upper
       guid: 6dac3bf0c26cc124fa7c3e9e392cac90
-      position: {x: 48.028046, y: -0.000009655578, z: 7}
-      rotation: {x: 0, y: 0, z: 0.20791093, w: 0.97814775}
-      length: 220.49986
+      position: {x: 48.028008, y: 0.00000581116, z: 7}
+      rotation: {x: 0, y: 0, z: 0.2079112, w: 0.9781477}
+      length: 220.49995
       parentId: 9
       color:
         serializedVersion: 2
@@ -2018,8 +2018,8 @@ ScriptedImporter:
     spriteBone:
     - name: Eye_Lower
       guid: 65cf724dbe2837843a5fd144edb61371
-      position: {x: -10.036425, y: -6.226797, z: 2}
-      rotation: {x: 0, y: 0, z: 0.022523185, w: 0.9997463}
+      position: {x: -10.036366, y: -6.2267942, z: 2}
+      rotation: {x: 0, y: 0, z: 0.022523144, w: 0.9997463}
       length: 24.105732
       parentId: 2
       color:
@@ -2027,9 +2027,9 @@ ScriptedImporter:
         rgba: 4286643968
     - name: Eye_Upper
       guid: 808ed57d815ac2249a166e270eb3e44f
-      position: {x: -10.639098, y: 5.659799, z: 2}
-      rotation: {x: 0, y: 0, z: 0.030762559, w: -0.9995268}
-      length: 24.619133
+      position: {x: -10.639099, y: 5.6598015, z: 2}
+      rotation: {x: 0, y: 0, z: 0.030762559, w: -0.99952674}
+      length: 24.619131
       parentId: 2
       color:
         serializedVersion: 2
@@ -2037,8 +2037,8 @@ ScriptedImporter:
     - name: Eye_Center
       guid: d05ff8925d19d3d4fa38251f867a9cc8
       position: {x: 19.710083, y: 20.90271, z: 4}
-      rotation: {x: 0, y: 0, z: -0.0000005479089, w: 1}
-      length: 5.401013
+      rotation: {x: 0, y: 0, z: -0.0000004214684, w: 1}
+      length: 5.401012
       parentId: -1
       color:
         serializedVersion: 2
@@ -2362,43 +2362,43 @@ ScriptedImporter:
     - name: Torso_Shoulders
       guid: cbd2ce4ad8bdbfc4cb690322b1144730
       position: {x: 96.608765, y: -17.994629, z: 0}
-      rotation: {x: 0, y: 0, z: 0.57357615, w: 0.8191523}
-      length: 58.575188
+      rotation: {x: 0, y: 0, z: 0.573576, w: 0.8191524}
+      length: 58.575134
       parentId: -1
       color:
         serializedVersion: 2
         rgba: 4294902015
     - name: _SkinClamp_FrontNeck
       guid: 7d42cbe25c7d4d546abf02827dd22ccd
-      position: {x: 29.952406, y: -123.35791, z: 2}
-      rotation: {x: 0, y: 0, z: 0.13052627, w: 0.9914448}
-      length: 54.990437
+      position: {x: 29.952427, y: -123.357956, z: 2}
+      rotation: {x: 0, y: 0, z: 0.13052623, w: 0.9914448}
+      length: 54.990444
       parentId: 13
       color:
         serializedVersion: 2
         rgba: 4291348680
     - name: Neck_Lower
       guid: d790986524e589b46ac2522cd5a1ee67
-      position: {x: 15.530283, y: 0.0000630507, z: 2}
-      rotation: {x: 0, y: 0, z: -0.082588896, w: 0.9965837}
-      length: 87.145065
+      position: {x: 15.530278, y: 0.000013829217, z: 2}
+      rotation: {x: 0, y: 0, z: -0.0825888, w: 0.99658376}
+      length: 87.14507
       parentId: 13
       color:
         serializedVersion: 2
         rgba: 4278255488
     - name: _SkinClamp_LowerBeak
       guid: 3fd861be248f58a4fbc9281ab8fdbc28
-      position: {x: 89.615845, y: -50.37527, z: 0}
-      rotation: {x: 0, y: 0, z: 0.6711382, w: 0.74133223}
-      length: 11.589356
+      position: {x: 89.61592, y: -50.37532, z: 0}
+      rotation: {x: 0, y: 0, z: 0.6711382, w: 0.7413323}
+      length: 11.5893545
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4291348680
     - name: Beak_Lower
       guid: cbebb42a959354b41a1ea82766008634
-      position: {x: 79.27844, y: -12.0426855, z: 1}
-      rotation: {x: 0, y: 0, z: 0.12455368, w: 0.9922129}
+      position: {x: 79.27852, y: -12.042732, z: 1}
+      rotation: {x: 0, y: 0, z: 0.12455366, w: 0.9922129}
       length: 139.03755
       parentId: 5
       color:
@@ -2406,8 +2406,8 @@ ScriptedImporter:
         rgba: 4294901760
     - name: Head_Center
       guid: 8bac9ca65b758ef40aefb0e10c589103
-      position: {x: 30.817703, y: 0.00003130531, z: 2}
-      rotation: {x: 0, y: 0, z: -0.5016322, w: 0.8650811}
+      position: {x: 30.817732, y: 0.000045300927, z: 2}
+      rotation: {x: 0, y: 0, z: -0.50163215, w: 0.8650811}
       length: 46.203938
       parentId: 10
       color:
@@ -2415,53 +2415,53 @@ ScriptedImporter:
         rgba: 4294901888
     - name: _SkinClamp_UpperBeak
       guid: e14ec9aac75288746af6f0cd344b5881
-      position: {x: 66.80557, y: 45.49748, z: 0}
-      rotation: {x: 0, y: 0, z: 0.22231476, w: -0.97497493}
-      length: 10.267976
+      position: {x: 66.8056, y: 45.49742, z: 0}
+      rotation: {x: 0, y: 0, z: 0.22231479, w: -0.97497493}
+      length: 10.267975
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4291348680
     - name: Eye_Upper
       guid: 808ed57d815ac2249a166e270eb3e44f
-      position: {x: -10.639193, y: 5.659762, z: 2}
-      rotation: {x: 0, y: 0, z: 0.030762507, w: -0.9995268}
-      length: 24.619131
+      position: {x: -10.639126, y: 5.65979, z: 2}
+      rotation: {x: 0, y: 0, z: 0.030762695, w: -0.9995268}
+      length: 24.619127
       parentId: 8
       color:
         serializedVersion: 2
         rgba: 4278255488
     - name: Eye_Center
       guid: d05ff8925d19d3d4fa38251f867a9cc8
-      position: {x: 37.44755, y: 31.162249, z: 4}
-      rotation: {x: 0, y: 0, z: 0.08115519, w: 0.9967015}
-      length: 5.4010124
+      position: {x: 37.447582, y: 31.162197, z: 4}
+      rotation: {x: 0, y: 0, z: 0.08115524, w: 0.9967015}
+      length: 5.4010115
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4278190335
     - name: Eye_Lower
       guid: 65cf724dbe2837843a5fd144edb61371
-      position: {x: -10.036457, y: -6.226833, z: 2}
-      rotation: {x: 0, y: 0, z: 0.02252319, w: 0.9997464}
-      length: 24.10573
+      position: {x: -10.036393, y: -6.2268047, z: 2}
+      rotation: {x: 0, y: 0, z: 0.022523137, w: 0.9997463}
+      length: 24.105728
       parentId: 8
       color:
         serializedVersion: 2
         rgba: 4286643968
     - name: Neck_Upper
       guid: 4db4729467f12534b9c6a0cbb68f3345
-      position: {x: 72.87291, y: 0.000005845681, z: 2}
-      rotation: {x: 0, y: 0, z: -0.41577289, w: 0.90946853}
-      length: 30.817762
+      position: {x: 72.87289, y: -0.000114347175, z: 2}
+      rotation: {x: 0, y: 0, z: -0.41577294, w: 0.90946853}
+      length: 30.817766
       parentId: 12
       color:
         serializedVersion: 2
         rgba: 4294934528
     - name: _SkinClamp_BackNeck
       guid: 92d8f683e88dd524f99a2d69567f0f2c
-      position: {x: 26.452398, y: 112.64209, z: 2}
-      rotation: {x: 0, y: 0, z: -0.27144048, w: 0.9624553}
+      position: {x: 26.45243, y: 112.642044, z: 2}
+      rotation: {x: 0, y: 0, z: -0.27144045, w: 0.9624552}
       length: 67.126564
       parentId: 13
       color:
@@ -2469,22 +2469,22 @@ ScriptedImporter:
         rgba: 4291348680
     - name: Neck_Middle
       guid: 49e7bd08f57b6184487186718ce87272
-      position: {x: 87.14508, y: -0.00006907031, z: 2}
-      rotation: {x: 0, y: 0, z: 0.16949461, w: 0.9855311}
-      length: 72.87293
+      position: {x: 87.14504, y: -0.000014502904, z: 2}
+      rotation: {x: 0, y: 0, z: 0.16949469, w: 0.9855311}
+      length: 72.87288
       parentId: 2
       color:
         serializedVersion: 2
         rgba: 4286643968
     - name: Neck_Pivot
       guid: c57fa391246e0564ab0143f8c8270632
-      position: {x: 58.575138, y: -0.000053610976, z: -3}
-      rotation: {x: 0, y: 0, z: 0.1736485, w: 0.98480767}
+      position: {x: 58.575195, y: 0.00000556755, z: -3}
+      rotation: {x: 0, y: 0, z: 0.17364863, w: 0.98480767}
       length: 15.530273
       parentId: 0
       color:
         serializedVersion: 2
-        rgba: 4279505940
+        rgba: 4278190335
     spriteOutline: []
     vertices:
     - position: {x: 143.034, y: 0.48399356}
@@ -3031,9 +3031,9 @@ ScriptedImporter:
     spriteBone:
     - name: FrontLeg_FootArch
       guid: a400a0ea18ff3c54a8ef883758e3aa52
-      position: {x: 95.900024, y: 0.000010032276, z: 1}
-      rotation: {x: 0, y: 0, z: 0.12186886, w: -0.99254626}
-      length: 68.93999
+      position: {x: 95.89991, y: -0.000017883398, z: 1}
+      rotation: {x: 0, y: 0, z: 0.12186886, w: -0.9925462}
+      length: 68.939995
       parentId: 2
       color:
         serializedVersion: 2
@@ -3046,11 +3046,11 @@ ScriptedImporter:
       parentId: -1
       color:
         serializedVersion: 2
-        rgba: 4293658604
+        rgba: 4278190335
     - name: FrontLeg_FootHeel
       guid: 010654a629ec01047a51173417b67927
-      position: {x: 65.49009, y: 0.00008532234, z: 1}
-      rotation: {x: 0, y: 0, z: 0.6560589, w: 0.7547097}
+      position: {x: 65.4901, y: 0.00014543021, z: 1}
+      rotation: {x: 0, y: 0, z: 0.65605897, w: 0.7547097}
       length: 95.899956
       parentId: 3
       color:
@@ -3060,14 +3060,14 @@ ScriptedImporter:
       guid: a031345b63643e24e867441309ad8b23
       position: {x: 116.160645, y: -0.000060821872, z: -3}
       rotation: {x: 0, y: 0, z: 0.08715596, w: 0.99619466}
-      length: 65.49013
+      length: 65.49012
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: BackLeg_FootArch
       guid: c6c9f30517c7c0b428af6488d1625524
-      position: {x: 95.89815, y: 0.0000019178194, z: 1}
+      position: {x: 95.89815, y: 0.00006080425, z: 1}
       rotation: {x: 0, y: 0, z: 0.12186959, w: -0.9925462}
       length: 81.81293
       parentId: 9
@@ -3109,12 +3109,12 @@ ScriptedImporter:
       parentId: 1
       color:
         serializedVersion: 2
-        rgba: 4279505940
+        rgba: 4278190335
     - name: BackLeg_FootHeel
       guid: 5ebaea1ea43b93e468f728fb108a48d5
-      position: {x: -23.625671, y: 30.344421, z: 1}
+      position: {x: -23.62561, y: 30.344421, z: 1}
       rotation: {x: 0, y: 0, z: 0.017452717, w: 0.99984777}
-      length: 95.898155
+      length: 95.898186
       parentId: -1
       color:
         serializedVersion: 2
@@ -3851,8 +3851,8 @@ ScriptedImporter:
     - name: Beak_Upper
       guid: ba495d2fe54f8074c9c19f93d351711b
       position: {x: 35.00049, y: 14.999634, z: 2}
-      rotation: {x: 0, y: 0, z: 0.026177194, w: -0.9996574}
-      length: 139.28632
+      rotation: {x: 0, y: 0, z: 0.02617711, w: -0.9996574}
+      length: 139.2863
       parentId: -1
       color:
         serializedVersion: 2
@@ -3860,16 +3860,16 @@ ScriptedImporter:
     - name: _SkinClamp_UpperBeak
       guid: e14ec9aac75288746af6f0cd344b5881
       position: {x: 33.00049, y: 41.299683, z: 0}
-      rotation: {x: 0, y: 0, z: 0.3007063, w: -0.9537169}
-      length: 10.267978
+      rotation: {x: 0, y: 0, z: 0.30070624, w: -0.9537168}
+      length: 10.267977
       parentId: -1
       color:
         serializedVersion: 2
         rgba: 4291348680
     - name: Eye_Lower
       guid: 65cf724dbe2837843a5fd144edb61371
-      position: {x: -8.326355, y: 25.675903, z: 2}
-      rotation: {x: 0, y: 0, z: 0.022522638, w: 0.9997463}
+      position: {x: -8.326294, y: 25.675903, z: 2}
+      rotation: {x: 0, y: 0, z: 0.022522723, w: 0.9997463}
       length: 24.105732
       parentId: -1
       color:
@@ -4414,18 +4414,18 @@ ScriptedImporter:
     spriteBone:
     - name: _SkinClamp_LowerBeak
       guid: 3fd861be248f58a4fbc9281ab8fdbc28
-      position: {x: 89.61596, y: -50.375336, z: 0}
+      position: {x: 89.615944, y: -50.375347, z: 0}
       rotation: {x: 0, y: 0, z: 0.6711383, w: 0.74133223}
-      length: 11.589355
+      length: 11.589357
       parentId: 2
       color:
         serializedVersion: 2
         rgba: 4291348680
     - name: Beak_Lower
       guid: cbebb42a959354b41a1ea82766008634
-      position: {x: 79.27855, y: -12.042746, z: 1}
-      rotation: {x: 0, y: 0, z: 0.12455375, w: 0.99221283}
-      length: 139.03758
+      position: {x: 79.27854, y: -12.042755, z: 1}
+      rotation: {x: 0, y: 0, z: 0.12455366, w: 0.9922129}
+      length: 139.03757
       parentId: 2
       color:
         serializedVersion: 2
@@ -4433,7 +4433,7 @@ ScriptedImporter:
     - name: Head_Center
       guid: 8bac9ca65b758ef40aefb0e10c589103
       position: {x: -40.285522, y: 64.20911, z: 2}
-      rotation: {x: 0, y: 0, z: -0.08115576, w: 0.9967015}
+      rotation: {x: 0, y: 0, z: -0.08115565, w: 0.9967015}
       length: 46.203945
       parentId: -1
       color:
@@ -4948,9 +4948,9 @@ ScriptedImporter:
         rgba: 4294934528
     - name: BackLeg_FootArch
       guid: c6c9f30517c7c0b428af6488d1625524
-      position: {x: 95.89822, y: 0.000027135462, z: 1}
-      rotation: {x: 0, y: 0, z: 0.121869706, w: -0.9925461}
-      length: 81.81292
+      position: {x: 95.89822, y: 0.00008600329, z: 1}
+      rotation: {x: 0, y: 0, z: 0.1218696, w: -0.99254614}
+      length: 81.81291
       parentId: 6
       color:
         serializedVersion: 2
@@ -4972,12 +4972,12 @@ ScriptedImporter:
       parentId: -1
       color:
         serializedVersion: 2
-        rgba: 4293658604
+        rgba: 4278190335
     - name: FrontLeg_Upper
       guid: a031345b63643e24e867441309ad8b23
       position: {x: 141.00006, y: 94.83942, z: -3}
       rotation: {x: 0, y: 0, z: -0.6427876, w: 0.7660445}
-      length: 65.49015
+      length: 65.49014
       parentId: -1
       color:
         serializedVersion: 2
@@ -4993,9 +4993,9 @@ ScriptedImporter:
         rgba: 4294901760
     - name: BackLeg_FootHeel
       guid: 5ebaea1ea43b93e468f728fb108a48d5
-      position: {x: 65.489815, y: 0.000011716645, z: 1}
+      position: {x: 65.48982, y: 0.00007182452, z: 1}
       rotation: {x: 0, y: 0, z: 0.6560589, w: 0.7547097}
-      length: 95.89813
+      length: 95.89816
       parentId: 5
       color:
         serializedVersion: 2
@@ -5780,9 +5780,9 @@ ScriptedImporter:
     spriteBone:
     - name: BackFlipper_Lower
       guid: 96e9ce2a3166bb949b691f3032464bce
-      position: {x: 189.96245, y: 0.000043709297, z: -4}
-      rotation: {x: 0, y: 0, z: 0.13052614, w: 0.9914449}
-      length: 182.63855
+      position: {x: 189.96225, y: 0.000026764936, z: -4}
+      rotation: {x: 0, y: 0, z: 0.13052627, w: 0.9914448}
+      length: 182.63858
       parentId: 3
       color:
         serializedVersion: 2
@@ -5807,8 +5807,8 @@ ScriptedImporter:
         rgba: 4294967040
     - name: BackFlipper_Upper
       guid: 8b902a7d542608f43a26abbf3f1330a7
-      position: {x: 46.981922, y: 0.000010626662, z: -5}
-      rotation: {x: 0, y: 0, z: 0.20791341, w: 0.97814727}
+      position: {x: 46.981907, y: -0.00000030498632, z: -5}
+      rotation: {x: 0, y: 0, z: 0.20791362, w: 0.97814727}
       length: 189.96239
       parentId: 4
       color:
@@ -5816,9 +5816,9 @@ ScriptedImporter:
         rgba: 4294901760
     - name: BackFlipper_Pivot
       guid: 0814b56beecfe10449f4459660f1026a
-      position: {x: 115.00067, y: 427.00043, z: -6}
-      rotation: {x: 0, y: 0, z: 0.89879507, w: -0.43836898}
-      length: 46.981888
+      position: {x: 115.00061, y: 427.00043, z: -6}
+      rotation: {x: 0, y: 0, z: 0.89879537, w: -0.43836853}
+      length: 46.98192
       parentId: -1
       color:
         serializedVersion: 2
@@ -6784,7 +6784,7 @@ ScriptedImporter:
       parentId: -1
       color:
         serializedVersion: 2
-        rgba: 4293658604
+        rgba: 4278190335
     - name: Torso_Pivot
       guid: 900e57980dd09384aab6943d8330057c
       position: {x: 71, y: 62.999985, z: 0}
@@ -6793,7 +6793,7 @@ ScriptedImporter:
       parentId: 0
       color:
         serializedVersion: 2
-        rgba: 4279505940
+        rgba: 4278190335
     - name: Torso_Lower
       guid: 9065b8b0b53a30a47bc41634a10c0ffe
       position: {x: 20, y: -0.000016927715, z: 0}
@@ -6824,43 +6824,43 @@ ScriptedImporter:
     - name: Torso_Shoulders
       guid: cbd2ce4ad8bdbfc4cb690322b1144730
       position: {x: 298.6716, y: 0.0007847454, z: 0}
-      rotation: {x: 0, y: 0, z: -0.13604069, w: 0.9907033}
-      length: 58.57518
+      rotation: {x: 0, y: 0, z: -0.1360409, w: 0.9907032}
+      length: 58.575127
       parentId: 4
       color:
         serializedVersion: 2
         rgba: 4294902015
     - name: Neck_Pivot
       guid: c57fa391246e0564ab0143f8c8270632
-      position: {x: 58.575115, y: -0.000008280769, z: -3}
-      rotation: {x: 0, y: 0, z: 0.17364854, w: 0.9848077}
+      position: {x: 58.57517, y: -0.000002497054, z: -3}
+      rotation: {x: 0, y: 0, z: 0.1736487, w: 0.98480767}
       length: 15.530272
       parentId: 5
       color:
         serializedVersion: 2
-        rgba: 4279505940
+        rgba: 4278190335
     - name: Neck_Lower
       guid: d790986524e589b46ac2522cd5a1ee67
-      position: {x: 15.530296, y: 0.000019283223, z: 2}
+      position: {x: 15.530298, y: -0.0000019043217, z: 2}
       rotation: {x: 0, y: 0, z: -0.082588844, w: 0.9965837}
-      length: 87.14505
+      length: 87.14506
       parentId: 6
       color:
         serializedVersion: 2
         rgba: 4278255488
     - name: Neck_Middle
       guid: 49e7bd08f57b6184487186718ce87272
-      position: {x: 87.14503, y: -0.00004497965, z: 2}
-      rotation: {x: 0, y: 0, z: 0.16949463, w: 0.98553115}
-      length: 72.87293
+      position: {x: 87.145035, y: -0.000039398677, z: 2}
+      rotation: {x: 0, y: 0, z: 0.1694947, w: 0.9855311}
+      length: 72.87287
       parentId: 7
       color:
         serializedVersion: 2
         rgba: 4286643968
     - name: Neck_Upper
       guid: 4db4729467f12534b9c6a0cbb68f3345
-      position: {x: 72.87291, y: -0.000004835558, z: 2}
-      rotation: {x: 0, y: 0, z: -0.41577289, w: 0.9094685}
+      position: {x: 72.87284, y: -0.000020605323, z: 2}
+      rotation: {x: 0, y: 0, z: -0.41577289, w: 0.90946853}
       length: 30.81776
       parentId: 8
       color:
@@ -6869,7 +6869,7 @@ ScriptedImporter:
     - name: Head_Center
       guid: 8bac9ca65b758ef40aefb0e10c589103
       position: {x: 30.817791, y: -0.00000009224459, z: 2}
-      rotation: {x: 0, y: 0, z: -0.5016323, w: 0.865081}
+      rotation: {x: 0, y: 0, z: -0.5016322, w: 0.86508095}
       length: 46.203938
       parentId: 9
       color:
@@ -6946,7 +6946,7 @@ ScriptedImporter:
       parentId: 1
       color:
         serializedVersion: 2
-        rgba: 4294934528
+        rgba: 4278190335
     - name: _SkinClamp_Shoulder
       guid: ac142cbcb2c4d2b4b9a2617b8f50d84b
       position: {x: 2.8588748, y: 15.521867, z: 0}
@@ -6959,25 +6959,25 @@ ScriptedImporter:
     - name: FrontFlipper_Pivot
       guid: 61a0ab27b9a8e1147ac9dc98b70cf3cd
       position: {x: -26.710442, y: 44.13414, z: 2}
-      rotation: {x: 0, y: -0, z: 0.9876884, w: 0.1564339}
-      length: 48.02812
+      rotation: {x: 0, y: -0, z: 0.9876885, w: 0.15643413}
+      length: 48.02805
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4278848495
     - name: FrontFlipper_Upper
       guid: 6dac3bf0c26cc124fa7c3e9e392cac90
-      position: {x: 48.028072, y: -0.000012243978, z: 7}
-      rotation: {x: 0, y: 0, z: 0.20791088, w: 0.9781478}
-      length: 220.49983
+      position: {x: 48.0281, y: -0.000032100164, z: 7}
+      rotation: {x: 0, y: 0, z: 0.2079112, w: 0.97814775}
+      length: 220.49986
       parentId: 20
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: FrontFlipper_Lower
       guid: b2681023e80ad3f41ae4d55f660d5be4
-      position: {x: 220.49982, y: -0.0000022758613, z: 6}
-      rotation: {x: 0, y: 0, z: 0.13052638, w: 0.9914448}
+      position: {x: 220.49988, y: -0.000045944234, z: 6}
+      rotation: {x: 0, y: 0, z: 0.13052632, w: 0.9914449}
       length: 203.5191
       parentId: 21
       color:
@@ -6986,25 +6986,25 @@ ScriptedImporter:
     - name: BackFlipper_Pivot
       guid: 0814b56beecfe10449f4459660f1026a
       position: {x: -25.135168, y: -82.9938, z: -6}
-      rotation: {x: 0, y: -0, z: 0.98768806, w: 0.15643638}
-      length: 46.981873
+      rotation: {x: 0, y: -0, z: 0.98768806, w: 0.15643673}
+      length: 46.9819
       parentId: 5
       color:
         serializedVersion: 2
         rgba: 4278848495
     - name: BackFlipper_Upper
       guid: 8b902a7d542608f43a26abbf3f1330a7
-      position: {x: 46.98189, y: -0.0000075763965, z: -5}
-      rotation: {x: 0, y: 0, z: 0.20791337, w: 0.97814727}
-      length: 189.96236
+      position: {x: 46.981865, y: 0.0000029535731, z: -5}
+      rotation: {x: 0, y: 0, z: 0.2079136, w: 0.9781472}
+      length: 189.96233
       parentId: 23
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: BackFlipper_Lower
       guid: 96e9ce2a3166bb949b691f3032464bce
-      position: {x: 189.96234, y: -0.000031461845, z: -4}
-      rotation: {x: 0, y: 0, z: 0.13052611, w: 0.9914449}
+      position: {x: 189.96228, y: -0.000027719252, z: -4}
+      rotation: {x: 0, y: 0, z: 0.13052626, w: 0.9914449}
       length: 182.6385
       parentId: 24
       color:
@@ -7039,7 +7039,7 @@ ScriptedImporter:
         rgba: 4278190335
     - name: BackLeg_Ankle
       guid: bd1f88cd690294e4ba887b6f89cf23e0
-      position: {x: 116.160736, y: 0.00205827, z: -3}
+      position: {x: 116.160736, y: 0.0020887875, z: -3}
       rotation: {x: 0, y: 0, z: 0.087156326, w: 0.99619466}
       length: 65.48982
       parentId: 28
@@ -7048,17 +7048,17 @@ ScriptedImporter:
         rgba: 4294901760
     - name: BackLeg_FootHeel
       guid: 5ebaea1ea43b93e468f728fb108a48d5
-      position: {x: 65.489815, y: -0.0000084491085, z: 1}
+      position: {x: 65.489815, y: -0.000008912751, z: 1}
       rotation: {x: 0, y: 0, z: 0.6560589, w: 0.7547097}
-      length: 95.89813
+      length: 95.89816
       parentId: 29
       color:
         serializedVersion: 2
         rgba: 4286643968
     - name: BackLeg_FootArch
       guid: c6c9f30517c7c0b428af6488d1625524
-      position: {x: 95.89815, y: -0.0000071412182, z: 1}
-      rotation: {x: 0, y: 0, z: 0.12186961, w: -0.9925462}
+      position: {x: 95.89818, y: -0.000009271365, z: 1}
+      rotation: {x: 0, y: 0, z: 0.12186957, w: -0.9925462}
       length: 81.81291
       parentId: 30
       color:
@@ -7077,14 +7077,14 @@ ScriptedImporter:
       guid: a031345b63643e24e867441309ad8b23
       position: {x: 116.160576, y: 0.000034736546, z: -3}
       rotation: {x: 0, y: 0, z: 0.08715598, w: 0.9961947}
-      length: 65.490135
+      length: 65.49013
       parentId: 32
       color:
         serializedVersion: 2
         rgba: 4294901760
     - name: FrontLeg_FootHeel
       guid: 010654a629ec01047a51173417b67927
-      position: {x: 65.490135, y: -0.000018196557, z: 1}
+      position: {x: 65.49013, y: -0.000016871725, z: 1}
       rotation: {x: 0, y: 0, z: 0.656059, w: 0.75470966}
       length: 95.89994
       parentId: 33
@@ -7093,7 +7093,7 @@ ScriptedImporter:
         rgba: 4286643968
     - name: FrontLeg_FootArch
       guid: a400a0ea18ff3c54a8ef883758e3aa52
-      position: {x: 95.89995, y: -0.000015290458, z: 1}
+      position: {x: 95.89995, y: -0.000015295107, z: 1}
       rotation: {x: 0, y: 0, z: 0.121869, w: -0.99254626}
       length: 68.93998
       parentId: 34
