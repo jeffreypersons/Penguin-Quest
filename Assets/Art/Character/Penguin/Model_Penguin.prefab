@@ -98,6 +98,37 @@ Transform:
   m_Father: {fileID: 4606278945813727062}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &742023180245772652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6568651017327330992}
+  m_Layer: 0
+  m_Name: IK_Target__Head
+  m_TagString: IkTarget
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6568651017327330992
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742023180245772652}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4783268262464871121}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1125080457704827071
 GameObject:
   m_ObjectHideFlags: 0
@@ -1299,6 +1330,79 @@ MonoBehaviour:
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
+--- !u!1 &7035589747959266401
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4783268262464871121}
+  - component: {fileID: 3151157292926916414}
+  m_Layer: 0
+  m_Name: IK_Solver__Head
+  m_TagString: IkSolver
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4783268262464871121
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7035589747959266401}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6568651017327330992}
+  m_Father: {fileID: 6351147641708094444}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3151157292926916414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7035589747959266401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef93bb9fe9d240e418a7fb8b476f3d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ConstrainRotation: 1
+  m_SolveFromDefaultPose: 0
+  m_Weight: 0.5
+  m_Chain:
+    m_EffectorTransform: {fileID: 0}
+    m_TargetTransform: {fileID: 0}
+    m_TransformCount: 5
+    m_Transforms:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    m_DefaultLocalRotations:
+    - {x: 0, y: 0, z: 0.16508937, w: 0.98627865}
+    - {x: 0, y: 0, z: -0.06931789, w: 0.99759465}
+    - {x: 0, y: 0, z: 0.14341532, w: 0.9896626}
+    - {x: 0, y: 0, z: -0.43886414, w: 0.89855343}
+    - {x: 0, y: 0, z: 0, w: 1}
+    m_StoredLocalRotations:
+    - {x: 0, y: 0, z: 0.16508937, w: 0.98627865}
+    - {x: 0, y: 0, z: -0.06931789, w: 0.99759465}
+    - {x: 0, y: 0, z: 0.14341532, w: 0.9896626}
+    - {x: 0, y: 0, z: -0.43886414, w: 0.89855343}
+    - {x: 0, y: 0, z: -0.00000011920926, w: 1}
+  m_Iterations: 15
+  m_Tolerance: 0.01
+  m_Velocity: 0.5
 --- !u!1 &7151754573772246408
 GameObject:
   m_ObjectHideFlags: 0
@@ -1967,6 +2071,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -7552582706839291426, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7475178395806332266}
+    - targetCorrespondingSourceObject: {fileID: -7552582706839291426, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4783268262464871121}
     - targetCorrespondingSourceObject: {fileID: -7552582706839291426, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2075595788805585220}
