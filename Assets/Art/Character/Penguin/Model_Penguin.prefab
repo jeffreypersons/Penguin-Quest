@@ -414,6 +414,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Model_Penguin
       objectReference: {fileID: 0}
+    - target: {fileID: -8471616569312301951, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -8263496327215763741, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -8155306422376895517, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: -8135618022976045580, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -7632824164803689250, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -458,13 +478,173 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7544844521064281934, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -6953328978215221047, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: -6908168349561558421, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: -5318716193034416726, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -4727410954600458878, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -4702794432843749782, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -4683040258818726111, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: -4556451469784850393, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_Name
       value: Beak_Upper
       objectReference: {fileID: 0}
+    - target: {fileID: -4556451469784850393, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -3449978076813203037, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -3140777901718485438, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: -3126850881291120598, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -3019393647053584125, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -2580165861706568480, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: -2108108713562904577, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -1213064427951520839, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -1095412727252820843, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -1024318462211781745, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: -751962818039460434, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 33235950386420522, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: 704608145152437862, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 1952885230289591584, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: 2248390355103046092, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 3219104047197129269, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 3889176496883529604, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 3972833826051132557, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521763886206175113, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566967345390294584, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 4998624038359967078, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 5047813985075056538, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189129824731417893, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 5634736628305755854, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 5838209686794034168, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 6236738719911778455, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
     - target: {fileID: 6254938027811603067, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_Name
       value: Beak_Lower
+      objectReference: {fileID: 0}
+    - target: {fileID: 6254938027811603067, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375858902663878844, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 7417135562689294501, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: 7988592578424090999, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bodypart
+      objectReference: {fileID: 0}
+    - target: {fileID: 8272737164253560605, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
+      objectReference: {fileID: 0}
+    - target: {fileID: 8681224913453908132, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845111520348111812, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: Bone
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
