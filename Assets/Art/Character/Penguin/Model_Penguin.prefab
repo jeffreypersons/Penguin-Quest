@@ -98,6 +98,37 @@ Transform:
   m_Father: {fileID: 4606278945813727062}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &311275721642701221
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5904942385092003717}
+  m_Layer: 0
+  m_Name: IK_Effector__Torso_Lower
+  m_TagString: IkEffector
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5904942385092003717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311275721642701221}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2006539971563941008}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &742023180245772652
 GameObject:
   m_ObjectHideFlags: 0
@@ -2092,6 +2123,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5626565240016337068, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       insertIndex: 1
       addedObject: {fileID: 1954794615901475303}
+    - targetCorrespondingSourceObject: {fileID: -3110667570555439454, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 5904942385092003717}
     - targetCorrespondingSourceObject: {fileID: 6065712283456765382, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       insertIndex: 0
       addedObject: {fileID: 2428508748320042072}
@@ -2263,6 +2297,11 @@ MonoBehaviour:
 --- !u!4 &2005290075547068741 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6113673436286858103, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+  m_PrefabInstance: {fileID: 5695955298003966514}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2006539971563941008 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3110667570555439454, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
   m_PrefabInstance: {fileID: 5695955298003966514}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2360865867362747564 stripped
