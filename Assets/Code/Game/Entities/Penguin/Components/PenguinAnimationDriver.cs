@@ -6,10 +6,14 @@ namespace PQ.Game.Entities.Penguin
 {
     public sealed class PenguinAnimationDriver : AnimationDriver<PenguinAnimationEventId, PenguinAnimationParamId>
     {
+        [SerializeField] private Animator _animator;
+
         protected override void OnInitialize()
         {
             Debug.Log("Initialized " + this);
-            Initialize(gameObject.GetComponentInChildren<Animator>());
+
+            // until animator params configured, the param ids won't match, so until then silence the validation
+            try { Initialize(_animator); } catch (System.InvalidOperationException) { }
         }
 
         protected override void OnEventRaised(string eventName)
