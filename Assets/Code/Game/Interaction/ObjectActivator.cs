@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public class ObjectActivator : MonoBehaviour
 {
     [SerializeField] string activatorTag = null;
