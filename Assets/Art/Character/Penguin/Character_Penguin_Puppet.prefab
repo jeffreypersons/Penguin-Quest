@@ -2095,7 +2095,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8653719598885068355, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_Name
-      value: Character_Penguin
+      value: Character_Penguin_Puppet
+      objectReference: {fileID: 0}
+    - target: {fileID: -8653719598885068355, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: IkPuppet
       objectReference: {fileID: 0}
     - target: {fileID: -8471616569312301951, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_TagString
