@@ -9,6 +9,7 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnInitialize()
         {
             Debug.Log("Initialized " + this);
+            Initialize(gameObject.GetComponentInChildren<Animator>());
         }
 
         protected override void OnEventRaised(string eventName)
