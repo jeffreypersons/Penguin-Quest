@@ -183,9 +183,11 @@ namespace PQ.Common.Animation
             {
                 throw new InvalidOperationException("Cannot start driver - animator must be provided in OnInitialize()");
             }
-            EnsureRegisteredAndEditorParamsAreAnExistMatch();
+
+            // until animator params configured, the param ids won't match, so until then silence the validation
+            //EnsureRegisteredAndEditorParamsAreAnExistMatch();
         }
-        
+
 
 
         /*** Internal 'Machinery' ***/

@@ -11,9 +11,7 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnInitialize()
         {
             Debug.Log("Initialized " + this);
-
-            // until animator params configured, the param ids won't match, so until then silence the validation
-            try { Initialize(_penguinRigAnimator); } catch (System.InvalidOperationException) { }
+            Initialize(_penguinRigAnimator);
         }
 
         protected override void OnEventRaised(string eventName)
