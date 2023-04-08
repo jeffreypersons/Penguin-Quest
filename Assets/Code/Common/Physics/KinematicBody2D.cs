@@ -7,11 +7,11 @@ namespace PQ.Common.Physics
 {
     /*
     Represents a physical body aligned with an AAB and driven by kinematic physics.
-    Physics component 
 
-    Assumes always upright bounding box, with kinematic rigidbody. Note that this means there is no rotation.
-
-    Note there is no caching of positions (but there is for casts).
+    Notes
+    * Assumes always upright bounding box, with kinematic rigidbody
+    * Corresponding game object is fixed in rotation to enforce alignment with global up
+    * Caching is done only for cast results, position caching is intentionally left to any calling code
     */
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
@@ -83,8 +83,9 @@ namespace PQ.Common.Physics
             Flip(horizontal: false, vertical: false);
         }
 
-        bool ground;
-        float angle;
+        // todo: figure out how to better deal with this
+        private bool ground;
+        private float angle;
 
         void OnCollisionStay2D(Collision2D collision)
         {

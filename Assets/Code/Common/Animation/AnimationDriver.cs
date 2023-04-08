@@ -35,6 +35,7 @@ namespace PQ.Common.Animation
         where EventId : struct, Enum
         where ParamId : struct, Enum
     {
+        private bool _initialized;
         private Animator _animator;
         private EnumMap<EventId, PqEvent> _animationEvents;
         private EnumMap<ParamId, string>  _animationParams;
@@ -133,9 +134,35 @@ namespace PQ.Common.Animation
             }
         }
 
+        // Sole source of truth for specifying animator
+        // Strictly required to be invoked only once and only in OnInitialize()
+        protected void Initialize(Animator animator)
+        {
+            if (_initialized)
+            {
+                throw new InvalidOperationException($"Cannot initialize - animator was already specified");
+            }
+            if (animator == null)
+            {
+                throw new InvalidOperationException($"Cannot initialize - animator cannot be null");
+            }
 
-        // Optional overridable callback for when things are setup
-        protected virtual void OnInitialize() { }
+            _initialized = true;
+            _animator = animator;
+            _animationEvents = new EnumMap<EventId, PqEvent>();
+            _animationParams = new EnumMap<ParamId, string>();
+            foreach (EventId eventId in _animationEvents.EnumFields)
+            {
+                _animationEvents.Add(eventId, new PqEvent(eventId.ToString()));
+            }
+            foreach (ParamId id in _animationParams.EnumFields)
+            {
+                _animationParams.Add(id, id.ToString());
+            }
+        }
+
+        // Required overridable callback for when things are setup
+        protected abstract void OnInitialize();
 
         // Optional overridable callback for when an event was raised via the Unity's animator/animation-clips
         protected virtual void OnEventRaised(string eventName) { }
@@ -149,30 +176,18 @@ namespace PQ.Common.Animation
 
         private void Awake()
         {
-            _animator = gameObject.GetComponent<Animator>();
-            if (_animator == null)
-            {
-                throw new MissingComponentException($"Expected attached animator - not found on {gameObject}");
-            }
-
             // note that since other monobehaviors may want to query events on Start(),
-            // we populate events early here in Awake as opposed to Start
-            _animationEvents = new EnumMap<EventId, PqEvent>();
-            foreach (EventId eventId in _animationEvents.EnumFields)
+            // we populate set references and populate events early here in Awake as opposed to Start
+            OnInitialize();
+            if (!_initialized)
             {
-                _animationEvents.Add(eventId, new PqEvent(eventId.ToString()));
+                throw new InvalidOperationException("Cannot start driver - animator must be provided in OnInitialize()");
             }
 
-            // eventually we will support parameter ids directly, OR map IDs to a custom param class,
-            // but for now we explicitly maintain id to mecanim parameter names, and enforce exact match
-            _animationParams = new EnumMap<ParamId, string>();
-            foreach (ParamId id in _animationParams.EnumFields)
-            {
-                _animationParams.Add(id, id.ToString());
-            }
-            EnsureRegisteredAndEditorParamsAreAnExistMatch();
+            // until animator params configured, the param ids won't match, so until then silence the validation
+            //EnsureRegisteredAndEditorParamsAreAnExistMatch();
         }
-        
+
 
 
         /*** Internal 'Machinery' ***/
@@ -180,17 +195,13 @@ namespace PQ.Common.Animation
         // is the ordering, count, and names of our paramIds an _exact_ match with the ones in the mecanim editor window?
         private void EnsureRegisteredAndEditorParamsAreAnExistMatch()
         {
-            IReadOnlyList<string> expected = _animationParams.Values;
-            IReadOnlyList<string> actual   = _animator.parameters.Select(param => param.name).ToArray();
-            for (int i = 0; i < expected.Count; i++)
+            IReadOnlyList<string> given  = _animationParams.Values;
+            IReadOnlyList<string> actual = _animator.parameters.Select(param => param.name).ToArray();
+            if (!given.SequenceEqual(actual))
             {
-                if (i >= actual.Count || expected[i] != actual[i])
-                {
-                    throw new InvalidOperationException(
-                        $"Animation parameter mismatch - expected [{string.Join(',', expected)}] " +
-                        $"found parameter mismatch - actual [{string.Join(',', actual)}]"
-                    );
-                }
+                throw new InvalidOperationException(
+                    $"Enum field names must match animator parameter names exactly - " +
+                    $"given=[{string.Join(',', given)}], actual=[{string.Join(',', actual)}]");
             }
         }
     }

@@ -6,9 +6,12 @@ namespace PQ.Game.Entities.Penguin
 {
     public sealed class PenguinAnimationDriver : AnimationDriver<PenguinAnimationEventId, PenguinAnimationParamId>
     {
+        [SerializeField] private Animator _penguinRigAnimator;
+
         protected override void OnInitialize()
         {
             Debug.Log("Initialized " + this);
+            Initialize(_penguinRigAnimator);
         }
 
         protected override void OnEventRaised(string eventName)

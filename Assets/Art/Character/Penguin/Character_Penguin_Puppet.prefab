@@ -1091,7 +1091,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5570691417807449199}
-  m_LocalRotation: {x: 0, y: 0, z: -0.000000089406946, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.0000001187436, w: 1}
   m_LocalPosition: {x: 0.2125, y: -0.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1168,7 +1168,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: -0.082588844, w: 0.9965837}
     - {x: 0, y: 0, z: 0.1694948, w: 0.9855311}
     - {x: 0, y: 0, z: -0.415773, w: 0.9094684}
-    - {x: 0, y: 0, z: -0.00000005960463, w: 1}
+    - {x: 0, y: 0, z: -0.00000011827794, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -1301,7 +1301,7 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0.030762557, w: -0.99952674}
     - {x: 0, y: 0, z: 0, w: 1}
     m_StoredLocalRotations:
-    - {x: 2.5314495e-10, y: 0.000000008225102, z: 0.3590607, w: -0.93331426}
+    - {x: 0, y: 0, z: 0.030762557, w: -0.99952674}
     - {x: 0, y: 0, z: 0, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
@@ -1562,7 +1562,7 @@ MonoBehaviour:
     m_StoredLocalRotations:
     - {x: 0, y: 0, z: 0.021811338, w: 0.9997621}
     - {x: 0, y: 0, z: -0.047975965, w: 0.9988485}
-    - {x: 0, y: 0, z: -0.0000000074505797, w: 1}
+    - {x: 0, y: 0, z: -0.00000002582419, w: 1}
   m_Iterations: 15
   m_Tolerance: 0.01
   m_Velocity: 0.5
@@ -1620,8 +1620,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7203041579778587763}
-  m_LocalRotation: {x: -0.00000009751299, y: -0.000000051148284, z: 0.9930407, w: 0.11777199}
-  m_LocalPosition: {x: 0.05800719, y: -0.017718308, z: 0.007999998}
+  m_LocalRotation: {x: -0, y: -0, z: 0.45734498, w: -0.88928944}
+  m_LocalPosition: {x: 0.09087197, y: -0.028581377, z: 0.008000001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1951,7 +1951,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8521174813210315436}
-  m_LocalRotation: {x: 0, y: 0, z: -0.000000013038514, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.000000026818723, w: 1}
   m_LocalPosition: {x: 0.075, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2095,7 +2095,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8653719598885068355, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_Name
-      value: Character_Penguin
+      value: Character_Penguin_Puppet
+      objectReference: {fileID: 0}
+    - target: {fileID: -8653719598885068355, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
+      propertyPath: m_TagString
+      value: IkPuppet
       objectReference: {fileID: 0}
     - target: {fileID: -8471616569312301951, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_TagString
@@ -2471,19 +2475,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2814430736736227711, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.86313623
+      value: -0.99952674
       objectReference: {fileID: 0}
     - target: {fileID: 2814430736736227711, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 3.804657e-10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2814430736736227711, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000011947936
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2814430736736227711, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.5049711
+      value: 0.030762557
       objectReference: {fileID: 0}
     - target: {fileID: 2814430736736227711, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -2922,7 +2926,7 @@ MonoBehaviour:
   m_CategoryHash: 0
   m_labelHash: 0
   m_SpriteKey: 0
-  m_SpriteHash: 0
+  m_SpriteHash: 504876712
 --- !u!4 &2005290075547068741 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6113673436286858103, guid: 4ed5f38ccc6f97c4da5d99dd5b48048c, type: 3}
