@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0a28b488f105c94bb50ceb1eae5a5ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerPenguin: {fileID: 0}
+  _playerPenguin: {fileID: 683524891}
   _soundEffectController: {fileID: 531736072}
   _soundTrackController: {fileID: 531736073}
 --- !u!4 &594763469
@@ -520,6 +520,11 @@ Transform:
   m_Father: {fileID: 755271234}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &683524891 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1807875206248570255, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+  m_PrefabInstance: {fileID: 609119320}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &755271233
 GameObject:
   m_ObjectHideFlags: 0
