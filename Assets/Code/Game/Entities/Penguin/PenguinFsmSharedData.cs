@@ -71,7 +71,7 @@ namespace PQ.Game.Entities.Penguin
                 return;
             }
 
-            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 1.00f, Color.white);
+            GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 0.025f, Color.white);
         }
         #endif
     }
