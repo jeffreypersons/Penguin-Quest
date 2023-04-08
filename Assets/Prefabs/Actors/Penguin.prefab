@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 3059268163222020866}
   - component: {fileID: 2916047126819965676}
   - component: {fileID: 2002890420633338778}
+  - component: {fileID: 4485612146676894531}
+  - component: {fileID: 79367290388874975}
   m_Layer: 0
   m_Name: Penguin
   m_TagString: Untagged
@@ -95,7 +97,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.04, y: 0.7}
+  m_Offset: {x: 0.005, y: 0.575}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -106,7 +108,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.45, y: 1.15}
   m_EdgeRadius: 0
 --- !u!114 &2916047126819965676
 MonoBehaviour:
@@ -133,6 +135,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _penguinRigAnimator: {fileID: 4064187206090137445}
+--- !u!114 &4485612146676894531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807875206248570255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e015a34e387fff42b232af4a5040dbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colliderConstraints: 0
+  _outerCollider: {fileID: 3059268163222020866}
+  _headCollider: {fileID: 4882723521779048514}
+  _torsoCollider: {fileID: 728521996775082805}
+  _frontFlipperUpperCollider: {fileID: 2800808826828882743}
+  _frontFlipperLowerCollider: {fileID: 5795216971677553721}
+  _frontFootCollider: {fileID: 8062061494419217889}
+  _backFootCollider: {fileID: 364787081291179283}
+--- !u!114 &79367290388874975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807875206248570255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c415f633318d75347abc38dc748c8bc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _penguinOnFeetSettings: {fileID: 11400000, guid: 06315a86b522e2e47b0e1a7cf2b82ee8, type: 2}
+  _penguinOnBellySettings: {fileID: 11400000, guid: 18187a383bafbcb439199a3912f5c3a2, type: 2}
+  _penguinAnimation: {fileID: 2002890420633338778}
+  _penguinSkeleton: {fileID: 4485612146676894531}
 --- !u!1001 &4068149060780552846
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -210,13 +248,43 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+--- !u!70 &364787081291179283 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 4430138981906831261, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+  m_PrefabInstance: {fileID: 4068149060780552846}
+  m_PrefabAsset: {fileID: 0}
+--- !u!70 &728521996775082805 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 3632367371668142523, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+  m_PrefabInstance: {fileID: 4068149060780552846}
+  m_PrefabAsset: {fileID: 0}
+--- !u!70 &2800808826828882743 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 2209720188017045945, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+  m_PrefabInstance: {fileID: 4068149060780552846}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &4064187206090137445 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: -9218273879223865877, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
   m_PrefabInstance: {fileID: 4068149060780552846}
   m_PrefabAsset: {fileID: 0}
+--- !u!70 &4882723521779048514 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 8914333575235261132, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+  m_PrefabInstance: {fileID: 4068149060780552846}
+  m_PrefabAsset: {fileID: 0}
+--- !u!70 &5795216971677553721 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 7500823407585273527, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+  m_PrefabInstance: {fileID: 4068149060780552846}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6942077982957359458 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6351147641708094444, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+  m_PrefabInstance: {fileID: 4068149060780552846}
+  m_PrefabAsset: {fileID: 0}
+--- !u!70 &8062061494419217889 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6311454246606712687, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
   m_PrefabInstance: {fileID: 4068149060780552846}
   m_PrefabAsset: {fileID: 0}
