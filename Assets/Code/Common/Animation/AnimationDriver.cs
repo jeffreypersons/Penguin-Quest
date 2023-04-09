@@ -37,33 +37,31 @@ namespace PQ.Common.Animation
     {
         private bool _initialized;
         private Animator _animator;
-        private EnumMap<EventId, PqEvent> _animationEvents;
-        private EnumMap<ParamId, string>  _animationParams;
+        private EnumMap<EventId, PqEvent> _events;
+        private EnumMap<ParamId, string>  _params;
 
         public Vector2 SkeletalRootPosition => _animator.rootPosition;
 
         public override string ToString()
         {
-            return $"{GetType()}(" +
-                $"gameObject:{base.name}," +
-                $"animator:{(_animator == null? "<none>" : _animator.name)}," +
-                $"events:{_animationEvents?.ToString() ?? "<none>"}," +
-                $"events:{_animationParams?.ToString() ?? "<none>"}" +
-            ")";
+            return
+                $"{GetType()}(gameObject:{base.name}, animator:{(_animator == null ? "<none>" : _animator.name)})" +
+                $"\n  params:{string.Join(',', _params.Values.Select(v => $"{v}"))}" +
+                $"\n  events:{string.Join(',', _events.Values.Select(v => $"{v.Name}"))}";
         }
 
 
         /*** Internal Hooks for Setting up a Animation Component Instance ***/
 
         // external facing event queries such that callbacks to animator events can be hooked up where this is called
-        public IPqEventReceiver LookupEvent(EventId eventId) => _animationEvents[eventId];
+        public IPqEventReceiver LookupEvent(EventId eventId) => _events[eventId];
 
 
         // knobs for feeding the animator relevant data and context that it can then use to determine transitions/blends
 
         public bool SetInteger(ParamId paramId, int paramValue)
         {
-            var paramName = _animationParams[paramId];
+            var paramName = _params[paramId];
             if (_animator.GetInteger(paramName) == paramValue)
             {
                 return false;
@@ -76,7 +74,7 @@ namespace PQ.Common.Animation
 
         public bool SetBool(ParamId paramId, bool paramValue)
         {
-            var paramName = _animationParams[paramId];
+            var paramName = _params[paramId];
             if (_animator.GetBool(paramName) == paramValue)
             {
                 return false;
@@ -89,7 +87,7 @@ namespace PQ.Common.Animation
 
         public bool SetFloat(ParamId paramId, float paramValue)
         {
-            var paramName = _animationParams[paramId];
+            var paramName = _params[paramId];
             if (_animator.GetFloat(paramName) == paramValue)
             {
                 return false;
@@ -105,7 +103,7 @@ namespace PQ.Common.Animation
         // in the child class
         public bool AddTriggerToQueue(ParamId paramId)
         {
-            var paramName = _animationParams[paramId];
+            var paramName = _params[paramId];
             _animator.SetTrigger(paramName);
             OnParamChanged(paramName, "trigger");
             return true;
@@ -118,7 +116,7 @@ namespace PQ.Common.Animation
         // callback to hook up with Animator in animation clip window, for triggering our custom events via Unity
         protected void RaiseEvent(EventId id)
         {
-            _animationEvents[id].Raise();
+            _events[id].Raise();
             OnEventRaised(id.ToString());
         }
         
@@ -153,15 +151,15 @@ namespace PQ.Common.Animation
 
             _initialized = true;
             _animator = animator;
-            _animationEvents = new EnumMap<EventId, PqEvent>();
-            _animationParams = new EnumMap<ParamId, string>();
-            foreach (EventId eventId in _animationEvents.EnumFields)
+            _events = new EnumMap<EventId, PqEvent>();
+            _params = new EnumMap<ParamId, string>();
+            foreach (EventId eventId in _events.EnumFields)
             {
-                _animationEvents.Add(eventId, new PqEvent(eventId.ToString()));
+                _events.Add(eventId, new PqEvent(eventId.ToString()));
             }
-            foreach (ParamId id in _animationParams.EnumFields)
+            foreach (ParamId id in _params.EnumFields)
             {
-                _animationParams.Add(id, id.ToString());
+                _params.Add(id, id.ToString());
             }
         }
 
@@ -199,7 +197,7 @@ namespace PQ.Common.Animation
         // is the ordering, count, and names of our paramIds an _exact_ match with the ones in the mecanim editor window?
         private void EnsureRegisteredAndEditorParamsAreAnExistMatch()
         {
-            IReadOnlyList<string> given  = _animationParams.Values;
+            IReadOnlyList<string> given  = _params.Values;
             IReadOnlyList<string> actual = _animator.parameters.Select(param => param.name).ToArray();
             if (!given.SequenceEqual(actual))
             {

@@ -10,8 +10,8 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnInitialize()
         {
-            Debug.Log("Initialized " + this);
             Initialize(_penguinRigAnimator);
+            Debug.Log("Initialized " + this);
         }
 
         protected override void OnEventRaised(string eventName)
