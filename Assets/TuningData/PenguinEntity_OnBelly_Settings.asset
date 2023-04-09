@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: PenguinEntity_OnBelly_Settings
   m_EditorClassIdentifier: 
   locomotionBlendStep: 0.1
-  walkSpeed: 20
-  jumpSpeed: 100
-  jumpLengthToApex: 10
-  jumpHeightToApex: 10
+  walkSpeed: 0.5
+  jumpSpeed: 0.5
+  jumpLengthToApex: 5
+  jumpHeightToApex: 5
   solverIterationsPerPhysicsUpdate: 10
   collisionBounciness: 0
   collisionFriction: 0
   maxAscendableSlopeAngle: 45
-  skinWidth: 0.25
+  skinWidth: 0.025
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 4096
