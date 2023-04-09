@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2002890420633338778}
   - component: {fileID: 4485612146676894531}
   - component: {fileID: 79367290388874975}
+  - component: {fileID: 5935993559784443868}
   m_Layer: 0
   m_Name: Penguin
   m_TagString: Untagged
@@ -171,6 +172,18 @@ MonoBehaviour:
   _penguinOnBellySettings: {fileID: 11400000, guid: 18187a383bafbcb439199a3912f5c3a2, type: 2}
   _penguinAnimation: {fileID: 2002890420633338778}
   _penguinSkeleton: {fileID: 4485612146676894531}
+--- !u!114 &5935993559784443868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807875206248570255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e0413346044954e9a41b7a83eb98de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4068149060780552846
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -179,13 +192,69 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 99392607343190492}
     m_Modifications:
+    - target: {fileID: 161625882124407328, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 2.275433e-19
+      objectReference: {fileID: 0}
+    - target: {fileID: 161625882124407328, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 8.751192e-33
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451559343169804102, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 2.275433e-19
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451559343169804102, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 2.9092094e-34
+      objectReference: {fileID: 0}
     - target: {fileID: 1954794615901475303, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.000000029802315
       objectReference: {fileID: 0}
+    - target: {fileID: 2054110161264714383, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 1.5557189e-30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2054110161264714383, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 1.362834e-18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676000885627855377, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 1.0813741e-29
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676000885627855377, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 0.00009328935
+      objectReference: {fileID: 0}
+    - target: {fileID: 3014423137384312330, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 0.72775185
+      objectReference: {fileID: 0}
+    - target: {fileID: 3014423137384312330, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 1.362834e-18
+      objectReference: {fileID: 0}
     - target: {fileID: 5254529740304907151, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_Name
       value: Puppet
+      objectReference: {fileID: 0}
+    - target: {fileID: 5684981678015311618, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 1.5557189e-30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5684981678015311618, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 2.0962387e-20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5826593560925505911, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 2.275433e-19
+      objectReference: {fileID: 0}
+    - target: {fileID: 5826593560925505911, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 1.1003433e-15
       objectReference: {fileID: 0}
     - target: {fileID: 5893188474431963402, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_LocalRotation.z
@@ -235,6 +304,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6554259550378103582, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 2.8910985e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6554259550378103582, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 0.00009328935
+      objectReference: {fileID: 0}
     - target: {fileID: 6867539850543450191, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_Chain.m_StoredLocalRotations.Array.data[4].z
       value: -0.00000011920926
@@ -242,6 +319,14 @@ PrefabInstance:
     - target: {fileID: 7826460162982194881, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_Chain.m_StoredLocalRotations.Array.data[2].z
       value: -0.000000029802315
+      objectReference: {fileID: 0}
+    - target: {fileID: 8902447895256317435, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_labelHash
+      value: 0.72775185
+      objectReference: {fileID: 0}
+    - target: {fileID: 8902447895256317435, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_CategoryHash
+      value: 2.0962387e-20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -71,7 +71,7 @@ namespace PQ.Game
 
         private void PauseGame()        => Time.timeScale = 0f;
         private void ResumeGame()       => Time.timeScale = 1f;
-        private void RestartGame()      => SceneExtensions.LoadScene("Game");
+        private void RestartGame()      => SceneExtensions.LoadScene("Main");
         private bool WinConditionMet()  => false;
         private bool LoseConditionMet() => false;
     }

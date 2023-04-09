@@ -44,7 +44,7 @@ namespace PQ.Common.Events
 
         bool IEquatable<PqEvent>.Equals(PqEvent other) => other is not null && Name == other.Name;
 
-        public override string ToString()         => $"Event({_name})";
+        public override string ToString()         => $"Event<void>({_name})";
         public override int    GetHashCode()      => HashCode.Combine(base.GetHashCode(), _action.GetHashCode(), Name);
         public override bool   Equals(object obj) => ((IEquatable<PqEvent>)this).Equals(obj as PqEvent);
 
