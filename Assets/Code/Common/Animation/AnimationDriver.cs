@@ -46,8 +46,8 @@ namespace PQ.Common.Animation
         {
             return
                 $"{GetType()}(gameObject:{base.name}, animator:{(_animator == null ? "<none>" : _animator.name)})" +
-                $"\n  params: {string.Join(',', _params.Values.Select(v => $"{v}"))}" +
-                $"\n  events: {string.Join(',', _events.Values.Select(v => $"{v.Name}"))}";
+                $"\n  params: {string.Join(", ", _params.Values.Select(v => $"{v}"))}" +
+                $"\n  events: {string.Join(", ", _events.Values.Select(v => $"{v.Name}"))}";
         }
 
 
