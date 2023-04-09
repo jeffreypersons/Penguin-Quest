@@ -45,7 +45,12 @@ namespace PQ.Common.Animation
         public override string ToString()
         {
             return $"{GetType()}" +
-                   $"(animator:{_animator},{_animationEvents}";
+            return $"{GetType()}(" +
+                $"gameObject:{base.name}," +
+                $"animator:{(_animator == null? "<none>" : _animator.name)}," +
+                $"events:{_animationEvents?.ToString() ?? "<none>"}," +
+                $"events:{_animationParams?.ToString() ?? "<none>"}," +
+            ")";
         }
 
 
