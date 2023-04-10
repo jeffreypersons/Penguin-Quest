@@ -28,7 +28,7 @@ namespace PQ.Game.Entities.Penguin
         {
             _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
-            Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
+            //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
         }
 
         protected override void OnFixedUpdate()
@@ -73,7 +73,7 @@ namespace PQ.Game.Entities.Penguin
             if (!Mathf.Approximately(_locomotionBlend, adjustedBlendAmount))
             {
                 _locomotionBlend = adjustedBlendAmount;
-                Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
+                //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
             }
         }
     }
