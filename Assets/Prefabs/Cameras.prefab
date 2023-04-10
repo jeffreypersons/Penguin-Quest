@@ -472,6 +472,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4401863855381985666}
+  - component: {fileID: 3852360466960447003}
   m_Layer: 0
   m_Name: Cameras
   m_TagString: Untagged
@@ -496,8 +497,23 @@ Transform:
   - {fileID: 4401863855712604966}
   - {fileID: 4401863855148388952}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3852360466960447003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4401863855381985667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd10308f50df4c64285d0ef9c5bfe12c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _followSubject: {fileID: 0}
+  _mainCam: {fileID: 0}
+  _vCams: []
 --- !u!1 &4401863855712604967
 GameObject:
   m_ObjectHideFlags: 0

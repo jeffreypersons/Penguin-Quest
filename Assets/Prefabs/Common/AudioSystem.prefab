@@ -52,7 +52,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5121901045983317106}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: b74c1728a4c7cec4e8570a88fda81c31, type: 3}
@@ -151,7 +151,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5121901046628408877}
   m_Layer: 0
-  m_Name: SoundSystem
+  m_Name: AudioSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,7 +172,7 @@ Transform:
   - {fileID: 5121901045983317108}
   - {fileID: 5121901046953082802}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5121901046953082814
 GameObject:
@@ -219,15 +219,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1281f07940613ac4a9c9c450de2fcae3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _volumeScalePlayerScored: 0
-  _volumeScalePlayerHit: 0
-  _volumeScaleEnemyHit: 0
-  _volumeScaleGameOver: 0
-  _playerHit: {fileID: 0}
-  _playerScored: {fileID: 0}
-  _enemyHit: {fileID: 0}
-  _playerWin: {fileID: 0}
-  _playerLose: {fileID: 0}
 --- !u!82 &5121901046953082815
 AudioSource:
   m_ObjectHideFlags: 0
