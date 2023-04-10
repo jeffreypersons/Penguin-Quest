@@ -2,6 +2,7 @@
 using PQ.Common.Extensions;
 using PQ.Game.Entities;
 using PQ.Game.Sound;
+using PQ.Game.Input;
 
 
 // todo: replace config settings with scriptable objects
@@ -12,6 +13,8 @@ namespace PQ.Game
     public class GameController : MonoBehaviour
     {
         [SerializeField] private GameObject            _playerPenguin;
+        [SerializeField] private GameplayInputReceiver _gameplayInputController;
+        [SerializeField] private CameraController      _cameraController;
         [SerializeField] private SoundEffectController _soundEffectController;
         [SerializeField] private SoundTrackController  _soundTrackController;
 
@@ -29,9 +32,10 @@ namespace PQ.Game
              );
 
             _gameEventCenter = GameEventCenter.Instance;
-
             _playerPenguin.SetActive(true);
             _playerPenguin.GetComponent<Entities.Penguin.PenguinFsmSharedData>().EventBus = _gameEventCenter;
+
+            _cameraController.FollowSubject = _playerPenguin.transform;
         }
 
         void Start()

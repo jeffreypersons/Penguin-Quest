@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 5455959190062047664}
   - component: {fileID: 5455959190062047665}
-  - component: {fileID: 1126618776}
   - component: {fileID: 481601335934478071}
+  - component: {fileID: 1126618776}
   m_Layer: 0
   m_Name: InputSystem
-  m_TagString: EventSystem
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5455959190062047665
 MonoBehaviour:
@@ -49,18 +49,6 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
---- !u!114 &1126618776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5455959190062047667}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adc037921f8dad3428173a3d07e0a1b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &481601335934478071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,30 +61,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
-  m_ActionsAsset: {fileID: -944628639613478452, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_PointAction: {fileID: 4789581029050987258, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_MoveAction: {fileID: -78548093980700084, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_SubmitAction: {fileID: 506697568685627458, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_CancelAction: {fileID: 2370686992305860980, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_LeftClickAction: {fileID: 8456929526316647609, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_MiddleClickAction: {fileID: -2519020627607434072, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_RightClickAction: {fileID: 8664571005444101993, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_ScrollWheelAction: {fileID: -6378886835845726903, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_TrackedDevicePositionAction: {fileID: 5142607986276224317, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
-  m_TrackedDeviceOrientationAction: {fileID: -886090780926285475, guid: 65dd9e11b1dfaa14cb798f8d6031291e,
-    type: 3}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_PointAction: {fileID: 4789581029050987258, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_MoveAction: {fileID: -78548093980700084, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_SubmitAction: {fileID: 506697568685627458, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_CancelAction: {fileID: 2370686992305860980, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_LeftClickAction: {fileID: 8456929526316647609, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_MiddleClickAction: {fileID: -2519020627607434072, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_RightClickAction: {fileID: 8664571005444101993, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_ScrollWheelAction: {fileID: -6378886835845726903, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 5142607986276224317, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: -886090780926285475, guid: 65dd9e11b1dfaa14cb798f8d6031291e, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 1
+  m_CursorLockBehavior: 0
+--- !u!114 &1126618776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5455959190062047667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adc037921f8dad3428173a3d07e0a1b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -28,7 +28,7 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnExit()
         {
             _locomotionBlend = 0.0f;
-            Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
+            //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
         }
 
         protected override void OnUpdate()
