@@ -3,6 +3,7 @@ using PQ.Common.Extensions;
 using PQ.Game.Entities;
 using PQ.Game.Sound;
 using PQ.Game.Input;
+using PQ.Game.Camera;
 
 
 // todo: replace config settings with scriptable objects
