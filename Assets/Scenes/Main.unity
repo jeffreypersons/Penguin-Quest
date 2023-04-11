@@ -197,10 +197,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 265413467}
     m_Modifications:
-    - target: {fileID: 4401863854545358135, guid: 24b234cac1a780b47bc77f81eb993d3e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 5.7400007
-      objectReference: {fileID: 0}
     - target: {fileID: 4401863855381985666, guid: 24b234cac1a780b47bc77f81eb993d3e, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -278,10 +274,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 265413467}
     m_Modifications:
-    - target: {fileID: 5121901045983317107, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5121901046628408876, guid: 0a2544a0c5c99754dbac428d23f1d664, type: 3}
       propertyPath: m_Name
       value: Audio
