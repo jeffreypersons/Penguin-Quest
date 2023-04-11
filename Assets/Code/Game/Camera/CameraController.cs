@@ -1,72 +1,78 @@
-using Cinemachine;
 using System;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Cinemachine;
 
 
-/*
-Camera controller for scripting with our game's Cinemachine setup.
-*/
-[ExecuteAlways]
-public class CameraController : MonoBehaviour
+namespace PQ.Game.Camera
 {
-    [Header("Subject to Follow")]
-    [Tooltip("Transform (if any) to follow")]
-    [SerializeField] private Transform _followSubject;
+    /*
+    Camera controller for scripting with our game's Cinemachine setup.
 
-    [Tooltip("Base camera for Cinemachine")]
-    [SerializeField] private CinemachineComponentBase _mainCam;
 
-    [Tooltip("Configured Cinemachine virtual cameras")]
-    [SerializeField] private CinemachineVirtualCamera[] _vCams = Array.Empty<CinemachineVirtualCamera>();
-
-    public override string ToString()
+    Notes
+    - Subjects are assigned at game start, rather than in inspector, to simplify serialization
+      (otherwise we have to account for property being reassigned via inspector during runtime, etc)
+    */
+    public class CameraController : MonoBehaviour
     {
-        return $"{GetType()}(gameObject:{base.name})" +
-            $"\n  follow: {_followSubject?.name ?? "<none>"}";
-    }
+        private Transform _followSubject = null;
 
-    public Transform FollowSubject
-    {
-        get
+        [Tooltip("Base camera for Cinemachine")]
+        [SerializeField] private UnityEngine.Camera _mainCamera = null;
+
+        [Tooltip("Base brain for Cinemachine (must be attached to main camera")]
+        [SerializeField] private CinemachineBrain _brain = null;
+
+        [Tooltip("Configured Cinemachine virtual cameras")]
+        [SerializeField] private CinemachineVirtualCamera[] _virtualCameras = Array.Empty<CinemachineVirtualCamera>();
+
+        public override string ToString()
         {
-            return _followSubject;
+            return $"{GetType()}(gameObject:{base.name})" +
+                $"\n  follow: {_followSubject?.name ?? "<none>"}";
         }
-        set
+
+        public Transform FollowSubject
         {
-            if (ReferenceEquals(_followSubject, value) && ReferenceEquals(_followSubject, _mainCam) && _vCams.All(vCam => ReferenceEquals(vCam.Follow, value)))
+            get
             {
-                return;
+                return _followSubject;
             }
-
-            StringBuilder message = new($"Changed follow object from '{_followSubject?.name}' to '{value?.name}'");
-            _followSubject = value;
-            for (int i = 0; i < _vCams.Length; i++)
+            set
             {
-                message.Append($", updated {_vCams[i].name} follow object from '{_vCams[i].Follow?.name}' to '{value?.name}'");
-                _vCams[i].Follow = _followSubject;
-            }
+                if (ReferenceEquals(_followSubject, value) && ReferenceEquals(_followSubject, _mainCamera) && _virtualCameras.All(vCam => ReferenceEquals(vCam.Follow, value)))
+                {
+                    return;
+                }
 
-            Debug.Log(message.ToString());
+                StringBuilder message = new($"Set follow target to '{value?.name}' (was previously '{_followSubject?.name}')");
+                _followSubject = value;
+                for (int i = 0; i < _virtualCameras.Length; i++)
+                {
+                    _virtualCameras[i].Follow = _followSubject;
+                    message.Append($", set {_virtualCameras[i].name} follow object to '{value?.name}'");
+                }
+                Debug.Log(message.ToString());
+            }
         }
-    }
 
-    #if UNITY_EDITOR
-    void OnValidate()
-    {
-        // cover assignment where changed in editor - force it to update any VCam follows 
-        FollowSubject = _followSubject;
-    }
-    #endif
 
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-        
+        void OnEnable()
+        {
+            if (_mainCamera == null)
+            {
+                throw new MissingComponentException($"Missing component for {base.name} - Main camera unassigned");
+            }
+            if (_brain == null)
+            {
+                throw new MissingComponentException($"Missing component for {base.name} - brain unassigned");
+            }
+            if (_virtualCameras == null || Array.Exists(_virtualCameras, vCam => vCam == null))
+            {
+                throw new MissingComponentException($"Missing component(s) for {base.name} - virtual camera(s) unassigned");
+            }
+        }
     }
 }
