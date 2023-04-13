@@ -47,7 +47,7 @@ namespace PQ.Game.Camera
                     return;
                 }
 
-                StringBuilder message = new($"Set follow target to '{value?.name}' (was previously '{_followSubject?.name}')");
+                StringBuilder message = new($"Set follow target to '{value?.name}' (was previously '{_followSubject?.name?? "<none>"}')");
                 _followSubject = value;
                 for (int i = 0; i < _virtualCameras.Length; i++)
                 {
