@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Cinemachine;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 
 namespace PQ.Game.Camera
@@ -17,7 +18,7 @@ namespace PQ.Game.Camera
     */
     public class CameraController : MonoBehaviour
     {
-        private Transform _followSubject = null;
+        private Transform _followTarget = null;
 
         [Tooltip("Base camera for Cinemachine")]
         [SerializeField] private UnityEngine.Camera _mainCamera = null;
@@ -30,36 +31,45 @@ namespace PQ.Game.Camera
 
         public override string ToString()
         {
+            // todo: add camera stats like viewport, etc
             return $"{GetType()}(gameObject:{base.name})" +
-                $"\n  follow: {_followSubject?.name ?? "<none>"}";
+                $"\n  follow: {_followTarget?.name ?? "<none>"}";
         }
 
-        public Transform FollowSubject
+        private string ExtractTargetName(Transform target) =>
+            (target == null || string.IsNullOrEmpty(target.name)) ? null : target.name;
+
+        private bool IsFollowingTarget(Transform target) =>
+            ReferenceEquals(_followTarget, target) &&
+            _virtualCameras.All(vCam => ReferenceEquals(vCam.Follow, target));
+
+
+        public Transform FollowTarget
         {
             get
             {
-                return _followSubject;
+                return _followTarget;
             }
             set
             {
-                if (ReferenceEquals(_followSubject, value) && ReferenceEquals(_followSubject, _mainCamera) && _virtualCameras.All(vCam => ReferenceEquals(vCam.Follow, value)))
+                if (IsFollowingTarget(value))
                 {
                     return;
                 }
 
-                StringBuilder message = new($"Set follow target to '{value?.name}' (was previously '{_followSubject?.name?? "<none>"}')");
-                _followSubject = value;
+                Debug.LogFormat($"Camera.FollowTarget set to '{0}' (previously '{1}')",
+                    ExtractTargetName(_followTarget) ?? "<none>",
+                    ExtractTargetName(value)         ?? "<none>");
+
+                _followTarget = value;
                 for (int i = 0; i < _virtualCameras.Length; i++)
                 {
-                    _virtualCameras[i].Follow = _followSubject;
-                    message.Append($", set {_virtualCameras[i].name} follow object to '{value?.name}'");
+                    _virtualCameras[i].Follow = _followTarget;
                 }
-                Debug.Log(message.ToString());
             }
         }
 
-
-        void OnEnable()
+        void Awake()
         {
             if (_mainCamera == null)
             {
@@ -73,6 +83,14 @@ namespace PQ.Game.Camera
             {
                 throw new MissingComponentException($"Missing component(s) for {base.name} - virtual camera(s) unassigned");
             }
+
+            StringBuilder message = new();
+            for (int i = 0; i < _virtualCameras.Length; i++)
+            {
+                _virtualCameras[i].Follow = _followTarget;
+                message.Append($",{_virtualCameras[i].name}");
+            }
+            Debug.Log($"Camera attached to {base.name} is awake, with virtual cameras: [{0}]" + message.ToString());
         }
     }
 }
