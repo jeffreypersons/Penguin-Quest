@@ -36,7 +36,7 @@ namespace PQ.Game
             _playerPenguin.SetActive(true);
             _playerPenguin.GetComponent<Entities.Penguin.PenguinFsmSharedData>().EventBus = _gameEventCenter;
 
-            _cameraController.FollowSubject = _playerPenguin.transform;
+            _cameraController.FollowTarget = _playerPenguin.transform;
         }
 
         void Start()
