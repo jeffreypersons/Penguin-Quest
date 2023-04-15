@@ -6,7 +6,7 @@ Preset:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Preset_Shape_Texture
+  m_Name: Preset_Icon
   m_TargetType:
     m_NativeTypeID: 1006
     m_ManagedTypePPtr: {fileID: 0}
@@ -22,7 +22,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_EnableMipMap
-    value: 1
+    value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_sRGBTexture
@@ -166,7 +166,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_SpriteMeshType
-    value: 0
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_Alignment
@@ -186,7 +186,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_SpriteBorder.x
-    value: 64
+    value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_SpriteBorder.y
@@ -194,7 +194,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_SpriteBorder.z
-    value: 64
+    value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_SpriteBorder.w
@@ -202,15 +202,15 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_SpriteGenerateFallbackPhysicsShape
-    value: 1
+    value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_AlphaUsage
-    value: 0
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_AlphaIsTransparency
-    value: 0
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_SpriteTessellationDetail
@@ -218,7 +218,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_TextureType
-    value: 0
+    value: 8
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_TextureShape
@@ -266,7 +266,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PlatformSettings.Array.size
-    value: 6
+    value: 5
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PlatformSettings.Array.data[0].m_BuildTarget
@@ -358,7 +358,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PlatformSettings.Array.data[2].m_BuildTarget
-    value: iPhone
+    value: Server
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PlatformSettings.Array.data[2].m_MaxTextureSize
@@ -446,7 +446,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PlatformSettings.Array.data[4].m_BuildTarget
-    value: Server
+    value: WebGL
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PlatformSettings.Array.data[4].m_MaxTextureSize
@@ -486,50 +486,6 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: m_PlatformSettings.Array.data[4].m_ForceMaximumCompressionQuality_BC6H_BC7
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_BuildTarget
-    value: WebGL
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_MaxTextureSize
-    value: 2048
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_ResizeAlgorithm
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_TextureFormat
-    value: -1
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_TextureCompression
-    value: 1
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_CompressionQuality
-    value: 50
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_CrunchedCompression
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_AllowsAlphaSplitting
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_Overridden
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_AndroidETC2FallbackOverride
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: m_PlatformSettings.Array.data[5].m_ForceMaximumCompressionQuality_BC6H_BC7
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
