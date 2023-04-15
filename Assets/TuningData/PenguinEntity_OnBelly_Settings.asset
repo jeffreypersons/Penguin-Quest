@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: PenguinEntity_OnBelly_Settings
   m_EditorClassIdentifier: 
   locomotionBlendStep: 0.1
-  walkSpeed: 6
+  walkSpeed: 0.5
   jumpSpeed: 0.5
-  jumpLengthToApex: 5
-  jumpHeightToApex: 5
+  jumpLengthToApex: 2
+  jumpHeightToApex: 2
   solverIterationsPerPhysicsUpdate: 10
   collisionBounciness: 0
   collisionFriction: 0

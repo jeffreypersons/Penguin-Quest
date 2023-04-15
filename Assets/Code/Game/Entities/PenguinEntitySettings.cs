@@ -23,22 +23,22 @@ namespace PQ.Game.Entities
         [Range(0.01f, 1.00f)][SerializeField] public float locomotionBlendStep = 0.10f;
 
         [Tooltip("At what speed does the character walk along the horizontal?")]
-        [Range(0, 50)][SerializeField] public float walkSpeed = 2.5f;
+        [Range(0, 10)][SerializeField] public float walkSpeed = 0.50f;
 
         [Tooltip("At what speed does the character move upwards?")]
-        [Range(0, 100)][SerializeField] public float jumpSpeed = 10f;
+        [Range(0, 50)][SerializeField] public float jumpSpeed = 2.50f;
 
         [Tooltip("Horizontal distance from jump origin to bottom center of arc")]
-        [Range(0, 100)][SerializeField] public float jumpLengthToApex = 10f;
+        [Range(0, 50)][SerializeField] public float jumpLengthToApex = 3.50f;
 
         [Tooltip("Vertical Distance from jump origin to top of arc")]
-        [Range(0, 100)][SerializeField] public float jumpHeightToApex = 10f;
+        [Range(0, 50)][SerializeField] public float jumpHeightToApex = 3.50f;
 
 
         [Header("Solver Method")]
 
         [Tooltip("How many times do we iterate the physics solver during a single fixed frame, where we evaluate movement?")]
-        [SerializeField][Range(0, 100)] public int solverIterationsPerPhysicsUpdate = 10;
+        [SerializeField][Range(0, 50)] public int solverIterationsPerPhysicsUpdate = 10;
 
 
         // todo: ideally bounciness/friction would be dealt with per surface/material instead
