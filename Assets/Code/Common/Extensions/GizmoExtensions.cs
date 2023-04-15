@@ -11,8 +11,7 @@ namespace PQ.Common.Extensions
     */
     public static class GizmoExtensions
     {
-        private const float DEFAULT_ARROWHEAD_LENGTH_RATIO = 0.10f;
-        private static readonly Color DEFAULT_COLOR = Color.white;
+        private static readonly Color DefaultColor = Color.white;
 
         /* Draw text at given world position. */
         public static void DrawText(Vector2 position, string text, Color? color = null)
@@ -20,7 +19,7 @@ namespace PQ.Common.Extensions
             // since handles are only available in editor, this becomes a no op when running elsewhere
             #if UNITY_EDITOR
             Color previousColor = Handles.color;
-            Handles.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Handles.color = color.GetValueOrDefault(DefaultColor);
 
             Handles.Label(position, text);
 
@@ -32,7 +31,7 @@ namespace PQ.Common.Extensions
         public static void DrawLine((Vector2, Vector2) endpoints, Color? color = null)
         {
             Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
             Gizmos.DrawLine(endpoints.Item1, endpoints.Item2);
 
@@ -43,7 +42,7 @@ namespace PQ.Common.Extensions
         public static void DrawRect(Vector2 origin, Vector2 xAxis, Vector2 yAxis, Color? color = null)
         {
             Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
             Vector2 min = origin - xAxis - yAxis;
             Vector2 max = origin + xAxis + yAxis;
@@ -69,7 +68,7 @@ namespace PQ.Common.Extensions
             }
 
             Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
             for (int i = 1; i < points.Length; i++)
             {
@@ -79,11 +78,11 @@ namespace PQ.Common.Extensions
             Gizmos.color = previousColor;
         }
 
-        /* Draw a 3d sphere at given world position.*/
+        /* Draw a 3d sphere at given world position. */
         public static void DrawSphere(Vector2 origin, float radius, Color? color = null)
         {
             Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
             Gizmos.DrawSphere(origin, radius);
 
@@ -92,25 +91,26 @@ namespace PQ.Common.Extensions
 
         /*
         Assumes arrow head length is nonzero and from,to are nonequal.
-
-        Note that arrow head length and height are configured to be the same length for simplicity.
+        
+        Note that arrow head length and height are configured to be the same length for simplicity,
+        and sized relative to length of line.
         */
         public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null,
-            float arrowHeadLengthRatio = DEFAULT_ARROWHEAD_LENGTH_RATIO)
+            float arrowheadSizeRatio = 0.10f)
         {
             Color previousColor = Gizmos.color;
-            Gizmos.color = color.GetValueOrDefault(DEFAULT_COLOR);
+            Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
             Vector2 vector    = to - from;
             Vector2 dir       = vector.normalized;
             float length      = vector.magnitude;
-            float arrowLength = arrowHeadLengthRatio * length;
-            Vector2 arrowHeadBottom      = from + ((length - arrowLength) * dir);
-            Vector2 arrowHeadBaseExtents = new Vector2(-dir.y, dir.x) * arrowLength * 0.50f;
+            float arrowLength = arrowheadSizeRatio * length;
+            Vector2 arrowheadBottom      = from + ((length - arrowLength) * dir);
+            Vector2 arrowheadBaseExtents = new Vector2(-dir.y, dir.x) * arrowLength * 0.50f;
 
             Gizmos.DrawLine(from, to);
-            Gizmos.DrawLine(arrowHeadBottom + arrowHeadBaseExtents, to);
-            Gizmos.DrawLine(arrowHeadBottom - arrowHeadBaseExtents, to);
+            Gizmos.DrawLine(arrowheadBottom + arrowheadBaseExtents, to);
+            Gizmos.DrawLine(arrowheadBottom - arrowheadBaseExtents, to);
 
             Gizmos.color = previousColor;
         }
