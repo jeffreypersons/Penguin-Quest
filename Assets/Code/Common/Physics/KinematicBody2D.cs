@@ -83,24 +83,6 @@ namespace PQ.Common.Physics
             Flip(horizontal: false, vertical: false);
         }
 
-        // todo: figure out how to better deal with this
-        private bool ground;
-        private float angle;
-
-        void OnCollisionStay2D(Collision2D collision)
-        {
-            //onGround = true;
-            foreach (ContactPoint2D contact in collision.contacts)
-            {
-                if (contact.point.y < transform.position.y - _skinWidth)
-                {
-                    ground = true;
-                    angle = Vector2.Angle(Up, contact.normal);
-                    Debug.DrawRay(contact.point, contact.normal, Color.white);
-                }
-            }
-        }
-
         public void Flip(bool horizontal, bool vertical)
         {
             _rigidBody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
@@ -217,12 +199,6 @@ namespace PQ.Common.Physics
         }
 
         #if UNITY_EDITOR
-        void OnGUI()
-        {
-            GUI.Label(new Rect(0,  0, 100, 20), $"grounded={ground}");
-            GUI.Label(new Rect(0, 20, 100, 20), $"angle={angle}");
-        }
-
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || !enabled)
