@@ -156,6 +156,7 @@ namespace PQ.Common.Physics
         /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
         public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
         {
+            _castFilter.SetDepth(0, _skinWidth);
             _castFilter.SetLayerMask(layerMask);
 
             Transform transform = _rigidBody.transform;
