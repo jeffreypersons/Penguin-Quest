@@ -62,6 +62,7 @@ namespace PQ.Common.Physics
 
             // now that we have solved for both movement independently, get our flags up to date
             _collisions = _body.CheckForOverlappingContacts(_params.LayerMask, _params.MaxSlopeAngle);
+            Debug.Log(Flags);
         }
 
 
