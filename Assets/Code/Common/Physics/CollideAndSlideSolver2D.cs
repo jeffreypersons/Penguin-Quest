@@ -44,10 +44,11 @@ namespace PQ.Common.Physics
             _body.SetSkinWidth(_params.ContactOffset);
         }
 
+        /* Note - collision responses are accounted for, but any other externalities such as gravity must be passed in. */
         public void Move(Vector2 deltaPosition)
         {
             _body.SetSkinWidth(_params.ContactOffset);
-
+            
             // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
             _collisions = CollisionFlags2D.None;
 
