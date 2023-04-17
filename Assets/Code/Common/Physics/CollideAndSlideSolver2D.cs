@@ -72,7 +72,7 @@ namespace PQ.Common.Physics
         {
             Vector2 currentDelta = desiredDelta;
             CollisionFlags2D flags = CollisionFlags2D.None;
-            for (int i = 0; i < _params.MaxIterations; i++)
+            for (int i = 0; i < _params.MaxIterations && !HasReachedTarget(currentDelta); i++)
             {
                 // move a single linear step along our delta until the detected collision
                 ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
@@ -101,7 +101,7 @@ namespace PQ.Common.Physics
         {
             Vector2 currentDelta = desiredDelta;
             CollisionFlags2D flags = CollisionFlags2D.None;
-            for (int i = 0; i < _params.MaxIterations; i++)
+            for (int i = 0; i < _params.MaxIterations && !HasReachedTarget(currentDelta); i++)
             {
                 // move a single linear step along our delta until the detected collision
                 ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
