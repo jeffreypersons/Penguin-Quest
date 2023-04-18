@@ -196,10 +196,6 @@ namespace PQ.Common.Physics
 
             int hitCount = _collider.Cast(delta, _castFilter, _castHits, delta.magnitude);
             hits = _castHits.AsSpan(0, hitCount);
-            foreach (var hit in hits)
-            {
-                DrawCastResultAsLineInEditor(hit, delta, _skinWidth);
-            }
             return hitCount >= 1;
         }
 
