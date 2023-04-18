@@ -117,6 +117,7 @@ namespace PQ.Common.Physics
             }
 
             // todo: add depenetration algo here
+            Debug.LogFormat("Skin width set to {0} from {1}", skinWidth, _skinWidth);
             _skinWidth = skinWidth;
         }
 
