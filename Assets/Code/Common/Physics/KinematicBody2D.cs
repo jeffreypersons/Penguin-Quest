@@ -16,15 +16,15 @@ namespace PQ.Common.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
-        [SerializeField] private ContactFilter2D _castFilter;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
-        [SerializeField] public bool DrawCastsInEditor { get; set; } = true;
+        [SerializeField] private bool _drawCastsInEditor = true;
 
         private bool  _flippedHorizontal;
         private bool  _flippedVertical;
         private float _skinWidth;
         private Rigidbody2D     _rigidBody;
         private Collider2D      _collider;
+        private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _castHits;
 
         public bool    FlippedHorizontal => _flippedHorizontal;
@@ -71,6 +71,7 @@ namespace PQ.Common.Physics
             _skinWidth  = 0f;
             _rigidBody  = rigidBody;
             _collider   = collider;
+            _castFilter = new ContactFilter2D();
             _castHits   = new RaycastHit2D[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
 
@@ -194,9 +195,12 @@ namespace PQ.Common.Physics
 
             int hitCount = _collider.Cast(delta, _castFilter, _castHits, delta.magnitude);
             hits = _castHits.AsSpan(0, hitCount);
-            foreach (var hit in hits)
+            if (_drawCastsInEditor)
             {
-                DrawCastResultAsLineInEditor(hit, delta, _skinWidth);
+                foreach (var hit in hits)
+                {
+                    DrawCastResultAsLineInEditor(hit, delta, _skinWidth);
+                }
             }
             return hitCount >= 1;
         }
