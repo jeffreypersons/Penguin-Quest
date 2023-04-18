@@ -16,14 +16,15 @@ namespace PQ.Common.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
-        private const int PreallocatedHitBufferSize = 16;
+        [SerializeField] private ContactFilter2D _castFilter;
+        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
+        [SerializeField] public bool DrawCastsInEditor { get; set; } = true;
 
         private bool  _flippedHorizontal;
         private bool  _flippedVertical;
         private float _skinWidth;
         private Rigidbody2D     _rigidBody;
         private Collider2D      _collider;
-        private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _castHits;
 
         public bool    FlippedHorizontal => _flippedHorizontal;
@@ -34,8 +35,6 @@ namespace PQ.Common.Physics
         public float   SkinWidth         => _skinWidth;
         public Vector2 Forward           => _rigidBody.transform.right.normalized;
         public Vector2 Up                => _rigidBody.transform.up.normalized;
-
-        public bool DrawCastsInEditor { get; set; } = true;
 
         public Bounds BoundsOuter
         {
@@ -72,8 +71,7 @@ namespace PQ.Common.Physics
             _skinWidth  = 0f;
             _rigidBody  = rigidBody;
             _collider   = collider;
-            _castFilter = new ContactFilter2D();
-            _castHits   = new RaycastHit2D[PreallocatedHitBufferSize];
+            _castHits   = new RaycastHit2D[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
 
             _rigidBody.isKinematic = true;
@@ -204,6 +202,19 @@ namespace PQ.Common.Physics
         }
 
         #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (!Application.IsPlaying(this))
+            {
+                return;
+            }
+
+            if (_preallocatedHitBufferSize != _castHits.Length)
+            {
+                _castHits = new RaycastHit2D[_preallocatedHitBufferSize];
+            }
+        }
+
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || !enabled)
