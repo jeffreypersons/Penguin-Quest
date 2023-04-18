@@ -28,7 +28,7 @@ namespace PQ.Game.Peformance
 
             string vSync     = VSyncCount > 0 ? "on" : "off";
             string fps       = TargetFrameRate == -1 ? "platform default" : $"{TargetFrameRate}";
-            string quality   = $"{QualityLevel}[{string.Join(',', qualities)}]";
+            string quality   = $"[{string.Join(',', qualities)}]";
             string timeScale = $"{TimeScale}";
             return $"{GetType()}(VSync:{vSync}, TargetFps:{fps}, Quality:{quality}, TimeScale:{timeScale})";
         }
