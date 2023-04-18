@@ -20,6 +20,7 @@ namespace PQ.Common.Physics
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
         [SerializeField] public bool DrawCastsInEditor { get; set; } = true;
 
+        private bool  _initialized;
         private bool  _flippedHorizontal;
         private bool  _flippedVertical;
         private float _skinWidth;
@@ -79,6 +80,7 @@ namespace PQ.Common.Physics
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             Flip(horizontal: false, vertical: false);
+            _initialized = true;
         }
 
         public void Flip(bool horizontal, bool vertical)
@@ -204,7 +206,7 @@ namespace PQ.Common.Physics
         #if UNITY_EDITOR
         private void OnValidate()
         {
-            if (!Application.IsPlaying(this))
+            if (!Application.IsPlaying(this) || !_initialized)
             {
                 return;
             }
