@@ -167,19 +167,19 @@ namespace PQ.Common.Physics
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (_collider.Cast(right, _castFilter, _castHits, _skinWidth) >= 1)
+            if (_collider.Cast(right, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (_collider.Cast(up, _castFilter, _castHits, _skinWidth) >= 1)
+            if (_collider.Cast(up, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (_collider.Cast(left, _castFilter, _castHits, _skinWidth) >= 1)
+            if (_collider.Cast(left, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (_collider.Cast(down, _castFilter, _castHits, _skinWidth) >= 1)
+            if (_collider.Cast(down, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
             {
                 flags |= CollisionFlags2D.Below;
             }
@@ -195,7 +195,7 @@ namespace PQ.Common.Physics
         {
             _castFilter.SetLayerMask(layerMask);
 
-            int hitCount = _collider.Cast(delta, _castFilter, _castHits, delta.magnitude);
+            int hitCount = _collider.Cast(delta, _castFilter, _castHits, delta.magnitude, ignoreSiblingColliders: true);
             hits = _castHits.AsSpan(0, hitCount);
             foreach (var hit in hits)
             {
