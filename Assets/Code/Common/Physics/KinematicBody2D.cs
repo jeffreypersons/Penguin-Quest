@@ -157,9 +157,6 @@ namespace PQ.Common.Physics
         /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
         public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
         {
-            //_castFilter.SetDepth(0, _skinWidth);
-            _castFilter.SetLayerMask(layerMask);
-
             Transform transform = _rigidBody.transform;
             Vector2 right = transform.right.normalized;
             Vector2 up    = transform.up.normalized;
@@ -167,22 +164,23 @@ namespace PQ.Common.Physics
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (_collider.Cast(right, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            if (CastAAB(_skinWidth * right, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (_collider.Cast(up, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            if (CastAAB(_skinWidth * up, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (_collider.Cast(left, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            if (CastAAB(_skinWidth * left, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (_collider.Cast(down, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            if (CastAAB(_skinWidth * down, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Below;
             }
+
             return flags;
         }
         
@@ -201,6 +199,8 @@ namespace PQ.Common.Physics
             {
                 DrawCastResultAsLineInEditor(hit, delta, _skinWidth);
             }
+
+            _castFilter.SetLayerMask(~layerMask);
             return hitCount >= 1;
         }
 
