@@ -16,14 +16,16 @@ namespace PQ.Common.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
-        private const int PreallocatedHitBufferSize = 16;
+        [SerializeField] private ContactFilter2D _castFilter;
+        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
+        [SerializeField] public bool DrawCastsInEditor { get; set; } = true;
 
+        private bool  _initialized;
         private bool  _flippedHorizontal;
         private bool  _flippedVertical;
         private float _skinWidth;
         private Rigidbody2D     _rigidBody;
         private Collider2D      _collider;
-        private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _castHits;
 
         public bool    FlippedHorizontal => _flippedHorizontal;
@@ -34,8 +36,6 @@ namespace PQ.Common.Physics
         public float   SkinWidth         => _skinWidth;
         public Vector2 Forward           => _rigidBody.transform.right.normalized;
         public Vector2 Up                => _rigidBody.transform.up.normalized;
-
-        public bool DrawCastsInEditor { get; set; } = true;
 
         public Bounds BoundsOuter
         {
@@ -72,8 +72,7 @@ namespace PQ.Common.Physics
             _skinWidth  = 0f;
             _rigidBody  = rigidBody;
             _collider   = collider;
-            _castFilter = new ContactFilter2D();
-            _castHits   = new RaycastHit2D[PreallocatedHitBufferSize];
+            _castHits   = new RaycastHit2D[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
 
             _rigidBody.isKinematic = true;
@@ -81,24 +80,7 @@ namespace PQ.Common.Physics
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             Flip(horizontal: false, vertical: false);
-        }
-
-        // todo: figure out how to better deal with this
-        private bool ground;
-        private float angle;
-
-        void OnCollisionStay2D(Collision2D collision)
-        {
-            //onGround = true;
-            foreach (ContactPoint2D contact in collision.contacts)
-            {
-                if (contact.point.y < transform.position.y - _skinWidth)
-                {
-                    ground = true;
-                    angle = Vector2.Angle(Up, contact.normal);
-                    Debug.DrawRay(contact.point, contact.normal, Color.white);
-                }
-            }
+            _initialized = true;
         }
 
         public void Flip(bool horizontal, bool vertical)
@@ -135,6 +117,7 @@ namespace PQ.Common.Physics
             }
 
             // todo: add depenetration algo here
+            Debug.LogFormat("Skin width set to {0} from {1}", skinWidth, _skinWidth);
             _skinWidth = skinWidth;
         }
 
@@ -174,8 +157,6 @@ namespace PQ.Common.Physics
         /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
         public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
         {
-            _castFilter.SetLayerMask(layerMask);
-
             Transform transform = _rigidBody.transform;
             Vector2 right = transform.right.normalized;
             Vector2 up    = transform.up.normalized;
@@ -183,22 +164,23 @@ namespace PQ.Common.Physics
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (_collider.Cast(right, _castFilter, _castHits, _skinWidth) >= 1)
+            if (CastAAB(_skinWidth * right, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (_collider.Cast(up, _castFilter, _castHits, _skinWidth) >= 1)
+            if (CastAAB(_skinWidth * up, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (_collider.Cast(left, _castFilter, _castHits, _skinWidth) >= 1)
+            if (CastAAB(_skinWidth * left, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (_collider.Cast(down, _castFilter, _castHits, _skinWidth) >= 1)
+            if (CastAAB(_skinWidth * down, layerMask, out _))
             {
                 flags |= CollisionFlags2D.Below;
             }
+
             return flags;
         }
         
@@ -211,16 +193,29 @@ namespace PQ.Common.Physics
         {
             _castFilter.SetLayerMask(layerMask);
 
-            int hitCount = _collider.Cast(delta, _castFilter, _castHits, delta.magnitude);
+            int hitCount = _collider.Cast(delta, _castFilter, _castHits, delta.magnitude, ignoreSiblingColliders: true);
             hits = _castHits.AsSpan(0, hitCount);
+            foreach (var hit in hits)
+            {
+                DrawCastResultAsLineInEditor(hit, delta, _skinWidth);
+            }
+
+            _castFilter.SetLayerMask(~layerMask);
             return hitCount >= 1;
         }
 
         #if UNITY_EDITOR
-        void OnGUI()
+        private void OnValidate()
         {
-            GUI.Label(new Rect(0,  0, 100, 20), $"grounded={ground}");
-            GUI.Label(new Rect(0, 20, 100, 20), $"angle={angle}");
+            if (!Application.IsPlaying(this) || !_initialized)
+            {
+                return;
+            }
+
+            if (_preallocatedHitBufferSize != _castHits.Length)
+            {
+                _castHits = new RaycastHit2D[_preallocatedHitBufferSize];
+            }
         }
 
         void OnDrawGizmos()

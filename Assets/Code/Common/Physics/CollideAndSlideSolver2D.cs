@@ -44,10 +44,11 @@ namespace PQ.Common.Physics
             _body.SetSkinWidth(_params.ContactOffset);
         }
 
+        /* Note - collision responses are accounted for, but any other externalities such as gravity must be passed in. */
         public void Move(Vector2 deltaPosition)
         {
             _body.SetSkinWidth(_params.ContactOffset);
-
+            
             // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
             _collisions = CollisionFlags2D.None;
 
@@ -62,6 +63,7 @@ namespace PQ.Common.Physics
 
             // now that we have solved for both movement independently, get our flags up to date
             _collisions = _body.CheckForOverlappingContacts(_params.LayerMask, _params.MaxSlopeAngle);
+            Debug.Log(Flags);
         }
 
 
@@ -71,7 +73,7 @@ namespace PQ.Common.Physics
         {
             Vector2 currentDelta = desiredDelta;
             CollisionFlags2D flags = CollisionFlags2D.None;
-            for (int i = 0; i < _params.MaxIterations; i++)
+            for (int i = 0; i < _params.MaxIterations && !HasReachedTarget(currentDelta); i++)
             {
                 // move a single linear step along our delta until the detected collision
                 ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
@@ -100,7 +102,7 @@ namespace PQ.Common.Physics
         {
             Vector2 currentDelta = desiredDelta;
             CollisionFlags2D flags = CollisionFlags2D.None;
-            for (int i = 0; i < _params.MaxIterations; i++)
+            for (int i = 0; i < _params.MaxIterations && !HasReachedTarget(currentDelta); i++)
             {
                 // move a single linear step along our delta until the detected collision
                 ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);

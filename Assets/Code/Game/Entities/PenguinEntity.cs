@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 using PQ.Common.Physics;
 
@@ -7,7 +8,8 @@ namespace PQ.Game.Entities
 {
     public sealed class PenguinEntity
     {
-        public System.Action OnGroundContactChanged { get; set; }
+        // todo: replace with an event bus
+        public Action OnGroundContactChanged { get; set; }
         public PenguinEntitySettings Settings
         {
             get
