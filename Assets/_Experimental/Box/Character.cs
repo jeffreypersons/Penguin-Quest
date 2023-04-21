@@ -12,7 +12,6 @@ namespace PQ.TestScenes.Box
         [Range(0,  1)][SerializeField] private float _skinWidth           = 0.25f;
 
         private bool    _grounded  = false;
-        private bool    _flipped   = false;
         private Vector2 _inputAxis = Vector2.zero;
         private Mover   _mover;
 
@@ -24,6 +23,7 @@ namespace PQ.TestScenes.Box
                 $"skinWidth:{_skinWidth}" +
             $"}}";
 
+        
         private void Awake()
         {
             _mover = new Mover(gameObject.transform);
@@ -39,12 +39,9 @@ namespace PQ.TestScenes.Box
 
         void FixedUpdate()
         {
-            // align if requested input in opposite direction
-            if (_inputAxis.x > 0 || 
-                !Mathf.Approximately(_inputAxis.x, 0f) &&
-                (_flipped != _inputAxis.x < 0))
+            if (!Mathf.Approximately(_inputAxis.x, 0f))
             {
-                // flip
+                _mover.Flip(horizontal: _inputAxis.x < 0, vertical: false);
             }
 
             float time = Time.fixedDeltaTime;
