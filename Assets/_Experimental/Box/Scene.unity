@@ -123,7 +123,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &226961832
+--- !u!1001 &376016316
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -188,7 +188,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 170b893c6459a394585bd2c098a275d5, type: 3}
---- !u!1001 &5129725273197097590
+--- !u!1001 &1639118127
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -249,7 +249,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8dd8740eb7eb8414297562c846f468b9, type: 3}
---- !u!1001 &8289068326201193930
+--- !u!1001 &1643375491
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -259,7 +259,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 124255097894653441, guid: 330338d0c76e54f46a1dfc97f37f96af, type: 3}
       propertyPath: m_Name
-      value: Camera
+      value: FixedCam
       objectReference: {fileID: 0}
     - target: {fileID: 1671424374037217978, guid: 330338d0c76e54f46a1dfc97f37f96af, type: 3}
       propertyPath: m_RootOrder
@@ -271,7 +271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1671424374037217978, guid: 330338d0c76e54f46a1dfc97f37f96af, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.75
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1671424374037217978, guid: 330338d0c76e54f46a1dfc97f37f96af, type: 3}
       propertyPath: m_LocalPosition.z
