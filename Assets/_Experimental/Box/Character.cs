@@ -11,7 +11,7 @@ namespace PQ.TestScenes.Box
         [Range(0, 50)][SerializeField] private int   _maxSolverIterations = 10;
         [Range(0,  1)][SerializeField] private float _skinWidth           = 0.025f;
 
-        private bool    _grounded  = false;
+        private bool    _grounded  = true;
         private Vector2 _inputAxis = Vector2.zero;
         private Mover   _mover;
 
@@ -50,10 +50,11 @@ namespace PQ.TestScenes.Box
             float time = Time.fixedDeltaTime;
             Vector2 velocity = new(
                 x: _inputAxis.x * _horizontalSpeed,
-                y: -_gravitySpeed
+                y: _grounded? 0 : -_gravitySpeed
             );
 
             _mover.Move(time * velocity);
+            _grounded = _mover.InContact(CollisionFlags2D.Below);
         }
 
 

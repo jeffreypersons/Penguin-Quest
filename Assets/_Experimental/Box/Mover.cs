@@ -15,17 +15,15 @@ namespace PQ.TestScenes.Box
         Above  = 1 << 4,
         All    = ~0,
     }
+
     public sealed class Mover
     {
         private const int PreallocatedHitBufferSize = 16;
 
         private CollisionFlags2D _collisions;
         private float            _maxAngle;
-        private bool             _flippedHorizontal;
-        private bool             _flippedVertical;
         private float            _skinWidth;
         private int              _maxIterations;
-        private LayerMask        _layerMask;
         private Rigidbody2D      _body;
         private BoxCollider2D    _aabb;
         private ContactFilter2D  _castFilter;
@@ -47,6 +45,8 @@ namespace PQ.TestScenes.Box
         public float   SkinWidth => _skinWidth;
         public Vector2 Forward   => _body.transform.right.normalized;
         public Vector2 Up        => _body.transform.up.normalized;
+
+        public bool InContact(CollisionFlags2D flags) => (_collisions & flags) == flags;
 
         [Pure]
         private bool ApproximatelyZero(Vector2 delta)
