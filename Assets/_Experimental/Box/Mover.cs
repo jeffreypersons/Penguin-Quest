@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -112,11 +113,6 @@ namespace PQ.TestScenes.Box
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-
-
-            // now that we have solved for both movement independently, get our flags up to date
-            _collisions = CheckForOverlappingContacts();
-            Debug.Log(_collisions);
         }
 
 
@@ -128,23 +124,21 @@ namespace PQ.TestScenes.Box
             for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
             {
                 // move a single linear step along our delta until the detected collision
-                ExtrapolateLinearStep(delta, out float fractionExtrapolated, out RaycastHit2D hit);
+                ExtrapolateLinearStep(delta, out Vector2 step, out RaycastHit2D hit);
+                delta -= step;
 
                 // move directly to target if unobstructed
                 if (!hit)
                 {
-                    _body.position += fractionExtrapolated * delta;
-                    delta = Vector2.zero;
+                    _body.position += step;
                     continue;
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAngle)
                 {
-                    delta = ComputeCollisionDelta(delta, hit.normal);
+                    delta += ComputeCollisionDelta(step, hit.normal);
                 }
-
-                delta = ComputeCollisionDelta(fractionExtrapolated * delta, hit.normal);
                 _body.position += delta;
             }
         }
@@ -157,13 +151,13 @@ namespace PQ.TestScenes.Box
             for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
             {
                 // move a single linear step along our delta until the detected collision
-                ExtrapolateLinearStep(delta, out float fractionExtrapolated, out RaycastHit2D hit);
-                delta *= fractionExtrapolated;
+                ExtrapolateLinearStep(delta, out Vector2 step, out RaycastHit2D hit);
+                delta -= step;
 
                 // move directly to target if unobstructed
                 if (!hit)
                 {
-                    _body.position += fractionExtrapolated * delta;
+                    _body.position += step;
                     delta = Vector2.zero;
                     continue;
                 }
@@ -171,7 +165,7 @@ namespace PQ.TestScenes.Box
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
                 if (Vector2.Angle(Vector2.up, hit.normal) > _maxAngle)
                 {
-                    delta = ComputeCollisionDelta(delta, hit.normal);
+                    delta += ComputeCollisionDelta(step, hit.normal);
                 }
                 _body.position += delta;
             }
@@ -181,13 +175,13 @@ namespace PQ.TestScenes.Box
         /*
         Compute projection of AABB linearly along given delta until first obstruction. Takes skin width into account.
         */
-        private void ExtrapolateLinearStep(Vector2 delta, out float fraction, out RaycastHit2D hit)
+        private void ExtrapolateLinearStep(Vector2 delta, out Vector2 step, out RaycastHit2D hit)
         {
             float maxDistance = delta.magnitude;
             int hitCount = _aabb.Cast(delta, _castFilter, _castHits, delta.magnitude, ignoreSiblingColliders: true);
             if (delta == Vector2.zero || hitCount < 1)
             {
-                fraction = 1.00f;
+                step = delta;
                 hit = default;
                 return;
             }
@@ -203,10 +197,8 @@ namespace PQ.TestScenes.Box
             }
             hit = _castHits[closestHitIndex];
 
-            // todo: account for skin width
-            Vector2 step = hit.point - hit.centroid;
-
-            fraction = step.magnitude / maxDistance;
+            ComputeRayOffset(delta, out Vector2 _, out Vector2 offset);
+            step = hit.point - hit.centroid - offset;
         }
 
 
@@ -231,36 +223,44 @@ namespace PQ.TestScenes.Box
             Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
             return perpendicularContribution + tangentialContribution;
         }
-        
-        /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
-        public CollisionFlags2D CheckForOverlappingContacts()
+
+        /* What's the delta between the AABB and the expanded AAB (with skin width) from center in given direction? */
+        private void ComputeRayOffset(Vector2 direction, out Vector2 deltaInner, out Vector2 deltaOuter)
         {
-            Transform transform = _body.transform;
-            Vector2 right = transform.right.normalized;
-            Vector2 up    = transform.up.normalized;
-            Vector2 left  = -right;
-            Vector2 down  = -up;
+            Vector2 center    = Vector2.zero;
+            Vector2 size      = new(_aabb.bounds.size.x, _aabb.bounds.size.y);
+            Vector2 maxOffset = new(_skinWidth, _skinWidth);
 
-            CollisionFlags2D flags = CollisionFlags2D.None;
-            if (_aabb.Cast(right, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
-            {
-                flags |= CollisionFlags2D.Front;
-            }
-            if (_aabb.Cast(up, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
-            {
-                flags |= CollisionFlags2D.Above;
-            }
-            if (_aabb.Cast(left, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
-            {
-                flags |= CollisionFlags2D.Behind;
-            }
-            if (_aabb.Cast(down, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
-            {
-                flags |= CollisionFlags2D.Below;
-            }
+            Ray    ray   = new(center, direction);
+            Bounds inner = new(center, size);
+            Bounds outer = new(center, size + maxOffset);
+            inner.IntersectRay(ray, out float distanceToInner);
+            outer.IntersectRay(ray, out float distanceToOuter);
 
-            return flags;
+            deltaInner = distanceToInner * direction.normalized;
+            deltaOuter = distanceToOuter * direction.normalized;
         }
+
+        /* What's the delta between the AABB and the expanded AAB (with skin width) from center in given direction? */
+        private Vector2 ComputeContactOffset(Vector2 direction)
+        {
+            if (Mathf.Approximately(_skinWidth, 0f))
+            {
+                return Vector2.zero;
+            }
+
+            Vector2 center = Vector2.zero;
+            Vector2 size = new(_aabb.bounds.size.x, _aabb.bounds.size.y);
+            Vector2 maxOffset = new(_skinWidth, _skinWidth);
+
+            Ray ray = new(center, direction);
+            Bounds inner = new(center, size);
+            Bounds outer = new(center, size + maxOffset);
+            inner.IntersectRay(ray, out float distanceToInner);
+            outer.IntersectRay(ray, out float distanceToOuter);
+            return (distanceToOuter - distanceToInner) * direction.normalized;
+        }
+
         private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, Vector2 delta, float offset)
         {
             if (!hit)
