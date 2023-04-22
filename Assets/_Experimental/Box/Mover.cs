@@ -5,20 +5,31 @@ using UnityEngine;
 
 namespace PQ.TestScenes.Box
 {
+    [Flags]
+    public enum CollisionFlags2D
+    {
+        None   = 0,
+        Front  = 1 << 1,
+        Below  = 1 << 2,
+        Behind = 1 << 3,
+        Above  = 1 << 4,
+        All    = ~0,
+    }
     public sealed class Mover
     {
         private const int PreallocatedHitBufferSize = 16;
 
-        private float     _maxAngle;
-        private bool      _flippedHorizontal;
-        private bool      _flippedVertical;
-        private float     _skinWidth;
-        private int       _maxIterations;
-        private LayerMask _layerMask;
-        private Rigidbody2D     _body;
-        private BoxCollider2D   _aabb;
-        private ContactFilter2D _castFilter;
-        private RaycastHit2D[]  _castHits;
+        private CollisionFlags2D _collisions;
+        private float            _maxAngle;
+        private bool             _flippedHorizontal;
+        private bool             _flippedVertical;
+        private float            _skinWidth;
+        private int              _maxIterations;
+        private LayerMask        _layerMask;
+        private Rigidbody2D      _body;
+        private BoxCollider2D    _aabb;
+        private ContactFilter2D  _castFilter;
+        private RaycastHit2D[]   _castHits;
 
         public override string ToString() =>
             $"Mover{{" +
@@ -56,6 +67,7 @@ namespace PQ.TestScenes.Box
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
 
+            _collisions = CollisionFlags2D.None;
             _skinWidth  = 0f;
             _body       = rigidBody;
             _aabb       = boxCollider;
@@ -89,6 +101,9 @@ namespace PQ.TestScenes.Box
         /* Note - collision responses are accounted for, but any other externalities such as gravity must be passed in. */
         public void Move(Vector2 deltaPosition)
         {
+            // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
+            _collisions = CollisionFlags2D.None;
+
             // scale deltas in proportion to the y-axis
             Vector2 up         = _body.transform.up.normalized;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
@@ -97,6 +112,11 @@ namespace PQ.TestScenes.Box
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
+
+
+            // now that we have solved for both movement independently, get our flags up to date
+            _collisions = CheckForOverlappingContacts();
+            Debug.Log(_collisions);
         }
 
 
@@ -118,6 +138,12 @@ namespace PQ.TestScenes.Box
                     continue;
                 }
 
+                // unless there's an overly steep slope, move a linear step with properties taken into account
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAngle)
+                {
+                    delta = ComputeCollisionDelta(delta, hit.normal);
+                }
+
                 delta = ComputeCollisionDelta(fractionExtrapolated * delta, hit.normal);
                 _body.position += delta;
             }
@@ -132,6 +158,7 @@ namespace PQ.TestScenes.Box
             {
                 // move a single linear step along our delta until the detected collision
                 ExtrapolateLinearStep(delta, out float fractionExtrapolated, out RaycastHit2D hit);
+                delta *= fractionExtrapolated;
 
                 // move directly to target if unobstructed
                 if (!hit)
@@ -141,7 +168,11 @@ namespace PQ.TestScenes.Box
                     continue;
                 }
 
-                delta = ComputeCollisionDelta(fractionExtrapolated * delta, hit.normal);
+                // only if there's an overly steep slope, do we want to take action (eg sliding down)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _maxAngle)
+                {
+                    delta = ComputeCollisionDelta(delta, hit.normal);
+                }
                 _body.position += delta;
             }
         }
@@ -201,6 +232,35 @@ namespace PQ.TestScenes.Box
             return perpendicularContribution + tangentialContribution;
         }
         
+        /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
+        public CollisionFlags2D CheckForOverlappingContacts()
+        {
+            Transform transform = _body.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
+
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            if (_aabb.Cast(right, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            {
+                flags |= CollisionFlags2D.Front;
+            }
+            if (_aabb.Cast(up, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            {
+                flags |= CollisionFlags2D.Above;
+            }
+            if (_aabb.Cast(left, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            {
+                flags |= CollisionFlags2D.Behind;
+            }
+            if (_aabb.Cast(down, _castFilter, _castHits, _skinWidth, ignoreSiblingColliders: true) >= 1)
+            {
+                flags |= CollisionFlags2D.Below;
+            }
+
+            return flags;
+        }
         private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, Vector2 delta, float offset)
         {
             if (!hit)
