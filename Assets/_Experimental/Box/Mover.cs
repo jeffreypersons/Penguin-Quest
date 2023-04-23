@@ -83,7 +83,7 @@ namespace PQ.TestScenes.Box
                 // move directly to target if unobstructed
                 if (!hit)
                 {
-                    _body.MoveBy(hit.point - hit.centroid);
+                    _body.MoveBy(delta);
                     delta = Vector2.zero;
                     continue;
                 }
