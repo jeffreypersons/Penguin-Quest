@@ -108,7 +108,7 @@ namespace PQ.TestScenes.Box
             }
             hit = _castHits[closestHitIndex];
 
-            DrawCastResultAsLineInEditor(hit, delta, _skinWidth);
+            DrawCastResultAsLineInEditor(delta, hitCount > 0? hit.point : null);
         }
 
 
@@ -130,25 +130,15 @@ namespace PQ.TestScenes.Box
         }
         
         
-        private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, Vector2 delta, float offset)
+        private void DrawCastResultAsLineInEditor(Vector2 delta, Vector2? hitPoint)
         {
-            if (!hit)
+            float duration = Time.fixedDeltaTime;
+            Vector2 centroid = Bounds.center;
+            Debug.DrawLine(centroid, centroid + delta, Color.red, duration);
+            if (hitPoint != null)
             {
-                // unfortunately we can't reliably find the origin of the cast
-                // if there was no hit (as far as I'm aware), so nothing to draw
-                return;
+                Debug.DrawLine(centroid, hitPoint.Value, Color.green, duration);
             }
-            
-            float duration  = Time.fixedDeltaTime;
-            Vector2 direction = delta.normalized;
-            Vector2 start     = hit.point - hit.distance * direction;
-            Vector2 origin    = hit.point - (hit.distance - offset) * direction;
-            Vector2 hitPoint  = hit.point;
-            Vector2 end       = hit.point + (1f - hit.fraction) * (delta.magnitude + offset) * direction;
-
-            Debug.DrawLine(start,    origin,   Color.magenta, duration);
-            Debug.DrawLine(origin,   hitPoint, Color.green,   duration);
-            Debug.DrawLine(hitPoint, end,      Color.red,     duration);
         }
 
         void OnValidate()

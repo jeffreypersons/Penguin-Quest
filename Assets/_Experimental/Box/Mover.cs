@@ -95,20 +95,7 @@ namespace PQ.TestScenes.Box
         /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
         private void MoveVertical(Vector2 initialDelta)
         {
-            Vector2 delta = initialDelta;
-            for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
-            {
-                // move a single linear step along our delta until the detected collision
-                ExtrapolateLinearStep(delta, out Vector2 step, out RaycastHit2D hit);
-                delta -= step;
-
-                // move directly to target if unobstructed
-                if (!hit)
-                {
-                    _body.MoveBy(step);
-                    continue;
-                }
-            }
+            ExtrapolateLinearStep(initialDelta, out _, out _);
         }
 
 
