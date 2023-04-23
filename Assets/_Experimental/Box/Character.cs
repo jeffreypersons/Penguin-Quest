@@ -51,6 +51,7 @@ namespace PQ.TestScenes.Box
                 y: _grounded? 0 : -_gravitySpeed
             );
 
+            velocity.y = 0; // remove once gravity works
             _mover.Move(time * velocity);
             _grounded = _mover.InContact(CollisionFlags2D.Below);
         }

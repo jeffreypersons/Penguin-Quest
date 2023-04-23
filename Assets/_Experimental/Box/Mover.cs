@@ -78,16 +78,16 @@ namespace PQ.TestScenes.Box
             Vector2 delta = initialDelta;
             for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
             {
-                // move a single linear step along our delta until the detected collision
-                ExtrapolateLinearStep(delta, out Vector2 step, out RaycastHit2D hit);
-                delta -= step;
+                _body.ClosestContact(delta, out RaycastHit2D hit);
 
                 // move directly to target if unobstructed
                 if (!hit)
                 {
-                    _body.MoveBy(step);
+                    _body.MoveBy(hit.point - hit.centroid);
+                    delta = Vector2.zero;
                     continue;
                 }
+
             }
         }
 
