@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace PQ.TestScenes.Box
 {
-    [ExecuteAlways]
     public class Body : MonoBehaviour
     {
         [SerializeField] private Rigidbody2D   _rigidBody;
@@ -55,12 +54,12 @@ namespace PQ.TestScenes.Box
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
 
-            _skinWidth   = 0f;
             _rigidBody   = rigidBody;
             _boxCollider = boxCollider;
             _castFilter  = new ContactFilter2D();
             _castHits    = new RaycastHit2D[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
+            _castFilter.SetLayerMask(_layerMask);
 
             _rigidBody.isKinematic = true;
             _rigidBody.simulated   = true;
@@ -155,11 +154,6 @@ namespace PQ.TestScenes.Box
 
         void OnDrawGizmos()
         {
-            if (!Application.IsPlaying(this) || !enabled)
-            {
-                return;
-            }
-
             // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window,
             // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
             // should be identical to the transform's axes in the editor window
