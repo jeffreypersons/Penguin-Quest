@@ -174,7 +174,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 7297335650238406910}
   _boxCollider: {fileID: 2897265776197244332}
-  _skinWidth: 0.025
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 4096
+  _skinWidth: 0.075
   _preallocatedHitBufferSize: 16
 --- !u!114 &-8340191444676239183
 MonoBehaviour:
