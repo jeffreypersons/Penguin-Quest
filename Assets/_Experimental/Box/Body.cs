@@ -9,6 +9,7 @@ namespace PQ.TestScenes.Box
         [SerializeField] private Rigidbody2D   _rigidBody;
         [SerializeField] private BoxCollider2D _boxCollider;
 
+        [SerializeField] private LayerMask _layerMask = default;
         [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.025f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
@@ -69,9 +70,6 @@ namespace PQ.TestScenes.Box
             _initialized = true;
         }
 
-        public void SetSkinWidth(float amount) => _skinWidth = amount;
-        public void SetLayerMask(LayerMask mask) => _castFilter.SetLayerMask(mask);
-
         public void Flip(bool horizontal, bool vertical)
         {
             _rigidBody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
@@ -96,6 +94,7 @@ namespace PQ.TestScenes.Box
 
         public void ClosestContact(Vector2 delta, out RaycastHit2D hit)
         {
+            _castFilter.SetLayerMask(_layerMask);
             int hitCount = _boxCollider.Cast(delta, _castFilter, _castHits, delta.magnitude, ignoreSiblingColliders: true);
 
             int closestHitIndex = 0;
