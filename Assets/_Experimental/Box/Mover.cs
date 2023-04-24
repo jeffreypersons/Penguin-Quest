@@ -65,14 +65,12 @@ namespace PQ.TestScenes.Box
             MoveVertical(vertical);
         }
 
-
         public bool InContact(CollisionFlags2D flags)
         {
             return (_collisions & flags) == flags;
         }
 
 
-        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
         private void MoveHorizontal(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
@@ -89,45 +87,8 @@ namespace PQ.TestScenes.Box
             }
         }
 
-
-        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
         private void MoveVertical(Vector2 initialDelta)
         {
-            ExtrapolateLinearStep(initialDelta, out _, out _);
-        }
-
-
-        /*
-        Compute projection of AABB linearly along given delta until first obstruction. Takes skin width into account.
-        */
-        private void ExtrapolateLinearStep(Vector2 delta, out Vector2 step, out Hit hit)
-        {
-            _body.Cast_Closest(delta, out hit);
-            _body.ComputeOffset(delta, out Vector2 _, out Vector2 offset);
-            step = hit.Point - hit.Centroid - offset;
-        }
-
-
-        /*
-        Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
-
-        In other words, for a given collision what is the adjusted delta when taking impact angle, velocity, bounciness,
-        and friction into account (using a linear model similar to Unity's dynamic physics)?
-        
-        Note that collisions are resolved via: adjustedDelta = moveDistance * [(Sbounciness)Snormal + (1-Sfriction)Stangent]
-        * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
-        * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
-        */
-        private Vector2 ComputeCollisionDelta(Vector2 desiredDelta, Vector2 hitNormal, float bounciness=0.00f, float friction=1.00f)
-        {
-            float remainingDistance = desiredDelta.magnitude;
-            Vector2 reflected  = Vector2.Reflect(desiredDelta, hitNormal);
-            Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
-            Vector2 tangent    = reflected - projection;
-
-            Vector2 perpendicularContribution = (bounciness      * remainingDistance) * projection.normalized;
-            Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
-            return perpendicularContribution + tangentialContribution;
         }
     }
 }
