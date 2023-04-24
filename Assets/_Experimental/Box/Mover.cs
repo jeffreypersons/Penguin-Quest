@@ -78,10 +78,8 @@ namespace PQ.TestScenes.Box
             Vector2 delta = initialDelta;
             for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
             {
-                _body.ClosestContact(delta, out RaycastHit2D hit);
-
                 // move directly to target if unobstructed
-                if (!hit)
+                if (!_body.Cast_Closest(delta, out Hit hit))
                 {
                     _body.MoveBy(delta);
                     delta = Vector2.zero;
@@ -102,11 +100,11 @@ namespace PQ.TestScenes.Box
         /*
         Compute projection of AABB linearly along given delta until first obstruction. Takes skin width into account.
         */
-        private void ExtrapolateLinearStep(Vector2 delta, out Vector2 step, out RaycastHit2D hit)
+        private void ExtrapolateLinearStep(Vector2 delta, out Vector2 step, out Hit hit)
         {
-            _body.ClosestContact(delta, out hit);
+            _body.Cast_Closest(delta, out hit);
             _body.ComputeOffset(delta, out Vector2 _, out Vector2 offset);
-            step = hit.point - hit.centroid - offset;
+            step = hit.Point - hit.Centroid - offset;
         }
 
 

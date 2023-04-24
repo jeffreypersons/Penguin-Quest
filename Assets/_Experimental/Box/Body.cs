@@ -3,6 +3,15 @@ using UnityEngine;
 
 namespace PQ.TestScenes.Box
 {
+    public struct Hit
+    {
+        public Vector2    Point;     // position of intersection
+        public Vector2    Normal;    // surface normal of hit
+        public float      Distance;  // distance between edge of collider and intersection point
+        public Collider2D Collider;  // collider hit
+        public float      Buffer;    // offset distance
+        public Vector2    Centroid;  // center of the collider that performed the cast
+    }
     public class Body : MonoBehaviour
     {
         [SerializeField] private Rigidbody2D   _rigidBody;
@@ -14,7 +23,8 @@ namespace PQ.TestScenes.Box
 
         private bool _initialized;
         private ContactFilter2D _castFilter;
-        private RaycastHit2D[]  _castHits;
+        private RaycastHit2D[]  _rawResults;
+        private Hit[]           _hits;
 
         public override string ToString() =>
             $"Mover{{" +
@@ -57,7 +67,8 @@ namespace PQ.TestScenes.Box
             _rigidBody   = rigidBody;
             _boxCollider = boxCollider;
             _castFilter  = new ContactFilter2D();
-            _castHits    = new RaycastHit2D[_preallocatedHitBufferSize];
+            _rawResults  = new RaycastHit2D[_preallocatedHitBufferSize];
+            _hits        = new Hit[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
             _castFilter.SetLayerMask(_layerMask);
 
@@ -91,22 +102,33 @@ namespace PQ.TestScenes.Box
             _rigidBody.position += delta;
         }
 
-        public void ClosestContact(Vector2 delta, out RaycastHit2D hit)
+        // assumes nonzero delta
+        public bool Cast_Closest(Vector2 delta, out Hit hit)
         {
             _castFilter.SetLayerMask(_layerMask);
-            int hitCount = _boxCollider.Cast(delta, _castFilter, _castHits, delta.magnitude, ignoreSiblingColliders: true);
+            int hitCount = _boxCollider.Cast(delta, _castFilter, _rawResults, delta.magnitude, ignoreSiblingColliders: true);
 
             int closestHitIndex = 0;
             for (int i = 0; i < hitCount; i++)
             {
-                if (_castHits[i].distance < _castHits[closestHitIndex].distance)
+                if (_rawResults[i].distance < _rawResults[closestHitIndex].distance)
                 {
                     closestHitIndex = i;
                 }
             }
-            hit = _castHits[closestHitIndex];
 
-            DrawCastResultAsLineInEditor(delta, hitCount > 0? hit.point : null);
+            RaycastHit2D result = _rawResults[closestHitIndex];
+            hit = new Hit
+            {
+                Point    = result.point,
+                Normal   = result.normal,
+                Distance = result.distance,
+                Collider = result.collider,
+                Buffer   = _skinWidth,
+                Centroid = result.centroid,
+            };
+            DrawCastResultAsLineInEditor(delta, hitCount > 0? hit.Point : null);
+            return hitCount > 0;
         }
 
 
@@ -146,9 +168,9 @@ namespace PQ.TestScenes.Box
                 return;
             }
 
-            if (_preallocatedHitBufferSize != _castHits.Length)
+            if (_preallocatedHitBufferSize != _rawResults.Length)
             {
-                _castHits = new RaycastHit2D[_preallocatedHitBufferSize];
+                _rawResults = new RaycastHit2D[_preallocatedHitBufferSize];
             }
         }
 
