@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7358749131327659747}
   - component: {fileID: 2748166048306509469}
   m_Layer: 12
-  m_Name: Platform
+  m_Name: Platform_Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,20 +80,11 @@ SpriteShapeRenderer:
   m_SortingOrder: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_MaskInteraction: 0
-  m_ShapeTexture: {fileID: 2800000, guid: b281b91a70a624a0da1c43adc1c30c7b, type: 3}
-  m_Sprites:
-  - {fileID: 21300000, guid: 0ae2b74b1edd14bb18dd7b65ae916a54, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
-  - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
+  m_ShapeTexture: {fileID: 2800000, guid: 36001e8de1045004aa437f300783c9a6, type: 3}
+  m_Sprites: []
   m_LocalAABB:
-    m_Center: {x: 0, y: -0.5, z: 0}
-    m_Extent: {x: 5.2500005, y: 0.7500001, z: 0}
+    m_Center: {x: 0, y: -0.50000006, z: 0}
+    m_Extent: {x: 5.0000005, y: 0.50000006, z: 0}
   m_SpriteSortPoint: 0
 --- !u!114 &1333357489651817220
 MonoBehaviour:
@@ -154,16 +145,16 @@ MonoBehaviour:
   m_ColliderOffset: 0
   m_UpdateCollider: 1
   m_EnableTangents: 1
-  m_GeometryCached: 0
+  m_GeometryCached: 1
   m_UTess2D: 1
   m_Creator: {fileID: 0}
   m_Modifiers: []
   m_ColliderSegment:
-  - {x: -4.9995003, y: -0.99950004}
-  - {x: -4.9995003, y: -0.00049995957}
-  - {x: 4.9995003, y: -0.0004999968}
-  - {x: 4.9995003, y: -0.99950004}
-  - {x: -4.9995003, y: -0.99950004}
+  - {x: -5, y: -1}
+  - {x: -5, y: 0}
+  - {x: 5, y: 0}
+  - {x: 5, y: -1}
+  - {x: -5, y: -1}
 --- !u!50 &90519231239738086
 Rigidbody2D:
   serializedVersion: 4
@@ -226,11 +217,11 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: -4.9995003, y: -0.99950004}
-  - {x: -4.9995003, y: -0.00049995957}
-  - {x: 4.9995003, y: -0.0004999968}
-  - {x: 4.9995003, y: -0.99950004}
-  - {x: -4.9995003, y: -0.99950004}
+  - {x: -5, y: -1}
+  - {x: -5, y: 0}
+  - {x: 5, y: 0}
+  - {x: 5, y: -1}
+  - {x: -5, y: -1}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 1
