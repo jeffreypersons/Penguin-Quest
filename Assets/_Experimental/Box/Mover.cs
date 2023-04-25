@@ -88,6 +88,17 @@ namespace PQ.TestScenes.Box
 
         private void MoveVertical(Vector2 initialDelta)
         {
+            Vector2 delta = initialDelta;
+            for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
+            {
+                // move directly to target if unobstructed
+                if (!_body.CastClosest(delta, out RaycastHit2D hit))
+                {
+                    _body.MoveBy(delta);
+                    delta = Vector2.zero;
+                    continue;
+                }
+            }
         }
     }
 }
