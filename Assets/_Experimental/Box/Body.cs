@@ -132,6 +132,7 @@ namespace PQ.TestScenes.Box
                 float duration = Time.fixedDeltaTime;
                 foreach (RaycastHit2D hit in hits)
                 {
+                    Debug.Log($"hit.centroid={hit.centroid}, rb.position={_rigidBody.position}, collider.bounds.center={_boxCollider.bounds.center}, transform.position={transform.position}");
                     Debug.DrawLine(hit.centroid, hit.centroid + delta, Color.red, duration);
                     Debug.DrawLine(hit.centroid, hit.point, Color.green, duration);
                 }
