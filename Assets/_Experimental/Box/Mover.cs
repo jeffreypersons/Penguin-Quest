@@ -77,13 +77,12 @@ namespace PQ.TestScenes.Box
             for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
-                if (!_body.Cast_Closest(delta, out Hit hit))
+                if (!_body.CastClosest(delta, out RaycastHit2D hit))
                 {
                     _body.MoveBy(delta);
                     delta = Vector2.zero;
                     continue;
                 }
-
             }
         }
 
