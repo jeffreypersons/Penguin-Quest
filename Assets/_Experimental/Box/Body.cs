@@ -141,14 +141,12 @@ namespace PQ.TestScenes.Box
                 float duration = Time.fixedDeltaTime;
                 foreach (RaycastHit2D hit in hits)
                 {
-                    Vector2 boxCastOrigin = hit.centroid;
-                    Vector2 edgePoint     = hit.point - (hit.distance * direction);
-                    Vector2 hitPoint      = hit.point;
-                    Vector2 endPoint      = hit.point + (maxDistance * direction);
+                    Vector2 edgePoint = hit.point - (hit.distance * direction);
+                    Vector2 hitPoint  = hit.point;
+                    Vector2 endPoint  = hit.point + (maxDistance * direction);
                     
-                    Debug.DrawLine(boxCastOrigin, edgePoint, Color.magenta, duration);
-                    Debug.DrawLine(edgePoint,     hitPoint,  Color.green,   duration);
-                    Debug.DrawLine(hitPoint,      endPoint,  Color.red,   duration);
+                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
                 }
             }
             #endif
