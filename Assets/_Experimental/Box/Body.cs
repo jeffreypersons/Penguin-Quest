@@ -118,12 +118,21 @@ namespace PQ.TestScenes.Box
             hit = _hitBuffer[closestHitIndex];
             return true;
         }
-        
+
 
         private bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
+            if (delta == Vector2.zero)
+            {
+                hits = _hitBuffer.AsSpan(0, 0);
+                return false;
+            }
+
             _castFilter.SetLayerMask(_layerMask);
-            int hitCount = _boxCollider.Cast(delta, _castFilter, _hitBuffer, delta.magnitude, ignoreSiblingColliders: true);
+
+            float maxDistance = delta.magnitude;
+            Vector2 direction = delta / maxDistance;
+            int hitCount = _boxCollider.Cast(direction, _castFilter, _hitBuffer, maxDistance, ignoreSiblingColliders: true);
             hits = _hitBuffer.AsSpan(0, hitCount);
             
             #if UNITY_EDITOR
@@ -132,8 +141,12 @@ namespace PQ.TestScenes.Box
                 float duration = Time.fixedDeltaTime;
                 foreach (RaycastHit2D hit in hits)
                 {
-                    Debug.DrawLine(hit.centroid, hit.centroid + delta, Color.red, duration);
-                    Debug.DrawLine(hit.centroid, hit.point, Color.green, duration);
+                    Vector2 edgePoint = hit.point - (hit.distance * direction);
+                    Vector2 hitPoint  = hit.point;
+                    Vector2 endPoint  = hit.point + (maxDistance * direction);
+                    
+                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
                 }
             }
             #endif

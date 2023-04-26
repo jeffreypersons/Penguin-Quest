@@ -83,11 +83,58 @@ namespace PQ.TestScenes.Box
                     delta = Vector2.zero;
                     continue;
                 }
+
+                // unless there's an overly steep slope, move a linear step with properties taken into account
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAngle)
+                {
+                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                    _body.MoveBy(collisionResponse);
+                }
             }
         }
 
         private void MoveVertical(Vector2 initialDelta)
         {
+            Vector2 delta = initialDelta;
+            for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
+            {
+                // move directly to target if unobstructed
+                if (!_body.CastClosest(delta, out RaycastHit2D hit))
+                {
+                    _body.MoveBy(delta);
+                    delta = Vector2.zero;
+                    continue;
+                }
+
+                // only if there's an overly steep slope, do we want to take action (eg sliding down)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _maxAngle)
+                {
+                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                    _body.MoveBy(collisionResponse);
+                }
+            }
+        }
+        
+        /*
+        Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
+
+        In other words, for a given collision what is the adjusted delta when taking impact angle, velocity, bounciness,
+        and friction into account (using a linear model similar to Unity's dynamic physics)?
+        
+        Note that collisions are resolved via: adjustedDelta = moveDistance * [(Sbounciness)Snormal + (1-Sfriction)Stangent]
+        * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
+        * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
+        */
+        private Vector2 ComputeCollisionDelta(Vector2 delta, Vector2 hitNormal, float bounciness=0f, float friction=0f)
+        {
+            float remainingDistance = delta.magnitude;
+            Vector2 reflected  = Vector2.Reflect(delta, hitNormal);
+            Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
+            Vector2 tangent    = reflected - projection;
+
+            Vector2 perpendicularContribution = (bounciness * remainingDistance) * projection.normalized;
+            Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
+            return perpendicularContribution + tangentialContribution;
         }
     }
 }
