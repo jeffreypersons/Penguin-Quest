@@ -84,7 +84,8 @@ namespace PQ.TestScenes.Box
                     continue;
                 }
 
-                delta = ApplyCollisionResponse(delta, hit.normal);
+                Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                _body.MoveBy(collisionResponse);
             }
         }
 
@@ -101,7 +102,8 @@ namespace PQ.TestScenes.Box
                     continue;
                 }
 
-                delta = ApplyCollisionResponse(delta, hit.normal);
+                Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                _body.MoveBy(collisionResponse);
             }
         }
         
@@ -112,10 +114,10 @@ namespace PQ.TestScenes.Box
         and friction into account (using a linear model similar to Unity's dynamic physics)?
         
         Note that collisions are resolved via: adjustedDelta = moveDistance * [(Sbounciness)Snormal + (1-Sfriction)Stangent]
-            * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
-            * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
+        * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
+        * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
         */
-        private Vector2 ApplyCollisionResponse(Vector2 delta, Vector2 hitNormal, float bounciness=0f, float friction=0f)
+        private Vector2 ComputeCollisionDelta(Vector2 delta, Vector2 hitNormal, float bounciness=0f, float friction=0f)
         {
             float remainingDistance = delta.magnitude;
             Vector2 reflected  = Vector2.Reflect(delta, hitNormal);
