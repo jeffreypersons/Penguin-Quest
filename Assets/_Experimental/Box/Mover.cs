@@ -83,6 +83,8 @@ namespace PQ.TestScenes.Box
                     delta = Vector2.zero;
                     continue;
                 }
+
+                delta = ApplyCollisionResponse(delta, hit.normal);
             }
         }
 
@@ -98,7 +100,15 @@ namespace PQ.TestScenes.Box
                     delta = Vector2.zero;
                     continue;
                 }
+
+                delta = ApplyCollisionResponse(delta, hit.normal);
             }
+        }
+        
+        private Vector2 ApplyCollisionResponse(Vector2 delta, Vector2 normal)
+        {
+            // todo: replace with actual collision response computations
+            return Vector3.ProjectOnPlane(delta, normal);
         }
     }
 }
