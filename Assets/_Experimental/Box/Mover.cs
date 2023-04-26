@@ -105,10 +105,26 @@ namespace PQ.TestScenes.Box
             }
         }
         
-        private Vector2 ApplyCollisionResponse(Vector2 delta, Vector2 normal)
+        /*
+        Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
+
+        In other words, for a given collision what is the adjusted delta when taking impact angle, velocity, bounciness,
+        and friction into account (using a linear model similar to Unity's dynamic physics)?
+        
+        Note that collisions are resolved via: adjustedDelta = moveDistance * [(Sbounciness)Snormal + (1-Sfriction)Stangent]
+            * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
+            * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
+        */
+        private Vector2 ApplyCollisionResponse(Vector2 delta, Vector2 hitNormal, float bounciness=0f, float friction=0f)
         {
-            // todo: replace with actual collision response computations
-            return Vector3.ProjectOnPlane(delta, normal);
+            float remainingDistance = delta.magnitude;
+            Vector2 reflected  = Vector2.Reflect(delta, hitNormal);
+            Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
+            Vector2 tangent    = reflected - projection;
+
+            Vector2 perpendicularContribution = (bounciness * remainingDistance) * projection.normalized;
+            Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
+            return perpendicularContribution + tangentialContribution;
         }
     }
 }
