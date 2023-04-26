@@ -102,8 +102,12 @@ namespace PQ.TestScenes.Box
                     continue;
                 }
 
-                Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
-                _body.MoveBy(collisionResponse);
+                // only if there's an overly steep slope, do we want to take action (eg sliding down)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _maxAngle)
+                {
+                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                    _body.MoveBy(collisionResponse);
+                }
             }
         }
         
