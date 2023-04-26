@@ -84,8 +84,12 @@ namespace PQ.TestScenes.Box
                     continue;
                 }
 
-                Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
-                _body.MoveBy(collisionResponse);
+                // unless there's an overly steep slope, move a linear step with properties taken into account
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAngle)
+                {
+                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                    _body.MoveBy(collisionResponse);
+                }
             }
         }
 
