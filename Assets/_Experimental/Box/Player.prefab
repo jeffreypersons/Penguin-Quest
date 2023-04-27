@@ -179,6 +179,7 @@ MonoBehaviour:
     m_Bits: 4096
   _preallocatedHitBufferSize: 16
   _drawCastsInEditor: 1
+  _drawMovesInEditor: 1
 --- !u!114 &-8340191444676239183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,7 +192,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e98c2434f2f48b4a83ad7078801fae6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _horizontalSpeed: 2
+  _timeScale: 1
+  _horizontalSpeed: 4
   _gravitySpeed: 4
   _maxSlopeAngle: 90
-  _maxSolverIterations: 2
+  _maxSolverIterations: 4
