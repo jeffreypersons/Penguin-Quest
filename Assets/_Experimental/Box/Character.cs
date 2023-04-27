@@ -6,7 +6,7 @@ namespace PQ.TestScenes.Box
 {
     public class Character : MonoBehaviour
     {
-        [Range(0, 10)] [SerializeField] private float _horizontalSpeed     = 20f;        
+        [Range(0, 10)] [SerializeField] private float _horizontalSpeed     = 20f;
         [Range(0, 50)] [SerializeField] private float _gravitySpeed        = 10f;
         [Range(0, 90)] [SerializeField] private float _maxSlopeAngle       = 90f;
         [Range(0, 50)] [SerializeField] private int   _maxSolverIterations = 10;
