@@ -6,6 +6,7 @@ namespace PQ.TestScenes.Box
 {
     public class Character : MonoBehaviour
     {
+        [Range(0, 10)] [SerializeField] private float _timeScale           = 1f;
         [Range(0, 10)] [SerializeField] private float _horizontalSpeed     = 5f;
         [Range(0, 50)] [SerializeField] private float _gravitySpeed        = 10f;
         [Range(0, 90)] [SerializeField] private float _maxSlopeAngle       = 90f;
@@ -25,6 +26,9 @@ namespace PQ.TestScenes.Box
         
         private void Awake()
         {
+            // set fps to 60 for more determinism when testing movement
+            Application.targetFrameRate = 60;
+
             _mover = new Mover(gameObject.transform);
         }
 
@@ -36,6 +40,7 @@ namespace PQ.TestScenes.Box
             );
 
             _mover.SetParams(_maxSlopeAngle, _maxSolverIterations);
+            Time.timeScale = _timeScale;
         }
 
         void FixedUpdate()
