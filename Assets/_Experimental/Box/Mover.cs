@@ -63,6 +63,8 @@ namespace PQ.TestScenes.Box
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
+
+            _collisions = _body.CheckForOverlappingContacts(0.02f);
         }
 
         public bool InContact(CollisionFlags2D flags)

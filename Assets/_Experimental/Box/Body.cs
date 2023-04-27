@@ -132,7 +132,7 @@ namespace PQ.TestScenes.Box
                 foreach (RaycastHit2D hit in hits)
                 {
                     Vector2 edgePoint = hit.point - (hit.distance * direction);
-                    Vector2 hitPoint  = hit.point;
+                    Vector2 hitPoint = hit.point;
                     Vector2 endPoint  = hit.point + (maxDistance * direction);
                     
                     Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
@@ -142,7 +142,52 @@ namespace PQ.TestScenes.Box
             #endif
             return !hits.IsEmpty;
         }
+        
+        /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
+        public CollisionFlags2D CheckForOverlappingContacts(float skinWidth)
+        {
+            Transform transform = _rigidBody.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
 
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            if (CastAABB(skinWidth * right, out _))
+            {
+                flags |= CollisionFlags2D.Front;
+            }
+            if (CastAABB(skinWidth * up, out _))
+            {
+                flags |= CollisionFlags2D.Above;
+            }
+            if (CastAABB(skinWidth * left, out _))
+            {
+                flags |= CollisionFlags2D.Behind;
+            }
+            if (CastAABB(skinWidth * down, out _))
+            {
+                flags |= CollisionFlags2D.Below;
+            }
+            
+            #if UNITY_EDITOR
+            if (_drawCastsInEditor)
+            {
+                Bounds bounds = _boxCollider.bounds;
+                Vector2 center    = new(bounds.center.x, bounds.center.y);
+                Vector2 skinRatio = new(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
+                Vector2 xAxis     = bounds.extents.x * right;
+                Vector2 yAxis     = bounds.extents.y * up;
+
+                float duration = Time.fixedDeltaTime;
+                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            }
+            #endif
+            return flags;
+        }
 
         void OnValidate()
         {
@@ -162,10 +207,10 @@ namespace PQ.TestScenes.Box
             // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window,
             // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
             // should be identical to the transform's axes in the editor window
-            Bounds box = Bounds;
-            Vector2 center = new(box.center.x, box.center.y);
-            Vector2 xAxis  = box.extents.x * Forward;
-            Vector2 yAxis  = box.extents.y * Up;
+            Bounds bounds = Bounds;
+            Vector2 center = new(bounds.center.x, bounds.center.y);
+            Vector2 xAxis  = bounds.extents.x * Forward;
+            Vector2 yAxis  = bounds.extents.y * Up;
 
             GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.blue);
             GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.cyan);
