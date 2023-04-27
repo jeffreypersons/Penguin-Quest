@@ -12,8 +12,9 @@ namespace PQ.TestScenes.Box
         [SerializeField] private LayerMask _layerMask = default;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
-        #if UNITY_EDITOR        
-        [SerializeField] private bool _drawCastsInEditor = true;
+        #if UNITY_EDITOR
+        [SerializeField] private bool _drawCastsInEditor = true;        
+        [SerializeField] private bool _drawMovesInEditor = true;
         #endif
 
         private bool _initialized;
@@ -29,11 +30,11 @@ namespace PQ.TestScenes.Box
                 $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
             $"}}";
 
-        public Vector2 Position  => _rigidBody.position;
-        public float   Depth     => _rigidBody.transform.position.z;
-        public Bounds  Bounds    => _boxCollider.bounds;
-        public Vector2 Forward   => _rigidBody.transform.right.normalized;
-        public Vector2 Up        => _rigidBody.transform.up.normalized;
+        public Vector2 Position => _rigidBody.position;
+        public float   Depth    => _rigidBody.transform.position.z;
+        public Bounds  Bounds   => _boxCollider.bounds;
+        public Vector2 Forward  => _rigidBody.transform.right.normalized;
+        public Vector2 Up       => _rigidBody.transform.up.normalized;
 
 
         void Awake()
@@ -62,6 +63,8 @@ namespace PQ.TestScenes.Box
             _initialized = true;
         }
 
+
+        /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
         {
             _rigidBody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
@@ -72,15 +75,33 @@ namespace PQ.TestScenes.Box
             _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
-        /* Immediately move body by given amount. */
+        /* Set world transform to given point, ignoring physics. */
+        public void TeleportTo(Vector2 position)
+        {
+            transform.position = position;
+        }
+
+        /* Immediately move body to given point. */
         public void MoveTo(Vector2 position)
         {
+            #if UNITY_EDITOR
+            if (_drawMovesInEditor)
+            {
+                Debug.DrawLine(_rigidBody.position, position, Color.grey, Time.fixedDeltaTime);
+            }
+            #endif
             _rigidBody.position = position;
         }
 
         /* Immediately move body by given amount. */
         public void MoveBy(Vector2 delta)
         {
+            #if UNITY_EDITOR
+            if (_drawMovesInEditor)
+            {
+                Debug.DrawLine(_rigidBody.position, _rigidBody.position + delta, Color.grey, Time.fixedDeltaTime);
+            }
+            #endif
             _rigidBody.position += delta;
         }
         
