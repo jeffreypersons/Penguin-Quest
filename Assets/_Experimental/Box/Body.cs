@@ -89,38 +89,7 @@ namespace PQ.TestScenes.Box
         
         WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
         */
-        public bool CastAll(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
-        {
-            return CastAABB(delta, out hits);
-        }
-
-        /*
-        Project AABB along delta, and return CLOSEST hit (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
-        public bool CastClosest(Vector2 delta, out RaycastHit2D hit)
-        {
-            if (!CastAABB(delta, out ReadOnlySpan<RaycastHit2D> hits))
-            {
-                hit = default;
-                return false;
-            }
-
-            int closestHitIndex = 0;
-            for (int i = 0; i < hits.Length; i++)
-            {
-                if (_hitBuffer[i].distance < _hitBuffer[closestHitIndex].distance)
-                {
-                    closestHitIndex = i;
-                }
-            }
-            hit = _hitBuffer[closestHitIndex];
-            return true;
-        }
-
-
-        private bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
             if (delta == Vector2.zero)
             {

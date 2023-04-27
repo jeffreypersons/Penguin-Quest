@@ -48,7 +48,7 @@ namespace PQ.TestScenes.Box
         {
             _body.Flip(horizontal, false);
         }
-
+        
         /* Note - collision responses are accounted for, but any other externalities such as gravity must be passed in. */
         public void Move(Vector2 deltaPosition)
         {
@@ -69,7 +69,7 @@ namespace PQ.TestScenes.Box
         {
             return (_collisions & flags) == flags;
         }
-
+        
 
         private void MoveHorizontal(Vector2 initialDelta)
         {
@@ -77,7 +77,7 @@ namespace PQ.TestScenes.Box
             for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
-                if (!_body.CastClosest(delta, out RaycastHit2D hit))
+                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
                 {
                     _body.MoveBy(delta);
                     delta = Vector2.zero;
@@ -99,7 +99,7 @@ namespace PQ.TestScenes.Box
             for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
-                if (!_body.CastClosest(delta, out RaycastHit2D hit))
+                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
                 {
                     _body.MoveBy(delta);
                     delta = Vector2.zero;
@@ -115,6 +115,32 @@ namespace PQ.TestScenes.Box
             }
         }
         
+        
+        /*
+        Project AABB along delta, and return CLOSEST hit (if any).
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
+        private bool DetectClosestCollision(Vector2 delta, out RaycastHit2D hit)
+        {
+            if (!_body.CastAABB(delta, out ReadOnlySpan<RaycastHit2D> hits))
+            {
+                hit = default;
+                return false;
+            }
+
+            int closestHitIndex = 0;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].distance < hits[closestHitIndex].distance)
+                {
+                    closestHitIndex = i;
+                }
+            }
+            hit = hits[closestHitIndex];
+            return true;
+        }
+
         /*
         Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
 
