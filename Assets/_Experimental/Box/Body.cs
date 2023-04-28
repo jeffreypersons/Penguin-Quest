@@ -10,6 +10,7 @@ namespace PQ.TestScenes.Box
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
+        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.02f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         #if UNITY_EDITOR
@@ -132,7 +133,7 @@ namespace PQ.TestScenes.Box
                 foreach (RaycastHit2D hit in hits)
                 {
                     Vector2 edgePoint = hit.point - (hit.distance * direction);
-                    Vector2 hitPoint = hit.point;
+                    Vector2 hitPoint  = hit.point;
                     Vector2 endPoint  = hit.point + (maxDistance * direction);
                     
                     Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
@@ -207,13 +208,16 @@ namespace PQ.TestScenes.Box
             // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window,
             // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
             // should be identical to the transform's axes in the editor window
-            Bounds bounds = Bounds;
-            Vector2 center = new(bounds.center.x, bounds.center.y);
-            Vector2 xAxis  = bounds.extents.x * Forward;
-            Vector2 yAxis  = bounds.extents.y * Up;
+            Bounds box = Bounds;
+            Vector2 center    = new(box.center.x, box.center.y);
+            Vector2 skinRatio = new(1f + (_skinWidth / box.extents.x), 1f + (_skinWidth / box.extents.y));
+            Vector2 xAxis     = box.extents.x * Forward;
+            Vector2 yAxis     = box.extents.y * Up;
 
-            GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.blue);
-            GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.cyan);
+            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
+            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.magenta);
+            GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
+            GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
     }
 }
