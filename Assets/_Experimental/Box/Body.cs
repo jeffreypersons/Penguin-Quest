@@ -159,8 +159,7 @@ namespace PQ.TestScenes.Box
             float   distance  = delta.magnitude;
             Vector2 direction = delta / distance;
 
-            //int hitCount = _boxCollider.Cast(direction, _castFilter, _hitBuffer, distance, ignoreSiblingColliders: true);
-            int hitCount = Physics2D.BoxCastNonAlloc(center, size, 0, direction, _hitBuffer, distance, _castFilter.layerMask, minDepth: 0);
+            int hitCount = Physics2D.BoxCast(center, size, 0, direction, _castFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
 
             #if UNITY_EDITOR
