@@ -144,19 +144,25 @@ namespace PQ.TestScenes.Box
         */
         public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
+            _castFilter.SetLayerMask(_layerMask);
+
             if (delta == Vector2.zero)
             {
                 hits = _hitBuffer.AsSpan(0, 0);
                 return false;
             }
 
-            _castFilter.SetLayerMask(_layerMask);
+            Bounds bounds = _boxCollider.bounds;
 
-            float maxDistance = delta.magnitude;
-            Vector2 direction = delta / maxDistance;
-            int hitCount = _boxCollider.Cast(direction, _castFilter, _hitBuffer, maxDistance, ignoreSiblingColliders: true);
+            Vector2 center    = bounds.center;
+            Vector2 size      = bounds.size;
+            float   distance  = delta.magnitude;
+            Vector2 direction = delta / distance;
+
+            //int hitCount = _boxCollider.Cast(direction, _castFilter, _hitBuffer, distance, ignoreSiblingColliders: true);
+            int hitCount = Physics2D.BoxCastNonAlloc(center, size, 0, direction, _hitBuffer, distance, _castFilter.layerMask, minDepth: 0);
             hits = _hitBuffer.AsSpan(0, hitCount);
-            
+
             #if UNITY_EDITOR
             if (_drawCastsInEditor)
             {
@@ -165,7 +171,7 @@ namespace PQ.TestScenes.Box
                 {
                     Vector2 edgePoint = hit.point - (hit.distance * direction);
                     Vector2 hitPoint  = hit.point;
-                    Vector2 endPoint  = hit.point + (maxDistance * direction);
+                    Vector2 endPoint  = hit.point + (distance * direction);
                     
                     Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
                     Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
