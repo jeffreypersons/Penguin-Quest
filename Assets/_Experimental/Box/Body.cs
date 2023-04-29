@@ -31,11 +31,12 @@ namespace PQ.TestScenes.Box
                 $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
             $"}}";
 
-        public Vector2 Position => _rigidBody.position;
-        public float   Depth    => _rigidBody.transform.position.z;
-        public Bounds  Bounds   => _boxCollider.bounds;
-        public Vector2 Forward  => _rigidBody.transform.right.normalized;
-        public Vector2 Up       => _rigidBody.transform.up.normalized;
+        public Vector2 Position  => _rigidBody.position;
+        public float   Depth     => _rigidBody.transform.position.z;
+        public Bounds  Bounds    => _boxCollider.bounds;
+        public Vector2 Forward   => _rigidBody.transform.right.normalized;
+        public Vector2 Up        => _rigidBody.transform.up.normalized;
+        public float   SkinWidth => _skinWidth;
 
 
         void Awake()
