@@ -105,7 +105,37 @@ namespace PQ.TestScenes.Box
             #endif
             _rigidBody.position += delta;
         }
+
+        /*
+        Move body to given frame's start position and perform MovePosition to maintain any interpolation.
         
+        Context:
+        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
+        - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
+        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
+          replace the original position _then_ apply MovePosition()
+
+        Reference:
+        - https://illogika-studio.gitbooks.io/unity-best-practices/content/physics-rigidbody-interpolation-and-fixedtimestep.html
+
+        Warning:
+        - Only use if you know exactly what you are doing with physics
+        - Interpolation can still be broken if position directly modified again in the same physics frame
+        */
+        public void InterpolatedMoveTo(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
+        {
+            // todo: look into encapsulating this inside a FixedUpdate call and a KinematicBody interpolation mode instead
+            //       would require storing any changes for current frame and 'undoing' and repllaying via MovePosition() like below
+            #if UNITY_EDITOR
+            if (_drawMovesInEditor)
+            {
+                Debug.DrawLine(startPositionThisFrame, targetPositionThisFrame, Color.grey, Time.fixedDeltaTime);
+            }
+            #endif
+            _rigidBody.position = startPositionThisFrame;
+            _rigidBody.MovePosition(targetPositionThisFrame);
+        }
+
         /*
         Project AABB along delta, and return ALL hits (if any).
         
