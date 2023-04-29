@@ -59,12 +59,14 @@ namespace PQ.TestScenes.Box
             Vector2 up         = _body.Up;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
+            Vector2 position   = _body.Position;
 
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-
             _collisions = _body.CheckForOverlappingContacts(0.02f);
+
+            _body.InterpolatedMoveTo(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
 
         public bool InContact(CollisionFlags2D flags)
