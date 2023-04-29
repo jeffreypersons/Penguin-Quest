@@ -24,10 +24,11 @@ namespace PQ.TestScenes.Box
 
 
         [Pure]
-        private bool ApproximatelyZero(Vector2 delta)
+        private static bool ApproximatelyZero(Vector2 delta)
         {
-            // note that the epsilon used for equality checks handles small values far better than
-            // checking square magnitude with mathf/k epsilons
+            // Since a movement amount can be exceedingly tiny depending on the timestep/world-scale/frame-rate,
+            // it's more reliable to consider it zero when within floating-point tolerances, rather than custom amounts.
+            // Specifically, Vector2 equality check handles this far better than comparing squares of magnitude/Mathf.Epsilon.
             return delta == Vector2.zero;
         }
 
@@ -48,21 +49,36 @@ namespace PQ.TestScenes.Box
         {
             _body.Flip(horizontal, false);
         }
+
+        /*
+        Move body given amount.
         
-        /* Note - collision responses are accounted for, but any other externalities such as gravity must be passed in. */
+        Notes
+        - Interpolation is supported
+        - Assumes all collisions are with static (non-moving) objects
+        - For flexibility, any external movement such as gravity must be accounted for in given delta
+        - Movement is only opted-out if within floating point tolerances of zero, as anything larger will lead to
+          skipping movement when deltas are small due to the timestep/world-scale/frame-rate used to compute it prior
+         */
         public void Move(Vector2 deltaPosition)
         {
-            // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
-            _collisions = CollisionFlags2D.None;
+            if (ApproximatelyZero(deltaPosition))
+            {
+                return;
+            }
 
             // scale deltas in proportion to the y-axis
             Vector2 up         = _body.Up;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
+            Vector2 position   = _body.Position;
 
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
+            _collisions = _body.CheckForOverlappingContacts(0.02f);
+
+            _body.InterpolatedMoveTo(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
 
         public bool InContact(CollisionFlags2D flags)

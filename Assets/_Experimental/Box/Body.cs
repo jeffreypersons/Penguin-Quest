@@ -10,6 +10,7 @@ namespace PQ.TestScenes.Box
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
+        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.02f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         #if UNITY_EDITOR
@@ -104,7 +105,37 @@ namespace PQ.TestScenes.Box
             #endif
             _rigidBody.position += delta;
         }
+
+        /*
+        Move body to given frame's start position and perform MovePosition to maintain any interpolation.
         
+        Context:
+        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
+        - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
+        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
+          replace the original position _then_ apply MovePosition()
+
+        Reference:
+        - https://illogika-studio.gitbooks.io/unity-best-practices/content/physics-rigidbody-interpolation-and-fixedtimestep.html
+
+        Warning:
+        - Only use if you know exactly what you are doing with physics
+        - Interpolation can still be broken if position directly modified again in the same physics frame
+        */
+        public void InterpolatedMoveTo(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
+        {
+            // todo: look into encapsulating this inside a FixedUpdate call and a KinematicBody interpolation mode instead
+            //       would require storing any changes for current frame and 'undoing' and repllaying via MovePosition() like below
+            #if UNITY_EDITOR
+            if (_drawMovesInEditor)
+            {
+                Debug.DrawLine(startPositionThisFrame, targetPositionThisFrame, Color.grey, Time.fixedDeltaTime);
+            }
+            #endif
+            _rigidBody.position = startPositionThisFrame;
+            _rigidBody.MovePosition(targetPositionThisFrame);
+        }
+
         /*
         Project AABB along delta, and return ALL hits (if any).
         
@@ -142,7 +173,52 @@ namespace PQ.TestScenes.Box
             #endif
             return !hits.IsEmpty;
         }
+        
+        /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
+        public CollisionFlags2D CheckForOverlappingContacts(float skinWidth)
+        {
+            Transform transform = _rigidBody.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
 
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            if (CastAABB(skinWidth * right, out _))
+            {
+                flags |= CollisionFlags2D.Front;
+            }
+            if (CastAABB(skinWidth * up, out _))
+            {
+                flags |= CollisionFlags2D.Above;
+            }
+            if (CastAABB(skinWidth * left, out _))
+            {
+                flags |= CollisionFlags2D.Behind;
+            }
+            if (CastAABB(skinWidth * down, out _))
+            {
+                flags |= CollisionFlags2D.Below;
+            }
+            
+            #if UNITY_EDITOR
+            if (_drawCastsInEditor)
+            {
+                Bounds bounds = _boxCollider.bounds;
+                Vector2 center    = new(bounds.center.x, bounds.center.y);
+                Vector2 skinRatio = new(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
+                Vector2 xAxis     = bounds.extents.x * right;
+                Vector2 yAxis     = bounds.extents.y * up;
+
+                float duration = Time.fixedDeltaTime;
+                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            }
+            #endif
+            return flags;
+        }
 
         void OnValidate()
         {
@@ -163,12 +239,15 @@ namespace PQ.TestScenes.Box
             // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
             // should be identical to the transform's axes in the editor window
             Bounds box = Bounds;
-            Vector2 center = new(box.center.x, box.center.y);
-            Vector2 xAxis  = box.extents.x * Forward;
-            Vector2 yAxis  = box.extents.y * Up;
+            Vector2 center    = new(box.center.x, box.center.y);
+            Vector2 skinRatio = new(1f + (_skinWidth / box.extents.x), 1f + (_skinWidth / box.extents.y));
+            Vector2 xAxis     = box.extents.x * Forward;
+            Vector2 yAxis     = box.extents.y * Up;
 
-            GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.blue);
-            GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.cyan);
+            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
+            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.magenta);
+            GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
+            GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
     }
 }
