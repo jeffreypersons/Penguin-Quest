@@ -158,8 +158,8 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0.0002
+  m_Size: {x: 0.9, y: 0.9}
+  m_EdgeRadius: 0.1
 --- !u!114 &-1598793908994606294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,7 +177,7 @@ MonoBehaviour:
   _layerMask:
     serializedVersion: 2
     m_Bits: 4096
-  _skinWidth: 0.075
+  _skinWidth: 0.1
   _preallocatedHitBufferSize: 16
   _drawCastsInEditor: 1
   _drawMovesInEditor: 1

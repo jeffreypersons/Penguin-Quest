@@ -10,7 +10,7 @@ namespace PQ.TestScenes.Box
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.02f;
+        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.01f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         #if UNITY_EDITOR
@@ -41,21 +41,23 @@ namespace PQ.TestScenes.Box
 
         void Awake()
         {
-            if (!transform.TryGetComponent<Rigidbody2D>(out var rigidBody))
+            if (!transform.TryGetComponent<Rigidbody2D>(out var _))
             {
                 throw new MissingComponentException($"Expected attached rigidbody2D - not found on {transform}");
             }
-            if (!transform.TryGetComponent<BoxCollider2D>(out var boxCollider))
+            if (!transform.TryGetComponent<BoxCollider2D>(out var _))
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
 
-            _rigidBody   = rigidBody;
-            _boxCollider = boxCollider;
-            _castFilter  = new ContactFilter2D();
-            _hitBuffer   = new RaycastHit2D[_preallocatedHitBufferSize];
+            _castFilter = new ContactFilter2D();
+            _hitBuffer  = new RaycastHit2D[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
             _castFilter.SetLayerMask(_layerMask);
+
+            float buffer = Mathf.Clamp01(_skinWidth);
+            _boxCollider.edgeRadius = buffer;
+            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
 
             _rigidBody.isKinematic = true;
             _rigidBody.simulated   = true;
@@ -226,8 +228,13 @@ namespace PQ.TestScenes.Box
             return flags;
         }
 
+
         void OnValidate()
         {
+            float buffer = Mathf.Clamp01(_skinWidth);
+            _boxCollider.edgeRadius = buffer;
+            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
+
             if (!Application.IsPlaying(this) || !_initialized)
             {
                 return;
@@ -250,8 +257,8 @@ namespace PQ.TestScenes.Box
             Vector2 xAxis     = box.extents.x * Forward;
             Vector2 yAxis     = box.extents.y * Up;
 
-            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
-            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.magenta);
+            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.black);
+            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.black);
             GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
             GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
