@@ -19,7 +19,8 @@ namespace PQ.TestScenes.Box
     {
         private Body _body;
         private float _maxAngle;
-        private int _maxIterations;
+        private int _maxMoveIterations;
+        private int _maxOverlapIterations;
         private CollisionFlags2D _collisions;
 
 
@@ -39,10 +40,11 @@ namespace PQ.TestScenes.Box
             _body.Flip(horizontal: false, vertical: false);
         }
 
-        public void SetParams(float maxSlopeAngle, int maxSolverIterations)
+        public void SetParams(float maxSlopeAngle, int maxMoveIterations, int maxOverlapIterations)
         {
             _maxAngle = maxSlopeAngle;
-            _maxIterations = maxSolverIterations;
+            _maxMoveIterations = maxMoveIterations;
+            _maxOverlapIterations = maxOverlapIterations;
         }
 
         public void Flip(bool horizontal)
@@ -76,7 +78,7 @@ namespace PQ.TestScenes.Box
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckForOverlappingContacts(0.02f);
+            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
 
             _body.InterpolatedMoveTo(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
@@ -90,7 +92,7 @@ namespace PQ.TestScenes.Box
         private void MoveHorizontal(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -106,13 +108,15 @@ namespace PQ.TestScenes.Box
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
                 }
+
+                PushOutIfOverlap(hit);
             }
         }
 
         private void MoveVertical(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _maxIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -128,6 +132,8 @@ namespace PQ.TestScenes.Box
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
                 }
+
+                PushOutIfOverlap(hit);
             }
         }
         
@@ -155,6 +161,18 @@ namespace PQ.TestScenes.Box
             }
             hit = hits[closestHitIndex];
             return true;
+        }
+
+        private void PushOutIfOverlap(RaycastHit2D hit)
+        {
+            Vector2 overlapAmount = Vector2.zero;
+            for (int i = 0; i < _maxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
+            {
+                if (_body.ComputeOverlap(hit.collider, out overlapAmount))
+                {
+                    _body.MoveBy(overlapAmount);
+                }
+            }
         }
 
         /*

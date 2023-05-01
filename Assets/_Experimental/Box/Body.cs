@@ -228,6 +228,25 @@ namespace PQ.TestScenes.Box
             return flags;
         }
 
+        /*
+        Compute vector representing overlap amount between body and given collider, if any.
+
+        Uses separating axis theorem to determine overlap - may require more invocations for
+        complex polygons.
+        */
+        public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
+        {
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            if (!minimumSeparation.isValid || minimumSeparation.distance <= 0)
+            {
+                amount = minimumSeparation.distance * minimumSeparation.normal;
+                return false;
+            }
+
+            amount = minimumSeparation.distance * minimumSeparation.normal;
+            return true;
+        }
+
 
         void OnValidate()
         {
