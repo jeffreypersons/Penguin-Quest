@@ -236,18 +236,16 @@ namespace PQ.TestScenes.Box
         */
         public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
         {
-            amount = Vector2.zero;
             if (collider == null)
             {
+                amount = Vector2.zero;
                 return false;
             }
 
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            Debug.Log($"distance={minimumSeparation.distance}" +
-                      $"normal={minimumSeparation.normal}" +
-                      $"isValid={minimumSeparation.isValid}");
             if (!minimumSeparation.isValid || minimumSeparation.distance <= 0)
             {
+                amount = Vector2.zero;
                 return false;
             }
 
