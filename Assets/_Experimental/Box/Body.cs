@@ -243,7 +243,8 @@ namespace PQ.TestScenes.Box
             }
 
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            if (!minimumSeparation.isValid || minimumSeparation.distance <= 0)
+            Debug.Log(minimumSeparation.distance);
+            if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
             {
                 amount = Vector2.zero;
                 return false;

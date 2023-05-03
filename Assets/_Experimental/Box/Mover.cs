@@ -64,11 +64,6 @@ namespace PQ.TestScenes.Box
          */
         public void Move(Vector2 deltaPosition)
         {
-            DetectClosestCollision(deltaPosition, out RaycastHit2D hitHorizontal);
-            DetectClosestCollision(deltaPosition, out RaycastHit2D hitVertical);
-            PushOutIfOverlap(hitHorizontal);
-            PushOutIfOverlap(hitVertical);
-
             if (ApproximatelyZero(deltaPosition))
             {
                 return;
@@ -170,6 +165,7 @@ namespace PQ.TestScenes.Box
 
         private void PushOutIfOverlap(RaycastHit2D hit)
         {
+            // todo: add skin width support
             Vector2 overlapAmount = Vector2.positiveInfinity;
             for (int i = 0; i < _maxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
             {
