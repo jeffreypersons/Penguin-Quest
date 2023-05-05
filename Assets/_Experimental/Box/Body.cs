@@ -10,7 +10,7 @@ namespace PQ.TestScenes.Box
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.02f;
+        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.01f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         #if UNITY_EDITOR
@@ -31,30 +31,33 @@ namespace PQ.TestScenes.Box
                 $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
             $"}}";
 
-        public Vector2 Position => _rigidBody.position;
-        public float   Depth    => _rigidBody.transform.position.z;
-        public Bounds  Bounds   => _boxCollider.bounds;
-        public Vector2 Forward  => _rigidBody.transform.right.normalized;
-        public Vector2 Up       => _rigidBody.transform.up.normalized;
+        public Vector2 Position  => _rigidBody.position;
+        public float   Depth     => _rigidBody.transform.position.z;
+        public Bounds  Bounds    => _boxCollider.bounds;
+        public Vector2 Forward   => _rigidBody.transform.right.normalized;
+        public Vector2 Up        => _rigidBody.transform.up.normalized;
+        public float   SkinWidth => _skinWidth;
 
 
         void Awake()
         {
-            if (!transform.TryGetComponent<Rigidbody2D>(out var rigidBody))
+            if (!transform.TryGetComponent<Rigidbody2D>(out var _))
             {
                 throw new MissingComponentException($"Expected attached rigidbody2D - not found on {transform}");
             }
-            if (!transform.TryGetComponent<BoxCollider2D>(out var boxCollider))
+            if (!transform.TryGetComponent<BoxCollider2D>(out var _))
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
 
-            _rigidBody   = rigidBody;
-            _boxCollider = boxCollider;
-            _castFilter  = new ContactFilter2D();
-            _hitBuffer   = new RaycastHit2D[_preallocatedHitBufferSize];
+            _castFilter = new ContactFilter2D();
+            _hitBuffer  = new RaycastHit2D[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
             _castFilter.SetLayerMask(_layerMask);
+
+            float buffer = Mathf.Clamp01(_skinWidth);
+            _boxCollider.edgeRadius = buffer;
+            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
 
             _rigidBody.isKinematic = true;
             _rigidBody.simulated   = true;
@@ -143,19 +146,24 @@ namespace PQ.TestScenes.Box
         */
         public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
+            _castFilter.SetLayerMask(_layerMask);
+
             if (delta == Vector2.zero)
             {
                 hits = _hitBuffer.AsSpan(0, 0);
                 return false;
             }
 
-            _castFilter.SetLayerMask(_layerMask);
+            Bounds bounds = _boxCollider.bounds;
 
-            float maxDistance = delta.magnitude;
-            Vector2 direction = delta / maxDistance;
-            int hitCount = _boxCollider.Cast(direction, _castFilter, _hitBuffer, maxDistance, ignoreSiblingColliders: true);
+            Vector2 center    = bounds.center;
+            Vector2 size      = bounds.size;
+            float   distance  = delta.magnitude;
+            Vector2 direction = delta / distance;
+
+            int hitCount = Physics2D.BoxCast(center, size, 0, direction, _castFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
-            
+
             #if UNITY_EDITOR
             if (_drawCastsInEditor)
             {
@@ -164,7 +172,7 @@ namespace PQ.TestScenes.Box
                 {
                     Vector2 edgePoint = hit.point - (hit.distance * direction);
                     Vector2 hitPoint  = hit.point;
-                    Vector2 endPoint  = hit.point + (maxDistance * direction);
+                    Vector2 endPoint  = hit.point + (distance * direction);
                     
                     Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
                     Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
@@ -220,8 +228,39 @@ namespace PQ.TestScenes.Box
             return flags;
         }
 
+        /*
+        Compute vector representing overlap amount between body and given collider, if any.
+
+        Uses separating axis theorem to determine overlap - may require more invocations for
+        complex polygons.
+        */
+        public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
+        {
+            if (collider == null)
+            {
+                amount = Vector2.zero;
+                return false;
+            }
+
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            Debug.Log(minimumSeparation.distance);
+            if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
+            {
+                amount = Vector2.zero;
+                return false;
+            }
+
+            amount = minimumSeparation.distance * minimumSeparation.normal;
+            return true;
+        }
+
+
         void OnValidate()
         {
+            float buffer = Mathf.Clamp01(_skinWidth);
+            _boxCollider.edgeRadius = buffer;
+            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
+
             if (!Application.IsPlaying(this) || !_initialized)
             {
                 return;
@@ -244,8 +283,8 @@ namespace PQ.TestScenes.Box
             Vector2 xAxis     = box.extents.x * Forward;
             Vector2 yAxis     = box.extents.y * Up;
 
-            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
-            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.magenta);
+            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.black);
+            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.black);
             GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
             GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
