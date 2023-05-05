@@ -2,7 +2,7 @@
 using UnityEditor;
 
 
-namespace PQ.TestScenes.Box
+namespace PQ._Experimental.SimpleMovement
 {
     /*
     Various utilities for drawing and manipulating gizmos.

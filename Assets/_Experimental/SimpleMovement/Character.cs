@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-namespace PQ.TestScenes.Box
+namespace PQ._Experimental.SimpleMovement
 {
     public class Character : MonoBehaviour
     {

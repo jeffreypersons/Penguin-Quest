@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
-namespace PQ.TestScenes.Box
+namespace PQ._Experimental.SimpleMovement
 {
     [Flags]
     public enum CollisionFlags2D
