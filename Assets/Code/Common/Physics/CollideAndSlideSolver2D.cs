@@ -14,9 +14,9 @@ namespace PQ.Common.Physics
     */
     public sealed class CollideAndSlideSolver2D
     {
+        private SolverParams _params;
+        private KinematicBody2D _body;
         private CollisionFlags2D _collisions;
-        private readonly KinematicBody2D _body;
-        private readonly SolverParams    _params;
 
         public SolverParams     Params => _params;
         public CollisionFlags2D Flags  => _collisions;
@@ -29,10 +29,11 @@ namespace PQ.Common.Physics
             $")";
 
         [Pure]
-        private bool HasReachedTarget(Vector2 delta)
+        private static bool ApproximatelyZero(Vector2 delta)
         {
-            // note that the epsilon used for equality checks handles small values far better than
-            // checking square magnitude with mathf/k epsilons
+            // Since a movement amount can be exceedingly tiny depending on the timestep/world-scale/frame-rate,
+            // it's more reliable to consider it zero when within floating-point tolerances, rather than custom amounts.
+            // Specifically, Vector2 equality check handles this far better than comparing squares of magnitude/Mathf.Epsilon.
             return delta == Vector2.zero;
         }
 
@@ -44,97 +45,108 @@ namespace PQ.Common.Physics
             _body.SetSkinWidth(_params.ContactOffset);
         }
 
-        /* Note - collision responses are accounted for, but any other externalities such as gravity must be passed in. */
+        public void Flip(bool horizontal)
+        {
+            _body.Flip(horizontal, false);
+        }
+
+        /*
+        Move body given amount.
+        
+        Notes
+        - Interpolation is supported
+        - Assumes all collisions are with static (non-moving) objects
+        - For flexibility, any external movement such as gravity must be accounted for in given delta
+        - Movement is only opted-out if within floating point tolerances of zero, as anything larger will lead to
+          skipping movement when deltas are small due to the timestep/world-scale/frame-rate used to compute it prior
+         */
         public void Move(Vector2 deltaPosition)
         {
-            _body.SetSkinWidth(_params.ContactOffset);
-            
-            // todo: add some special-cased sort of move initial/and or depenetration/overlap resolution (and at end)
-            _collisions = CollisionFlags2D.None;
+            if (ApproximatelyZero(deltaPosition))
+            {
+                return;
+            }
 
             // scale deltas in proportion to the y-axis
             Vector2 up         = _body.Up;
             Vector2 vertical   = Vector2.Dot(deltaPosition, up) * up;
             Vector2 horizontal = deltaPosition - vertical;
+            Vector2 position   = _body.Position;
 
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
+            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
 
-            // now that we have solved for both movement independently, get our flags up to date
-            _collisions = _body.CheckForOverlappingContacts(_params.LayerMask, _params.MaxSlopeAngle);
-            Debug.Log(Flags);
+            _body.InterpolatedMoveTo(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
+        }
+
+        public bool InContact(CollisionFlags2D flags)
+        {
+            return (_collisions & flags) == flags;
         }
 
 
-
-        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void MoveHorizontal(Vector2 desiredDelta)
+        private void MoveHorizontal(Vector2 initialDelta)
         {
-            Vector2 currentDelta = desiredDelta;
-            CollisionFlags2D flags = CollisionFlags2D.None;
-            for (int i = 0; i < _params.MaxIterations && !HasReachedTarget(currentDelta); i++)
+            Vector2 delta = initialDelta;
+            for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move a single linear step along our delta until the detected collision
-                ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
-
-                if (!hit)
+                // move directly to target if unobstructed
+                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
                 {
-                    // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
-                    _body.MoveBy(step);
-                    break;
+                    _body.MoveBy(delta);
+                    delta = Vector2.zero;
+                    continue;
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
                 {
-                    step += ComputeCollisionDelta(currentDelta, hit.normal);
+                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                    _body.MoveBy(collisionResponse);
                 }
 
-                _body.MoveBy(step);
+                PushOutIfOverlap(hit);
             }
-
-            _collisions |= flags;
         }
 
-        /* Iteratively move body along surface one linear step at a time until target reached, or iteration cap exceeded. */
-        private void MoveVertical(Vector2 desiredDelta)
+        private void MoveVertical(Vector2 initialDelta)
         {
-            Vector2 currentDelta = desiredDelta;
-            CollisionFlags2D flags = CollisionFlags2D.None;
-            for (int i = 0; i < _params.MaxIterations && !HasReachedTarget(currentDelta); i++)
+            Vector2 delta = initialDelta;
+            for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move a single linear step along our delta until the detected collision
-                ExtrapolateLinearStep(currentDelta, out Vector2 step, out RaycastHit2D hit);
-
-                if (!hit)
+                // move directly to target if unobstructed
+                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
                 {
-                    // nothing blocking our path, move straight ahead, and don't worry about energy loss (for now)
-                    _body.MoveBy(step);
-                    break;
+                    _body.MoveBy(delta);
+                    delta = Vector2.zero;
+                    continue;
                 }
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
                 if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
                 {
-                    step += ComputeCollisionDelta(currentDelta, hit.normal);
+                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
+                    _body.MoveBy(collisionResponse);
                 }
 
-                _body.MoveBy(step);
+                PushOutIfOverlap(hit);
             }
-
-            _collisions |= flags;
         }
 
 
-        /* How far can we move unobstructed along given vector without being hit? */
-        private void ExtrapolateLinearStep(Vector2 desiredDelta, out Vector2 step, out RaycastHit2D hit)
+        /*
+        Project AABB along delta, and return CLOSEST hit (if any).
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
+        private bool DetectClosestCollision(Vector2 delta, out RaycastHit2D hit)
         {
-            if (!_body.CastAAB(desiredDelta, _params.LayerMask, out ReadOnlySpan<RaycastHit2D> hits))
+            if (!_body.CastAABB(delta, out ReadOnlySpan<RaycastHit2D> hits))
             {
-                step = desiredDelta;
-                hit  = default;
-                return;
+                hit = default;
+                return false;
             }
 
             int closestHitIndex = 0;
@@ -145,15 +157,20 @@ namespace PQ.Common.Physics
                     closestHitIndex = i;
                 }
             }
-
             hit = hits[closestHitIndex];
-            if (hit.distance <= _params.ContactOffset || Mathf.Approximately(_params.ContactOffset, 0f))
+            return true;
+        }
+
+        private void PushOutIfOverlap(RaycastHit2D hit)
+        {
+            // todo: add skin width support
+            Vector2 overlapAmount = Vector2.positiveInfinity;
+            for (int i = 0; i < _params.MaxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
             {
-                step = Vector2.zero;
-            }
-            else
-            {
-                step = hit.point - hit.centroid - _body.ComputeContactOffset(direction: desiredDelta);
+                if (_body.ComputeOverlap(hit.collider, out overlapAmount))
+                {
+                    _body.MoveBy(overlapAmount);
+                }
             }
         }
 
@@ -164,18 +181,18 @@ namespace PQ.Common.Physics
         and friction into account (using a linear model similar to Unity's dynamic physics)?
         
         Note that collisions are resolved via: adjustedDelta = moveDistance * [(Sbounciness)Snormal + (1-Sfriction)Stangent]
-            * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
-            * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
+        * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
+        * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
         */
-        private Vector2 ComputeCollisionDelta(Vector2 desiredDelta, Vector2 hitNormal)
+        private Vector2 ComputeCollisionDelta(Vector2 delta, Vector2 hitNormal, float bounciness=0f, float friction=0f)
         {
-            float remainingDistance = desiredDelta.magnitude;
-            Vector2 reflected  = Vector2.Reflect(desiredDelta, hitNormal);
+            float remainingDistance = delta.magnitude;
+            Vector2 reflected  = Vector2.Reflect(delta, hitNormal);
             Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
             Vector2 tangent    = reflected - projection;
 
-            Vector2 perpendicularContribution = (_params.Bounciness      * remainingDistance) * projection.normalized;
-            Vector2 tangentialContribution    = ((1f - _params.Friction) * remainingDistance) * tangent.normalized;
+            Vector2 perpendicularContribution = (bounciness * remainingDistance) * projection.normalized;
+            Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
             return perpendicularContribution + tangentialContribution;
         }
     }

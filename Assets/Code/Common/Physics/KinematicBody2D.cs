@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using PQ.Common.Extensions;
-
+using UnityEditor;
 
 namespace PQ.Common.Physics
 {
@@ -16,146 +16,208 @@ namespace PQ.Common.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
-        [SerializeField] private ContactFilter2D _castFilter;
-        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
-        [SerializeField] public bool DrawCastsInEditor { get; set; } = true;
+        [SerializeField] private Rigidbody2D   _rigidBody;
+        [SerializeField] private BoxCollider2D _boxCollider;
 
-        private bool  _initialized;
-        private bool  _flippedHorizontal;
-        private bool  _flippedVertical;
-        private float _skinWidth;
-        private Rigidbody2D     _rigidBody;
-        private Collider2D      _collider;
-        private RaycastHit2D[]  _castHits;
+        [SerializeField] private LayerMask _layerMask = default;
+        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.01f;
+        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
+
+        #if UNITY_EDITOR
+        [SerializeField] private bool _drawCastsInEditor = true;        
+        [SerializeField] private bool _drawMovesInEditor = true;
+        #endif
+
+        private bool _initialized;
+        private bool _flippedHorizontal;
+        private bool _flippedVertical;
+        private ContactFilter2D _castFilter;
+        private RaycastHit2D[]  _hitBuffer;
+
+        public override string ToString() =>
+            $"Mover{{" +
+                $"Position:{Position}," +
+                $"Depth:{Depth}," +
+                $"Forward:{Forward}," +
+                $"Up:{Up}," +
+                $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
+            $"}}";
 
         public bool    FlippedHorizontal => _flippedHorizontal;
         public bool    FlippedVertical   => _flippedVertical;
         public Vector2 Position          => _rigidBody.position;
         public float   Depth             => _rigidBody.transform.position.z;
-        public Bounds  Bounds            => _collider.bounds;
+        public Bounds  Bounds            => _boxCollider.bounds;
         public float   SkinWidth         => _skinWidth;
         public Vector2 Forward           => _rigidBody.transform.right.normalized;
         public Vector2 Up                => _rigidBody.transform.up.normalized;
 
-        public Bounds BoundsOuter
-        {
-            get
-            {
-                var bounds = _collider.bounds;
-                bounds.Expand(amount: 2f * _skinWidth);
-                return _collider.bounds;
-            }
-        }
-
-        public override string ToString() =>
-            $"{GetType()}(" +
-                $"Position:{Position}," +
-                $"Depth:{Depth}," +
-                $"Forward:{Forward}," +
-                $"Up:{Up}," +
-                $"SkinWidth:{SkinWidth}," +
-                $"AAB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
-            $")";
-
-        
         void Awake()
         {
-            if (!gameObject.TryGetComponent<Rigidbody2D>(out var rigidBody))
+            if (!transform.TryGetComponent<Rigidbody2D>(out var _))
             {
-                throw new MissingComponentException($"Expected attached rigidbody2D - not found on {gameObject}");
+                throw new MissingComponentException($"Expected attached rigidbody2D - not found on {transform}");
             }
-            if (!gameObject.TryGetComponent<Collider2D>(out var collider))
+            if (!transform.TryGetComponent<BoxCollider2D>(out var _))
             {
-                throw new MissingComponentException($"Expected attached collider2D - not found on {gameObject}");
+                throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
 
-            _skinWidth  = 0f;
-            _rigidBody  = rigidBody;
-            _collider   = collider;
-            _castHits   = new RaycastHit2D[_preallocatedHitBufferSize];
+            _castFilter = new ContactFilter2D();
+            _hitBuffer  = new RaycastHit2D[_preallocatedHitBufferSize];
             _castFilter.useLayerMask = true;
+            _castFilter.SetLayerMask(_layerMask);
+
+            float buffer = Mathf.Clamp01(_skinWidth);
+            _boxCollider.edgeRadius = buffer;
+            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
 
             _rigidBody.isKinematic = true;
+            _rigidBody.simulated   = true;
             _rigidBody.useFullKinematicContacts = true;
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-            Flip(horizontal: false, vertical: false);
             _initialized = true;
         }
 
+
+        /* Set outer buffer of AABB by given amount. Note does not automatically resolve any collisions. */
+        public void SetLayerMask(LayerMask layerMask)
+        {
+            _castFilter.SetLayerMask(layerMask);
+            _layerMask = layerMask;
+        }
+
+        /* Set outer buffer of AABB by given amount. Note does not automatically resolve any collisions. */
+        public void SetSkinWidth(float skinWidth)
+        {
+            float buffer = Mathf.Clamp01(skinWidth);
+            _boxCollider.edgeRadius = buffer;
+            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
+        }
+
+        /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
         {
             _rigidBody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
             _rigidBody.transform.localEulerAngles = new Vector3(
-                x: vertical?   180f : 0f,
-                y: horizontal? 180f : 0f,
+                x: vertical   ? 180f : 0f,
+                y: horizontal ? 180f : 0f,
                 z: 0f);
             _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
-
             _flippedHorizontal = horizontal;
-            _flippedVertical   = vertical;
+            _flippedVertical = vertical;
         }
 
-        /* Immediately move body by given amount. */
+        /* Set world transform to given point, ignoring physics. */
+        public void TeleportTo(Vector2 position)
+        {
+            transform.position = position;
+        }
+
+        /* Immediately move body to given point. */
         public void MoveTo(Vector2 position)
         {
+            #if UNITY_EDITOR
+            if (_drawMovesInEditor)
+            {
+                Debug.DrawLine(_rigidBody.position, position, Color.grey, Time.fixedDeltaTime);
+            }
+            #endif
             _rigidBody.position = position;
         }
 
         /* Immediately move body by given amount. */
         public void MoveBy(Vector2 delta)
         {
+            #if UNITY_EDITOR
+            if (_drawMovesInEditor)
+            {
+                Debug.DrawLine(_rigidBody.position, _rigidBody.position + delta, Color.grey, Time.fixedDeltaTime);
+            }
+            #endif
             _rigidBody.position += delta;
         }
 
-        /* How much is our desired contact offset for collisions? */
-        public void SetSkinWidth(float skinWidth)
-        {
-            if (Mathf.Approximately(_skinWidth, skinWidth))
-            {
-                return;
-            }
+        /*
+        Move body to given frame's start position and perform MovePosition to maintain any interpolation.
+        
+        Context:
+        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
+        - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
+        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
+          replace the original position _then_ apply MovePosition()
 
-            // todo: add depenetration algo here
-            Debug.LogFormat("Skin width set to {0} from {1}", skinWidth, _skinWidth);
-            _skinWidth = skinWidth;
+        Reference:
+        - https://illogika-studio.gitbooks.io/unity-best-practices/content/physics-rigidbody-interpolation-and-fixedtimestep.html
+
+        Warning:
+        - Only use if you know exactly what you are doing with physics
+        - Interpolation can still be broken if position directly modified again in the same physics frame
+        */
+        public void InterpolatedMoveTo(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
+        {
+            // todo: look into encapsulating this inside a FixedUpdate call and a KinematicBody interpolation mode instead
+            //       would require storing any changes for current frame and 'undoing' and repllaying via MovePosition() like below
+            #if UNITY_EDITOR
+            if (_drawMovesInEditor)
+            {
+                Debug.DrawLine(startPositionThisFrame, targetPositionThisFrame, Color.grey, Time.fixedDeltaTime);
+            }
+            #endif
+            _rigidBody.position = startPositionThisFrame;
+            _rigidBody.MovePosition(targetPositionThisFrame);
         }
 
-        /* Resize preallocated raycast hit buffer to given amount (warning: causes allocations!). */
-        public void ResizeHitBuffer(int size)
+        /*
+        Project AABB along delta, and return ALL hits (if any).
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
+        public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
-            if (size <= 0)
+            _castFilter.SetLayerMask(_layerMask);
+
+            if (delta == Vector2.zero)
             {
-                throw new ArgumentException($"Buffer size must be at least 1 - received {size} instead");
+                hits = _hitBuffer.AsSpan(0, 0);
+                return false;
             }
-            if (_castHits.Length != size)
+
+            Bounds bounds = _boxCollider.bounds;
+
+            Vector2 center    = bounds.center;
+            Vector2 size      = bounds.size;
+            float   distance  = delta.magnitude;
+            Vector2 direction = delta / distance;
+
+            int hitCount = Physics2D.BoxCast(center, size, 0, direction, _castFilter, _hitBuffer, distance);
+            hits = _hitBuffer.AsSpan(0, hitCount);
+
+            #if UNITY_EDITOR
+            if (_drawCastsInEditor)
             {
-                _castHits = new RaycastHit2D[size];
+                float duration = Time.fixedDeltaTime;
+                foreach (RaycastHit2D hit in hits)
+                {
+                    Vector2 edgePoint = hit.point - (hit.distance * direction);
+                    Vector2 hitPoint  = hit.point;
+                    Vector2 endPoint  = hit.point + (distance * direction);
+                    
+                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
+                }
             }
+            #endif
+            return !hits.IsEmpty;
         }
+        
+        /*
+        Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
 
-        /* What's the delta between the AAB and the expanded AAB (with skin width) from center in given direction? */
-        public Vector2 ComputeContactOffset(Vector2 direction)
-        {
-            if (Mathf.Approximately(_skinWidth, 0f))
-            {
-                return Vector2.zero;
-            }
-
-            Vector2 center    = Vector2.zero;
-            Vector2 size      = new(_collider.bounds.size.x, _collider.bounds.size.y);
-            Vector2 maxOffset = new(_skinWidth, _skinWidth);
-
-            Ray    ray   = new(center, direction);
-            Bounds inner = new(center, size);
-            Bounds outer = new(center, size + maxOffset);
-            inner.IntersectRay(ray, out float distanceToInner);
-            outer.IntersectRay(ray, out float distanceToOuter);
-            return (distanceToOuter - distanceToInner) * direction.normalized;
-        }
-
-        /* Check each side for _any_ colliders occupying the region between AAB and the outer perimeter defined by skin width. */
-        public CollisionFlags2D CheckForOverlappingContacts(in LayerMask layerMask, float maxAngle)
+        If no layermask provided, uses the one assigned in editor.
+        */
+        public CollisionFlags2D CheckForOverlappingContacts(float skinWidth)
         {
             Transform transform = _rigidBody.transform;
             Vector2 right = transform.right.normalized;
@@ -164,67 +226,93 @@ namespace PQ.Common.Physics
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAAB(_skinWidth * right, layerMask, out _))
+            if (CastAABB(skinWidth * right, out _))
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (CastAAB(_skinWidth * up, layerMask, out _))
+            if (CastAABB(skinWidth * up, out _))
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (CastAAB(_skinWidth * left, layerMask, out _))
+            if (CastAABB(skinWidth * left, out _))
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (CastAAB(_skinWidth * down, layerMask, out _))
+            if (CastAABB(skinWidth * down, out _))
             {
                 flags |= CollisionFlags2D.Below;
             }
+            
+            #if UNITY_EDITOR
+            if (_drawCastsInEditor)
+            {
+                Bounds bounds = _boxCollider.bounds;
+                Vector2 center    = new(bounds.center.x, bounds.center.y);
+                Vector2 skinRatio = new(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
+                Vector2 xAxis     = bounds.extents.x * right;
+                Vector2 yAxis     = bounds.extents.y * up;
 
+                float duration = Time.fixedDeltaTime;
+                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            }
+            #endif
             return flags;
         }
-        
-        /*
-        Project AAB along delta, taking skin width into account, and return the closest distance/normal.
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
-        public bool CastAAB(Vector2 delta, in LayerMask layerMask, out ReadOnlySpan<RaycastHit2D> hits)
-        {
-            _castFilter.SetLayerMask(layerMask);
 
-            int hitCount = _collider.Cast(delta, _castFilter, _castHits, delta.magnitude, ignoreSiblingColliders: true);
-            hits = _castHits.AsSpan(0, hitCount);
-            foreach (var hit in hits)
+        /*
+        Compute vector representing overlap amount between body and given collider, if any.
+
+        Uses separating axis theorem to determine overlap - may require more invocations for
+        complex polygons.
+        */
+        public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
+        {
+            if (collider == null)
             {
-                DrawCastResultAsLineInEditor(hit, delta, _skinWidth);
+                amount = Vector2.zero;
+                return false;
             }
 
-            _castFilter.SetLayerMask(~layerMask);
-            return hitCount >= 1;
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            Debug.Log(minimumSeparation.distance);
+            if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
+            {
+                amount = Vector2.zero;
+                return false;
+            }
+
+            amount = minimumSeparation.distance * minimumSeparation.normal;
+            return true;
         }
 
-        #if UNITY_EDITOR
-        private void OnValidate()
+
+        void OnValidate()
         {
+            bool isEditingInEditor = EditorUtility.IsPersistent(this);
+
+            if (isEditingInEditor)
+            {
+                // there are moments with prefabs where the collider is null, so just skip those
+                SetSkinWidth(_skinWidth);
+            }
+
             if (!Application.IsPlaying(this) || !_initialized)
             {
                 return;
             }
 
-            if (_preallocatedHitBufferSize != _castHits.Length)
+            SetLayerMask(_layerMask);
+            if (_preallocatedHitBufferSize != _hitBuffer.Length)
             {
-                _castHits = new RaycastHit2D[_preallocatedHitBufferSize];
+                _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
             }
         }
 
         void OnDrawGizmos()
         {
-            if (!Application.IsPlaying(this) || !enabled)
-            {
-                return;
-            }
-
             // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window,
             // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
             // should be identical to the transform's axes in the editor window
@@ -234,32 +322,10 @@ namespace PQ.Common.Physics
             Vector2 xAxis     = box.extents.x * Forward;
             Vector2 yAxis     = box.extents.y * Up;
 
-            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.gray);
-            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.magenta);
+            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.black);
+            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.black);
             GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
             GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
-
-        private static void DrawCastResultAsLineInEditor(RaycastHit2D hit, Vector2 delta, float offset)
-        {
-            if (!hit)
-            {
-                // unfortunately we can't reliably find the origin of the cast
-                // if there was no hit (as far as I'm aware), so nothing to draw
-                return;
-            }
-            
-            float duration  = Time.fixedDeltaTime;
-            Vector2 direction = delta.normalized;
-            Vector2 start     = hit.point - hit.distance * direction;
-            Vector2 origin    = hit.point - (hit.distance - offset) * direction;
-            Vector2 hitPoint  = hit.point;
-            Vector2 end       = hit.point + (1f - hit.fraction) * (delta.magnitude + offset) * direction;
-
-            Debug.DrawLine(start,    origin,   Color.magenta, duration);
-            Debug.DrawLine(origin,   hitPoint, Color.green,   duration);
-            Debug.DrawLine(hitPoint, end,      Color.red,     duration);
-        }
-        #endif
     }
 }

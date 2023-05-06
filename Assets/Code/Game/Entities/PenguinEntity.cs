@@ -46,7 +46,7 @@ namespace PQ.Game.Entities
             _jumpSpeed                           = Settings.jumpSpeed;
             _jumpDisplacementToPeak              = new Vector2(Settings.jumpLengthToApex, Settings.jumpHeightToApex);
 
-            _characterSolverParams.MaxIterations = Settings.solverIterationsPerPhysicsUpdate;
+            _characterSolverParams.MaxMoveIterations = Settings.solverIterationsPerPhysicsUpdate;
 
             _characterSolverParams.Bounciness    = Settings.collisionBounciness;
             _characterSolverParams.Friction      = Settings.collisionFriction;
