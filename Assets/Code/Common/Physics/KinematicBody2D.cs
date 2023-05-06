@@ -81,7 +81,7 @@ namespace PQ.Common.Physics
         }
 
 
-        /* Set outer buffer of AABB by given amount. Note does not automatically resolve any collisions. */
+        /* Set layermask used for detecting collisions. */
         public void SetLayerMask(LayerMask layerMask)
         {
             _castFilter.SetLayerMask(layerMask);
