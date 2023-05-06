@@ -106,7 +106,7 @@ namespace PQ.Common.Physics
                 z: 0f);
             _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
             _flippedHorizontal = horizontal;
-            _flippedVertical = vertical;
+            _flippedVertical   = vertical;
         }
 
         /* Set world transform to given point, ignoring physics. */
