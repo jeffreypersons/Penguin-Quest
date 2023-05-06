@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
 using PQ.Common.Extensions;
-using UnityEditor;
+using TMPro;
+
 
 namespace PQ.Common.Physics
 {
     /*
-    Represents a physical body aligned with an AAB and driven by kinematic physics.
+    Represents a physical body aligned with an AABB and driven by kinematic physics.
 
     Notes
     * Assumes always upright bounding box, with kinematic rigidbody
@@ -31,6 +32,7 @@ namespace PQ.Common.Physics
         private bool _initialized;
         private bool _flippedHorizontal;
         private bool _flippedVertical;
+
         private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _hitBuffer;
 
@@ -65,12 +67,6 @@ namespace PQ.Common.Physics
 
             _castFilter = new ContactFilter2D();
             _hitBuffer  = new RaycastHit2D[_preallocatedHitBufferSize];
-            _castFilter.useLayerMask = true;
-            _castFilter.SetLayerMask(_layerMask);
-
-            float buffer = Mathf.Clamp01(_skinWidth);
-            _boxCollider.edgeRadius = buffer;
-            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
 
             _rigidBody.isKinematic = true;
             _rigidBody.simulated   = true;
@@ -88,12 +84,24 @@ namespace PQ.Common.Physics
             _castFilter.SetLayerMask(layerMask);
         }
 
-        /* Set outer buffer of AABB by given amount. Note does not automatically resolve any collisions. */
-        public void SetSkinWidth(float skinWidth)
+        /* Set AABB by given corners, used to infer extents, offset, and orientation. Note does not automatically resolve any collisions. */
+        public void SetBounds(Vector2 localMin, Vector2 localMax, float skinWidth)
         {
-            _skinWidth = Mathf.Clamp01(skinWidth);
-            _boxCollider.edgeRadius = _skinWidth;
-            _boxCollider.size       = new Vector2(1f - _skinWidth, 1f - _skinWidth);
+            Vector2 extents = localMax - localMin;
+            if (localMin.x >= localMax.x || localMin.y >= localMax.x)
+            {
+                throw new ArgumentOutOfRangeException($"Invalid bounding box extents - " +
+                    $"collider extents must be > 0, received {extents} instead");
+            }
+            if (skinWidth < 0f)
+            {
+                throw new ArgumentOutOfRangeException($"Invalid skin width - " +
+                    $"buffer amount must be >= 0, received {skinWidth} instead");
+            }
+
+            _boxCollider.size       = new Vector2(extents.x - skinWidth, extents.y - skinWidth);
+            _boxCollider.edgeRadius = skinWidth;
+            _skinWidth              = skinWidth;
         }
 
         /* Immediately set facing of horizontal/vertical axes. */
@@ -176,8 +184,6 @@ namespace PQ.Common.Physics
         */
         public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
-            _castFilter.SetLayerMask(_layerMask);
-
             if (delta == Vector2.zero)
             {
                 hits = _hitBuffer.AsSpan(0, 0);
@@ -217,7 +223,7 @@ namespace PQ.Common.Physics
 
         If no layermask provided, uses the one assigned in editor.
         */
-        public CollisionFlags2D CheckForOverlappingContacts(float skinWidth)
+        public CollisionFlags2D CheckForOverlappingContacts(float extent)
         {
             Transform transform = _rigidBody.transform;
             Vector2 right = transform.right.normalized;
@@ -226,19 +232,19 @@ namespace PQ.Common.Physics
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAABB(skinWidth * right, out _))
+            if (CastAABB(extent * right, out _))
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (CastAABB(skinWidth * up, out _))
+            if (CastAABB(extent * up, out _))
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (CastAABB(skinWidth * left, out _))
+            if (CastAABB(extent * left, out _))
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (CastAABB(skinWidth * down, out _))
+            if (CastAABB(extent * down, out _))
             {
                 flags |= CollisionFlags2D.Below;
             }
@@ -248,7 +254,7 @@ namespace PQ.Common.Physics
             {
                 Bounds bounds = _boxCollider.bounds;
                 Vector2 center    = new(bounds.center.x, bounds.center.y);
-                Vector2 skinRatio = new(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
+                Vector2 skinRatio = new(1f + (extent / bounds.extents.x), 1f + (extent / bounds.extents.y));
                 Vector2 xAxis     = bounds.extents.x * right;
                 Vector2 yAxis     = bounds.extents.y * up;
 
@@ -291,13 +297,12 @@ namespace PQ.Common.Physics
 
         void OnValidate()
         {
+            SetBounds(Bounds.min, Bounds.max, _skinWidth);
             if (!Application.IsPlaying(this) || !_initialized)
             {
                 return;
             }
 
-            // there are moments with prefabs where the collider is null, so just skip those
-            SetSkinWidth(_skinWidth);
             SetLayerMask(_layerMask);
             if (_preallocatedHitBufferSize != _hitBuffer.Length)
             {

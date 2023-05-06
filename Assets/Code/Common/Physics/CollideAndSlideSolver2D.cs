@@ -42,7 +42,7 @@ namespace PQ.Common.Physics
             _body       = body;
             _params     = solverParams;
             _collisions = CollisionFlags2D.None;
-            _body.SetSkinWidth(_params.ContactOffset);
+            _body.SetBounds(body.Bounds.min, body.Bounds.max, _params.ContactOffset);
         }
 
         public void Flip(bool horizontal)
