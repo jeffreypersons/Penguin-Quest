@@ -84,16 +84,16 @@ namespace PQ.Common.Physics
         /* Set layermask used for detecting collisions. */
         public void SetLayerMask(LayerMask layerMask)
         {
-            _castFilter.SetLayerMask(layerMask);
             _layerMask = layerMask;
+            _castFilter.SetLayerMask(layerMask);
         }
 
         /* Set outer buffer of AABB by given amount. Note does not automatically resolve any collisions. */
         public void SetSkinWidth(float skinWidth)
         {
-            float buffer = Mathf.Clamp01(skinWidth);
-            _boxCollider.edgeRadius = buffer;
-            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
+            _skinWidth = Mathf.Clamp01(skinWidth);
+            _boxCollider.edgeRadius = _skinWidth;
+            _boxCollider.size       = new Vector2(1f - _skinWidth, 1f - _skinWidth);
         }
 
         /* Immediately set facing of horizontal/vertical axes. */
@@ -291,19 +291,13 @@ namespace PQ.Common.Physics
 
         void OnValidate()
         {
-            bool isEditingInEditor = EditorUtility.IsPersistent(this);
-
-            if (isEditingInEditor)
-            {
-                // there are moments with prefabs where the collider is null, so just skip those
-                SetSkinWidth(_skinWidth);
-            }
-
             if (!Application.IsPlaying(this) || !_initialized)
             {
                 return;
             }
 
+            // there are moments with prefabs where the collider is null, so just skip those
+            SetSkinWidth(_skinWidth);
             SetLayerMask(_layerMask);
             if (_preallocatedHitBufferSize != _hitBuffer.Length)
             {
