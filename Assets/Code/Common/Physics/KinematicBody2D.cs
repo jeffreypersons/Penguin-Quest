@@ -86,6 +86,7 @@ namespace PQ.Common.Physics
         /* Resize AABB to span between given local coordinates, with skin width as our collision contact offset. */
         public void SetBounds(Vector2 from, Vector2 to, float skinWidth)
         {
+            Debug.Log($"set bounds: from={from} to={to}");
             Vector2 center = Vector2.LerpUnclamped(from, to, 0.50f);
             Vector2 size   = new Vector2(Mathf.Abs(to.x - from.x), Mathf.Abs(to.y - from.y));
             Vector2 buffer = new Vector2(2f * skinWidth, 2f * skinWidth);
@@ -98,8 +99,10 @@ namespace PQ.Common.Physics
                 throw new ArgumentOutOfRangeException($"Invalid skin-width - expected >= 0 and < size={size}, received skinWidth={skinWidth}");
             }
 
+            Vector2 oldSize = _boxCollider.size;
+
             _boxCollider.size = size - buffer;
-            _boxCollider.offset = _rigidBody.position - center;
+            _boxCollider.offset = center - _rigidBody.position;
             _boxCollider.edgeRadius = skinWidth;
             _skinWidth = skinWidth;
         }
