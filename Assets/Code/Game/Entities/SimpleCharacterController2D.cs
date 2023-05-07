@@ -28,7 +28,6 @@ namespace PQ.Game.Entities
 
         void ICharacterController2D.Flip()
         {
-            _body.SetBounds(_body.Bounds.min, _body.Bounds.max, _solver.Params.ContactOffset);
             _body.Flip(horizontal: !_body.FlippedHorizontal, vertical: false);
         }
 

@@ -53,12 +53,6 @@ namespace PQ.Game.Entities
         [Tooltip("At what slope angle do we allow the character to walk up to?")]
         [SerializeField][Range(0, 90)] public float maxAscendableSlopeAngle = 45f;
 
-        [Tooltip("What's the buffer (aka skin width) that we offset collisions and casts with?")]
-        [SerializeField][Range(0, 1)] public float skinWidth = 0.25f;
-
-        [Tooltip("What layers do we consider to make up ceilings, obstacles, ground, platforms, etc?")]
-        [SerializeField] public LayerMask groundLayerMask = default;
-
         [Tooltip("How strong (as a multiple of the global setting) is the pull of gravity?")]
         [SerializeField][Range(0, 10)] public float gravityScale = 1.00f;
     }

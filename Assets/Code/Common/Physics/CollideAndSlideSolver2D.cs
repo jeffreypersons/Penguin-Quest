@@ -66,11 +66,6 @@ namespace PQ.Common.Physics
          */
         public void Move(Vector2 deltaPosition)
         {
-            if (!Mathf.Approximately(_params.ContactOffset, _body.SkinWidth))
-            {
-                _body.SetBounds(_body.Bounds.min, _body.Bounds.max, _params.ContactOffset);
-            }
-
             if (ApproximatelyZero(deltaPosition))
             {
                 return;

@@ -51,8 +51,6 @@ namespace PQ.Game.Entities
             _characterSolverParams.Bounciness    = Settings.collisionBounciness;
             _characterSolverParams.Friction      = Settings.collisionFriction;
 
-            _characterSolverParams.ContactOffset = Settings.skinWidth;
-            _characterSolverParams.LayerMask     = Settings.groundLayerMask;
             _characterSolverParams.MaxSlopeAngle = Settings.maxAscendableSlopeAngle;
             _characterSolverParams.Gravity       = Mathf.Abs(Settings.gravityScale * Physics2D.gravity.y);
 

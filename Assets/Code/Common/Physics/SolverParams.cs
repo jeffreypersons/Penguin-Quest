@@ -12,8 +12,6 @@ namespace PQ.Common.Physics
         public float     Bounciness           { get; set; }
         public float     Friction             { get; set; }
 
-        public float     ContactOffset        { get; set; }
-        public LayerMask LayerMask            { get; set; }
         public float     MaxSlopeAngle        { get; set; }
         public float     Gravity              { get; set; }
     }

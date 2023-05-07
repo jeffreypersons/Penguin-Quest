@@ -86,6 +86,7 @@ namespace PQ.Common.Physics
         /* Resize AABB to span between given local coordinates, with skin width as our collision contact offset. */
         public void SetBounds(Vector2 from, Vector2 to, float skinWidth)
         {
+            Bounds oldBounds = _boxCollider.bounds;
             Debug.Log($"set bounds: from={from} to={to}");
             Vector2 center = Vector2.LerpUnclamped(from, to, 0.50f);
             Vector2 size   = new Vector2(Mathf.Abs(to.x - from.x), Mathf.Abs(to.y - from.y));
@@ -99,9 +100,10 @@ namespace PQ.Common.Physics
                 throw new ArgumentOutOfRangeException($"Invalid skin-width - expected >= 0 and < size={size}, received skinWidth={skinWidth}");
             }
 
-            Vector2 oldSize = _boxCollider.size;
+            Vector2 oldSize = _boxCollider.size + new Vector2(2f * _skinWidth, 2f * _skinWidth);
+            Vector2 newSize = size + buffer;
 
-            _boxCollider.size = size - buffer;
+            _boxCollider.size += newSize - oldSize;
             _boxCollider.offset = center - _rigidBody.position;
             _boxCollider.edgeRadius = skinWidth;
             _skinWidth = skinWidth;
@@ -331,6 +333,7 @@ namespace PQ.Common.Physics
             Vector2 xAxis     = box.extents.x * Forward;
             Vector2 yAxis     = box.extents.y * Up;
 
+            GizmoExtensions.DrawSphere(Position, 0.02f, Color.blue);
             GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.black);
             GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.black);
             GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
