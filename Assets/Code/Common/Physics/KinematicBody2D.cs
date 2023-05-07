@@ -84,25 +84,27 @@ namespace PQ.Common.Physics
             _castFilter.SetLayerMask(layerMask);
         }
 
+
         /* Set AABB by given corners, used to infer extents, offset, and orientation. Note does not automatically resolve any collisions. */
-        public void SetBounds(Vector2 localMin, Vector2 localMax, float skinWidth)
+        public void SetBounds(Vector2 min, Vector2 max, float skinWidth)
         {
-            Vector2 extents = 0.50f * (localMax - localMin);
-            if (extents.x <= 0f || extents.y <= 0f)
+            Vector2 size = new Vector2(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
+            Vector2 buffer = 2f * new Vector2(skinWidth, skinWidth);
+            if (size.x < 0 || size.y < 0)
             {
-                throw new ArgumentOutOfRangeException($"Invalid bounding box extents - " +
-                    $"collider extents must be > 0, received min={localMin} and max={localMax} instead");
+                throw new ArgumentOutOfRangeException($"Invalid bounds - expected min < max, received min={min} and max={max}");
             }
-            if (skinWidth < 0f)
+            if (skinWidth < 0f || size.x < buffer.x || size.y < buffer.y)
             {
-                throw new ArgumentOutOfRangeException($"Invalid skin width - " +
-                    $"buffer amount must be >= 0, received {skinWidth} instead");
+                throw new ArgumentOutOfRangeException($"Invalid skin-width - expected >= 0 and < size={size}, received skinWidth={skinWidth}");
             }
 
-            _boxCollider.size       = new Vector2(extents.x - skinWidth, extents.y - skinWidth);
+            _boxCollider.size = size - buffer;
+            _boxCollider.offset = _rigidBody.position - (max - (0.50f * size));
             _boxCollider.edgeRadius = skinWidth;
-            _skinWidth              = skinWidth;
+            _skinWidth = skinWidth;
         }
+        
 
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
