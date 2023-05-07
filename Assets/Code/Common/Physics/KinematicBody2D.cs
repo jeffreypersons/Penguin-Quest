@@ -57,7 +57,7 @@ namespace PQ.Common.Physics
             get
             {
                 Bounds bounds = _boxCollider.bounds;
-                bounds.Expand(_skinWidth);
+                bounds.Expand(2f * _skinWidth);
                 return bounds;
             }
         }
@@ -92,30 +92,32 @@ namespace PQ.Common.Physics
             _castFilter.SetLayerMask(layerMask);
         }
 
-        /* Resize AABB to span between given local coordinates, with skin width as our collision contact offset. */
+        /*
+        Resize AABB to span between given local coordinates, with skin width as our collision contact offset.
+
+        Note: Skin width is calculated _inwards_ from the given bound corners.
+        */
         public void SetBounds(Vector2 from, Vector2 to, float skinWidth)
         {
-            Bounds oldBounds = _boxCollider.bounds;
-            Debug.Log($"set bounds: from={from} to={to}");
-            Vector2 center = Vector2.LerpUnclamped(from, to, 0.50f);
-            Vector2 size   = new Vector2(Mathf.Abs(to.x - from.x), Mathf.Abs(to.y - from.y));
-            Vector2 buffer = new Vector2(2f * skinWidth, 2f * skinWidth);
-            if (size.x <= 0 || size.y <= 0)
+            Vector3 center = Vector2.LerpUnclamped(from, to, 0.50f);
+            Vector3 size = new Vector3(
+                x: Mathf.Abs(to.x - from.x) - (2f * skinWidth),
+                y: Mathf.Abs(to.y - from.y) - (2f * skinWidth),
+                z: 0
+            );
+            if (skinWidth < 0f || size.x <= 0 || size.y <= 0)
             {
-                throw new ArgumentOutOfRangeException($"Invalid bounds - expected size >= 0, received from={from} and to={to}");
-            }
-            if (skinWidth < 0f || buffer.x >= size.x || buffer.y >= size.y)
-            {
-                throw new ArgumentOutOfRangeException($"Invalid skin-width - expected >= 0 and < size={size}, received skinWidth={skinWidth}");
+                throw new ArgumentOutOfRangeException(
+                    $"Invalid bounds - expected 0 <= skinWidth < size={size}, " +
+                    $"received from={from} to={to} skinWidth={skinWidth}");
             }
 
-            Vector2 oldSize = _boxCollider.size + new Vector2(2f * _skinWidth, 2f * _skinWidth);
-            Vector2 newSize = size + buffer;
-
-            _boxCollider.size += newSize - oldSize;
-            _boxCollider.offset = center - _rigidBody.position;
+            _boxCollider.offset = center - _boxCollider.bounds.center;
+            _boxCollider.size = size;
             _boxCollider.edgeRadius = skinWidth;
             _skinWidth = skinWidth;
+
+            Debug.Log($"set bounds: from={from} to={to}");
         }
 
         /* Immediately set facing of horizontal/vertical axes. */
@@ -316,7 +318,7 @@ namespace PQ.Common.Physics
             // note skip if bounds are empty, which occurs when a prefab is instantiated during an editor refresh
             if (_boxCollider != null && (_boxCollider.bounds.size.x != 0f || _boxCollider.bounds.size.y != 0f))
             {
-                SetBounds(_boxCollider.bounds.min, _boxCollider.bounds.max, _skinWidth);
+                //SetBounds(_boxCollider.bounds.min, _boxCollider.bounds.max, _skinWidth);
             }
 
             // update runtime data if inspector changed while game playing in editor
@@ -338,7 +340,7 @@ namespace PQ.Common.Physics
             // should be identical to the transform's axes in the editor window
             Bounds box = Bounds;
             Vector2 center    = new(box.center.x, box.center.y);
-            Vector2 skinRatio = new(1f + (_skinWidth / box.extents.x), 1f + (_skinWidth / box.extents.y));
+            Vector2 skinRatio = new(1f + box.extents.x / _skinWidth, 1f +box.extents.y - _skinWidth);
             Vector2 xAxis     = box.extents.x * Forward;
             Vector2 yAxis     = box.extents.y * Up;
 
