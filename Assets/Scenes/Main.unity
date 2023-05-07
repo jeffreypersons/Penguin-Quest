@@ -1179,6 +1179,18 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.025001526
+      objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.57499987
+      objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_EdgeRadius
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

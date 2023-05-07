@@ -83,26 +83,26 @@ namespace PQ.Common.Physics
             _castFilter.SetLayerMask(layerMask);
         }
 
-        /* Set AABB by given corners, used to infer extents, offset, and orientation. Note does not automatically resolve any collisions. */
-        public void SetBounds(Vector2 min, Vector2 max, float skinWidth)
+        /* Resize AABB to span between given local coordinates, with skin width as our collision contact offset. */
+        public void SetBounds(Vector2 from, Vector2 to, float skinWidth)
         {
-            Vector2 size = new Vector2(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
-            Vector2 buffer = 2f * new Vector2(skinWidth, skinWidth);
-            if (size.x < 0 || size.y < 0)
+            Vector2 center = Vector2.LerpUnclamped(from, to, 0.50f);
+            Vector2 size   = new Vector2(Mathf.Abs(to.x - from.x), Mathf.Abs(to.y - from.y));
+            Vector2 buffer = new Vector2(2f * skinWidth, 2f * skinWidth);
+            if (size.x <= 0 || size.y <= 0)
             {
-                throw new ArgumentOutOfRangeException($"Invalid bounds - expected min < max, received min={min} and max={max}");
+                throw new ArgumentOutOfRangeException($"Invalid bounds - expected size >= 0, received from={from} and to={to}");
             }
-            if (skinWidth < 0f || size.x < buffer.x || size.y < buffer.y)
+            if (skinWidth < 0f || buffer.x >= size.x || buffer.y >= size.y)
             {
                 throw new ArgumentOutOfRangeException($"Invalid skin-width - expected >= 0 and < size={size}, received skinWidth={skinWidth}");
             }
 
             _boxCollider.size = size - buffer;
-            _boxCollider.offset = _rigidBody.position - (max - (0.50f * size));
+            _boxCollider.offset = _rigidBody.position - center;
             _boxCollider.edgeRadius = skinWidth;
             _skinWidth = skinWidth;
         }
-        
 
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
@@ -295,20 +295,27 @@ namespace PQ.Common.Physics
         }
 
 
+        #if UNITY_EDITOR
         void OnValidate()
         {
-            if (!Application.IsPlaying(this) || !_initialized)
+            // force synchronization with inspector values whether game is playing in editor or not
+            // note skip if bounds are empty, which occurs when a prefab is instantiated during an editor refresh
+            if (_boxCollider != null && (_boxCollider.bounds.size.x != 0f || _boxCollider.bounds.size.y != 0f))
             {
-                return;
+                SetBounds(_boxCollider.bounds.min, _boxCollider.bounds.max, _skinWidth);
             }
 
-            SetBounds(Bounds.min, Bounds.max, _skinWidth);
-            SetLayerMask(_layerMask);
-            if (_preallocatedHitBufferSize != _hitBuffer.Length)
+            // update runtime data if inspector changed while game playing in editor
+            if (Application.IsPlaying(this) && _initialized)
             {
-                _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
+                SetLayerMask(_layerMask);
+                if (_preallocatedHitBufferSize != _hitBuffer.Length)
+                {
+                    _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
+                }
             }
         }
+
 
         void OnDrawGizmos()
         {
@@ -326,5 +333,6 @@ namespace PQ.Common.Physics
             GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
             GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
+        #endif
     }
 }
