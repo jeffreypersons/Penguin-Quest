@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using PQ.Common.Extensions;
-using TMPro;
 
 
 namespace PQ.Common.Physics
@@ -83,7 +82,6 @@ namespace PQ.Common.Physics
             _layerMask = layerMask;
             _castFilter.SetLayerMask(layerMask);
         }
-
 
         /* Set AABB by given corners, used to infer extents, offset, and orientation. Note does not automatically resolve any collisions. */
         public void SetBounds(Vector2 min, Vector2 max, float skinWidth)
