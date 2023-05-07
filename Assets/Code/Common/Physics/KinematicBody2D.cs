@@ -48,10 +48,19 @@ namespace PQ.Common.Physics
         public bool    FlippedVertical   => _flippedVertical;
         public Vector2 Position          => _rigidBody.position;
         public float   Depth             => _rigidBody.transform.position.z;
-        public Bounds  Bounds            => _boxCollider.bounds;
         public float   SkinWidth         => _skinWidth;
         public Vector2 Forward           => _rigidBody.transform.right.normalized;
         public Vector2 Up                => _rigidBody.transform.up.normalized;
+
+        public Bounds Bounds
+        {
+            get
+            {
+                Bounds bounds = _boxCollider.bounds;
+                bounds.Expand(_skinWidth);
+                return bounds;
+            }
+        }
 
         void Awake()
         {
