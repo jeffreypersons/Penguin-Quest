@@ -18,8 +18,6 @@ namespace PQ.Game.Entities
 
             _body   = body;
             _solver = new CollideAndSlideSolver2D(body, solverParams);
-
-            _body.SetBounds(_body.Bounds.min, _body.Bounds.max, _solver.Params.ContactOffset);
         }
 
         Vector2 ICharacterController2D.Position   => _body.Position;
@@ -36,7 +34,6 @@ namespace PQ.Game.Entities
 
         void ICharacterController2D.Move(Vector2 deltaPosition)
         {
-            _body.SetBounds(_body.Bounds.min, _body.Bounds.max, _solver.Params.ContactOffset);
             _solver.Move(deltaPosition);
         }
     }

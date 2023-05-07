@@ -87,11 +87,11 @@ namespace PQ.Common.Physics
         /* Set AABB by given corners, used to infer extents, offset, and orientation. Note does not automatically resolve any collisions. */
         public void SetBounds(Vector2 localMin, Vector2 localMax, float skinWidth)
         {
-            Vector2 extents = localMax - localMin;
-            if (localMin.x >= localMax.x || localMin.y >= localMax.x)
+            Vector2 extents = 0.50f * (localMax - localMin);
+            if (extents.x <= 0f || extents.y <= 0f)
             {
                 throw new ArgumentOutOfRangeException($"Invalid bounding box extents - " +
-                    $"collider extents must be > 0, received {extents} instead");
+                    $"collider extents must be > 0, received min={localMin} and max={localMax} instead");
             }
             if (skinWidth < 0f)
             {
@@ -297,12 +297,12 @@ namespace PQ.Common.Physics
 
         void OnValidate()
         {
-            SetBounds(Bounds.min, Bounds.max, _skinWidth);
             if (!Application.IsPlaying(this) || !_initialized)
             {
                 return;
             }
 
+            SetBounds(Bounds.min, Bounds.max, _skinWidth);
             SetLayerMask(_layerMask);
             if (_preallocatedHitBufferSize != _hitBuffer.Length)
             {

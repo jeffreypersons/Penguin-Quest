@@ -39,6 +39,11 @@ namespace PQ.Common.Physics
 
         public CollideAndSlideSolver2D(KinematicBody2D body, in SolverParams solverParams)
         {
+            if (body == null)
+            {
+                throw new ArgumentNullException($"Expected non-null {nameof(KinematicBody2D)}");
+            }
+
             _body       = body;
             _params     = solverParams;
             _collisions = CollisionFlags2D.None;
@@ -62,6 +67,11 @@ namespace PQ.Common.Physics
          */
         public void Move(Vector2 deltaPosition)
         {
+            if (!Mathf.Approximately(_params.ContactOffset, _body.SkinWidth))
+            {
+                _body.SetBounds(_body.Bounds.min, _body.Bounds.max, _params.ContactOffset);
+            }
+
             if (ApproximatelyZero(deltaPosition))
             {
                 return;
