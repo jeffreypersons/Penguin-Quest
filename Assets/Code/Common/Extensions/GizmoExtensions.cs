@@ -38,6 +38,27 @@ namespace PQ.Common.Extensions
             Gizmos.color = previousColor;
         }
 
+        /* Draw sides of rectangle corresponding to the area represented by given relative origin and extents (AABB). */
+        public static void DrawRect(Vector2 origin, Vector2 extents, Color? color = null)
+        {
+            Color previousColor = Gizmos.color;
+            Gizmos.color = color.GetValueOrDefault(DefaultColor);
+
+            Vector2 min = origin - extents;
+            Vector2 max = origin + extents;
+            Vector2 leftBottom  = new(min.x, min.y);
+            Vector2 leftTop     = new(min.x, max.y);
+            Vector2 rightBottom = new(max.x, min.y);
+            Vector2 rightTop    = new(max.x, max.y);
+
+            Gizmos.DrawLine(leftTop,     rightTop);
+            Gizmos.DrawLine(leftBottom,  rightBottom);
+            Gizmos.DrawLine(leftBottom,  leftTop);
+            Gizmos.DrawLine(rightBottom, rightTop);
+
+            Gizmos.color = previousColor;
+        }
+
         /* Draw sides of rectangle corresponding to the area represented by given relative origin and axes. */
         public static void DrawRect(Vector2 origin, Vector2 xAxis, Vector2 yAxis, Color? color = null)
         {

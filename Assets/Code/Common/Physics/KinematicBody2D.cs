@@ -20,7 +20,7 @@ namespace PQ.Common.Physics
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.01f;
+        [SerializeField] [Range(0, 1)]   private float _overlapTolerance = 0.01f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         #if UNITY_EDITOR
@@ -41,27 +41,34 @@ namespace PQ.Common.Physics
                 $"Depth:{Depth}," +
                 $"Forward:{Forward}," +
                 $"Up:{Up}," +
-                $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
+                $"AABB: bounds(center:{Center}, extents:{Extents})," +
             $"}}";
 
         public bool    FlippedHorizontal => _flippedHorizontal;
         public bool    FlippedVertical   => _flippedVertical;
-        public Vector2 Position          => _rigidBody.position;
-        public float   Depth             => _rigidBody.transform.position.z;
-        public float   SkinWidth         => _skinWidth;
-        public Vector2 Forward           => _rigidBody.transform.right.normalized;
-        public Vector2 Up                => _rigidBody.transform.up.normalized;
 
-        public Bounds Bounds
-        {
-            get
-            {
-                Bounds bounds = _boxCollider.bounds;
-                bounds.Expand(2f * _skinWidth);
-                return bounds;
-            }
-        }
+        /* Position of body as anchored at the bottom center (not to be confused with AABB center position). */
+        public Vector2 Position => _rigidBody.position;
 
+        /* Center position of AABB. */
+        public Vector2 Center => _boxCollider.bounds.center;
+
+        /* Local forward direction. Always up unless horizontal flipped set to true. */
+        public Vector2 Forward => _rigidBody.transform.right.normalized;
+
+        /* Local upwards direction. Always up unless vertical flipped set to true. */
+        public Vector2 Up      => _rigidBody.transform.up.normalized;
+        
+        /* Half size of bounding box (in other words, distance from AABB center to horizontal/vertical sides, including skinWidth). */
+        public Vector2 Extents => _boxCollider.bounds.extents;
+
+        /* Distance 'into' the screen. */
+        public float Depth => _rigidBody.transform.position.z;
+
+        /* Buffer amount measured from AABB into our bounding box, if any. This defines the acceptable overlap amount for collisions. */
+        public float OverlapTolerance => _overlapTolerance;
+
+        
         void Awake()
         {
             if (!transform.TryGetComponent<Rigidbody2D>(out var _))
@@ -115,7 +122,7 @@ namespace PQ.Common.Physics
             _boxCollider.offset = center - _boxCollider.bounds.center;
             _boxCollider.size = size;
             _boxCollider.edgeRadius = skinWidth;
-            _skinWidth = skinWidth;
+            _overlapTolerance = skinWidth;
 
             Debug.Log($"set bounds: from={from} to={to}");
         }
@@ -335,20 +342,24 @@ namespace PQ.Common.Physics
 
         void OnDrawGizmos()
         {
-            // draw a bounding box that should be identical to the BoxCollider2D bounds in the editor window,
-            // surrounded by an outer bounding box offset by our skin with, with a pair of arrows from the that
-            // should be identical to the transform's axes in the editor window
-            Bounds box = Bounds;
-            Vector2 center    = new(box.center.x, box.center.y);
-            Vector2 skinRatio = new(1f + box.extents.x / _skinWidth, 1f +box.extents.y - _skinWidth);
-            Vector2 xAxis     = box.extents.x * Forward;
-            Vector2 yAxis     = box.extents.y * Up;
+            Vector2 anchor  = _rigidBody.position;
+            Vector2 center  = _boxCollider.bounds.center;
+            Vector2 forward = _rigidBody.transform.right.normalized;
+            Vector2 up      = _rigidBody.transform.up.normalized;
+            Vector2 extentsInner = _boxCollider.bounds.extents - new Vector3(_overlapTolerance, _overlapTolerance, 0f);
+            Vector2 extentsOuter = _boxCollider.bounds.extents;
 
-            GizmoExtensions.DrawSphere(Position, 0.02f, Color.blue);
-            GizmoExtensions.DrawRect(center, xAxis, yAxis, Color.black);
-            GizmoExtensions.DrawRect(center, skinRatio.x * xAxis, skinRatio.y * yAxis, Color.black);
-            GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
-            GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
+            // draw anchor/center positions, local axes, and AABB with inner bounds to indicate region of tolerated overlap
+
+            GizmoExtensions.DrawSphere(anchor, 0.02f, Color.blue);
+            GizmoExtensions.DrawSphere(center, 0.02f, Color.black);
+
+            GizmoExtensions.DrawRect(center, extentsInner, Color.black);
+            GizmoExtensions.DrawRect(center, extentsOuter, Color.black);
+
+            GizmoExtensions.DrawArrow(center, extentsInner.x * forward, Color.red);
+            GizmoExtensions.DrawArrow(center, extentsInner.y * up, Color.green);
+
         }
         #endif
     }

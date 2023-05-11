@@ -80,7 +80,7 @@ namespace PQ.Common.Physics
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
+            _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
 
             _body.InterpolatedMoveTo(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
