@@ -376,9 +376,9 @@ namespace PQ.Common.Physics
                 Vector2 frontCenter = center + (extents.x + buffer.x) * forward;
                 Vector2 topCenter   = center + (extents.y + buffer.y) * up;
                 GizmoExtensions.DrawArrow(center, frontCenter, Color.red);
-                GizmoExtensions.DrawArrow(center, topCenter, Color.green);
+                GizmoExtensions.DrawArrow(center, topCenter,   Color.green);
                 GizmoExtensions.DrawLine(frontCenter - buffer.x * forward, frontCenter, Color.black);
-                GizmoExtensions.DrawLine(topCenter - buffer.y * up, topCenter, Color.black);
+                GizmoExtensions.DrawLine(topCenter   - buffer.y * up,      topCenter,   Color.black);
             }
         }
         #endif
