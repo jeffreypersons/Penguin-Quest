@@ -116,8 +116,7 @@ namespace PQ.Common.Extensions
         Note that arrow head length and height are configured to be the same length for simplicity,
         and sized relative to length of line.
         */
-        public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null,
-            float arrowheadSizeRatio = 0.10f)
+        public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null, float arrowheadSizeRatio = 0.10f)
         {
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DefaultColor);

@@ -357,8 +357,8 @@ namespace PQ.Common.Physics
             GizmoExtensions.DrawRect(center, extentsInner, Color.black);
             GizmoExtensions.DrawRect(center, extentsOuter, Color.black);
 
-            GizmoExtensions.DrawArrow(center, extentsInner.x * forward, Color.red);
-            GizmoExtensions.DrawArrow(center, extentsInner.y * up, Color.green);
+            GizmoExtensions.DrawArrow(center, center + extentsInner.x * forward, Color.red);
+            GizmoExtensions.DrawArrow(center, center + extentsInner.y * up, Color.green);
 
         }
         #endif
