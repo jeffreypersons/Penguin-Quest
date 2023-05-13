@@ -98,7 +98,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.5725}
+  m_Offset: {x: 0, y: 0.585}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -109,8 +109,8 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 1
   serializedVersion: 2
-  m_Size: {x: 0.48, y: 1.105}
-  m_EdgeRadius: 0.01
+  m_Size: {x: 0.45, y: 1.07}
+  m_EdgeRadius: 0.025
 --- !u!114 &2916047126819965676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,12 +128,11 @@ MonoBehaviour:
   _layerMask:
     serializedVersion: 2
     m_Bits: 4096
-  _overlapTolerance: 0.01
   _preallocatedHitBufferSize: 16
-  _AABBCornerMin: {x: -0.25, y: 0.01}
-  _AABBCornerMax: {x: 0.25, y: 1.135}
-  _drawCastsInEditor: 1
-  _drawMovesInEditor: 1
+  _AABBCornerMin: {x: -0.25, y: 0.025}
+  _AABBCornerMax: {x: 0.25, y: 1.145}
+  _overlapTolerance: 0.025
+  _editorVisuals: -1
 --- !u!114 &2002890420633338778
 MonoBehaviour:
   m_ObjectHideFlags: 0

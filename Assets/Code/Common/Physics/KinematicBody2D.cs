@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEditor;
 using PQ.Common.Extensions;
-
 
 namespace PQ.Common.Physics
 {
@@ -20,15 +20,27 @@ namespace PQ.Common.Physics
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0, 1)]   private float _overlapTolerance = 0.01f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
-        
+
         [SerializeField] private Vector2 _AABBCornerMin = -Vector2.one;
         [SerializeField] private Vector2 _AABBCornerMax =  Vector2.one;
-        
+        [SerializeField][Range(0, 1)] private float _overlapTolerance = 0.01f;
+
         #if UNITY_EDITOR
-        [SerializeField] private bool _drawCastsInEditor = true;        
-        [SerializeField] private bool _drawMovesInEditor = true;
+        [Flags]
+        public enum EditorVisuals
+        {
+            None      = 0,
+            Casts     = 1 << 1,
+            Moves     = 1 << 2,
+            Axes      = 1 << 3,
+            Positions = 1 << 4,
+            Bounds    = 1 << 5,
+            All       = ~0,
+        }
+
+        [SerializeField] private EditorVisuals _editorVisuals = EditorVisuals.All;
+        private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
         #endif
 
         private bool _initialized;
@@ -63,7 +75,7 @@ namespace PQ.Common.Physics
         public Vector2 Up      => _rigidBody.transform.up.normalized;
         
         /* Half size of bounding box (in other words, distance from AABB center to horizontal/vertical sides, including skinWidth). */
-        public Vector2 Extents => _boxCollider.bounds.extents;
+        public Vector2 Extents => _boxCollider.bounds.extents + new Vector3(_overlapTolerance, _overlapTolerance, 0f);
 
         /* Distance 'into' the screen. */
         public float Depth => _rigidBody.transform.position.z;
@@ -120,6 +132,7 @@ namespace PQ.Common.Physics
                     $"Invalid bounds - expected 0 <= overlapTolerance < size={localSize}, " +
                     $"received from={from} to={to} overlapTolerance={overlapTolerance}");
             }
+
             Debug.Log(overlapTolerance);
             _boxCollider.offset     = localCenter;
             _boxCollider.size       = localSize;
@@ -152,7 +165,7 @@ namespace PQ.Common.Physics
         public void MoveTo(Vector2 position)
         {
             #if UNITY_EDITOR
-            if (_drawMovesInEditor)
+            if (IsEnabled(EditorVisuals.Moves))
             {
                 Debug.DrawLine(_rigidBody.position, position, Color.grey, Time.fixedDeltaTime);
             }
@@ -164,7 +177,7 @@ namespace PQ.Common.Physics
         public void MoveBy(Vector2 delta)
         {
             #if UNITY_EDITOR
-            if (_drawMovesInEditor)
+            if (IsEnabled(EditorVisuals.Moves))
             {
                 Debug.DrawLine(_rigidBody.position, _rigidBody.position + delta, Color.grey, Time.fixedDeltaTime);
             }
@@ -193,7 +206,7 @@ namespace PQ.Common.Physics
             // todo: look into encapsulating this inside a FixedUpdate call and a KinematicBody interpolation mode instead
             //       would require storing any changes for current frame and 'undoing' and repllaying via MovePosition() like below
             #if UNITY_EDITOR
-            if (_drawMovesInEditor)
+            if (IsEnabled(EditorVisuals.Moves))
             {
                 Debug.DrawLine(startPositionThisFrame, targetPositionThisFrame, Color.grey, Time.fixedDeltaTime);
             }
@@ -226,7 +239,7 @@ namespace PQ.Common.Physics
             hits = _hitBuffer.AsSpan(0, hitCount);
 
             #if UNITY_EDITOR
-            if (_drawCastsInEditor)
+            if (IsEnabled(EditorVisuals.Casts))
             {
                 float duration = Time.fixedDeltaTime;
                 foreach (RaycastHit2D hit in hits)
@@ -275,7 +288,7 @@ namespace PQ.Common.Physics
             }
             
             #if UNITY_EDITOR
-            if (_drawCastsInEditor)
+            if (IsEnabled(EditorVisuals.Casts))
             {
                 Bounds bounds = _boxCollider.bounds;
                 Vector2 center    = new(bounds.center.x, bounds.center.y);
@@ -323,6 +336,14 @@ namespace PQ.Common.Physics
         #if UNITY_EDITOR
         void OnValidate()
         {
+            // avoid updating with inspector if loading the original prefab from disk (which occurs before loading the instance)
+            // otherwise the default inspector values are used. By skipping persistent objects, we effectively only update when values are
+            // changed in the inspector
+            if (EditorUtility.IsPersistent(this))
+            {
+                return;
+            }
+
             SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
 
             // update runtime data if inspector changed while game playing in editor
@@ -343,19 +364,28 @@ namespace PQ.Common.Physics
             Vector2 center  = _boxCollider.bounds.center;
             Vector2 forward = _rigidBody.transform.right.normalized;
             Vector2 up      = _rigidBody.transform.up.normalized;
-            Vector2 extentsInner = _boxCollider.bounds.extents - new Vector3(_overlapTolerance, _overlapTolerance, 0f);
-            Vector2 extentsOuter = _boxCollider.bounds.extents;
+            Vector2 extentsInner = _boxCollider.bounds.extents;
+            Vector2 extentsOuter = _boxCollider.bounds.extents + new Vector3(_overlapTolerance, _overlapTolerance, 0f);
 
             // draw anchor/center positions, local axes, and AABB with inner bounds to indicate region of tolerated overlap
 
-            GizmoExtensions.DrawSphere(anchor, 0.02f, Color.blue);
-            GizmoExtensions.DrawSphere(center, 0.02f, Color.black);
+            if (IsEnabled(EditorVisuals.Positions))
+            {
+                GizmoExtensions.DrawSphere(anchor, 0.02f, Color.blue);
+                GizmoExtensions.DrawSphere(center, 0.02f, Color.black);
+            }
 
-            GizmoExtensions.DrawRect(center, extentsInner, Color.black);
-            GizmoExtensions.DrawRect(center, extentsOuter, Color.black);
+            if (IsEnabled(EditorVisuals.Bounds))
+            {
+                GizmoExtensions.DrawRect(center, extentsInner, Color.black);
+                GizmoExtensions.DrawRect(center, extentsOuter, Color.black);
+            }
 
-            GizmoExtensions.DrawArrow(center, center + extentsInner.x * forward, Color.red);
-            GizmoExtensions.DrawArrow(center, center + extentsInner.y * up, Color.green);
+            if (IsEnabled(EditorVisuals.Axes))
+            {
+                GizmoExtensions.DrawArrow(center, center + extentsInner.x * forward, Color.red);
+                GizmoExtensions.DrawArrow(center, center + extentsInner.y * up,      Color.green);
+            }
 
         }
         #endif
