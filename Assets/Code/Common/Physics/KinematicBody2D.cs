@@ -120,7 +120,7 @@ namespace PQ.Common.Physics
                     $"Invalid bounds - expected 0 <= overlapTolerance < size={localSize}, " +
                     $"received from={from} to={to} overlapTolerance={overlapTolerance}");
             }
-
+            Debug.Log(overlapTolerance);
             _boxCollider.offset     = localCenter;
             _boxCollider.size       = localSize;
             _boxCollider.edgeRadius = overlapTolerance;
@@ -323,12 +323,7 @@ namespace PQ.Common.Physics
         #if UNITY_EDITOR
         void OnValidate()
         {
-            // force synchronization with inspector values whether game is playing in editor or not
-            // note skip if bounds are empty, which occurs when a prefab is instantiated during an editor refresh
-            if (_boxCollider != null && (_boxCollider.bounds.size.x != 0f || _boxCollider.bounds.size.y != 0f))
-            {
-                SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
-            }
+            SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
 
             // update runtime data if inspector changed while game playing in editor
             if (Application.IsPlaying(this) && _initialized)
