@@ -35,7 +35,6 @@ namespace PQ.Common.Physics
             Moves     = 1 << 2,
             Axes      = 1 << 3,
             Positions = 1 << 4,
-            Bounds    = 1 << 5,
             All       = ~0,
         }
 
@@ -364,29 +363,23 @@ namespace PQ.Common.Physics
             Vector2 center  = _boxCollider.bounds.center;
             Vector2 forward = _rigidBody.transform.right.normalized;
             Vector2 up      = _rigidBody.transform.up.normalized;
-            Vector2 extentsInner = _boxCollider.bounds.extents;
-            Vector2 extentsOuter = _boxCollider.bounds.extents + new Vector3(_overlapTolerance, _overlapTolerance, 0f);
-
-            // draw anchor/center positions, local axes, and AABB with inner bounds to indicate region of tolerated overlap
+            Vector2 extents = _boxCollider.bounds.extents;
+            Vector2 buffer  = new Vector2(_overlapTolerance, _overlapTolerance);
 
             if (IsEnabled(EditorVisuals.Positions))
             {
                 GizmoExtensions.DrawSphere(anchor, 0.02f, Color.blue);
                 GizmoExtensions.DrawSphere(center, 0.02f, Color.black);
             }
-
-            if (IsEnabled(EditorVisuals.Bounds))
-            {
-                GizmoExtensions.DrawRect(center, extentsInner, Color.black);
-                GizmoExtensions.DrawRect(center, extentsOuter, Color.black);
-            }
-
             if (IsEnabled(EditorVisuals.Axes))
             {
-                GizmoExtensions.DrawArrow(center, center + extentsInner.x * forward, Color.red);
-                GizmoExtensions.DrawArrow(center, center + extentsInner.y * up,      Color.green);
+                Vector2 frontCenter = center + (extents.x + buffer.x) * forward;
+                Vector2 topCenter   = center + (extents.y + buffer.y) * up;
+                GizmoExtensions.DrawArrow(center, frontCenter, Color.red);
+                GizmoExtensions.DrawArrow(center, topCenter, Color.green);
+                GizmoExtensions.DrawLine(frontCenter - buffer.x * forward, frontCenter, Color.black);
+                GizmoExtensions.DrawLine(topCenter - buffer.y * up, topCenter, Color.black);
             }
-
         }
         #endif
     }
