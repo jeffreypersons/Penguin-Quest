@@ -22,7 +22,10 @@ namespace PQ.Common.Physics
         [SerializeField] private LayerMask _layerMask = default;
         [SerializeField] [Range(0, 1)]   private float _overlapTolerance = 0.01f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
-
+        
+        [SerializeField] private Vector2 _AABBCornerMin = -Vector2.one;
+        [SerializeField] private Vector2 _AABBCornerMax =  Vector2.one;
+        
         #if UNITY_EDITOR
         [SerializeField] private bool _drawCastsInEditor = true;        
         [SerializeField] private bool _drawMovesInEditor = true;
@@ -104,27 +107,26 @@ namespace PQ.Common.Physics
 
         Note: Skin width is calculated _inwards_ from the given bound corners.
         */
-        public void SetBounds(Vector2 from, Vector2 to, float skinWidth)
+        public void SetBounds(Vector2 from, Vector2 to, float overlapTolerance)
         {
-            Vector3 center = Vector2.LerpUnclamped(from, to, 0.50f);
-            Vector3 size = new Vector3(
-                x: Mathf.Abs(to.x - from.x) - (2f * skinWidth),
-                y: Mathf.Abs(to.y - from.y) - (2f * skinWidth),
-                z: 0
+            Vector2 localCenter = Vector2.LerpUnclamped(from, to, 0.50f);
+            Vector2 localSize = new Vector2(
+                x: Mathf.Abs(to.x - from.x) - (2f * overlapTolerance),
+                y: Mathf.Abs(to.y - from.y) - (2f * overlapTolerance)
             );
-            if (skinWidth < 0f || size.x <= 0 || size.y <= 0)
+            if (overlapTolerance < 0f || localSize.x <= 0 || localSize.y <= 0)
             {
-                throw new ArgumentOutOfRangeException(
-                    $"Invalid bounds - expected 0 <= skinWidth < size={size}, " +
-                    $"received from={from} to={to} skinWidth={skinWidth}");
+                throw new ArgumentException(
+                    $"Invalid bounds - expected 0 <= overlapTolerance < size={localSize}, " +
+                    $"received from={from} to={to} overlapTolerance={overlapTolerance}");
             }
 
-            _boxCollider.offset = center - _boxCollider.bounds.center;
-            _boxCollider.size = size;
-            _boxCollider.edgeRadius = skinWidth;
-            _overlapTolerance = skinWidth;
-
-            Debug.Log($"set bounds: from={from} to={to}");
+            _boxCollider.offset     = localCenter;
+            _boxCollider.size       = localSize;
+            _boxCollider.edgeRadius = overlapTolerance;
+            _overlapTolerance       = overlapTolerance;
+            _AABBCornerMin          = from;
+            _AABBCornerMax          = to;
         }
 
         /* Immediately set facing of horizontal/vertical axes. */
@@ -325,7 +327,7 @@ namespace PQ.Common.Physics
             // note skip if bounds are empty, which occurs when a prefab is instantiated during an editor refresh
             if (_boxCollider != null && (_boxCollider.bounds.size.x != 0f || _boxCollider.bounds.size.y != 0f))
             {
-                //SetBounds(_boxCollider.bounds.min, _boxCollider.bounds.max, _skinWidth);
+                SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
             }
 
             // update runtime data if inspector changed while game playing in editor
