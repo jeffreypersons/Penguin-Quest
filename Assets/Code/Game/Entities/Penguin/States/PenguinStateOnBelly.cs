@@ -4,43 +4,41 @@ using PQ.Common.Fsm;
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinStateOnBelly : FsmState<PenguinStateId, PenguinFsmSharedData>
+    public class PenguinStateOnBelly : FsmState<PenguinStateId, PenguinEntity>
     {
         public PenguinStateOnBelly() : base() { }
 
-        private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
         protected override void OnIntialize()
         {
-            RegisterEvent(Blob.EventBus.standUpCommand,                    HandleStandUpInputReceived);
-            RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
-            //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged); // disabled until we fix ground handling
+            RegisterEvent(Blob.EventBus.standUpCommand,      HandleStandUpInputReceived);
+            RegisterEvent(Blob.EventBus.movementInputChange, HandleMoveHorizontalChanged);
         }
 
         protected override void OnEnter()
         {
-            Blob.CharacterController.Settings = Blob.OnBellySettings;
-            _locomotionBlend = 0.0f;
+            Blob.Movement.Settings = Blob.BellySettings;
             _horizontalInput = new(HorizontalInput.Type.None);
+
+            // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
+            // but enable everything else including bounding box
+            Blob.Skeleton.ColliderConstraints =
+                 PenguinColliderConstraints.DisableFeet |
+                 PenguinColliderConstraints.DisableFlippers;
+
+            // todo: might want to be more explicit that this causes a bounding box resize...
+            Blob.Movement.Settings = Blob.BellySettings;
         }
 
         protected override void OnExit()
         {
-            _locomotionBlend = 0.0f;
-            //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
+            Blob.Movement.Move(new Vector2(_horizontalInput.value, 0f), Blob.MaxWalkSpeed, Time.fixedDeltaTime);
         }
 
         protected override void OnUpdate()
         {
             HandleHorizontalMovement();
-        }
-
-
-        // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
-        private void HandleGroundContactChanged(bool isGrounded)
-        {
-            Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, isGrounded);
         }
 
         private void HandleStandUpInputReceived()

@@ -4,11 +4,10 @@ using PQ.Common.Fsm;
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinStateOnFeet : FsmState<PenguinStateId, PenguinFsmSharedData>
+    public class PenguinStateOnFeet : FsmState<PenguinStateId, PenguinEntity>
     {
         public PenguinStateOnFeet() : base() { }
 
-        private float _locomotionBlend;
         private HorizontalInput _horizontalInput;
 
         protected override void OnIntialize()
@@ -19,26 +18,23 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.CharacterController.Settings = Blob.OnFeetSettings;
-            _locomotionBlend = 0.0f;
+            Blob.Movement.Settings = Blob.FeetSettings;
             _horizontalInput = new(HorizontalInput.Type.None);
         }
 
         protected override void OnExit()
         {
-            _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
-            //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
         }
 
         protected override void OnFixedUpdate()
         {
-            Blob.CharacterController.UpdateMovement();
+            Blob.Movement.Move(new Vector2(_horizontalInput.value, 0f), Blob.MaxWalkSpeed, Time.fixedDeltaTime);
         }
 
         protected override void OnUpdate()
         {
-            AdjustLocomotionBlendBasedOnInput();
+
         }
 
 
@@ -50,31 +46,6 @@ namespace PQ.Game.Entities.Penguin
         private void HandleMoveHorizontalChanged(HorizontalInput state)
         {
             _horizontalInput = state;
-            if (_horizontalInput.value == HorizontalInput.Type.Right)
-            {
-                Blob.CharacterController.HorizontalInput = 1.0f;
-            }
-            else if (_horizontalInput.value == HorizontalInput.Type.Left)
-            {
-                Blob.CharacterController.HorizontalInput = -1.0f;
-            }
-            else
-            {
-                Blob.CharacterController.HorizontalInput = 0.0f;
-            }
-        }
-
-        private void AdjustLocomotionBlendBasedOnInput()
-        {
-            float adjustedBlendAmount = Mathf.Approximately(Blob.CharacterController.HorizontalInput, 0f)?
-                Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.locomotionBlendStep) :
-                Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.locomotionBlendStep);
-
-            if (!Mathf.Approximately(_locomotionBlend, adjustedBlendAmount))
-            {
-                _locomotionBlend = adjustedBlendAmount;
-                //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
-            }
         }
     }
 }

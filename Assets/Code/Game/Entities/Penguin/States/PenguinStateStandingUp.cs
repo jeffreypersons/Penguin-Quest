@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinStateStandingUp : FsmState<PenguinStateId, PenguinFsmSharedData>
+    public class PenguinStateStandingUp : FsmState<PenguinStateId, PenguinEntity>
     {
         public PenguinStateStandingUp() : base() { }
 
@@ -24,6 +24,10 @@ namespace PQ.Game.Entities.Penguin
             // no op
         }
 
+        protected override void OnFixedUpdate()
+        {
+            // todo: handle momentum during stand up and 'sliding' bounding box adjustments
+        }
 
         private void HandleStandUpAnimationStarted()
         {
@@ -36,17 +40,7 @@ namespace PQ.Game.Entities.Penguin
             // enable all colliders as we are now fully onFeet
             Blob.Skeleton.ColliderConstraints = PenguinColliderConstraints.None;
 
-            Blob.CharacterController.Settings = Blob.OnFeetSettings;
-            Blob.Skeleton.ReadjustBoundingBox(
-                offset: new Vector2(-0.3983436f, 14.60247f),
-                size:   new Vector2(13.17636f,   28.28143f),
-                edgeRadius: 0.68f
-            );
-
             base.SignalMoveToNextState(PenguinStateId.Feet);
-
-            // todo: find a good way of having data for sliding and for onFeet that can be passed in here,
-            //       and those values can be adjusted, perhaps in their own scriptable objects?
         }
     }
 }

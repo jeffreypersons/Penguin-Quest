@@ -4,7 +4,7 @@
 namespace PQ.Game.Entities.Penguin
 {
     // todo: add some sort of free fall check that forces a respawn/death
-    public class PenguinStateMidair : FsmState<PenguinStateId, PenguinFsmSharedData>
+    public class PenguinStateMidair : FsmState<PenguinStateId, PenguinEntity>
     {
         public PenguinStateMidair() : base() { }
 

@@ -9,7 +9,7 @@ namespace PQ.Game.Entities.Penguin
 
     This is intended to keep all that skeletal animation sort of book-keeping code out of the core game logic.
     */
-    public class PenguinSkeletalStructure : MonoBehaviour
+    public sealed class PenguinSkeletalStructure : MonoBehaviour
     {
         [Header("Body Part Collider Constraints")]
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.None;

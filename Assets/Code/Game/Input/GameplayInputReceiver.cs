@@ -85,7 +85,7 @@ namespace PQ.Game.Input
                 horizontalInputType = HorizontalInput.Type.Right;
             }
 
-            if (_horizontalInputState.value != horizontalInputType)
+            if (_horizontalInputState.type != horizontalInputType)
             {
                 _horizontalInputState = new(horizontalInputType);
                 _eventCenter.movementInputChange.Raise(_horizontalInputState);

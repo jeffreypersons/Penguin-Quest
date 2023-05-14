@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEditor;
 using PQ.Common.Extensions;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 
 namespace PQ.Common.Physics
@@ -25,14 +26,8 @@ namespace PQ.Common.Physics
     {
         [SerializeField] private Rigidbody2D   _rigidBody;
         [SerializeField] private BoxCollider2D _boxCollider;
-
-        [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
-
-        [SerializeField] private Vector2 _AABBCornerMin = -Vector2.one;
-        [SerializeField] private Vector2 _AABBCornerMax =  Vector2.one;
-        [SerializeField][Range(0, 1)] private float _overlapTolerance = 0.01f;
-
+        [SerializeField] private KinematicBody2DSettings _settings;
+        
         #if UNITY_EDITOR
         [Flags]
         public enum EditorVisuals
@@ -49,12 +44,14 @@ namespace PQ.Common.Physics
         private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
         #endif
 
+
         private bool _initialized;
         private bool _flippedHorizontal;
         private bool _flippedVertical;
 
         private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _hitBuffer;
+        private KinematicSolver2D _solver;
 
         public override string ToString() =>
             $"Mover{{" +
@@ -63,6 +60,7 @@ namespace PQ.Common.Physics
                 $"Forward:{Forward}," +
                 $"Up:{Up}," +
                 $"AABB: bounds(center:{Center}, extents:{Extents})," +
+                $"Settings: {_settings}" +
             $"}}";
 
         public bool    FlippedHorizontal => _flippedHorizontal;
@@ -81,15 +79,48 @@ namespace PQ.Common.Physics
         public Vector2 Up      => _rigidBody.transform.up.normalized;
         
         /* Half size of bounding box (in other words, distance from AABB center to horizontal/vertical sides, including skinWidth). */
-        public Vector2 Extents => _boxCollider.bounds.extents + new Vector3(_overlapTolerance, _overlapTolerance, 0f);
+        public Vector2 Extents => _boxCollider.bounds.extents + new Vector3(_settings.overlapTolerance, _settings.overlapTolerance, 0f);
 
         /* Distance 'into' the screen. */
         public float Depth => _rigidBody.transform.position.z;
 
         /* Buffer amount measured from AABB into our bounding box, if any. This defines the acceptable overlap amount for collisions. */
-        public float OverlapTolerance => _overlapTolerance;
+        public float OverlapTolerance => _settings.overlapTolerance;
 
+        public float Gravity => _settings.gravityScale * - Mathf.Abs(Physics2D.gravity.y);
+
+        public KinematicBody2DSettings Settings
+        {
+            get
+            {
+                return _settings;
+            }
+            set
+            {
+                if (!ReferenceEquals(_settings, value))
+                {
+                    _settings = value;
+                    _settings.RegisterOnChanged(SyncPropertiesFromSettings);
+                    SyncPropertiesFromSettings();
+                }
+            }
+        }
         
+        private void SyncPropertiesFromSettings()
+        {
+            SetBounds(_settings.AABBCornerMin, _settings.AABBCornerMax, _settings.overlapTolerance);
+
+            // update runtime data if inspector changed while game playing in editor
+            if (Application.IsPlaying(this) && _initialized)
+            {
+                SetLayerMask(_settings.layerMask);
+                if (_settings.preallocatedHitBufferSize != _hitBuffer.Length)
+                {
+                    _hitBuffer = new RaycastHit2D[_settings.preallocatedHitBufferSize];
+                }
+            }
+        }
+
         void Awake()
         {
             if (!transform.TryGetComponent<Rigidbody2D>(out var _))
@@ -100,9 +131,13 @@ namespace PQ.Common.Physics
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
+            if (!transform.TryGetComponent<BoxCollider2D>(out var _))
+            {
+                throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
+            }
 
             _castFilter = new ContactFilter2D();
-            _hitBuffer  = new RaycastHit2D[_preallocatedHitBufferSize];
+            _hitBuffer  = new RaycastHit2D[_settings.preallocatedHitBufferSize];
 
             _rigidBody.isKinematic = true;
             _rigidBody.simulated   = true;
@@ -110,13 +145,13 @@ namespace PQ.Common.Physics
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             _initialized = true;
+            SyncPropertiesFromSettings();
         }
 
 
         /* Set layermask used for detecting collisions. */
         public void SetLayerMask(LayerMask layerMask)
         {
-            _layerMask = layerMask;
             _castFilter.SetLayerMask(layerMask);
         }
 
@@ -139,14 +174,14 @@ namespace PQ.Common.Physics
                     $"received from={from} to={to} overlapTolerance={overlapTolerance}");
             }
 
-            Debug.Log(overlapTolerance);
             _boxCollider.offset     = localCenter;
             _boxCollider.size       = localSize;
             _boxCollider.edgeRadius = overlapTolerance;
-            _overlapTolerance       = overlapTolerance;
-            _AABBCornerMin          = from;
-            _AABBCornerMax          = to;
+            _settings.overlapTolerance = overlapTolerance;
+            _settings.AABBCornerMin = from;
+            _settings.AABBCornerMax = to;
         }
+
 
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
@@ -167,8 +202,18 @@ namespace PQ.Common.Physics
             transform.position = position;
         }
 
+        public void Move(Vector2 delta)
+        {
+            _solver.SolveMovement(delta);
+        }
+
+        public bool IsContacting(CollisionFlags2D flags)
+        {
+            return _solver.InContact(flags);
+        }
+
         /* Immediately move body to given point. */
-        public void MoveTo(Vector2 position)
+        internal void MoveTo(Vector2 position)
         {
             #if UNITY_EDITOR
             if (IsEnabled(EditorVisuals.Moves))
@@ -180,7 +225,7 @@ namespace PQ.Common.Physics
         }
 
         /* Immediately move body by given amount. */
-        public void MoveBy(Vector2 delta)
+        internal void MoveBy(Vector2 delta)
         {
             #if UNITY_EDITOR
             if (IsEnabled(EditorVisuals.Moves))
@@ -327,7 +372,6 @@ namespace PQ.Common.Physics
             }
 
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            Debug.Log(minimumSeparation.distance);
             if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
             {
                 amount = Vector2.zero;
@@ -345,21 +389,9 @@ namespace PQ.Common.Physics
             // avoid updating with inspector if loading the original prefab from disk (which occurs before loading the instance)
             // otherwise the default inspector values are used. By skipping persistent objects, we effectively only update when values are
             // changed in the inspector
-            if (EditorUtility.IsPersistent(this))
+            if (!EditorUtility.IsPersistent(this))
             {
-                return;
-            }
-
-            SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
-
-            // update runtime data if inspector changed while game playing in editor
-            if (Application.IsPlaying(this) && _initialized)
-            {
-                SetLayerMask(_layerMask);
-                if (_preallocatedHitBufferSize != _hitBuffer.Length)
-                {
-                    _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
-                }
+                SyncPropertiesFromSettings();
             }
         }
 
@@ -371,7 +403,7 @@ namespace PQ.Common.Physics
             Vector2 forward = _rigidBody.transform.right.normalized;
             Vector2 up      = _rigidBody.transform.up.normalized;
             Vector2 extents = _boxCollider.bounds.extents;
-            Vector2 buffer  = new Vector2(_overlapTolerance, _overlapTolerance);
+            Vector2 buffer  = new Vector2(_settings.overlapTolerance, _settings.overlapTolerance);
 
             if (IsEnabled(EditorVisuals.Positions))
             {
