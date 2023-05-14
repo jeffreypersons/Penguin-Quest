@@ -7,8 +7,8 @@ namespace PQ.Common.Physics
     /*
     Data container for kinematic body settings.
     */
-    [AddComponentMenu("KinematicBody2DSettings")]
-    public sealed class KinematicBody2DSettings : MonoBehaviour
+    [AddComponentMenu("ScriptableObjects/KinematicBody2DSettings")]
+    public sealed class KinematicBody2DSettings : ScriptableObject
     {
         // Any time script is loaded, or field values are modified, where do we want that input to go?
         // Note that since we treat there editor-configured settings as input, we deliberately expose a single listener at a time
