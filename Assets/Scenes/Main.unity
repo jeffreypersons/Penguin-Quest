@@ -803,7 +803,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0a28b488f105c94bb50ceb1eae5a5ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerPenguin: {fileID: 1881419969}
+  _playerPenguin: {fileID: 0}
   _gameplayInputController: {fileID: 1130163922}
   _cameraController: {fileID: 357019676}
   _soundEffectController: {fileID: 531736072}
@@ -1119,7 +1119,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc037921f8dad3428173a3d07e0a1b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &1415639863
+--- !u!4 &1820119110 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8715041716411336930, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
+  m_PrefabInstance: {fileID: 825276994}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1902110081
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1128,13 +1133,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 79367290388874975, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
-      propertyPath: _onFeetSettings
-      value: 
-      objectReference: {fileID: 11400000, guid: bf3016304364da242bcf3da74bd558d8, type: 2}
-    - target: {fileID: 79367290388874975, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
-      propertyPath: _onBellySettings
-      value: 
-      objectReference: {fileID: 11400000, guid: fb877f6ad0b560747b25d510f8d62aeb, type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 99392607343190492, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -1183,36 +1184,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Penguin
       objectReference: {fileID: 0}
-    - target: {fileID: 1807875206248570255, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
-      propertyPath: m_TagString
-      value: Player
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1807875206248570255, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1881419978}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
---- !u!4 &1820119110 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8715041716411336930, guid: 2f2faa6da29227548b98aba3c67361a3, type: 3}
-  m_PrefabInstance: {fileID: 825276994}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1881419969 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1807875206248570255, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
-  m_PrefabInstance: {fileID: 1415639863}
-  m_PrefabAsset: {fileID: 0}
---- !u!81 &1881419978
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1881419969}
-  m_Enabled: 1
 --- !u!1 &1903154439
 GameObject:
   m_ObjectHideFlags: 0

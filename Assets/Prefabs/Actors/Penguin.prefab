@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 3059268163222020866}
   - component: {fileID: 2916047126819965676}
   - component: {fileID: 2002890420633338778}
+  - component: {fileID: 5935993559784443868}
   - component: {fileID: 4485612146676894531}
   - component: {fileID: 79367290388874975}
-  - component: {fileID: 5935993559784443868}
   m_Layer: 7
   m_Name: Penguin
   m_TagString: Untagged
@@ -62,7 +62,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -140,6 +140,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _penguinRigAnimator: {fileID: 4064187206090137445}
+--- !u!114 &5935993559784443868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807875206248570255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e0413346044954e9a41b7a83eb98de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4485612146676894531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,20 +189,8 @@ MonoBehaviour:
   _penguinStateMachine: {fileID: 5935993559784443868}
   _maxWalkSpeed: 5
   _maxSlideSpeed: 20
-  _onFeetSettings: {fileID: 0}
-  _onBellySettings: {fileID: 0}
---- !u!114 &5935993559784443868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1807875206248570255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79e0413346044954e9a41b7a83eb98de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _onFeetSettings: {fileID: 11400000, guid: bf3016304364da242bcf3da74bd558d8, type: 2}
+  _onBellySettings: {fileID: 11400000, guid: fb877f6ad0b560747b25d510f8d62aeb, type: 2}
 --- !u!1001 &4068149060780552846
 PrefabInstance:
   m_ObjectHideFlags: 0
