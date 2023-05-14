@@ -1127,6 +1127,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 79367290388874975, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: _onFeetSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: bf3016304364da242bcf3da74bd558d8, type: 2}
+    - target: {fileID: 79367290388874975, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: _onBellySettings
+      value: 
+      objectReference: {fileID: 11400000, guid: fb877f6ad0b560747b25d510f8d62aeb, type: 2}
     - target: {fileID: 99392607343190492, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
       propertyPath: m_RootOrder
       value: 4

@@ -397,6 +397,11 @@ namespace PQ.Common.Physics
 
         void OnDrawGizmos()
         {
+            if (_settings == null)
+            {
+                return;
+            }
+
             Vector2 anchor  = _rigidBody.position;
             Vector2 center  = _boxCollider.bounds.center;
             Vector2 forward = _rigidBody.transform.right.normalized;

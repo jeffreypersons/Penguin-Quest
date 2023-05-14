@@ -7,7 +7,10 @@ namespace PQ.Common.Physics
     /*
     Data container for kinematic body settings.
     */
-    [AddComponentMenu("ScriptableObjects/KinematicBody2DSettings")]
+    [CreateAssetMenu(
+        fileName = "KinematicBody2DSettings",
+        menuName = "ScriptableObjects/KinematicBody2DSettings",
+        order = 1)]
     public sealed class KinematicBody2DSettings : ScriptableObject
     {
         // Any time script is loaded, or field values are modified, where do we want that input to go?

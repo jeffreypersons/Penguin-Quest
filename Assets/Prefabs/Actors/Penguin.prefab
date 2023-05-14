@@ -125,13 +125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 3285427051894065791}
   _boxCollider: {fileID: 3059268163222020866}
-  _layerMask:
-    serializedVersion: 2
-    m_Bits: 4096
-  _preallocatedHitBufferSize: 16
-  _AABBCornerMin: {x: -0.25, y: 0.025}
-  _AABBCornerMax: {x: 0.25, y: 1.145}
-  _overlapTolerance: 0.025
+  _settings: {fileID: 0}
   _editorVisuals: -1
 --- !u!114 &2002890420633338778
 MonoBehaviour:
@@ -178,10 +172,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c415f633318d75347abc38dc748c8bc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _penguinOnFeetSettings: {fileID: 11400000, guid: 009f768bbe15c8b4582e9b4e0c9262fd, type: 2}
-  _penguinOnBellySettings: {fileID: 11400000, guid: d1e94f2aceb431549829209c39d82a84, type: 2}
   _penguinAnimation: {fileID: 2002890420633338778}
   _penguinSkeleton: {fileID: 4485612146676894531}
+  _penguinStateMachine: {fileID: 5935993559784443868}
+  _maxWalkSpeed: 5
+  _maxSlideSpeed: 20
+  _onFeetSettings: {fileID: 0}
+  _onBellySettings: {fileID: 0}
 --- !u!114 &5935993559784443868
 MonoBehaviour:
   m_ObjectHideFlags: 0
