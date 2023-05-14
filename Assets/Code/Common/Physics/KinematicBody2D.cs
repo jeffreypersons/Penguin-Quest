@@ -3,10 +3,17 @@ using UnityEngine;
 using UnityEditor;
 using PQ.Common.Extensions;
 
+
 namespace PQ.Common.Physics
 {
     /*
     Represents a physical body aligned with an AABB and driven by kinematic physics.
+
+
+    This is intended to be our interface for collisions, casts, rigidbody movement.
+    It does not determine how to or when to move, simply provides a tool box for doing so using kinematic
+    physics in a tailored way.
+
 
     Notes
     * Assumes always upright bounding box, with kinematic rigidbody
