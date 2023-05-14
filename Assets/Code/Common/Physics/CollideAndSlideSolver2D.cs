@@ -66,6 +66,7 @@ namespace PQ.Common.Physics
          */
         public void Move(Vector2 deltaPosition)
         {
+            _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
             if (ApproximatelyZero(deltaPosition))
             {
                 return;
