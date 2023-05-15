@@ -7,6 +7,9 @@ using PQ.Common.Extensions;
 
 namespace PQ.Common.Physics
 {
+    // todo: go all the way with AABB, meaning we can get rid of the transform.forward, etc
+    // todo: go all the way with becoming source of truth for movement
+    
     /*
     Represents a physical body aligned with an AABB and driven by kinematic physics.
 
@@ -33,13 +36,18 @@ namespace PQ.Common.Physics
 
 
         [Header("Thresholds")]
+        
+        [Tooltip("Minimum for bounding box, with coordinates relative to rigidbody position")]
+        [SerializeField] public Vector2 _AABBCornerMin = -Vector2.one;
 
-        [Tooltip("Max degrees allowed for climbing a slope")]
-        [SerializeField][Range(0, 90)] private float _maxAscendableSlopeAngle = 90f;
+        [Tooltip("Maximum for bounding box, with coordinates relative to rigidbody position")]
+        [SerializeField] public Vector2 _AABBCornerMax =  Vector2.one;
 
         [Tooltip("Maximum permissible overlap with other colliders")]
         [SerializeField][Range(0, 1)] private float _overlapTolerance = 0.04f;
 
+        [Tooltip("Max degrees allowed for climbing a slope")]
+        [SerializeField][Range(0, 90)] private float _maxAscendableSlopeAngle = 90f;
 
         [Header("Physical Properties")]
 
@@ -86,6 +94,7 @@ namespace PQ.Common.Physics
         private bool _initialized;
         private bool _flippedHorizontal;
         private bool _flippedVertical;
+        private (Vector2 min, Vector2 max) _localAABBCorners;
 
         private ContactFilter2D   _castFilter;
         private RaycastHit2D[]    _hitBuffer;
@@ -186,6 +195,9 @@ namespace PQ.Common.Physics
             _rigidBody.useFullKinematicContacts = true;
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
+            SetLayerMask(_layerMask);
+            SetBounds(_localAABBCorners.min, _localAABBCorners.max, _overlapTolerance);
+
             _initialized = true;
         }
 
@@ -220,6 +232,8 @@ namespace PQ.Common.Physics
             _boxCollider.size       = localSize;
             _boxCollider.edgeRadius = overlapTolerance;
             _overlapTolerance       = overlapTolerance;
+            _AABBCornerMin          = from;
+            _AABBCornerMax          = to;
         }
 
 
@@ -434,8 +448,26 @@ namespace PQ.Common.Physics
                 return;
             }
 
-            (Vector2 localMin, Vector2 localMax) = GetOrientedLocalMinMaxCorners(_boxCollider);
-            SetBounds(localMin, localMax, _overlapTolerance);
+
+            Vector2 minChange    = _AABBCornerMin    - _localAABBCorners.min;
+            Vector2 maxChange    = _AABBCornerMax    - _localAABBCorners.max;
+            float bufferChange = _overlapTolerance - _boxCollider.edgeRadius;
+
+            // if corners changed in editor, they take precedence over any manual changes to collider bounds
+            if (!Mathf.Approximately(bufferChange, 0))
+            {
+                (Vector2 localMin, Vector2 localMax) = GetOrientedLocalMinMaxCorners(_boxCollider);
+                SetBounds(localMin, localMax, _overlapTolerance);
+            }
+            else if (Mathf.Approximately(bufferChange, 0))
+            {
+
+            }
+            else
+            {
+
+            }
+
 
             // update runtime data if inspector changed while game playing in editor
 
