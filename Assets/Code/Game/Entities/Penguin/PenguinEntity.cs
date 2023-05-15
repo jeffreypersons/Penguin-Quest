@@ -21,47 +21,31 @@ namespace PQ.Game.Entities.Penguin
     */
     public sealed class PenguinEntity : FsmSharedData
     {
-        private MovementController2D _characterController;
-
-        [Header("Component References")]
+        [Header("Component/Config References")]
+        [SerializeField] private KinematicBody2D          _kinematicBody2D;
         [SerializeField] private PenguinAnimationDriver   _penguinAnimation;
         [SerializeField] private PenguinSkeletalStructure _penguinSkeleton;
         [SerializeField] private PenguinFsmDriver         _penguinStateMachine;
+        [SerializeField] private PenguinTuningConfig      _config;
 
-        [Header("Configs")]
-        [SerializeField] [Range(0, 100)] private float _maxWalkSpeed  =  5f;
-        [SerializeField] [Range(0, 100)] private float _maxSlideSpeed = 20f;
-        [SerializeField] private KinematicBody2DSettings _onFeetSettings;
-        [SerializeField] private KinematicBody2DSettings _onBellySettings;
-
-        // todo: add acceleration curves and stuff until we find a better place to put it
-
+        
+        // todo: find a better way to hook it up
+        public GameEventCenter EventBus { get; set; }
+        public KinematicBody2D          PhysicsBody  => _kinematicBody2D;
+        public PenguinTuningConfig      Config       => _config;
         public PenguinAnimationDriver   Animation    => _penguinAnimation;
         public PenguinSkeletalStructure Skeleton     => _penguinSkeleton;
-        public MovementController2D     Movement     => _characterController;
         public PenguinFsmDriver         StateMachine => _penguinStateMachine;
-        
-        public float MaxWalkSpeed  => _maxWalkSpeed;
-        public float MaxSlideSpeed => _maxSlideSpeed;
 
-        public KinematicBody2DSettings  FeetSettings  => _onFeetSettings;
-        public KinematicBody2DSettings  BellySettings => _onBellySettings;
+        // todo: add acceleration curves here until we find a better place to put it
 
-
-        // todo: think of a better way of doing this hooking up..
-        public GameEventCenter EventBus { get; set; }
-
-        void Awake()
-        {
-            _characterController = new MovementController2D(gameObject);
-        }
 
         #if UNITY_EDITOR
         void Start()
         {
             if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
             {
-                throw new NullReferenceException("Event bus of penguin blob is disconnected");
+                throw new NullReferenceException("Event bus of penguin blob is disconnected - expected assignment prior to start");
             }
         }
 

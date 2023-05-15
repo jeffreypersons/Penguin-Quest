@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using PQ.Common.Fsm;
+using PQ.Common.Physics;
 
 
 namespace PQ.Game.Entities.Penguin
 {
     public class PenguinStateOnFeet : FsmState<PenguinStateId, PenguinEntity>
     {
-        public PenguinStateOnFeet() : base() { }
-
+        private bool _grounded;
         private HorizontalInput _horizontalInput;
+
+        public PenguinStateOnFeet() : base() { }
 
         protected override void OnIntialize()
         {
@@ -18,8 +20,9 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.Movement.Settings = Blob.FeetSettings;
             _horizontalInput = new(HorizontalInput.Type.None);
+            Blob.PhysicsBody.SetBounds(Blob.Config.boundsMinUpright, Blob.Config.boundsMaxUpright, Blob.Config.overlapToleranceUpright);
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         protected override void OnExit()
@@ -29,7 +32,21 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnFixedUpdate()
         {
-            Blob.Movement.Move(new Vector2(_horizontalInput.value, 0f), Blob.MaxWalkSpeed, Time.fixedDeltaTime);
+            if (!Mathf.Approximately(_horizontalInput.value, 0f))
+            {
+                Blob.PhysicsBody.Flip(horizontal: _horizontalInput.value < 0, vertical: false);
+            }
+
+            // todo: check inputAxis.y for jumps
+
+            Vector2 velocity = new(
+                x: Blob.Config.maxHorizontalSpeedUpright * _horizontalInput.value,
+                y: _grounded ? 0 : Blob.PhysicsBody.Gravity
+            );
+
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+
+            Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
         }
 
         protected override void OnUpdate()

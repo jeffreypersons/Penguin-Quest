@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using PQ.Common.Fsm;
+using PQ.Common.Physics;
 
 
 namespace PQ.Game.Entities.Penguin
 {
     public class PenguinStateOnBelly : FsmState<PenguinStateId, PenguinEntity>
     {
+        private bool _grounded;
+        private HorizontalInput _horizontalInput;
+
         public PenguinStateOnBelly() : base() { }
 
-        private HorizontalInput _horizontalInput;
 
         protected override void OnIntialize()
         {
@@ -18,7 +21,6 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.Movement.Settings = Blob.BellySettings;
             _horizontalInput = new(HorizontalInput.Type.None);
 
             // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
@@ -27,34 +29,48 @@ namespace PQ.Game.Entities.Penguin
                  PenguinColliderConstraints.DisableFeet |
                  PenguinColliderConstraints.DisableFlippers;
 
-            // todo: might want to be more explicit that this causes a bounding box resize...
-            Blob.Movement.Settings = Blob.BellySettings;
+            Blob.PhysicsBody.SetBounds(Blob.Config.boundsMinProne, Blob.Config.boundsMaxProne, Blob.Config.overlapToleranceProne);
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         protected override void OnExit()
         {
-            Blob.Movement.Move(new Vector2(_horizontalInput.value, 0f), Blob.MaxWalkSpeed, Time.fixedDeltaTime);
+            // no op
+        }
+
+        protected override void OnFixedUpdate()
+        {
+            if (!Mathf.Approximately(_horizontalInput.value, 0f))
+            {
+                Blob.PhysicsBody.Flip(horizontal: _horizontalInput.value < 0, vertical: false);
+            }
+
+            // todo: check inputAxis.y for jumps
+
+            Vector2 velocity = new(
+                x: Blob.Config.maxHorizontalSpeedUpright * _horizontalInput.value,
+                y: _grounded ? 0 : Blob.PhysicsBody.Gravity
+            );
+
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+
+            Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
         }
 
         protected override void OnUpdate()
         {
-            HandleHorizontalMovement();
+            // no op
         }
+
 
         private void HandleStandUpInputReceived()
         {
             base.SignalMoveToNextState(PenguinStateId.StandingUp);
         }
 
-        // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void HandleMoveHorizontalChanged(HorizontalInput state)
         {
-            // no op
-        }
-
-        private void HandleHorizontalMovement()
-        {
-            // no op
+            _horizontalInput = state;
         }
     }
 }

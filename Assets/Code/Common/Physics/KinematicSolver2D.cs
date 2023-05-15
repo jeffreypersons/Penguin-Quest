@@ -12,7 +12,7 @@ namespace PQ.Common.Physics
     Basically, this class is all about projecting rigidbody along desired delta,
     taking skin width, surface collisions, and attached colliders into account.
     */
-    public sealed class KinematicSolver2D
+    internal sealed class KinematicSolver2D
     {
         private KinematicBody2D _body;
         private CollisionFlags2D _collisions;
@@ -86,7 +86,7 @@ namespace PQ.Common.Physics
         private void MoveHorizontal(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _body.Settings.maxSolverMoveIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _body.MaxSolverMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -97,7 +97,7 @@ namespace PQ.Common.Physics
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                if (Vector2.Angle(Vector2.up, hit.normal) <= _body.Settings.maxAscendableSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _body.MaxAscendableSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
@@ -110,7 +110,7 @@ namespace PQ.Common.Physics
         private void MoveVertical(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _body.Settings.maxSolverMoveIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _body.MaxSolverMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -121,7 +121,7 @@ namespace PQ.Common.Physics
                 }
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                if (Vector2.Angle(Vector2.up, hit.normal) > _body.Settings.maxAscendableSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _body.MaxAscendableSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
@@ -161,7 +161,7 @@ namespace PQ.Common.Physics
         {
             // todo: add skin width support
             Vector2 overlapAmount = Vector2.positiveInfinity;
-            for (int i = 0; i < _body.Settings.overlapTolerance && !ApproximatelyZero(overlapAmount); i++)
+            for (int i = 0; i < _body.OverlapTolerance && !ApproximatelyZero(overlapAmount); i++)
             {
                 if (_body.ComputeOverlap(hit.collider, out overlapAmount))
                 {
