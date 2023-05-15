@@ -16,9 +16,10 @@ GameObject:
   - component: {fileID: 5935993559784443868}
   - component: {fileID: 4485612146676894531}
   - component: {fileID: 79367290388874975}
+  - component: {fileID: 7461990293831333279}
   m_Layer: 7
   m_Name: Penguin
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -37,7 +38,7 @@ Transform:
   m_Children:
   - {fileID: 6942077982957359458}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &3285427051894065791
 Rigidbody2D:
@@ -127,7 +128,7 @@ MonoBehaviour:
   _boxCollider: {fileID: 3059268163222020866}
   _layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   _AABBCornerMin: {x: -1, y: -1}
   _AABBCornerMax: {x: 1, y: 1}
   _overlapTolerance: 0.04
@@ -201,6 +202,14 @@ MonoBehaviour:
   _penguinSkeleton: {fileID: 4485612146676894531}
   _penguinStateMachine: {fileID: 5935993559784443868}
   _config: {fileID: 11400000, guid: c70f71d3b929b9f43be865688b04de12, type: 2}
+--- !u!81 &7461990293831333279
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807875206248570255}
+  m_Enabled: 1
 --- !u!1001 &4068149060780552846
 PrefabInstance:
   m_ObjectHideFlags: 0
