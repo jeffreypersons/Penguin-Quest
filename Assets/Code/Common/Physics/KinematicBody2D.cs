@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 using UnityEditor;
 using PQ.Common.Extensions;
@@ -158,6 +159,13 @@ namespace PQ.Common.Physics
         internal float PreallocatedHitBufferSize => _preallocatedHitBufferSize;
 
 
+        [Pure]
+        private static (Vector2 min, Vector2 max) GetOrientedLocalMinMaxCorners(BoxCollider2D box)
+        {
+            Vector2 xAxis = (box.bounds.extents.x + box.edgeRadius) * box.attachedRigidbody.transform.right.normalized;
+            Vector2 yAxis = (box.bounds.extents.y + box.edgeRadius) * box.attachedRigidbody.transform.up.normalized;
+            return (-xAxis - yAxis, xAxis + yAxis);
+        }
 
         void Awake()
         {
@@ -426,7 +434,8 @@ namespace PQ.Common.Physics
                 return;
             }
 
-            SetBounds(_boxCollider.bounds.min, _boxCollider.bounds.max, _overlapTolerance);
+            (Vector2 localMin, Vector2 localMax) = GetOrientedLocalMinMaxCorners(_boxCollider);
+            SetBounds(localMin, localMax, _overlapTolerance);
 
             // update runtime data if inspector changed while game playing in editor
 

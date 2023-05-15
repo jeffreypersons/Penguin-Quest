@@ -98,7 +98,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.585}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -109,8 +109,8 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 1
   serializedVersion: 2
-  m_Size: {x: 0.45, y: 1.07}
-  m_EdgeRadius: 0.025
+  m_Size: {x: 0.049987793, y: 0.67000055}
+  m_EdgeRadius: 0.04
 --- !u!114 &2916047126819965676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,7 +125,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 3285427051894065791}
   _boxCollider: {fileID: 3059268163222020866}
-  _settings: {fileID: 0}
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _maxAscendableSlopeAngle: 90
+  _overlapTolerance: 0.04
+  _collisionBounciness: 0
+  _collisionFriction: 0
+  _gravityScale: 1
+  _maxSolverMoveIterations: 10
+  _maxSolverOverlapIterations: 2
+  _preallocatedHitBufferSize: 16
   _editorVisuals: -1
 --- !u!114 &2002890420633338778
 MonoBehaviour:
@@ -184,13 +194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c415f633318d75347abc38dc748c8bc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _kinematicBody2D: {fileID: 2916047126819965676}
   _penguinAnimation: {fileID: 2002890420633338778}
   _penguinSkeleton: {fileID: 4485612146676894531}
   _penguinStateMachine: {fileID: 5935993559784443868}
-  _maxWalkSpeed: 5
-  _maxSlideSpeed: 20
-  _onFeetSettings: {fileID: 11400000, guid: bf3016304364da242bcf3da74bd558d8, type: 2}
-  _onBellySettings: {fileID: 11400000, guid: fb877f6ad0b560747b25d510f8d62aeb, type: 2}
+  _config: {fileID: 11400000, guid: c70f71d3b929b9f43be865688b04de12, type: 2}
 --- !u!1001 &4068149060780552846
 PrefabInstance:
   m_ObjectHideFlags: 0

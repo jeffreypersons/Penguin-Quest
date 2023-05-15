@@ -1180,6 +1180,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Penguin
       objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_Size.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_Size.y
+      value: 1.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.575
+      objectReference: {fileID: 0}
+    - target: {fileID: 3059268163222020866, guid: ff13ec81cbe8014418b88c5e68427ff6, type: 3}
+      propertyPath: m_EdgeRadius
+      value: 0.04
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

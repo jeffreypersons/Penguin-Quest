@@ -7,6 +7,8 @@ namespace PQ.Common.Tuning
     /*
     Collection of tuning data, with a listener built in.
     */
+    // todo: figure out how to make this work with inheritance
+    //[CreateAssetMenu(fileName = "TuningConfig",menuName = "TuningConfigs/TuningConfig",order = 1)]
     public abstract class TuningConfig : ScriptableObject
     {
         private event Action _onChanged = delegate { };
