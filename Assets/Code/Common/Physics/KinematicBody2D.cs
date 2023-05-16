@@ -195,8 +195,9 @@ namespace PQ.Common.Physics
             _rigidBody.useFullKinematicContacts = true;
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
+            Debug.Log("awake");
             SetLayerMask(_layerMask);
-            SetBounds(_localAABBCorners.min, _localAABBCorners.max, _overlapTolerance);
+            SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
 
             _initialized = true;
         }
@@ -216,6 +217,7 @@ namespace PQ.Common.Physics
         */
         public void SetBounds(Vector2 from, Vector2 to, float overlapTolerance)
         {
+            Debug.Log($"{from} {to} {overlapTolerance}");
             Vector2 localCenter = Vector2.LerpUnclamped(from, to, 0.50f);
             Vector2 localSize = new Vector2(
                 x: Mathf.Abs(to.x - from.x) - (2f * overlapTolerance),
@@ -234,6 +236,7 @@ namespace PQ.Common.Physics
             _overlapTolerance       = overlapTolerance;
             _AABBCornerMin          = from;
             _AABBCornerMax          = to;
+            _localAABBCorners = (_AABBCornerMin, _AABBCornerMax);
         }
 
 
