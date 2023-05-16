@@ -4,7 +4,7 @@ using PQ.Common.Fsm;
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinStateLyingDown : FsmState<PenguinStateId, PenguinFsmSharedData>
+    public class PenguinStateLyingDown : FsmState<PenguinStateId, PenguinEntity>
     {
         public PenguinStateLyingDown() : base() { }
 
@@ -25,6 +25,10 @@ namespace PQ.Game.Entities.Penguin
             // no op
         }
 
+        protected override void OnFixedUpdate()
+        {
+            // todo: handle momentum during stand up and 'sliding' bounding box adjustments
+        }
 
         private void HandleLieDownAnimationStarted()
         {
@@ -43,19 +47,6 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleLieDownAnimationFinished()
         {
-            // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
-            // but enable everything else including bounding box
-            Blob.Skeleton.ColliderConstraints =
-                 PenguinColliderConstraints.DisableFeet |
-                 PenguinColliderConstraints.DisableFlippers;
-
-            Blob.CharacterController.Settings = Blob.OnBellySettings;
-            Blob.Skeleton.ReadjustBoundingBox(
-                offset:     new Vector2( 0,  5),
-                size:       new Vector2(25, 10),
-                edgeRadius: 1.25f
-            );
-
             base.SignalMoveToNextState(PenguinStateId.Belly);
         }
     }

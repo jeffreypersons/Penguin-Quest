@@ -13,12 +13,13 @@ GameObject:
   - component: {fileID: 3059268163222020866}
   - component: {fileID: 2916047126819965676}
   - component: {fileID: 2002890420633338778}
+  - component: {fileID: 5935993559784443868}
   - component: {fileID: 4485612146676894531}
   - component: {fileID: 79367290388874975}
-  - component: {fileID: 5935993559784443868}
+  - component: {fileID: 7461990293831333279}
   m_Layer: 7
   m_Name: Penguin
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62,7 +63,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -98,7 +99,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.025, y: 0.575}
+  m_Offset: {x: 0, y: 0.575}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -109,7 +110,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 1.05}
+  m_Size: {x: 0.5, y: 1.15}
   m_EdgeRadius: 0.04
 --- !u!114 &2916047126819965676
 MonoBehaviour:
@@ -128,10 +129,17 @@ MonoBehaviour:
   _layerMask:
     serializedVersion: 2
     m_Bits: 4096
-  _skinWidth: 0.15
+  _AABBCornerMin: {x: -1, y: -1}
+  _AABBCornerMax: {x: 1, y: 1}
+  _overlapTolerance: 0.04
+  _maxAscendableSlopeAngle: 90
+  _collisionBounciness: 0
+  _collisionFriction: 0
+  _gravityScale: 1
+  _maxSolverMoveIterations: 10
+  _maxSolverOverlapIterations: 2
   _preallocatedHitBufferSize: 16
-  _drawCastsInEditor: 1
-  _drawMovesInEditor: 1
+  _editorVisuals: -1
 --- !u!114 &2002890420633338778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,6 +153,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _penguinRigAnimator: {fileID: 4064187206090137445}
+--- !u!114 &5935993559784443868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807875206248570255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e0413346044954e9a41b7a83eb98de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4485612146676894531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,22 +197,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c415f633318d75347abc38dc748c8bc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _penguinOnFeetSettings: {fileID: 11400000, guid: 009f768bbe15c8b4582e9b4e0c9262fd, type: 2}
-  _penguinOnBellySettings: {fileID: 11400000, guid: d1e94f2aceb431549829209c39d82a84, type: 2}
+  _kinematicBody2D: {fileID: 2916047126819965676}
   _penguinAnimation: {fileID: 2002890420633338778}
   _penguinSkeleton: {fileID: 4485612146676894531}
---- !u!114 &5935993559784443868
-MonoBehaviour:
+  _penguinStateMachine: {fileID: 5935993559784443868}
+  _config: {fileID: 11400000, guid: c70f71d3b929b9f43be865688b04de12, type: 2}
+--- !u!81 &7461990293831333279
+AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1807875206248570255}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79e0413346044954e9a41b7a83eb98de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4068149060780552846
 PrefabInstance:
   m_ObjectHideFlags: 0

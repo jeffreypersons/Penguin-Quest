@@ -34,7 +34,7 @@ namespace PQ.Game
 
             _gameEventCenter = GameEventCenter.Instance;
             _playerPenguin.SetActive(true);
-            _playerPenguin.GetComponent<Entities.Penguin.PenguinFsmSharedData>().EventBus = _gameEventCenter;
+            _playerPenguin.GetComponent<Entities.Penguin.PenguinEntity>().EventBus = _gameEventCenter;
 
             _cameraController.FollowTarget = _playerPenguin.transform;
         }

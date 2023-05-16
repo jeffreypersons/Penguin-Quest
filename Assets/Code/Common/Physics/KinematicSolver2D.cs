@@ -12,19 +12,16 @@ namespace PQ.Common.Physics
     Basically, this class is all about projecting rigidbody along desired delta,
     taking skin width, surface collisions, and attached colliders into account.
     */
-    public sealed class CollideAndSlideSolver2D
+    internal sealed class KinematicSolver2D
     {
-        private SolverParams _params;
         private KinematicBody2D _body;
         private CollisionFlags2D _collisions;
 
-        public SolverParams     Params => _params;
         public CollisionFlags2D Flags  => _collisions;
 
         public override string ToString() =>
             $"{GetType()}, " +
                 $"Flags: {_collisions}," +
-                $"Params: {_params}," +
                 $"Body: {_body}," +
             $")";
 
@@ -37,7 +34,7 @@ namespace PQ.Common.Physics
             return delta == Vector2.zero;
         }
 
-        public CollideAndSlideSolver2D(KinematicBody2D body, in SolverParams solverParams)
+        public KinematicSolver2D(KinematicBody2D body)
         {
             if (body == null)
             {
@@ -45,13 +42,7 @@ namespace PQ.Common.Physics
             }
 
             _body       = body;
-            _params     = solverParams;
             _collisions = CollisionFlags2D.None;
-        }
-
-        public void Flip(bool horizontal)
-        {
-            _body.Flip(horizontal, false);
         }
 
         /*
@@ -64,8 +55,9 @@ namespace PQ.Common.Physics
         - Movement is only opted-out if within floating point tolerances of zero, as anything larger will lead to
           skipping movement when deltas are small due to the timestep/world-scale/frame-rate used to compute it prior
          */
-        public void Move(Vector2 deltaPosition)
+        public void SolveMovement(Vector2 deltaPosition)
         {
+            _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
             if (ApproximatelyZero(deltaPosition))
             {
                 return;
@@ -94,7 +86,7 @@ namespace PQ.Common.Physics
         private void MoveHorizontal(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _body.MaxSolverMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -105,7 +97,7 @@ namespace PQ.Common.Physics
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _body.MaxAscendableSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
@@ -118,7 +110,7 @@ namespace PQ.Common.Physics
         private void MoveVertical(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _body.MaxSolverMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -129,7 +121,7 @@ namespace PQ.Common.Physics
                 }
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _body.MaxAscendableSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
@@ -169,7 +161,7 @@ namespace PQ.Common.Physics
         {
             // todo: add skin width support
             Vector2 overlapAmount = Vector2.positiveInfinity;
-            for (int i = 0; i < _params.MaxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
+            for (int i = 0; i < _body.OverlapTolerance && !ApproximatelyZero(overlapAmount); i++)
             {
                 if (_body.ComputeOverlap(hit.collider, out overlapAmount))
                 {
@@ -195,7 +187,7 @@ namespace PQ.Common.Physics
             Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
             Vector2 tangent    = reflected - projection;
 
-            Vector2 perpendicularContribution = (bounciness * remainingDistance) * projection.normalized;
+            Vector2 perpendicularContribution = (bounciness      * remainingDistance) * projection.normalized;
             Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
             return perpendicularContribution + tangentialContribution;
         }

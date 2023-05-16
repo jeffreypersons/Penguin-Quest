@@ -1,12 +1,19 @@
 using System;
+using System.Diagnostics.Contracts;
 using UnityEngine;
+using UnityEditor;
 using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Physics
 {
+    // todo: go all the way with AABB, meaning we can get rid of the transform.forward, etc
+    // todo: go all the way with becoming source of truth for movement
+    
     /*
     Represents a physical body aligned with an AABB and driven by kinematic physics.
+
+    This is intended to be our interface for collisions, casts, rigidbody movement.
 
     Notes
     * Assumes always upright bounding box, with kinematic rigidbody
@@ -16,35 +23,103 @@ namespace PQ.Common.Physics
     [AddComponentMenu("KinematicBody2D")]
     public sealed class KinematicBody2D : MonoBehaviour
     {
+        [Header("Thresholds")]
+
+        [Tooltip("Attached rigidbody, used internally")]
         [SerializeField] private Rigidbody2D   _rigidBody;
+
+        [Tooltip("Attached box collider, used internally as our object's primary AABB")]
         [SerializeField] private BoxCollider2D _boxCollider;
 
+        [Tooltip("Layers to include in collision detection")]
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0, 1)]   private float _overlapTolerance = 0.01f;
-        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
+
+        [Header("Thresholds")]
+        
+        [Tooltip("Minimum for bounding box, with coordinates relative to rigidbody position")]
+        [SerializeField] public Vector2 _AABBCornerMin = -Vector2.one;
+
+        [Tooltip("Maximum for bounding box, with coordinates relative to rigidbody position")]
+        [SerializeField] public Vector2 _AABBCornerMax =  Vector2.one;
+
+        [Tooltip("Maximum permissible overlap with other colliders")]
+        [SerializeField][Range(0, 1)] private float _overlapTolerance = 0.04f;
+
+        [Tooltip("Max degrees allowed for climbing a slope")]
+        [SerializeField][Range(0, 90)] private float _maxAscendableSlopeAngle = 90f;
+
+        [Header("Physical Properties")]
+
+        [Tooltip("Scalar for reflection along the normal (bounciness is from 0 (no bounciness) to 1 (completely reflected))")]
+        [SerializeField] [Range(0, 1)] private float _collisionBounciness = 0f;
+
+        [Tooltip("Scalar for reflection along the tangent (friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance))")]
+        [SerializeField] [Range(-1, 1)] private float _collisionFriction = 0f;
+
+        [Tooltip("Multiplier for 2D gravity")]
+        [SerializeField] [Range(0, 10)] private float _gravityScale = 1.00f;
+
+
+        [Header("Advanced Physics Settings")]
+
+        [Tooltip("Cap on number of movement solves (exposed only in editor, default suffices most the time)")]
+        [SerializeField][Range(0, 50)] private int _maxSolverMoveIterations = 10;
+
+        [Tooltip("Cap on number of overlap resolution solves (exposed only in editor, default suffices most the time)")]
+        [SerializeField][Range(0, 50)] private int _maxSolverOverlapIterations = 2;
+
+        [Tooltip("Size of buffer used to cache cast results (exposed only in editor, default suffices most the time)")]
+        [SerializeField][Range(1, 100)] private int _preallocatedHitBufferSize = 16;
+
+        
         #if UNITY_EDITOR
-        [SerializeField] private bool _drawCastsInEditor = true;        
-        [SerializeField] private bool _drawMovesInEditor = true;
+        [Flags]
+        public enum EditorVisuals
+        {
+            None      = 0,
+            Casts     = 1 << 1,
+            Moves     = 1 << 2,
+            Axes      = 1 << 3,
+            Positions = 1 << 4,
+            All       = ~0,
+        }
+
+        [Tooltip("Settings for easily toggling debug visuals in one place from the inspector")]
+        [SerializeField] private EditorVisuals _editorVisuals = EditorVisuals.All;
+        private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
         #endif
+
 
         private bool _initialized;
         private bool _flippedHorizontal;
         private bool _flippedVertical;
+        private (Vector2 min, Vector2 max) _localAABBCorners;
 
-        private ContactFilter2D _castFilter;
-        private RaycastHit2D[]  _hitBuffer;
+        private ContactFilter2D   _castFilter;
+        private RaycastHit2D[]    _hitBuffer;
+        private KinematicSolver2D _solver;
 
         public override string ToString() =>
-            $"Mover{{" +
+            $"KinematicBody2D{{" +
                 $"Position:{Position}," +
                 $"Depth:{Depth}," +
                 $"Forward:{Forward}," +
                 $"Up:{Up}," +
-                $"AABB: bounds(center:{Center}, extents:{Extents})," +
+                $"AABB:bounds(center:{Center},extents:{Extents})," +
+                $"Gravity:{Gravity}," +
+                $"OverlapTolerance:{OverlapTolerance}," +
+                $"Friction:{Friction}," +
+                $"LayerMask:{LayerMask}," +
+                $"MaxSolverMoveIterations:{MaxSolverMoveIterations}," +
+                $"MaxSolverOverlapIterations:{MaxSolverOverlapIterations}," +
+                $"PreallocatedHitBufferSize:{PreallocatedHitBufferSize}" +
             $"}}";
 
+        /* Whether the body's relative x-axis is facing left or not. */
         public bool    FlippedHorizontal => _flippedHorizontal;
+
+        /* Whether the body's relative x-axis is facing down or not. */
         public bool    FlippedVertical   => _flippedVertical;
 
         /* Position of body as anchored at the bottom center (not to be confused with AABB center position). */
@@ -60,7 +135,7 @@ namespace PQ.Common.Physics
         public Vector2 Up      => _rigidBody.transform.up.normalized;
         
         /* Half size of bounding box (in other words, distance from AABB center to horizontal/vertical sides, including skinWidth). */
-        public Vector2 Extents => _boxCollider.bounds.extents;
+        public Vector2 Extents => _boxCollider.bounds.extents + new Vector3(_overlapTolerance, _overlapTolerance, 0f);
 
         /* Distance 'into' the screen. */
         public float Depth => _rigidBody.transform.position.z;
@@ -68,7 +143,39 @@ namespace PQ.Common.Physics
         /* Buffer amount measured from AABB into our bounding box, if any. This defines the acceptable overlap amount for collisions. */
         public float OverlapTolerance => _overlapTolerance;
 
-        
+        /* Gravity specific to the body, according to set scale. */
+        public float Gravity => _gravityScale * - Mathf.Abs(Physics2D.gravity.y);
+
+        /* Bounciness of material on collisions (bounciness is from 0 (no bounciness) to 1 (completely reflected)). */
+        public float Bounciness => _collisionBounciness;
+
+        /* Friction of material on collisions (friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)). */
+        public float Friction => _collisionFriction;
+
+        /* Layer mask used when detecting collisions. */
+        public LayerMask LayerMask => _castFilter.layerMask;
+
+        /* Max degrees allowed for climbing a slope. */
+        public float MaxAscendableSlopeAngle => _maxAscendableSlopeAngle;
+
+        /* Cap on number of overlap resolution solves, used when solving for movement. */
+        internal float MaxSolverMoveIterations => _maxSolverMoveIterations;
+
+        /* Cap on number of movement resolution solves, used when resolving overlaps after solving for movement. */
+        internal float MaxSolverOverlapIterations => _maxSolverOverlapIterations;
+
+        /* Size of buffer used to cache cast results. */
+        internal float PreallocatedHitBufferSize => _preallocatedHitBufferSize;
+
+
+        [Pure]
+        private static (Vector2 min, Vector2 max) GetOrientedLocalMinMaxCorners(BoxCollider2D box)
+        {
+            Vector2 xAxis = (box.bounds.extents.x + box.edgeRadius) * box.attachedRigidbody.transform.right.normalized;
+            Vector2 yAxis = (box.bounds.extents.y + box.edgeRadius) * box.attachedRigidbody.transform.up.normalized;
+            return (-xAxis - yAxis, xAxis + yAxis);
+        }
+
         void Awake()
         {
             if (!transform.TryGetComponent<Rigidbody2D>(out var _))
@@ -88,6 +195,11 @@ namespace PQ.Common.Physics
             _rigidBody.useFullKinematicContacts = true;
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
+            SetLayerMask(_layerMask);
+            SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
+
+            _solver = new KinematicSolver2D(this);
+
             _initialized = true;
         }
 
@@ -95,8 +207,8 @@ namespace PQ.Common.Physics
         /* Set layermask used for detecting collisions. */
         public void SetLayerMask(LayerMask layerMask)
         {
-            _layerMask = layerMask;
             _castFilter.SetLayerMask(layerMask);
+            _layerMask = layerMask;
         }
 
         /*
@@ -104,28 +216,29 @@ namespace PQ.Common.Physics
 
         Note: Skin width is calculated _inwards_ from the given bound corners.
         */
-        public void SetBounds(Vector2 from, Vector2 to, float skinWidth)
+        public void SetBounds(Vector2 from, Vector2 to, float overlapTolerance)
         {
-            Vector3 center = Vector2.LerpUnclamped(from, to, 0.50f);
-            Vector3 size = new Vector3(
-                x: Mathf.Abs(to.x - from.x) - (2f * skinWidth),
-                y: Mathf.Abs(to.y - from.y) - (2f * skinWidth),
-                z: 0
+            Vector2 localCenter = Vector2.LerpUnclamped(from, to, 0.50f);
+            Vector2 localSize = new Vector2(
+                x: Mathf.Abs(to.x - from.x) - (2f * overlapTolerance),
+                y: Mathf.Abs(to.y - from.y) - (2f * overlapTolerance)
             );
-            if (skinWidth < 0f || size.x <= 0 || size.y <= 0)
+            if (overlapTolerance < 0f || localSize.x <= 0 || localSize.y <= 0)
             {
-                throw new ArgumentOutOfRangeException(
-                    $"Invalid bounds - expected 0 <= skinWidth < size={size}, " +
-                    $"received from={from} to={to} skinWidth={skinWidth}");
+                throw new ArgumentException(
+                    $"Invalid bounds - expected 0 <= overlapTolerance < size={localSize}, " +
+                    $"received from={from} to={to} overlapTolerance={overlapTolerance}");
             }
 
-            _boxCollider.offset = center - _boxCollider.bounds.center;
-            _boxCollider.size = size;
-            _boxCollider.edgeRadius = skinWidth;
-            _overlapTolerance = skinWidth;
-
-            Debug.Log($"set bounds: from={from} to={to}");
+            _boxCollider.offset     = localCenter;
+            _boxCollider.size       = localSize;
+            _boxCollider.edgeRadius = overlapTolerance;
+            _overlapTolerance       = overlapTolerance;
+            _AABBCornerMin          = from;
+            _AABBCornerMax          = to;
+            _localAABBCorners = (_AABBCornerMin, _AABBCornerMax);
         }
+
 
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
@@ -146,11 +259,21 @@ namespace PQ.Common.Physics
             transform.position = position;
         }
 
+        public void Move(Vector2 delta)
+        {
+            _solver.SolveMovement(delta);
+        }
+
+        public bool IsContacting(CollisionFlags2D flags)
+        {
+            return _solver.InContact(flags);
+        }
+
         /* Immediately move body to given point. */
-        public void MoveTo(Vector2 position)
+        internal void MoveTo(Vector2 position)
         {
             #if UNITY_EDITOR
-            if (_drawMovesInEditor)
+            if (IsEnabled(EditorVisuals.Moves))
             {
                 Debug.DrawLine(_rigidBody.position, position, Color.grey, Time.fixedDeltaTime);
             }
@@ -159,10 +282,10 @@ namespace PQ.Common.Physics
         }
 
         /* Immediately move body by given amount. */
-        public void MoveBy(Vector2 delta)
+        internal void MoveBy(Vector2 delta)
         {
             #if UNITY_EDITOR
-            if (_drawMovesInEditor)
+            if (IsEnabled(EditorVisuals.Moves))
             {
                 Debug.DrawLine(_rigidBody.position, _rigidBody.position + delta, Color.grey, Time.fixedDeltaTime);
             }
@@ -191,7 +314,7 @@ namespace PQ.Common.Physics
             // todo: look into encapsulating this inside a FixedUpdate call and a KinematicBody interpolation mode instead
             //       would require storing any changes for current frame and 'undoing' and repllaying via MovePosition() like below
             #if UNITY_EDITOR
-            if (_drawMovesInEditor)
+            if (IsEnabled(EditorVisuals.Moves))
             {
                 Debug.DrawLine(startPositionThisFrame, targetPositionThisFrame, Color.grey, Time.fixedDeltaTime);
             }
@@ -224,7 +347,7 @@ namespace PQ.Common.Physics
             hits = _hitBuffer.AsSpan(0, hitCount);
 
             #if UNITY_EDITOR
-            if (_drawCastsInEditor)
+            if (IsEnabled(EditorVisuals.Casts))
             {
                 float duration = Time.fixedDeltaTime;
                 foreach (RaycastHit2D hit in hits)
@@ -273,7 +396,7 @@ namespace PQ.Common.Physics
             }
             
             #if UNITY_EDITOR
-            if (_drawCastsInEditor)
+            if (IsEnabled(EditorVisuals.Casts))
             {
                 Bounds bounds = _boxCollider.bounds;
                 Vector2 center    = new(bounds.center.x, bounds.center.y);
@@ -306,7 +429,6 @@ namespace PQ.Common.Physics
             }
 
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            Debug.Log(minimumSeparation.distance);
             if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
             {
                 amount = Vector2.zero;
@@ -321,14 +443,25 @@ namespace PQ.Common.Physics
         #if UNITY_EDITOR
         void OnValidate()
         {
-            // force synchronization with inspector values whether game is playing in editor or not
-            // note skip if bounds are empty, which occurs when a prefab is instantiated during an editor refresh
-            if (_boxCollider != null && (_boxCollider.bounds.size.x != 0f || _boxCollider.bounds.size.y != 0f))
+            // avoid updating with inspector if loading the original prefab from disk (which occurs before loading the instance)
+            // otherwise the default inspector values are used. By skipping persistent objects, we effectively only update when values are
+            // changed in the inspector
+            if (EditorUtility.IsPersistent(this))
             {
-                //SetBounds(_boxCollider.bounds.min, _boxCollider.bounds.max, _skinWidth);
+                return;
+            }
+
+            float bufferChange = _overlapTolerance - _boxCollider.edgeRadius;
+
+            // if corners changed in editor, they take precedence over any manual changes to collider bounds
+            if (!Mathf.Approximately(bufferChange, 0))
+            {
+                (Vector2 localMin, Vector2 localMax) = GetOrientedLocalMinMaxCorners(_boxCollider);
+                SetBounds(localMin, localMax, _overlapTolerance);
             }
 
             // update runtime data if inspector changed while game playing in editor
+
             if (Application.IsPlaying(this) && _initialized)
             {
                 SetLayerMask(_layerMask);
@@ -346,20 +479,23 @@ namespace PQ.Common.Physics
             Vector2 center  = _boxCollider.bounds.center;
             Vector2 forward = _rigidBody.transform.right.normalized;
             Vector2 up      = _rigidBody.transform.up.normalized;
-            Vector2 extentsInner = _boxCollider.bounds.extents - new Vector3(_overlapTolerance, _overlapTolerance, 0f);
-            Vector2 extentsOuter = _boxCollider.bounds.extents;
+            Vector2 extents = _boxCollider.bounds.extents;
+            Vector2 buffer  = new Vector2(_overlapTolerance, _overlapTolerance);
 
-            // draw anchor/center positions, local axes, and AABB with inner bounds to indicate region of tolerated overlap
-
-            GizmoExtensions.DrawSphere(anchor, 0.02f, Color.blue);
-            GizmoExtensions.DrawSphere(center, 0.02f, Color.black);
-
-            GizmoExtensions.DrawRect(center, extentsInner, Color.black);
-            GizmoExtensions.DrawRect(center, extentsOuter, Color.black);
-
-            GizmoExtensions.DrawArrow(center, center + extentsInner.x * forward, Color.red);
-            GizmoExtensions.DrawArrow(center, center + extentsInner.y * up, Color.green);
-
+            if (IsEnabled(EditorVisuals.Positions))
+            {
+                GizmoExtensions.DrawSphere(anchor, 0.02f, Color.blue);
+                GizmoExtensions.DrawSphere(center, 0.02f, Color.black);
+            }
+            if (IsEnabled(EditorVisuals.Axes))
+            {
+                Vector2 frontCenter = center + (extents.x + buffer.x) * forward;
+                Vector2 topCenter   = center + (extents.y + buffer.y) * up;
+                GizmoExtensions.DrawArrow(center, frontCenter, Color.red);
+                GizmoExtensions.DrawArrow(center, topCenter,   Color.green);
+                GizmoExtensions.DrawLine(frontCenter - buffer.x * forward, frontCenter, Color.black);
+                GizmoExtensions.DrawLine(topCenter   - buffer.y * up,      topCenter,   Color.black);
+            }
         }
         #endif
     }

@@ -28,12 +28,12 @@ namespace PQ.Common.Extensions
         }
 
         /* Draw line between given world positions. */
-        public static void DrawLine((Vector2, Vector2) endpoints, Color? color = null)
+        public static void DrawLine(Vector2 from, Vector2 to, Color? color = null)
         {
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
-            Gizmos.DrawLine(endpoints.Item1, endpoints.Item2);
+            Gizmos.DrawLine(from, to);
 
             Gizmos.color = previousColor;
         }
@@ -111,26 +111,23 @@ namespace PQ.Common.Extensions
         }
 
         /*
-        Assumes arrow head length is nonzero and from,to are nonequal.
+        Assumes from != to and arrow head length is > 0.
         
         Note that arrow head length and height are configured to be the same length for simplicity,
-        and sized relative to length of line.
+        and sized relative to the length of the line.
         */
         public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null, float arrowheadSizeRatio = 0.10f)
         {
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
-            Vector2 vector    = to - from;
-            Vector2 dir       = vector.normalized;
-            float length      = vector.magnitude;
-            float arrowLength = arrowheadSizeRatio * length;
-            Vector2 arrowheadBottom      = from + ((length - arrowLength) * dir);
-            Vector2 arrowheadBaseExtents = new Vector2(-dir.y, dir.x) * arrowLength * 0.50f;
+            Vector2 vector = to - from;
+            Vector2 arrowheadBottom = to - arrowheadSizeRatio * vector;
+            Vector2 arrowheadOffset = 0.50f * arrowheadSizeRatio * new Vector2(-vector.y, vector.x);
 
             Gizmos.DrawLine(from, to);
-            Gizmos.DrawLine(arrowheadBottom + arrowheadBaseExtents, to);
-            Gizmos.DrawLine(arrowheadBottom - arrowheadBaseExtents, to);
+            Gizmos.DrawLine(arrowheadBottom - arrowheadOffset, to);
+            Gizmos.DrawLine(arrowheadBottom + arrowheadOffset, to);
 
             Gizmos.color = previousColor;
         }

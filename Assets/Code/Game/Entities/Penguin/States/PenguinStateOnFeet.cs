@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using PQ.Common.Fsm;
+using PQ.Common.Physics;
 
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinStateOnFeet : FsmState<PenguinStateId, PenguinFsmSharedData>
+    public class PenguinStateOnFeet : FsmState<PenguinStateId, PenguinEntity>
     {
-        public PenguinStateOnFeet() : base() { }
-
-        private float _locomotionBlend;
+        private bool _grounded;
         private HorizontalInput _horizontalInput;
+
+        public PenguinStateOnFeet() : base() { }
 
         protected override void OnIntialize()
         {
@@ -19,26 +20,38 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnEnter()
         {
-            Blob.CharacterController.Settings = Blob.OnFeetSettings;
-            _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
+            Blob.PhysicsBody.SetBounds(Blob.Config.boundsMinUpright, Blob.Config.boundsMaxUpright, Blob.Config.overlapToleranceUpright);
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         protected override void OnExit()
         {
-            _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
-            //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
         }
 
         protected override void OnFixedUpdate()
         {
-            Blob.CharacterController.UpdateMovement();
+            if (!Mathf.Approximately(_horizontalInput.value, 0f))
+            {
+                Blob.PhysicsBody.Flip(horizontal: _horizontalInput.value < 0, vertical: false);
+            }
+
+            // todo: check inputAxis.y for jumps
+
+            Vector2 velocity = new(
+                x: Blob.Config.maxHorizontalSpeedUpright * _horizontalInput.value,
+                y: _grounded ? 0 : Blob.PhysicsBody.Gravity
+            );
+
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+
+            Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
         }
 
         protected override void OnUpdate()
         {
-            AdjustLocomotionBlendBasedOnInput();
+
         }
 
 
@@ -50,31 +63,6 @@ namespace PQ.Game.Entities.Penguin
         private void HandleMoveHorizontalChanged(HorizontalInput state)
         {
             _horizontalInput = state;
-            if (_horizontalInput.value == HorizontalInput.Type.Right)
-            {
-                Blob.CharacterController.HorizontalInput = 1.0f;
-            }
-            else if (_horizontalInput.value == HorizontalInput.Type.Left)
-            {
-                Blob.CharacterController.HorizontalInput = -1.0f;
-            }
-            else
-            {
-                Blob.CharacterController.HorizontalInput = 0.0f;
-            }
-        }
-
-        private void AdjustLocomotionBlendBasedOnInput()
-        {
-            float adjustedBlendAmount = Mathf.Approximately(Blob.CharacterController.HorizontalInput, 0f)?
-                Mathf.Clamp01(_locomotionBlend - Blob.OnFeetSettings.locomotionBlendStep) :
-                Mathf.Clamp01(_locomotionBlend + Blob.OnFeetSettings.locomotionBlendStep);
-
-            if (!Mathf.Approximately(_locomotionBlend, adjustedBlendAmount))
-            {
-                _locomotionBlend = adjustedBlendAmount;
-                //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
-            }
         }
     }
 }

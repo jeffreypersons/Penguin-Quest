@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using PQ.Common.Fsm;
 
 
 namespace PQ.Game.Entities.Penguin
 {
-    public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinFsmSharedData>
+    // todo: integrate with entity so the graph is initialized there, and use game object instantiate/add component instead of subclass
+    public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinEntity>
     {
         protected override void OnInitialStateEntered(PenguinStateId initial) =>
             Debug.Log($"Intialized {this}");
@@ -15,9 +17,9 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnInitialize()
         {
-            if (!gameObject.TryGetComponent<PenguinFsmSharedData>(out var penguinBlob))
+            if (!gameObject.TryGetComponent<PenguinEntity>(out var penguinBlob))
             {
-                throw new System.InvalidOperationException(
+                throw new InvalidOperationException(
                     $"PenguinBlob not found - driver must be attached to same gameObject as PenguinFsmDriver");
             }
 

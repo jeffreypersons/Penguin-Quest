@@ -1,6 +1,5 @@
 ﻿using PQ.Common.Events;
 using PQ.Game.Entities;
-using PQ.Game.Sound;
 
 
 // todo: replace this with GameEventRegistries for UI, Commands, etc, and move HorizontalInput out of here
@@ -9,10 +8,17 @@ namespace PQ.Game
     public struct HorizontalInput
     {
         public enum Type { None, Left, Right }
-        public readonly Type value;
-        public HorizontalInput(Type value)
+        public readonly Type type;
+        public readonly float value;
+        public HorizontalInput(Type type)
         {
-            this.value = value;
+            this.type = type;
+            this.value = type switch
+            {
+                Type.Left  => -1f,
+                Type.Right =>  1f,
+                _          =>  0f,
+            };
         }
     }
 

@@ -1,62 +1,76 @@
 ﻿using UnityEngine;
 using PQ.Common.Fsm;
+using PQ.Common.Physics;
 
 
 namespace PQ.Game.Entities.Penguin
 {
-    public class PenguinStateOnBelly : FsmState<PenguinStateId, PenguinFsmSharedData>
+    public class PenguinStateOnBelly : FsmState<PenguinStateId, PenguinEntity>
     {
+        private bool _grounded;
+        private HorizontalInput _horizontalInput;
+
         public PenguinStateOnBelly() : base() { }
 
-        private float _locomotionBlend;
-        private HorizontalInput _horizontalInput;
 
         protected override void OnIntialize()
         {
-            RegisterEvent(Blob.EventBus.standUpCommand,                    HandleStandUpInputReceived);
-            RegisterEvent(Blob.EventBus.movementInputChange,               HandleMoveHorizontalChanged);
-            //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged); // disabled until we fix ground handling
+            RegisterEvent(Blob.EventBus.standUpCommand,      HandleStandUpInputReceived);
+            RegisterEvent(Blob.EventBus.movementInputChange, HandleMoveHorizontalChanged);
         }
 
         protected override void OnEnter()
         {
-            Blob.CharacterController.Settings = Blob.OnBellySettings;
-            _locomotionBlend = 0.0f;
             _horizontalInput = new(HorizontalInput.Type.None);
+
+            // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
+            // but enable everything else including bounding box
+            Blob.Skeleton.ColliderConstraints =
+                 PenguinColliderConstraints.DisableFeet |
+                 PenguinColliderConstraints.DisableFlippers;
+
+            Blob.PhysicsBody.SetBounds(Blob.Config.boundsMinProne, Blob.Config.boundsMaxProne, Blob.Config.overlapToleranceProne);
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         protected override void OnExit()
         {
-            _locomotionBlend = 0.0f;
-            //Blob.Animation.SetFloat(PenguinAnimationParamId.LocomotionIntensity, _locomotionBlend);
+            // no op
+        }
+
+        protected override void OnFixedUpdate()
+        {
+            if (!Mathf.Approximately(_horizontalInput.value, 0f))
+            {
+                Blob.PhysicsBody.Flip(horizontal: _horizontalInput.value < 0, vertical: false);
+            }
+
+            // todo: check inputAxis.y for jumps
+
+            Vector2 velocity = new(
+                x: Blob.Config.maxHorizontalSpeedUpright * _horizontalInput.value,
+                y: _grounded ? 0 : Blob.PhysicsBody.Gravity
+            );
+
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+
+            Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
         }
 
         protected override void OnUpdate()
         {
-            HandleHorizontalMovement();
+            // no op
         }
 
-
-        // todo: look into putting the ground check animation update somewhere else more reusable, like a penguin base state
-        private void HandleGroundContactChanged(bool isGrounded)
-        {
-            Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, isGrounded);
-        }
 
         private void HandleStandUpInputReceived()
         {
             base.SignalMoveToNextState(PenguinStateId.StandingUp);
         }
 
-        // todo: find a flexible solution for all this duplicated movement code in multiple states
         private void HandleMoveHorizontalChanged(HorizontalInput state)
         {
-            // no op
-        }
-
-        private void HandleHorizontalMovement()
-        {
-            // no op
+            _horizontalInput = state;
         }
     }
 }
