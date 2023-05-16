@@ -195,9 +195,10 @@ namespace PQ.Common.Physics
             _rigidBody.useFullKinematicContacts = true;
             _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-            Debug.Log("awake");
             SetLayerMask(_layerMask);
             SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
+
+            _solver = new KinematicSolver2D(this);
 
             _initialized = true;
         }
@@ -217,7 +218,6 @@ namespace PQ.Common.Physics
         */
         public void SetBounds(Vector2 from, Vector2 to, float overlapTolerance)
         {
-            Debug.Log($"{from} {to} {overlapTolerance}");
             Vector2 localCenter = Vector2.LerpUnclamped(from, to, 0.50f);
             Vector2 localSize = new Vector2(
                 x: Mathf.Abs(to.x - from.x) - (2f * overlapTolerance),
@@ -451,9 +451,6 @@ namespace PQ.Common.Physics
                 return;
             }
 
-
-            Vector2 minChange    = _AABBCornerMin    - _localAABBCorners.min;
-            Vector2 maxChange    = _AABBCornerMax    - _localAABBCorners.max;
             float bufferChange = _overlapTolerance - _boxCollider.edgeRadius;
 
             // if corners changed in editor, they take precedence over any manual changes to collider bounds
@@ -462,15 +459,6 @@ namespace PQ.Common.Physics
                 (Vector2 localMin, Vector2 localMax) = GetOrientedLocalMinMaxCorners(_boxCollider);
                 SetBounds(localMin, localMax, _overlapTolerance);
             }
-            else if (Mathf.Approximately(bufferChange, 0))
-            {
-
-            }
-            else
-            {
-
-            }
-
 
             // update runtime data if inspector changed while game playing in editor
 
