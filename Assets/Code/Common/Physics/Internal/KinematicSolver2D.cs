@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
-namespace PQ.Common.Physics
+namespace PQ.Common.Physics.Internal
 {
     /*
     Collide and slide style solver for 2D that works in linear steps.
