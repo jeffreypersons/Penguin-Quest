@@ -17,20 +17,17 @@ namespace PQ.Game.Entities.Penguin
         {
             RegisterEvent(Blob.EventBus.standUpCommand,      HandleStandUpInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange, HandleMoveHorizontalChanged);
+            RegisterEvent(Blob.Config.OnChanged,             HandleConfigChanged);
         }
 
         protected override void OnEnter()
         {
+            // turn off feet and flippers, since they overlap when sliding around
             _horizontalInput = new(HorizontalInput.Type.None);
-
-            // keep our feet and flippers disabled to avoid interference with ground while OnBelly,
-            // but enable everything else including bounding box
             Blob.Skeleton.ColliderConstraints =
                  PenguinColliderConstraints.DisableFeet |
                  PenguinColliderConstraints.DisableFlippers;
-
-            Blob.PhysicsBody.SetBounds(Blob.Config.boundsMinProne, Blob.Config.boundsMaxProne, Blob.Config.overlapToleranceProne);
-            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+            HandleConfigChanged();
         }
 
         protected override void OnExit()
@@ -61,7 +58,14 @@ namespace PQ.Game.Entities.Penguin
         {
             // no op
         }
-
+        
+        private void HandleConfigChanged()
+        {
+            // todo: after setting bounds, do overlap resolution before ground check
+            // todo: look into putting all this into the physics body class, as it's something we want to do nearly everytime bounds are changed
+            Blob.PhysicsBody.SetBounds(Blob.Config.boundsMinUpright, Blob.Config.boundsMaxUpright, Blob.Config.overlapToleranceUpright);
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+        }
 
         private void HandleStandUpInputReceived()
         {

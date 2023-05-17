@@ -1,22 +1,28 @@
-using System;
 using UnityEngine;
+using PQ.Common.Events;
 
 
 namespace PQ.Common.Tuning
 {
     /*
     Collection of tuning data, with a listener built in.
+
+    Intentionally makes zero assumptions about the data that may be contained in implementing classes.
     */
     // todo: figure out how to make this work with inheritance
     //[CreateAssetMenu(fileName = "TuningConfig",menuName = "TuningConfigs/TuningConfig",order = 1)]
     public abstract class TuningConfig : ScriptableObject
     {
-        private event Action _onChanged = delegate { };
+        private static readonly string _configName = typeof(TuningConfig).Name;
 
-        public override string ToString() => $"{GetType()}";
+        private PqEvent _onChanged = new($"{_configName}.changed");
 
-        public void RegisterOnChanged(Action onChanged) => _onChanged += onChanged;
+        private void OnValidate() => _onChanged.Raise();
 
-        void OnValidate() => _onChanged.Invoke();
+
+        public override string ToString() => $"{_configName}";
+
+        public IPqEventReceiver OnChanged => _onChanged;
+
     }
 }
