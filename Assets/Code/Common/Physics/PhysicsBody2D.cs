@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.Contracts;
 using UnityEngine;
 using UnityEditor;
 using PQ.Common.Extensions;
@@ -199,6 +198,8 @@ namespace PQ.Common.Physics
             {
                 return;
             }
+
+            _kinematicBody ??= new KinematicRigidbody2D(_transform);
 
             // if corners changed in editor, they take precedence over any manual changes to collider bounds
             if (!Mathf.Approximately(_overlapTolerance, _kinematicBody.OverlapTolerance))
