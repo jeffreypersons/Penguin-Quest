@@ -169,23 +169,23 @@ namespace PQ.Common.Physics
         * Positions are relative to rigidbody position (eg anchor point at bottom center of sprite)
         * Size of box must be non zero and larger than twice our tolerance (ie amount of tolerance must be < 100%)
         */
-        public void SetAABBMinMax(Vector2 localMin, Vector2 localMax, float overlapTolerance)
+        public void SetAABBMinMax(Vector2 locaMin, Vector2 localMax, float overlapTolerance)
         {
-            Vector2 localCenter = Vector2.LerpUnclamped(localMin, localMax, 0.50f);
-            Vector2 localSize = new Vector2(
-                x: Mathf.Abs(localMax.x - localMin.x) - (2f * overlapTolerance),
-                y: Mathf.Abs(localMax.y - localMin.y) - (2f * overlapTolerance)
+            Vector2 localCenter = Vector2.LerpUnclamped(locaMin, localMax, 0.50f);
+            Vector2 localExtents = new Vector2(
+                x: 0.50f * (localMax.x - locaMin.x),
+                y: 0.50f * (localMax.y - locaMin.y)
             );
-            if (overlapTolerance < 0f || localSize.x <= 0 || localSize.y <= 0)
+            if (overlapTolerance < 0f || localExtents.x <= 0 || localExtents.y <= 0)
             {
                 throw new ArgumentException(
-                    $"Invalid bounds - expected 0 <= overlapTolerance < size={localSize}, " +
-                    $"received from={localMin} to={localMax} overlapTolerance={overlapTolerance}");
+                    $"Invalid bounds - expected 0 <= overlapTolerance < extents={localExtents}, " +
+                    $"received from={locaMin} to={localMax} overlapTolerance={overlapTolerance}");
             }
 
-            _kinematicBody.SetLocalBounds(localCenter, localSize, overlapTolerance);
+            _kinematicBody.SetLocalBounds(localCenter, 2f * localExtents, overlapTolerance);
             _overlapTolerance = overlapTolerance;
-            _AABBCornerMin    = localMin;
+            _AABBCornerMin    = locaMin;
             _AABBCornerMax    = localMax;
         }
 

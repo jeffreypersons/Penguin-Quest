@@ -89,11 +89,11 @@ namespace PQ.Common.Physics.Internal
         }
         
 
-        public void SetLocalBounds(Vector2 offset, Vector2 size, float edgeRadius)
+        public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
         {
             _boxCollider.offset     = offset;
             _boxCollider.size       = size;
-            _boxCollider.edgeRadius = edgeRadius;
+            _boxCollider.edgeRadius = outerEdgeRadius;
         }
         
         /* Given amount between 0 and 1, set rotation about y axis, and rotation about x axis. Note we never allow z rotation. */

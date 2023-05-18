@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e37d6fdccb8eff4986ebfb260f41c89, type: 3}
   m_Name: PenguinTuningConfig
   m_EditorClassIdentifier: 
+  maxVerticalSpeedFalling: 5
+  maxVerticalSpeedJumping: 5
   maxHorizontalSpeedUpright: 5
+  overlapToleranceUpright: 0.04
   boundsMinUpright: {x: -0.25, y: 0}
-  boundsMaxUpright: {x: 0.25, y: 1}
-  overlapToleranceUpright: 0.075
+  boundsMaxUpright: {x: 0.25, y: 1.15}
   maxHorizontalSpeedProne: 20
-  boundsMinProne: {x: -0.5, y: 0}
-  boundsMaxProne: {x: 0.5, y: 0.5}
-  overlapToleranceProne: 0.075
+  overlapToleranceProne: 0.04
+  boundsMinProne: {x: -0.575, y: 0}
+  boundsMaxProne: {x: 0.575, y: 0.5}
