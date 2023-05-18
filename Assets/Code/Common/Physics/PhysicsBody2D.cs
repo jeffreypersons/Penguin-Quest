@@ -85,30 +85,30 @@ namespace PQ.Common.Physics
         private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
         #endif
 
-        private KinematicRigidbody2D    _body;
-        private KinematicLinearSolver2D _solver;
+        private KinematicRigidbody2D    _kinematicBody;
+        private KinematicLinearSolver2D _kinematicSolver;
         
-        public Vector2 Position => _body.Position;
-        public Vector2 Center   => _body.Center;
-        public Vector2 Forward  => _body.Forward;
-        public Vector2 Up       => _body.Up;
-        public Vector2 Extents  => _body.Extents;
-        public float   Depth    => _body.Depth;
+        public Vector2 Position => _kinematicBody.Position;
+        public Vector2 Center   => _kinematicBody.Center;
+        public Vector2 Forward  => _kinematicBody.Forward;
+        public Vector2 Up       => _kinematicBody.Up;
+        public Vector2 Extents  => _kinematicBody.Extents;
+        public float   Depth    => _kinematicBody.Depth;
 
         public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
-        public float Bounciness => _body.Bounciness;
-        public float Friction   => _body.Friction;
+        public float Bounciness => _kinematicBody.Bounciness;
+        public float Friction   => _kinematicBody.Friction;
 
-        public LayerMask LayerMask => _body.LayerMask;
-        public float OverlapTolerance => _body.OverlapTolerance;
+        public LayerMask LayerMask => _kinematicBody.LayerMask;
+        public float OverlapTolerance => _kinematicBody.OverlapTolerance;
 
 
         public override string ToString() =>
             $"PhysicsBody2D{{" +
-                $"Position:{_body.Position}," +
-                $"Depth:{_body.Depth}," +
-                $"Forward:{_body.Forward}," +
-                $"Up:{_body.Up}," +
+                $"Position:{_kinematicBody.Position}," +
+                $"Depth:{_kinematicBody.Depth}," +
+                $"Forward:{_kinematicBody.Forward}," +
+                $"Up:{_kinematicBody.Up}," +
                 $"OverlapTolerance:{_overlapTolerance}," +
                 $"Friction:{_collisionFriction}," +
                 $"Bounciness:{_collisionBounciness}," +
@@ -124,8 +124,8 @@ namespace PQ.Common.Physics
             SetLayerMask(_layerMask);
             SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
 
-            _body   = new KinematicRigidbody2D(transform);
-            _solver = new KinematicLinearSolver2D(_body);
+            _kinematicBody   = new KinematicRigidbody2D(transform);
+            _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
         }
         
         /* Set world transform to given point, ignoring physics. */
@@ -137,7 +137,7 @@ namespace PQ.Common.Physics
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
         {
-            _body.SetFlippedAmount(
+            _kinematicBody.SetFlippedAmount(
                 horizontalRatio: horizontal ? 1f : 0f,
                 verticalRatio:   vertical   ? 1f : 0f
              );
@@ -146,12 +146,12 @@ namespace PQ.Common.Physics
         /* Immediately set facing of horizontal/vertical axes. */
         public void Move(Vector2 delta)
         {
-            _solver.SolveMovement(delta);
+            _kinematicSolver.SolveMovement(delta);
         }
 
         public bool IsContacting(CollisionFlags2D flags)
         {
-            return _solver.InContact(flags);
+            return _kinematicSolver.InContact(flags);
         }
 
 
@@ -182,7 +182,7 @@ namespace PQ.Common.Physics
                     $"received from={localMin} to={localMax} overlapTolerance={overlapTolerance}");
             }
 
-            _body.SetLocalBounds(localMin, localMax, overlapTolerance);
+            _kinematicBody.SetLocalBounds(localMin, localMax, overlapTolerance);
             _overlapTolerance = overlapTolerance;
             _AABBCornerMin    = localMin;
             _AABBCornerMax    = localMax;
@@ -201,13 +201,13 @@ namespace PQ.Common.Physics
             }
 
             // if corners changed in editor, they take precedence over any manual changes to collider bounds
-            if (!Mathf.Approximately(_overlapTolerance, _body.OverlapTolerance))
+            if (!Mathf.Approximately(_overlapTolerance, _kinematicBody.OverlapTolerance))
             {
-                SetAABBMinMax(_body.Center - _body.Extents, _body.Center + _body.Extents, _overlapTolerance);
+                SetAABBMinMax(_kinematicBody.Center - _kinematicBody.Extents, _kinematicBody.Center + _kinematicBody.Extents, _overlapTolerance);
             }
-            if (!Mathf.Approximately(_overlapTolerance, _body.OverlapTolerance))
+            if (!Mathf.Approximately(_overlapTolerance, _kinematicBody.OverlapTolerance))
             {
-                SetAABBMinMax(_body.Center - _body.Extents, _body.Center + _body.Extents, _overlapTolerance);
+                SetAABBMinMax(_kinematicBody.Center - _kinematicBody.Extents, _kinematicBody.Center + _kinematicBody.Extents, _overlapTolerance);
             }
 
             // update runtime data if inspector changed while game playing in editor
@@ -215,28 +215,28 @@ namespace PQ.Common.Physics
             if (Application.IsPlaying(this))
             {
                 SetLayerMask(_layerMask);
-                _body.ResizeHitBuffer(_preallocatedHitBufferSize);
+                _kinematicBody.ResizeHitBuffer(_preallocatedHitBufferSize);
             }
         }
 
 
         void OnDrawGizmos()
         {
-            Vector2 buffer  = new Vector2(_overlapTolerance, _overlapTolerance);
+            Vector2 buffer = new Vector2(_overlapTolerance, _overlapTolerance);
 
             if (IsEnabled(EditorVisuals.Positions))
             {
-                GizmoExtensions.DrawSphere(_body.Position, 0.02f, Color.blue);
-                GizmoExtensions.DrawSphere(_body.Center, 0.02f, Color.black);
+                GizmoExtensions.DrawSphere(_kinematicBody.Position, 0.02f, Color.blue);
+                GizmoExtensions.DrawSphere(_kinematicBody.Center, 0.02f, Color.black);
             }
             if (IsEnabled(EditorVisuals.Axes))
             {
-                Vector2 frontCenter = _body.Center + (_body.Extents.x + buffer.x) * _body.Forward;
-                Vector2 topCenter   = _body.Center + (_body.Extents.y + buffer.y) * _body.Up;
-                GizmoExtensions.DrawArrow(_body.Center, frontCenter, Color.red);
-                GizmoExtensions.DrawArrow(_body.Center, topCenter,   Color.green);
-                GizmoExtensions.DrawLine(frontCenter - buffer.x * _body.Forward, frontCenter, Color.black);
-                GizmoExtensions.DrawLine(topCenter   - buffer.y * _body.Up,      topCenter,   Color.black);
+                Vector2 frontCenter = _kinematicBody.Center + (_kinematicBody.Extents.x + buffer.x) * _kinematicBody.Forward;
+                Vector2 topCenter   = _kinematicBody.Center + (_kinematicBody.Extents.y + buffer.y) * _kinematicBody.Up;
+                GizmoExtensions.DrawArrow(_kinematicBody.Center, frontCenter, Color.red);
+                GizmoExtensions.DrawArrow(_kinematicBody.Center, topCenter,   Color.green);
+                GizmoExtensions.DrawLine(frontCenter - buffer.x * _kinematicBody.Forward, frontCenter, Color.black);
+                GizmoExtensions.DrawLine(topCenter   - buffer.y * _kinematicBody.Up,      topCenter,   Color.black);
             }
         }
         #endif
