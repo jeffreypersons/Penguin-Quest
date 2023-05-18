@@ -171,6 +171,7 @@ namespace PQ.Common.Physics
         */
         public void SetAABBMinMax(Vector2 localMin, Vector2 localMax, float overlapTolerance)
         {
+            Vector2 localCenter = Vector2.LerpUnclamped(localMin, localMax, 0.50f);
             Vector2 localSize = new Vector2(
                 x: Mathf.Abs(localMax.x - localMin.x) - (2f * overlapTolerance),
                 y: Mathf.Abs(localMax.y - localMin.y) - (2f * overlapTolerance)
@@ -182,7 +183,7 @@ namespace PQ.Common.Physics
                     $"received from={localMin} to={localMax} overlapTolerance={overlapTolerance}");
             }
 
-            _kinematicBody.SetLocalBounds(localMin, localMax, overlapTolerance);
+            _kinematicBody.SetLocalBounds(localCenter, localSize, overlapTolerance);
             _overlapTolerance = overlapTolerance;
             _AABBCornerMin    = localMin;
             _AABBCornerMax    = localMax;
