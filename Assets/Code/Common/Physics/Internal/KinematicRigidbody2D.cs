@@ -106,17 +106,10 @@ namespace PQ.Common.Physics.Internal
             }
         }
 
-        /* Resize collider such that it spans between given corners, adjusting 'inwards' for given skin width. */
-        public void SetBounds(Vector2 min, Vector2 max, float edgeRadius)
+        public void SetLocalBounds(Vector2 offset, Vector2 size, float edgeRadius)
         {
-            Vector2 localCenter = Vector2.LerpUnclamped(min, max, 0.50f);
-            Vector2 localSize = new Vector2(
-                x: Mathf.Abs(max.x - min.x) - (2f * edgeRadius),
-                y: Mathf.Abs(max.y - min.y) - (2f * edgeRadius)
-            );
-
-            _boxCollider.offset     = localCenter;
-            _boxCollider.size       = localSize;
+            _boxCollider.offset     = offset;
+            _boxCollider.size       = size;
             _boxCollider.edgeRadius = edgeRadius;
         }
 

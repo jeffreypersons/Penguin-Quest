@@ -122,11 +122,38 @@ namespace PQ.Common.Physics
         void Awake()
         {
             SetLayerMask(_layerMask);
-            SetBounds(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
+            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
 
             _body   = new KinematicRigidbody2D(transform);
             _solver = new KinematicLinearSolver2D(_body);
         }
+        
+        /* Set world transform to given point, ignoring physics. */
+        public void TeleportTo(Vector2 position)
+        {
+            transform.position = position;
+        }
+        
+        /* Immediately set facing of horizontal/vertical axes. */
+        public void Flip(bool horizontal, bool vertical)
+        {
+            _body.SetFlippedAmount(
+                horizontalRatio: horizontal ? 1f : 0f,
+                verticalRatio:   vertical   ? 1f : 0f
+             );
+        }
+
+        /* Immediately set facing of horizontal/vertical axes. */
+        public void Move(Vector2 delta)
+        {
+            _solver.SolveMovement(delta);
+        }
+
+        public bool IsContacting(CollisionFlags2D flags)
+        {
+            return _solver.InContact(flags);
+        }
+
 
 
         /* Set layermask used for detecting collisions. */
@@ -136,50 +163,29 @@ namespace PQ.Common.Physics
         }
 
         /*
-        Resize AABB to span between given local coordinates, with skin width as our collision contact offset.
+        Resize bounding box to span between given local corners, with tolerance defining our bounds 'thickness'.
 
-        Note: Skin width is calculated _inwards_ from the given bound corners.
+        Notes
+        * Positions are relative to rigidbody position (eg anchor point at bottom center of sprite)
+        * Size of box must be non zero and larger than twice our tolerance (ie amount of tolerance must be < 100%)
         */
-        public void SetBounds(Vector2 from, Vector2 to, float overlapTolerance)
+        public void SetAABBMinMax(Vector2 localMin, Vector2 localMax, float overlapTolerance)
         {
-            Vector2 localCenter = Vector2.LerpUnclamped(from, to, 0.50f);
             Vector2 localSize = new Vector2(
-                x: Mathf.Abs(to.x - from.x) - (2f * overlapTolerance),
-                y: Mathf.Abs(to.y - from.y) - (2f * overlapTolerance)
+                x: Mathf.Abs(localMax.x - localMin.x) - (2f * overlapTolerance),
+                y: Mathf.Abs(localMax.y - localMin.y) - (2f * overlapTolerance)
             );
             if (overlapTolerance < 0f || localSize.x <= 0 || localSize.y <= 0)
             {
                 throw new ArgumentException(
                     $"Invalid bounds - expected 0 <= overlapTolerance < size={localSize}, " +
-                    $"received from={from} to={to} overlapTolerance={overlapTolerance}");
+                    $"received from={localMin} to={localMax} overlapTolerance={overlapTolerance}");
             }
 
+            _body.SetLocalBounds(localMin, localMax, overlapTolerance);
             _overlapTolerance = overlapTolerance;
-            _AABBCornerMin    = from;
-            _AABBCornerMax    = to;
-        }
-
-
-        /* Immediately set facing of horizontal/vertical axes. */
-        public void Flip(bool horizontal, bool vertical)
-        {
-            _body.SetFlippedAmount(horizontalRatio: horizontal ? 1f : 0f, verticalRatio: vertical ? 1f : 0f);
-        }
-
-        /* Set world transform to given point, ignoring physics. */
-        public void TeleportTo(Vector2 position)
-        {
-            transform.position = position;
-        }
-
-        public void Move(Vector2 delta)
-        {
-            _solver.SolveMovement(delta);
-        }
-
-        public bool IsContacting(CollisionFlags2D flags)
-        {
-            return _solver.InContact(flags);
+            _AABBCornerMin    = localMin;
+            _AABBCornerMax    = localMax;
         }
 
 
@@ -197,7 +203,11 @@ namespace PQ.Common.Physics
             // if corners changed in editor, they take precedence over any manual changes to collider bounds
             if (!Mathf.Approximately(_overlapTolerance, _body.OverlapTolerance))
             {
-                SetBounds(_body.Center - _body.Extents, _body.Center + _body.Extents, _overlapTolerance);
+                SetAABBMinMax(_body.Center - _body.Extents, _body.Center + _body.Extents, _overlapTolerance);
+            }
+            if (!Mathf.Approximately(_overlapTolerance, _body.OverlapTolerance))
+            {
+                SetAABBMinMax(_body.Center - _body.Extents, _body.Center + _body.Extents, _overlapTolerance);
             }
 
             // update runtime data if inspector changed while game playing in editor
