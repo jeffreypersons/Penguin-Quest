@@ -130,9 +130,15 @@ namespace PQ.Common.Physics
         /* Set world transform to given point, ignoring physics. */
         public void TeleportTo(Vector2 position)
         {
-            transform.position = position;
+            _kinematicBody.TeleportTo(position);
         }
-        
+
+        /* Immediately set facing of horizontal/vertical axes. */
+        public void Move(Vector2 delta)
+        {
+            _kinematicSolver.SolveMovement(delta);
+        }
+
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
         {
@@ -142,22 +148,18 @@ namespace PQ.Common.Physics
              );
         }
 
-        /* Immediately set facing of horizontal/vertical axes. */
-        public void Move(Vector2 delta)
-        {
-            _kinematicSolver.SolveMovement(delta);
-        }
 
+        /* Immediately set facing of horizontal/vertical axes. */
         public bool IsContacting(CollisionFlags2D flags)
         {
             return _kinematicSolver.InContact(flags);
         }
 
 
-
         /* Set layermask used for detecting collisions. */
         public void SetLayerMask(LayerMask layerMask)
         {
+            _kinematicBody.SetLayerMask(layerMask);
             _layerMask = layerMask;
         }
 
@@ -199,13 +201,14 @@ namespace PQ.Common.Physics
                 return;
             }
 
-            _kinematicBody ??= new KinematicRigidbody2D(_transform);
+            // if accessed before awake (eg in the editor when not playing), only initialize if transform reference changed
+            if (_kinematicBody == null || !_kinematicBody.IsAttachedTo(_transform))
+            {
+                _kinematicBody   = new KinematicRigidbody2D(_transform);
+                _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
+            }
 
             // if corners changed in editor, they take precedence over any manual changes to collider bounds
-            if (!Mathf.Approximately(_overlapTolerance, _kinematicBody.OverlapTolerance))
-            {
-                SetAABBMinMax(_kinematicBody.Center - _kinematicBody.Extents, _kinematicBody.Center + _kinematicBody.Extents, _overlapTolerance);
-            }
             if (!Mathf.Approximately(_overlapTolerance, _kinematicBody.OverlapTolerance))
             {
                 SetAABBMinMax(_kinematicBody.Center - _kinematicBody.Extents, _kinematicBody.Center + _kinematicBody.Extents, _overlapTolerance);

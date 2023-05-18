@@ -79,7 +79,7 @@ namespace PQ.Common.Physics.Internal
             MoveVertical(vertical);
             _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
 
-            _body.InterpolatedMoveTo(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
+            _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
 
         public bool InContact(CollisionFlags2D flags)

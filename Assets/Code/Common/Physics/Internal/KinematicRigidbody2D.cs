@@ -27,7 +27,8 @@ namespace PQ.Common.Physics.Internal
 
 
         public override string ToString() =>
-            $"KinematicRigidbody2D{{" +
+            $"{GetType()}{{" +
+                $"Transform:{_transform.name}" +
                 $"Position:{Position}," +
                 $"Depth:{Depth}," +
                 $"Forward:{Forward}," +
@@ -86,25 +87,7 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
-
-        public void SetLayerMask(LayerMask layerMask)
-        {
-            _contactFilter.SetLayerMask(layerMask);
-        }
-
-        /* WARNING: Causes allocations. */
-        public void ResizeHitBuffer(int maxCastHitsUsed)
-        {
-            if (maxCastHitsUsed <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(maxCastHitsUsed), maxCastHitsUsed, "Length must be >= 1");
-            }
-
-            if (_hitBuffer.Length != maxCastHitsUsed)
-            {
-                _hitBuffer = new RaycastHit2D[maxCastHitsUsed];
-            }
-        }
+        
 
         public void SetLocalBounds(Vector2 offset, Vector2 size, float edgeRadius)
         {
@@ -112,7 +95,7 @@ namespace PQ.Common.Physics.Internal
             _boxCollider.size       = size;
             _boxCollider.edgeRadius = edgeRadius;
         }
-
+        
         /* Given amount between 0 and 1, set rotation about y axis, and rotation about x axis. Note we never allow z rotation. */
         public void SetFlippedAmount(float horizontalRatio, float verticalRatio)
         {
@@ -120,48 +103,35 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.transform.localEulerAngles = new Vector3(
                 x: verticalRatio   * 180f,
                 y: horizontalRatio * 180f,
-                z: 0f); ;
+                z: 0f);
             _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
+        
+        public void SetLayerMask(LayerMask layerMask) => _contactFilter.SetLayerMask(layerMask);
+        public void ResizeHitBuffer(int length)       => Array.Resize(ref _hitBuffer, length);
+        public bool IsAttachedTo(Transform transform) => ReferenceEquals(_transform, transform);
 
-        public void TeleportTo(Vector2 position)
-        {
-            _transform.position = position;
-        }
-
-        public void MoveTo(Vector2 position)
-        {
-            _rigidbody.position = position;
-        }
-
-        public void MoveBy(Vector2 delta)
-        {
-            _rigidbody.position += delta;
-        }
+        public void TeleportTo(Vector2 position) => _transform.position = position;
+        public void MoveTo(Vector2 position)     => _rigidbody.position = position;
+        public void MoveBy(Vector2 delta)        => _rigidbody.position += delta;
 
         /*
         Move body to given frame's start position and perform MovePosition to maintain any interpolation.
         
-        In other words, sets final position for next physics update, whether extrapolating, interpolating, or neither.
+        This allows changes to rigidbody.position be applied without ignoring interpolation settings.
         
         Context:
         - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
         - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
         - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
           replace the original position _then_ apply MovePosition()
-
-        Reference:
-        - https://illogika-studio.gitbooks.io/unity-best-practices/content/physics-rigidbody-interpolation-and-fixedtimestep.html
-
-        Warning:
-        - Only use if you know exactly what you are doing with physics
-        - Interpolation can still be broken if position directly modified again in the same physics frame
         */
-        public void InterpolatedMoveTo(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
+        public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
         {
             _rigidbody.position = startPositionThisFrame;
             _rigidbody.MovePosition(targetPositionThisFrame);
         }
+
 
         /*
         Project AABB along delta, and return ALL hits (if any).
