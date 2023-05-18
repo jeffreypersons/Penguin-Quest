@@ -124,7 +124,6 @@ namespace PQ.Common.Physics
             _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
 
             SetLayerMask(_layerMask);
-            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
         }
         
         /* Set world transform to given point, ignoring physics. */
