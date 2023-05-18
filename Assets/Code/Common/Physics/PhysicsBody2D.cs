@@ -87,6 +87,20 @@ namespace PQ.Common.Physics
 
         private KinematicRigidbody2D    _body;
         private KinematicLinearSolver2D _solver;
+        
+        public Vector2 Position => _body.Position;
+        public Vector2 Center   => _body.Center;
+        public Vector2 Forward  => _body.Forward;
+        public Vector2 Up       => _body.Up;
+        public Vector2 Extents  => _body.Extents;
+        public float   Depth    => _body.Depth;
+
+        public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
+        public float Bounciness => _body.Bounciness;
+        public float Friction   => _body.Friction;
+
+        public LayerMask LayerMask => _body.LayerMask;
+        public float OverlapTolerance => _body.OverlapTolerance;
 
 
         public override string ToString() =>
@@ -104,14 +118,6 @@ namespace PQ.Common.Physics
                 $"PreallocatedHitBufferSize:{_preallocatedHitBufferSize}" +
             $"}}";
 
-
-        [Pure]
-        private static (Vector2 min, Vector2 max) GetOrientedLocalMinMaxCorners(BoxCollider2D box)
-        {
-            Vector2 xAxis = (box.bounds.extents.x + box.edgeRadius) * box.attachedRigidbody.transform.right.normalized;
-            Vector2 yAxis = (box.bounds.extents.y + box.edgeRadius) * box.attachedRigidbody.transform.up.normalized;
-            return (-xAxis - yAxis, xAxis + yAxis);
-        }
 
         void Awake()
         {

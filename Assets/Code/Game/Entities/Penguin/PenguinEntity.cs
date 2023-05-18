@@ -22,7 +22,7 @@ namespace PQ.Game.Entities.Penguin
     public sealed class PenguinEntity : FsmSharedData
     {
         [Header("Component/Config References")]
-        [SerializeField] private PhysicsBody2D          _kinematicBody2D;
+        [SerializeField] private PhysicsBody2D            _physicsBody;
         [SerializeField] private PenguinAnimationDriver   _penguinAnimation;
         [SerializeField] private PenguinSkeletalStructure _penguinSkeleton;
         [SerializeField] private PenguinFsmDriver         _penguinStateMachine;
@@ -31,7 +31,7 @@ namespace PQ.Game.Entities.Penguin
         
         // todo: find a better way to hook it up
         public GameEventCenter EventBus { get; set; }
-        public PhysicsBody2D          PhysicsBody  => _kinematicBody2D;
+        public PhysicsBody2D            PhysicsBody  => _physicsBody;
         public PenguinTuningConfig      Config       => _config;
         public PenguinAnimationDriver   Animation    => _penguinAnimation;
         public PenguinSkeletalStructure Skeleton     => _penguinSkeleton;
