@@ -120,11 +120,11 @@ namespace PQ.Common.Physics
 
         void Awake()
         {
-            SetLayerMask(_layerMask);
-            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
-
             _kinematicBody   = new KinematicRigidbody2D(transform);
             _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
+
+            SetLayerMask(_layerMask);
+            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
         }
         
         /* Set world transform to given point, ignoring physics. */
