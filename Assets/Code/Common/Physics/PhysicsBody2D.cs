@@ -121,7 +121,12 @@ namespace PQ.Common.Physics
         void Awake()
         {
             _kinematicBody   = new KinematicRigidbody2D(transform);
-            _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
+            _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody, new KinematicLinearSolver2D.Params
+            {
+                MaxMoveIterations = _maxSolverMoveIterations,
+                MaxOverlapIterations = _maxSolverOverlapIterations,
+                MaxSlopeAngle = _maxAscendableSlopeAngle
+            });
 
             SetLayerMask(_layerMask);
         }
@@ -204,8 +209,14 @@ namespace PQ.Common.Physics
             // if accessed before awake (eg in the editor when not playing), only initialize if transform reference changed
             if (_kinematicBody == null || !_kinematicBody.IsAttachedTo(_transform))
             {
+                var SolverParams = new KinematicLinearSolver2D.Params
+                {
+                    MaxMoveIterations    = _maxSolverMoveIterations,
+                    MaxOverlapIterations = _maxSolverOverlapIterations,
+                    MaxSlopeAngle        = _maxAscendableSlopeAngle
+                };
                 _kinematicBody   = new KinematicRigidbody2D(_transform);
-                _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
+                _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody, SolverParams);
             }
 
             // if corners changed in editor, they take precedence over any manual changes to collider bounds

@@ -14,19 +14,22 @@ namespace PQ.Common.Physics.Internal
     */
     internal sealed class KinematicLinearSolver2D
     {
+        // todo: replace with struct and store as `ref readonly struct` when we finally get C#11
+        public record Params
+        {
+            public int       MaxMoveIterations    { get; set; }
+            public int       MaxOverlapIterations { get; set; }
+            public float     MaxSlopeAngle        { get; set; }
+        }
+
         private KinematicRigidbody2D _body;
         private CollisionFlags2D _collisions;
         
-        // todo: use solver params or similar
-        private int   _maxSolverMoveIterations;
-        private int   _maxSolverOverlapIterations;
-        private float _maxAscendableSlopeAngle;
+        private Params _params;
 
         public override string ToString() =>
             $"{GetType()}, " +
-                $"MaxSolverMoveIterations: {_maxSolverMoveIterations}," +
-                $"MaxSolverOverlapIterations: {_maxSolverOverlapIterations}," +
-                $"MaxAscendableSlopeAngle: {_maxAscendableSlopeAngle}" +
+                $"Params: {_params}" +
             $")";
         
 
@@ -39,7 +42,7 @@ namespace PQ.Common.Physics.Internal
             return delta == Vector2.zero;
         }
 
-        public KinematicLinearSolver2D(KinematicRigidbody2D body)
+        public KinematicLinearSolver2D(KinematicRigidbody2D body, in Params solverParams)
         {
             if (body == null)
             {
@@ -48,7 +51,9 @@ namespace PQ.Common.Physics.Internal
 
             _body       = body;
             _collisions = CollisionFlags2D.None;
+            _params     = solverParams;
         }
+
 
         /*
         Move body given amount.
@@ -91,7 +96,7 @@ namespace PQ.Common.Physics.Internal
         private void MoveHorizontal(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _maxSolverMoveIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -102,7 +107,7 @@ namespace PQ.Common.Physics.Internal
                 }
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAscendableSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
@@ -115,7 +120,7 @@ namespace PQ.Common.Physics.Internal
         private void MoveVertical(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
-            for (int i = 0; i < _maxSolverMoveIterations && !ApproximatelyZero(delta); i++)
+            for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
                 if (!DetectClosestCollision(delta, out RaycastHit2D hit))
@@ -126,7 +131,7 @@ namespace PQ.Common.Physics.Internal
                 }
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                if (Vector2.Angle(Vector2.up, hit.normal) > _maxAscendableSlopeAngle)
+                if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
