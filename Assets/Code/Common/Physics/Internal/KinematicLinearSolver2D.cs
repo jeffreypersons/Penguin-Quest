@@ -171,7 +171,7 @@ namespace PQ.Common.Physics.Internal
         {
             // todo: add skin width support
             Vector2 overlapAmount = Vector2.positiveInfinity;
-            for (int i = 0; i < _body.OverlapTolerance && !ApproximatelyZero(overlapAmount); i++)
+            for (int i = 0; i < _params.MaxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
             {
                 if (_body.ComputeOverlap(hit.collider, out overlapAmount))
                 {
