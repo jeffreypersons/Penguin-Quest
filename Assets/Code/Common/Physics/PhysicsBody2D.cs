@@ -84,7 +84,6 @@ namespace PQ.Common.Physics
         private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
         #endif
 
-        private bool _initialized;
         private KinematicLinearSolver2D.Params _solverParams;
         private KinematicRigidbody2D    _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
