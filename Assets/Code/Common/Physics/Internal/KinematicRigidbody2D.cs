@@ -20,8 +20,8 @@ namespace PQ.Common.Physics.Internal
         private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
 
-        private float _bounciness = 0f;
-        private float _friction = 0f;
+        private float _bounciness   = 0.00f;
+        private float _friction     = 0.00f;
         private float _gravityScale = 1.00f;
         private const int DefaultHitBufferSize = 16;
 
@@ -49,14 +49,13 @@ namespace PQ.Common.Physics.Internal
         public Vector2 Extents  => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth    => _rigidbody.transform.position.z;
 
-        public Vector2 LocalOffset => _boxCollider.offset;
-
         public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
         public float Bounciness => _bounciness;
         public float Friction   => _friction;
 
         public LayerMask LayerMask => _contactFilter.layerMask;
         public float OverlapTolerance => _boxCollider.edgeRadius;
+        public Vector2 LocalBoundsOffset => _boxCollider.offset;
 
 
         public KinematicRigidbody2D(Transform transform)
@@ -90,14 +89,15 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
+
         public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
         {
             if (_boxCollider.offset != offset ||
                 _boxCollider.size   != size   ||
                 !Mathf.Approximately(_boxCollider.edgeRadius, outerEdgeRadius))
             {
-                _boxCollider.offset = offset;
-                _boxCollider.size = size;
+                _boxCollider.offset      = offset;
+                _boxCollider.size       = size;
                 _boxCollider.edgeRadius = outerEdgeRadius;
             }
         }

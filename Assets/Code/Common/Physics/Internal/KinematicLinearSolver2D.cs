@@ -17,9 +17,9 @@ namespace PQ.Common.Physics.Internal
         // todo: replace with struct and store as `ref readonly struct` when we finally get C#11
         public record Params
         {
-            public int       MaxMoveIterations    { get; set; }
-            public int       MaxOverlapIterations { get; set; }
-            public float     MaxSlopeAngle        { get; set; }
+            public int   MaxMoveIterations    { get; set; }
+            public int   MaxOverlapIterations { get; set; }
+            public float MaxSlopeAngle        { get; set; }
         }
 
         private Params _params;
