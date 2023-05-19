@@ -22,10 +22,10 @@ namespace PQ.Common.Physics.Internal
             public float     MaxSlopeAngle        { get; set; }
         }
 
+        private Params _params;
         private KinematicRigidbody2D _body;
         private CollisionFlags2D _collisions;
         
-        private Params _params;
 
         public override string ToString() =>
             $"{GetType()}, " +

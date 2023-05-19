@@ -84,6 +84,8 @@ namespace PQ.Common.Physics
         private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
         #endif
 
+        private bool _initialized;
+        private KinematicLinearSolver2D.Params _solverParams;
         private KinematicRigidbody2D    _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         
@@ -118,17 +120,32 @@ namespace PQ.Common.Physics
             $"}}";
 
 
-        void Awake()
+        private void Initialize(bool force)
         {
-            _kinematicBody   = new KinematicRigidbody2D(transform);
-            _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody, new KinematicLinearSolver2D.Params
+            if (force || _kinematicBody == null || !_kinematicBody.IsAttachedTo(_transform))
             {
-                MaxMoveIterations = _maxSolverMoveIterations,
-                MaxOverlapIterations = _maxSolverOverlapIterations,
-                MaxSlopeAngle = _maxAscendableSlopeAngle
-            });
+                _solverParams    = new();
+                _kinematicBody   = new KinematicRigidbody2D(_transform);
+                _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody, in _solverParams);
+            }
+        }
+
+        private void SyncProperties()
+        {
+            _solverParams.MaxMoveIterations    = _maxSolverMoveIterations;
+            _solverParams.MaxOverlapIterations = _maxSolverOverlapIterations;
+            _solverParams.MaxSlopeAngle        = _maxAscendableSlopeAngle;
 
             SetLayerMask(_layerMask);
+            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
+            _kinematicBody.ResizeHitBuffer(_preallocatedHitBufferSize);
+        }
+
+
+        void Awake()
+        {
+            Initialize(force: true);
+            SyncProperties();
         }
         
         /* Set world transform to given point, ignoring physics. */
@@ -174,27 +191,26 @@ namespace PQ.Common.Physics
         * Positions are relative to rigidbody position (eg anchor point at bottom center of sprite)
         * Size of box must be non zero and larger than twice our tolerance (ie amount of tolerance must be < 100%)
         */
-        public void SetAABBMinMax(Vector2 locaMin, Vector2 localMax, float overlapTolerance)
+        public void SetAABBMinMax(Vector2 localMin, Vector2 localMax, float overlapTolerance)
         {
-            Vector2 localCenter = Vector2.LerpUnclamped(locaMin, localMax, 0.50f);
+            Vector2 localCenter = Vector2.LerpUnclamped(localMin, localMax, 0.50f);
             Vector2 localExtents = new Vector2(
-                x: 0.50f * (localMax.x - locaMin.x),
-                y: 0.50f * (localMax.y - locaMin.y)
+                x: 0.50f * (localMax.x - localMin.x),
+                y: 0.50f * (localMax.y - localMin.y)
             );
             if (overlapTolerance < 0f || localExtents.x <= 0 || localExtents.y <= 0)
             {
                 throw new ArgumentException(
                     $"Invalid bounds - expected 0 <= overlapTolerance < extents={localExtents}, " +
-                    $"received from={locaMin} to={localMax} overlapTolerance={overlapTolerance}");
+                    $"received from={localMin} to={localMax} overlapTolerance={overlapTolerance}");
             }
 
             _kinematicBody.SetLocalBounds(localCenter, 2f * localExtents, overlapTolerance);
             _overlapTolerance = overlapTolerance;
-            _AABBCornerMin    = locaMin;
+            _AABBCornerMin    = localMin;
             _AABBCornerMax    = localMax;
         }
-
-
+        
         #if UNITY_EDITOR
         void OnValidate()
         {
@@ -206,32 +222,8 @@ namespace PQ.Common.Physics
                 return;
             }
 
-            // if accessed before awake (eg in the editor when not playing), only initialize if transform reference changed
-            if (_kinematicBody == null || !_kinematicBody.IsAttachedTo(_transform))
-            {
-                var SolverParams = new KinematicLinearSolver2D.Params
-                {
-                    MaxMoveIterations    = _maxSolverMoveIterations,
-                    MaxOverlapIterations = _maxSolverOverlapIterations,
-                    MaxSlopeAngle        = _maxAscendableSlopeAngle
-                };
-                _kinematicBody   = new KinematicRigidbody2D(_transform);
-                _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody, SolverParams);
-            }
-
-            // if corners changed in editor, they take precedence over any manual changes to collider bounds
-            if (!Mathf.Approximately(_overlapTolerance, _kinematicBody.OverlapTolerance))
-            {
-                SetAABBMinMax(_kinematicBody.Center - _kinematicBody.Extents, _kinematicBody.Center + _kinematicBody.Extents, _overlapTolerance);
-            }
-
-            // update runtime data if inspector changed while game playing in editor
-
-            if (Application.IsPlaying(this))
-            {
-                SetLayerMask(_layerMask);
-                _kinematicBody.ResizeHitBuffer(_preallocatedHitBufferSize);
-            }
+            Initialize(force: true);
+            SyncProperties();
         }
 
 

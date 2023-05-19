@@ -49,6 +49,8 @@ namespace PQ.Common.Physics.Internal
         public Vector2 Extents  => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth    => _rigidbody.transform.position.z;
 
+        public Vector2 LocalOffset => _boxCollider.offset;
+
         public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
         public float Bounciness => _bounciness;
         public float Friction   => _friction;
@@ -87,13 +89,17 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
-        
 
         public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
         {
-            _boxCollider.offset     = offset;
-            _boxCollider.size       = size;
-            _boxCollider.edgeRadius = outerEdgeRadius;
+            if (_boxCollider.offset != offset ||
+                _boxCollider.size   != size   ||
+                !Mathf.Approximately(_boxCollider.edgeRadius, outerEdgeRadius))
+            {
+                _boxCollider.offset = offset;
+                _boxCollider.size = size;
+                _boxCollider.edgeRadius = outerEdgeRadius;
+            }
         }
         
         /* Given amount between 0 and 1, set rotation about y axis, and rotation about x axis. Note we never allow z rotation. */
