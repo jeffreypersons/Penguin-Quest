@@ -37,7 +37,7 @@ Transform:
   m_Children:
   - {fileID: 6942077982957359458}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &3285427051894065791
 Rigidbody2D:
@@ -127,8 +127,8 @@ MonoBehaviour:
   _layerMask:
     serializedVersion: 2
     m_Bits: 4096
-  _AABBCornerMin: {x: -1, y: -1}
-  _AABBCornerMax: {x: 1, y: 1}
+  _AABBCornerMin: {x: -0.25, y: 0}
+  _AABBCornerMax: {x: 0.25, y: 1.15}
   _overlapTolerance: 0.04
   _maxAscendableSlopeAngle: 90
   _collisionBounciness: 0
