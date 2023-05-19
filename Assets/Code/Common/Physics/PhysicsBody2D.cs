@@ -221,7 +221,7 @@ namespace PQ.Common.Physics
                 return;
             }
 
-            Initialize(force: true);
+            Initialize(force: false);
             SyncProperties();
         }
 
