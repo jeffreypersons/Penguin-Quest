@@ -49,9 +49,8 @@ namespace PQ.Game.Entities.Penguin
                 y: _grounded ? 0 : Blob.PhysicsBody.Gravity
             );
 
-            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
-
             Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         protected override void OnUpdate()
