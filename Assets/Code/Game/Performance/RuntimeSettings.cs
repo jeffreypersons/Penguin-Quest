@@ -19,7 +19,7 @@ namespace PQ.Game.Peformance
         [Header("Timing")]
 
         [Tooltip("What time scale to use (note useful to scale down when debugging movement)?")]
-        [Range(0, 10)][SerializeField] public float timeScale = 1.00f;
+        [Range(0.10f, 5f)][SerializeField] public float timeScale = 1.00f;
 
 
         [Header("Frame Rates")]
