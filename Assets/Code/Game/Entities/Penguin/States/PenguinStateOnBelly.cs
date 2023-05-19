@@ -49,9 +49,8 @@ namespace PQ.Game.Entities.Penguin
                 y: _grounded ? 0 : Blob.PhysicsBody.Gravity
             );
 
-            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
-
             Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         protected override void OnUpdate()
@@ -63,7 +62,7 @@ namespace PQ.Game.Entities.Penguin
         {
             // todo: after setting bounds, do overlap resolution before ground check
             // todo: look into putting all this into the physics body class, as it's something we want to do nearly everytime bounds are changed
-            Blob.PhysicsBody.SetBounds(Blob.Config.boundsMinUpright, Blob.Config.boundsMaxUpright, Blob.Config.overlapToleranceUpright);
+            Blob.PhysicsBody.SetAABBMinMax(Blob.Config.boundsMinUpright, Blob.Config.boundsMaxUpright, Blob.Config.overlapToleranceUpright);
             _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
