@@ -17,6 +17,7 @@ namespace PQ.Common.Physics
     * Corresponding game object is fixed in rotation to enforce alignment with global up
     * Caching is done only for cast results, position caching is intentionally left to any calling code
     */
+    [ExecuteAlways]
     [AddComponentMenu("PhysicsBody2D")]
     public sealed class PhysicsBody2D : MonoBehaviour
     {
@@ -233,12 +234,12 @@ namespace PQ.Common.Physics
             if (IsEnabled(EditorVisuals.Positions))
             {
                 GizmoExtensions.DrawSphere(_kinematicBody.Position, 0.02f, Color.blue);
-                GizmoExtensions.DrawSphere(_kinematicBody.Center, 0.02f, Color.black);
+                GizmoExtensions.DrawSphere(_kinematicBody.Center,   0.02f, Color.black);
             }
             if (IsEnabled(EditorVisuals.Axes))
             {
-                Vector2 frontCenter = _kinematicBody.Center + (_kinematicBody.Extents.x + buffer.x) * _kinematicBody.Forward;
-                Vector2 topCenter   = _kinematicBody.Center + (_kinematicBody.Extents.y + buffer.y) * _kinematicBody.Up;
+                Vector2 frontCenter = _kinematicBody.Center + (_kinematicBody.Extents.x) * _kinematicBody.Forward;
+                Vector2 topCenter   = _kinematicBody.Center + (_kinematicBody.Extents.y) * _kinematicBody.Up;
                 GizmoExtensions.DrawArrow(_kinematicBody.Center, frontCenter, Color.red);
                 GizmoExtensions.DrawArrow(_kinematicBody.Center, topCenter,   Color.green);
                 GizmoExtensions.DrawLine(frontCenter - buffer.x * _kinematicBody.Forward, frontCenter, Color.black);

@@ -14,6 +14,7 @@ namespace PQ.Game.Peformance
     */
     public class RuntimeAdapter : MonoBehaviour
     {
+        private float _initialTimeScale;
         [SerializeField] private RuntimeSettings _settings;
 
         private int   VSyncCount      { get => QualitySettings.vSyncCount;        set => QualitySettings.vSyncCount  = value;    }
@@ -35,11 +36,18 @@ namespace PQ.Game.Peformance
 
         void Awake()
         {
+            _initialTimeScale = TimeScale;
             _settings.OnChanged = UpdateCurrentSettings;
 
             UpdateCurrentSettings();
             Debug.Log($"Starting up {this}");
         }
+        
+        void OnDestroy()
+        {
+            TimeScale = _initialTimeScale;
+        }
+
 
         private void UpdateCurrentSettings()
         {
@@ -61,7 +69,10 @@ namespace PQ.Game.Peformance
                 TargetFrameRate = targetFps;
             }
 
-            TimeScale = _settings.timeScale;
+            if (Application.IsPlaying(this))
+            {
+                TimeScale = _settings.timeScale;
+            }
         }
     }
 }

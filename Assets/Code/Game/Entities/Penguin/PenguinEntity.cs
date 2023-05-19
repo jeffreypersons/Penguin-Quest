@@ -3,6 +3,7 @@ using UnityEngine;
 using PQ.Common.Fsm;
 using PQ.Common.Physics;
 using PQ.Common.Extensions;
+using UnityEditor;
 
 
 namespace PQ.Game.Entities.Penguin
@@ -49,11 +50,40 @@ namespace PQ.Game.Entities.Penguin
             }
         }
 
+        void OnValidate()
+        {
+            _config.OnChanged.AddHandler(AdjustBoundsToMatchConfig);
+        }
+
+        void OnDestroy()
+        {
+            _config.OnChanged.RemoveHandler(AdjustBoundsToMatchConfig);
+        }
+
+
         void OnDrawGizmos()
         {
             if (UnityEditor.EditorApplication.isPlaying)
             {
                 GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 0.025f, Color.white);
+            }
+        }
+
+
+        private void AdjustBoundsToMatchConfig()
+        {
+            // avoid updating with inspector if loading the original prefab from disk (which occurs before loading the instance)
+            // otherwise the default inspector values are used. By skipping persistent objects, we effectively only update when values are
+            // changed in the inspector
+            if (EditorUtility.IsPersistent(this))
+            {
+                return;
+            }
+
+            // todo: add option to switch between prone and upright default poses, and set bounds accordingly
+            if (!UnityEditor.EditorApplication.isPlaying)
+            {
+                _physicsBody.SetAABBMinMax(_config.boundsMinUpright, _config.boundsMaxUpright, _config.overlapToleranceUpright);
             }
         }
         #endif
