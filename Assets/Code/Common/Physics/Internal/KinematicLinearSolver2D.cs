@@ -67,7 +67,7 @@ namespace PQ.Common.Physics.Internal
          */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
+            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
             if (ApproximatelyZero(deltaPosition))
             {
                 return;
@@ -82,7 +82,7 @@ namespace PQ.Common.Physics.Internal
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
+            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
 
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
@@ -170,12 +170,15 @@ namespace PQ.Common.Physics.Internal
         private void SnapToTouching(RaycastHit2D hit)
         {
             // todo: add skin width support, and 'snap' if in radius
-            Vector2 overlapAmount = Vector2.positiveInfinity;
-            for (int i = 0; i < _params.MaxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
+            for (int i = 0; i < _params.MaxOverlapIterations; i++)
             {
                 ColliderDistance2D separation = _body.ComputeMinimumSeparation(hit.collider);
                 Debug.Log($"isOverlapped={separation.isOverlapped} distance={separation.distance} normal={separation.normal}");
-                _body.MoveBy(separation.distance * separation.normal);
+
+                if (Mathf.Abs(separation.distance) > _body.SkinWidth)
+                {
+                    _body.MoveBy(separation.distance * separation.normal);
+                }
             }
         }
 

@@ -35,7 +35,7 @@ namespace PQ.Common.Physics.Internal
                 $"Up:{Up}," +
                 $"AABB:bounds(center:{Center},extents:{Extents})," +
                 $"Gravity:{GravityScale}," +
-                $"OverlapTolerance:{OverlapTolerance}," +
+                $"SkinWidth:{SkinWidth}," +
                 $"Friction:{Friction}," +
                 $"LayerMask:{LayerMask}," +
             $"}}";
@@ -54,7 +54,7 @@ namespace PQ.Common.Physics.Internal
         public float GravityScale => _gravityScale;
 
         public LayerMask LayerMask => _contactFilter.layerMask;
-        public float OverlapTolerance => _boxCollider.edgeRadius;
+        public float SkinWidth => _boxCollider.edgeRadius;
         public Vector2 LocalBoundsOffset => _boxCollider.offset;
 
         #if UNITY_EDITOR

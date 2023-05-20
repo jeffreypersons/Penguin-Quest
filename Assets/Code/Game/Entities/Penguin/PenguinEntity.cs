@@ -83,7 +83,7 @@ namespace PQ.Game.Entities.Penguin
             // todo: add option to switch between prone and upright default poses, and set bounds accordingly
             if (!EditorApplication.isPlaying)
             {
-                _physicsBody.SetAABBMinMax(_config.boundsMinUpright, _config.boundsMaxUpright, _config.overlapToleranceUpright);
+                _physicsBody.SetAABBMinMax(_config.boundsMinUpright, _config.boundsMaxUpright, _config.skinWidthUpright);
             }
         }
         #endif
