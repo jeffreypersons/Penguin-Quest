@@ -57,10 +57,8 @@ namespace PQ.Common.Physics.Internal
         public float OverlapTolerance => _boxCollider.edgeRadius;
         public Vector2 LocalBoundsOffset => _boxCollider.offset;
 
-
         #if UNITY_EDITOR
         public bool DrawCastsInEditor { get; set; } = true;
-        public bool DrawMovesInEditor { get; set; } = true;
         #endif
 
         public KinematicRigidbody2D(Transform transform)

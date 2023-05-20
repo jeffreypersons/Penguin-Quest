@@ -68,23 +68,6 @@ namespace PQ.Common.Physics
         [SerializeField][Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         
-        #if UNITY_EDITOR
-        [Flags]
-        public enum EditorVisuals
-        {
-            None      = 0,
-            Axes      = 1 << 1,
-            Positions = 1 << 2,
-            Casts     = 1 << 3,
-            Moves     = 1 << 4,
-            All       = ~0,
-        }
-
-        [Tooltip("Settings for easily toggling debug visuals in one place from the inspector")]
-        [SerializeField] private EditorVisuals _editorVisuals = EditorVisuals.All;
-        private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
-        #endif
-
         private KinematicLinearSolver2D.Params _solverParams;
         private KinematicRigidbody2D    _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
@@ -118,6 +101,24 @@ namespace PQ.Common.Physics
                 $"MaxSolverOverlapIterations:{_maxSolverOverlapIterations}," +
                 $"PreallocatedHitBufferSize:{_preallocatedHitBufferSize}" +
             $"}}";
+        
+        
+        #if UNITY_EDITOR
+        [Flags]
+        public enum EditorVisuals
+        {
+            None      = 0,
+            Axes      = 1 << 1,
+            Positions = 1 << 2,
+            Casts     = 1 << 3,
+            Moves     = 1 << 4,
+            All       = ~0,
+        }
+
+        [Tooltip("Settings for easily toggling debug visuals in one place from the inspector")]
+        [SerializeField] private EditorVisuals _editorVisuals = EditorVisuals.All;
+        private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
+        #endif
 
 
         private void Initialize(bool force)
@@ -143,7 +144,6 @@ namespace PQ.Common.Physics
 
             #if UNITY_EDITOR
             _solverParams.VisualizePath      = IsEnabled(EditorVisuals.Moves);
-            _kinematicBody.DrawMovesInEditor = IsEnabled(EditorVisuals.Moves);
             _kinematicBody.DrawCastsInEditor = IsEnabled(EditorVisuals.Casts);
             #endif
         }

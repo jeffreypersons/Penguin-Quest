@@ -26,13 +26,7 @@ namespace PQ.Common.Physics.Internal
         private Params _params;
         private KinematicRigidbody2D _body;
         private CollisionFlags2D _collisions;
-        
-
-        public override string ToString() =>
-            $"{GetType()}, " +
-                $"Params: {_params}" +
-            $")";
-        
+                
 
         [Pure]
         private static bool ApproximatelyZero(Vector2 delta)
@@ -42,6 +36,11 @@ namespace PQ.Common.Physics.Internal
             // Specifically, Vector2 equality check handles this far better than comparing squares of magnitude/Mathf.Epsilon.
             return delta == Vector2.zero;
         }
+        
+        public override string ToString() =>
+            $"{GetType()}, " +
+                $"Params: {_params}" +
+            $")";
 
         public KinematicLinearSolver2D(KinematicRigidbody2D body, in Params solverParams)
         {
