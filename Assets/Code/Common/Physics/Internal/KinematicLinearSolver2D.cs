@@ -20,6 +20,7 @@ namespace PQ.Common.Physics.Internal
             public int   MaxMoveIterations    { get; set; }
             public int   MaxOverlapIterations { get; set; }
             public float MaxSlopeAngle        { get; set; }
+            public bool  VisualizePath        { get; set; }
         }
 
         private Params _params;

@@ -73,10 +73,10 @@ namespace PQ.Common.Physics
         public enum EditorVisuals
         {
             None      = 0,
-            Casts     = 1 << 1,
-            Moves     = 1 << 2,
-            Axes      = 1 << 3,
-            Positions = 1 << 4,
+            Axes      = 1 << 1,
+            Positions = 1 << 2,
+            Casts     = 1 << 3,
+            Moves     = 1 << 4,
             All       = ~0,
         }
 
@@ -135,6 +135,7 @@ namespace PQ.Common.Physics
             _solverParams.MaxMoveIterations    = _maxSolverMoveIterations;
             _solverParams.MaxOverlapIterations = _maxSolverOverlapIterations;
             _solverParams.MaxSlopeAngle        = _maxAscendableSlopeAngle;
+            _solverParams.VisualizePath        = IsEnabled(EditorVisuals.Moves);
 
             SetLayerMask(_layerMask);
             SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
