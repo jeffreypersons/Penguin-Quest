@@ -34,7 +34,7 @@ namespace PQ.Common.Physics.Internal
                 $"Forward:{Forward}," +
                 $"Up:{Up}," +
                 $"AABB:bounds(center:{Center},extents:{Extents})," +
-                $"Gravity:{Gravity}," +
+                $"Gravity:{GravityScale}," +
                 $"OverlapTolerance:{OverlapTolerance}," +
                 $"Friction:{Friction}," +
                 $"LayerMask:{LayerMask}," +
@@ -48,10 +48,10 @@ namespace PQ.Common.Physics.Internal
         public Vector2 Up       => _rigidbody.transform.up.normalized;
         public Vector2 Extents  => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth    => _rigidbody.transform.position.z;
-
-        public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
-        public float Bounciness => _bounciness;
-        public float Friction   => _friction;
+                
+        public float Friction     => _friction;
+        public float Bounciness   => _bounciness;
+        public float GravityScale => _gravityScale;
 
         public LayerMask LayerMask => _contactFilter.layerMask;
         public float OverlapTolerance => _boxCollider.edgeRadius;
@@ -96,12 +96,12 @@ namespace PQ.Common.Physics.Internal
                 _boxCollider.size   != size   ||
                 !Mathf.Approximately(_boxCollider.edgeRadius, outerEdgeRadius))
             {
-                _boxCollider.offset      = offset;
+                _boxCollider.offset     = offset;
                 _boxCollider.size       = size;
                 _boxCollider.edgeRadius = outerEdgeRadius;
             }
         }
-        
+
         /* Given amount between 0 and 1, set rotation about y axis, and rotation about x axis. Note we never allow z rotation. */
         public void SetFlippedAmount(float horizontalRatio, float verticalRatio)
         {
@@ -112,7 +112,14 @@ namespace PQ.Common.Physics.Internal
                 z: 0f);
             _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
-        
+
+        public void SetPhysicalProperties(float friction, float bounciness, float gravityScale)
+        {
+            _friction     = friction;
+            _bounciness   = bounciness;
+            _gravityScale = gravityScale;
+        }
+
         public void SetLayerMask(LayerMask layerMask) => _contactFilter.SetLayerMask(layerMask);
         public void ResizeHitBuffer(int length)       => Array.Resize(ref _hitBuffer, length);
         public bool IsAttachedTo(Transform transform) => ReferenceEquals(_transform, transform);

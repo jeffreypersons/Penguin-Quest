@@ -46,11 +46,11 @@ namespace PQ.Common.Physics
 
         [Header("Physical Properties")]
 
-        [Tooltip("Scalar for reflection along the normal (bounciness is from 0 (no bounciness) to 1 (completely reflected))")]
-        [SerializeField] [Range(0, 1)] private float _collisionBounciness = 0f;
-
         [Tooltip("Scalar for reflection along the tangent (friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance))")]
         [SerializeField] [Range(-1, 1)] private float _collisionFriction = 0f;
+
+        [Tooltip("Scalar for reflection along the normal (bounciness is from 0 (no bounciness) to 1 (completely reflected))")]
+        [SerializeField][Range(0, 1)] private float _collisionBounciness = 0f;
 
         [Tooltip("Multiplier for 2D gravity")]
         [SerializeField] [Range(0, 10)] private float _gravityScale = 1.00f;
@@ -96,9 +96,9 @@ namespace PQ.Common.Physics
         public Vector2 Extents  => _kinematicBody.Extents;
         public float   Depth    => _kinematicBody.Depth;
 
-        public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
-        public float Bounciness => _kinematicBody.Bounciness;
+        public float Gravity    => _kinematicBody.GravityScale * -Mathf.Abs(Physics2D.gravity.y);
         public float Friction   => _kinematicBody.Friction;
+        public float Bounciness => _kinematicBody.Bounciness;
 
         public LayerMask LayerMask => _kinematicBody.LayerMask;
         public float OverlapTolerance => _kinematicBody.OverlapTolerance;
@@ -140,6 +140,7 @@ namespace PQ.Common.Physics
             SetLayerMask(_layerMask);
             SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
             _kinematicBody.ResizeHitBuffer(_preallocatedHitBufferSize);
+            _kinematicBody.SetPhysicalProperties(_collisionFriction, _collisionBounciness, _gravityScale);
         }
 
 
