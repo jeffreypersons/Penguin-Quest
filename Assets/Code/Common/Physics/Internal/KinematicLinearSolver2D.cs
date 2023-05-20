@@ -113,7 +113,7 @@ namespace PQ.Common.Physics.Internal
                     _body.MoveBy(collisionResponse);
                 }
 
-                PushOutIfOverlap(hit);
+                SnapToTouching(hit);
             }
         }
 
@@ -137,7 +137,7 @@ namespace PQ.Common.Physics.Internal
                     _body.MoveBy(collisionResponse);
                 }
 
-                PushOutIfOverlap(hit);
+                SnapToTouching(hit);
             }
         }
 
@@ -167,16 +167,15 @@ namespace PQ.Common.Physics.Internal
             return true;
         }
 
-        private void PushOutIfOverlap(RaycastHit2D hit)
+        private void SnapToTouching(RaycastHit2D hit)
         {
-            // todo: add skin width support
+            // todo: add skin width support, and 'snap' if in radius
             Vector2 overlapAmount = Vector2.positiveInfinity;
             for (int i = 0; i < _params.MaxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
             {
-                if (_body.ComputeOverlap(hit.collider, out overlapAmount))
-                {
-                    _body.MoveBy(overlapAmount);
-                }
+                ColliderDistance2D separation = _body.ComputeMinimumSeparation(hit.collider);
+                Debug.Log($"isOverlapped={separation.isOverlapped} distance={separation.distance} normal={separation.normal}");
+                _body.MoveBy(separation.distance * separation.normal);
             }
         }
 

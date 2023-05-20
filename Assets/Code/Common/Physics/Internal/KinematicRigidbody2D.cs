@@ -247,25 +247,14 @@ namespace PQ.Common.Physics.Internal
         Uses separating axis theorem to determine overlap - may require more invocations for
         complex polygons.
         */
-        public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
+        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
         {
-            if (collider == null)
-            {
-                amount = Vector2.zero;
-                return false;
-            }
-
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-
-            Debug.Log(minimumSeparation.distance);
-            if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
+            if (collider == !minimumSeparation.isValid)
             {
-                amount = Vector2.zero;
-                return false;
+                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
             }
-
-            amount = minimumSeparation.distance * minimumSeparation.normal;
-            return true;
+            return minimumSeparation;
         }
     }
 }
