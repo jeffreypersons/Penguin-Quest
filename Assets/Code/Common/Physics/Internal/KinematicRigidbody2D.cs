@@ -58,6 +58,11 @@ namespace PQ.Common.Physics.Internal
         public Vector2 LocalBoundsOffset => _boxCollider.offset;
 
 
+        #if UNITY_EDITOR
+        public bool DrawCastsInEditor { get; set; } = true;
+        public bool DrawMovesInEditor { get; set; } = true;
+        #endif
+
         public KinematicRigidbody2D(Transform transform)
         {
             if (transform == null)
@@ -168,6 +173,22 @@ namespace PQ.Common.Physics.Internal
 
             int hitCount = Physics2D.BoxCast(center, size, 0, direction, _contactFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
+            
+            #if UNITY_EDITOR
+            if (DrawCastsInEditor)
+            {
+                float duration = Time.fixedDeltaTime;
+                foreach (RaycastHit2D hit in hits)
+                {
+                    Vector2 edgePoint = hit.point - (hit.distance * direction);
+                    Vector2 hitPoint  = hit.point;
+                    Vector2 endPoint  = hit.point + (distance * direction);
+                    
+                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
+                }
+            }
+            #endif
             return !hits.IsEmpty;
         }
         
@@ -201,6 +222,24 @@ namespace PQ.Common.Physics.Internal
             {
                 flags |= CollisionFlags2D.Below;
             }
+            
+            #if UNITY_EDITOR
+            // draw the 'scan-lines' whether we get a cast hit or not
+            if (DrawCastsInEditor)
+            {
+                Bounds bounds = _boxCollider.bounds;
+                Vector2 center    = new(bounds.center.x, bounds.center.y);
+                Vector2 skinRatio = new(1f + (extent / bounds.extents.x), 1f + (extent / bounds.extents.y));
+                Vector2 xAxis     = bounds.extents.x * right;
+                Vector2 yAxis     = bounds.extents.y * up;
+
+                float duration = Time.fixedDeltaTime;
+                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            }
+            #endif
             return flags;
         }
 

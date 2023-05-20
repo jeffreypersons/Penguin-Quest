@@ -135,12 +135,17 @@ namespace PQ.Common.Physics
             _solverParams.MaxMoveIterations    = _maxSolverMoveIterations;
             _solverParams.MaxOverlapIterations = _maxSolverOverlapIterations;
             _solverParams.MaxSlopeAngle        = _maxAscendableSlopeAngle;
-            _solverParams.VisualizePath        = IsEnabled(EditorVisuals.Moves);
 
             SetLayerMask(_layerMask);
             SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
             _kinematicBody.ResizeHitBuffer(_preallocatedHitBufferSize);
             _kinematicBody.SetPhysicalProperties(_collisionFriction, _collisionBounciness, _gravityScale);
+
+            #if UNITY_EDITOR
+            _solverParams.VisualizePath      = IsEnabled(EditorVisuals.Moves);
+            _kinematicBody.DrawMovesInEditor = IsEnabled(EditorVisuals.Moves);
+            _kinematicBody.DrawCastsInEditor = IsEnabled(EditorVisuals.Casts);
+            #endif
         }
 
 
