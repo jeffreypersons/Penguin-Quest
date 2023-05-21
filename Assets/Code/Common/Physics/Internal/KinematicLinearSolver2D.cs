@@ -187,6 +187,10 @@ namespace PQ.Common.Physics.Internal
             // if sufficiently outside the collider, then no adjustment is needed
             Vector2 initialPosition = _body.Position;
             ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
+            if (initialSeparation.distance > _body.SkinWidth)
+            {
+                return Vector2.zero;
+            }
             // otherwise, move the entire distance needed to resolve the initial overlap
             _body.MoveBy(initialSeparation.distance * initialSeparation.normal);
 
