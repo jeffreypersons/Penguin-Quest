@@ -173,6 +173,7 @@ namespace PQ.Common.Physics.Internal
         private Vector2 ComputeContactAdjustment(Collider2D collider)
         {
             // if sufficiently outside the collider, then no adjustment is needed
+            Vector2 initialPosition = _body.Position;
             ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
             if (initialSeparation.distance > _body.SkinWidth)
             {
@@ -185,14 +186,19 @@ namespace PQ.Common.Physics.Internal
             for (int i = 0; i < _params.MaxOverlapIterations; i++)
             {
                 ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
+
                 Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
                 if (ApproximatelyZero(offset))
                 {
-                    return Vector2.zero;
+                    break;
                 }
                 _body.MoveBy(offset);
             }
-            return Vector2.zero;
+
+            // now that the final position was found, return the rigidbody back to its original state
+            Vector2 finalPosition = _body.Position;
+            _body.MoveTo(initialPosition);
+            return finalPosition - initialPosition;
         }
 
         /*
