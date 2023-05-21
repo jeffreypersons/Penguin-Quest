@@ -198,16 +198,6 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
-        Compute distance from center to edge of our bounding box in given direction.
-        */
-        public float DistanceToEdge(Vector2 direction)
-        {
-            Bounds bounds = _boxCollider.bounds;
-            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
-            return distanceFromCenterToEdge;
-        }
-
-        /*
         Check for overlapping colliders within our bounding box.
         */
         public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
@@ -266,6 +256,16 @@ namespace PQ.Common.Physics.Internal
             }
             #endif
             return flags;
+        }
+        
+        /*
+        Compute distance from center to edge of our bounding box in given direction.
+        */
+        public float ComputeDistanceToEdge(Vector2 direction)
+        {
+            Bounds bounds = _boxCollider.bounds;
+            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
+            return distanceFromCenterToEdge;
         }
 
         /*
