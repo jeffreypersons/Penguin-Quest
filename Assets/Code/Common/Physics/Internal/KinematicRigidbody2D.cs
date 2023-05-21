@@ -19,6 +19,7 @@ namespace PQ.Common.Physics.Internal
         private BoxCollider2D   _boxCollider;
         private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
+        private Collider2D[]    _colliderBuffer;
 
         private float _bounciness   = 0.00f;
         private float _friction     = 0.00f;
@@ -34,8 +35,8 @@ namespace PQ.Common.Physics.Internal
                 $"Forward:{Forward}," +
                 $"Up:{Up}," +
                 $"AABB:bounds(center:{Center},extents:{Extents})," +
-                $"Gravity:{Gravity}," +
-                $"OverlapTolerance:{OverlapTolerance}," +
+                $"Gravity:{GravityScale}," +
+                $"OverlapTolerance:{SkinWidth}," +
                 $"Friction:{Friction}," +
                 $"LayerMask:{LayerMask}," +
             $"}}";
@@ -48,15 +49,18 @@ namespace PQ.Common.Physics.Internal
         public Vector2 Up       => _rigidbody.transform.up.normalized;
         public Vector2 Extents  => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth    => _rigidbody.transform.position.z;
-
-        public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
-        public float Bounciness => _bounciness;
-        public float Friction   => _friction;
+                
+        public float Friction     => _friction;
+        public float Bounciness   => _bounciness;
+        public float GravityScale => _gravityScale;
 
         public LayerMask LayerMask => _contactFilter.layerMask;
-        public float OverlapTolerance => _boxCollider.edgeRadius;
+        public float SkinWidth => _boxCollider.edgeRadius;
         public Vector2 LocalBoundsOffset => _boxCollider.offset;
 
+        #if UNITY_EDITOR
+        public bool DrawCastsInEditor { get; set; } = true;
+        #endif
 
         public KinematicRigidbody2D(Transform transform)
         {
@@ -77,11 +81,12 @@ namespace PQ.Common.Physics.Internal
                 throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(boxCollider2D)}");
             }
 
-            _transform     = rigidbody2D.transform;
-            _rigidbody     = rigidbody2D;
-            _boxCollider   = boxCollider2D;
-            _contactFilter = new ContactFilter2D();
-            _hitBuffer     = new RaycastHit2D[DefaultHitBufferSize];
+            _transform      = rigidbody2D.transform;
+            _rigidbody      = rigidbody2D;
+            _boxCollider    = boxCollider2D;
+            _contactFilter  = new ContactFilter2D();
+            _hitBuffer      = new RaycastHit2D[DefaultHitBufferSize];
+            _colliderBuffer = new Collider2D[DefaultHitBufferSize];
 
             _rigidbody.isKinematic = true;
             _rigidbody.simulated   = true;
@@ -90,18 +95,24 @@ namespace PQ.Common.Physics.Internal
         }
 
 
+        public void ResizeHitBuffer(int length)
+        {
+            Array.Resize(ref _hitBuffer,      length);
+            Array.Resize(ref _colliderBuffer, length);
+        }
+
         public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
         {
             if (_boxCollider.offset != offset ||
                 _boxCollider.size   != size   ||
                 !Mathf.Approximately(_boxCollider.edgeRadius, outerEdgeRadius))
             {
-                _boxCollider.offset      = offset;
+                _boxCollider.offset     = offset;
                 _boxCollider.size       = size;
                 _boxCollider.edgeRadius = outerEdgeRadius;
             }
         }
-        
+
         /* Given amount between 0 and 1, set rotation about y axis, and rotation about x axis. Note we never allow z rotation. */
         public void SetFlippedAmount(float horizontalRatio, float verticalRatio)
         {
@@ -112,9 +123,15 @@ namespace PQ.Common.Physics.Internal
                 z: 0f);
             _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
-        
+
+        public void SetPhysicalProperties(float friction, float bounciness, float gravityScale)
+        {
+            _friction     = friction;
+            _bounciness   = bounciness;
+            _gravityScale = gravityScale;
+        }
+
         public void SetLayerMask(LayerMask layerMask) => _contactFilter.SetLayerMask(layerMask);
-        public void ResizeHitBuffer(int length)       => Array.Resize(ref _hitBuffer, length);
         public bool IsAttachedTo(Transform transform) => ReferenceEquals(_transform, transform);
 
         public void TeleportTo(Vector2 position) => _transform.position = position;
@@ -161,9 +178,35 @@ namespace PQ.Common.Physics.Internal
 
             int hitCount = Physics2D.BoxCast(center, size, 0, direction, _contactFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
+            
+            #if UNITY_EDITOR
+            if (DrawCastsInEditor)
+            {
+                float duration = Time.fixedDeltaTime;
+                foreach (RaycastHit2D hit in hits)
+                {
+                    Vector2 edgePoint = hit.point - (hit.distance * direction);
+                    Vector2 hitPoint  = hit.point;
+                    Vector2 endPoint  = hit.point + (distance * direction);
+                    
+                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
+                }
+            }
+            #endif
             return !hits.IsEmpty;
         }
         
+        /*
+        Check for overlapping colliders within our bounding box.
+        */
+        public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
+        {
+            int colliderCount = _boxCollider.OverlapCollider(_contactFilter, _colliderBuffer);
+            colliders = _colliderBuffer.AsSpan(0, colliderCount);
+            return !colliders.IsEmpty;
+        }
+
         /*
         Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
 
@@ -194,6 +237,24 @@ namespace PQ.Common.Physics.Internal
             {
                 flags |= CollisionFlags2D.Below;
             }
+            
+            #if UNITY_EDITOR
+            // draw the 'scan-lines' whether we get a cast hit or not
+            if (DrawCastsInEditor)
+            {
+                Bounds bounds = _boxCollider.bounds;
+                Vector2 center    = new(bounds.center.x, bounds.center.y);
+                Vector2 skinRatio = new(1f + (extent / bounds.extents.x), 1f + (extent / bounds.extents.y));
+                Vector2 xAxis     = bounds.extents.x * right;
+                Vector2 yAxis     = bounds.extents.y * up;
+
+                float duration = Time.fixedDeltaTime;
+                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            }
+            #endif
             return flags;
         }
 
@@ -203,25 +264,15 @@ namespace PQ.Common.Physics.Internal
         Uses separating axis theorem to determine overlap - may require more invocations for
         complex polygons.
         */
-        public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
+        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
         {
-            if (collider == null)
-            {
-                amount = Vector2.zero;
-                return false;
-            }
-
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-
-            Debug.Log(minimumSeparation.distance);
-            if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
+            if (!minimumSeparation.isValid)
             {
-                amount = Vector2.zero;
-                return false;
+                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
             }
-
-            amount = minimumSeparation.distance * minimumSeparation.normal;
-            return true;
+            Debug.Log($"isOverlapped={minimumSeparation.isOverlapped} distance={minimumSeparation.distance} normal={minimumSeparation.normal}");
+            return minimumSeparation;
         }
     }
 }

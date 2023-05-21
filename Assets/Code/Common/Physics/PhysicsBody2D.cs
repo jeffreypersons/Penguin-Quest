@@ -38,7 +38,7 @@ namespace PQ.Common.Physics
         [SerializeField] public Vector2 _AABBCornerMax =  Vector2.one;
 
         [Tooltip("Maximum permissible overlap with other colliders")]
-        [SerializeField][Range(0, 1)] private float _overlapTolerance = 0.04f;
+        [SerializeField][Range(0, 1)] private float _skinWidth = 0.04f;
 
         [Tooltip("Max degrees allowed for climbing a slope")]
         [SerializeField][Range(0, 90)] private float _maxAscendableSlopeAngle = 90f;
@@ -46,11 +46,11 @@ namespace PQ.Common.Physics
 
         [Header("Physical Properties")]
 
-        [Tooltip("Scalar for reflection along the normal (bounciness is from 0 (no bounciness) to 1 (completely reflected))")]
-        [SerializeField] [Range(0, 1)] private float _collisionBounciness = 0f;
-
         [Tooltip("Scalar for reflection along the tangent (friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance))")]
         [SerializeField] [Range(-1, 1)] private float _collisionFriction = 0f;
+
+        [Tooltip("Scalar for reflection along the normal (bounciness is from 0 (no bounciness) to 1 (completely reflected))")]
+        [SerializeField][Range(0, 1)] private float _collisionBounciness = 0f;
 
         [Tooltip("Multiplier for 2D gravity")]
         [SerializeField] [Range(0, 10)] private float _gravityScale = 1.00f;
@@ -62,29 +62,12 @@ namespace PQ.Common.Physics
         [SerializeField][Range(0, 50)] private int _maxSolverMoveIterations = 10;
 
         [Tooltip("Cap on number of overlap resolution solves (exposed only in editor, default suffices most the time)")]
-        [SerializeField][Range(0, 50)] private int _maxSolverOverlapIterations = 2;
+        [SerializeField][Range(0, 50)] private int _maxSolverContactAdjustmentIterations = 2;
 
         [Tooltip("Size of buffer used to cache cast results (exposed only in editor, default suffices most the time)")]
         [SerializeField][Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         
-        #if UNITY_EDITOR
-        [Flags]
-        public enum EditorVisuals
-        {
-            None      = 0,
-            Casts     = 1 << 1,
-            Moves     = 1 << 2,
-            Axes      = 1 << 3,
-            Positions = 1 << 4,
-            All       = ~0,
-        }
-
-        [Tooltip("Settings for easily toggling debug visuals in one place from the inspector")]
-        [SerializeField] private EditorVisuals _editorVisuals = EditorVisuals.All;
-        private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
-        #endif
-
         private KinematicLinearSolver2D.Params _solverParams;
         private KinematicRigidbody2D    _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
@@ -96,12 +79,12 @@ namespace PQ.Common.Physics
         public Vector2 Extents  => _kinematicBody.Extents;
         public float   Depth    => _kinematicBody.Depth;
 
-        public float Gravity    => _gravityScale * -Mathf.Abs(Physics2D.gravity.y);
-        public float Bounciness => _kinematicBody.Bounciness;
+        public float Gravity    => _kinematicBody.GravityScale * -Mathf.Abs(Physics2D.gravity.y);
         public float Friction   => _kinematicBody.Friction;
+        public float Bounciness => _kinematicBody.Bounciness;
 
         public LayerMask LayerMask => _kinematicBody.LayerMask;
-        public float OverlapTolerance => _kinematicBody.OverlapTolerance;
+        public float SkinWidth => _kinematicBody.SkinWidth;
 
 
         public override string ToString() =>
@@ -110,14 +93,32 @@ namespace PQ.Common.Physics
                 $"Depth:{_kinematicBody.Depth}," +
                 $"Forward:{_kinematicBody.Forward}," +
                 $"Up:{_kinematicBody.Up}," +
-                $"OverlapTolerance:{_overlapTolerance}," +
+                $"SkinWidth:{_skinWidth}," +
                 $"Friction:{_collisionFriction}," +
                 $"Bounciness:{_collisionBounciness}," +
                 $"LayerMask:{_layerMask}," +
                 $"MaxSolverMoveIterations:{_maxSolverMoveIterations}," +
-                $"MaxSolverOverlapIterations:{_maxSolverOverlapIterations}," +
+                $"MaxSolverOverlapIterations:{_maxSolverContactAdjustmentIterations}," +
                 $"PreallocatedHitBufferSize:{_preallocatedHitBufferSize}" +
             $"}}";
+        
+        
+        #if UNITY_EDITOR
+        [Flags]
+        public enum EditorVisuals
+        {
+            None      = 0,
+            Axes      = 1 << 1,
+            Positions = 1 << 2,
+            Casts     = 1 << 3,
+            Moves     = 1 << 4,
+            All       = ~0,
+        }
+
+        [Tooltip("Settings for easily toggling debug visuals in one place from the inspector")]
+        [SerializeField] private EditorVisuals _editorVisuals = EditorVisuals.All;
+        private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
+        #endif
 
 
         private void Initialize(bool force)
@@ -133,12 +134,18 @@ namespace PQ.Common.Physics
         private void SyncProperties()
         {
             _solverParams.MaxMoveIterations    = _maxSolverMoveIterations;
-            _solverParams.MaxOverlapIterations = _maxSolverOverlapIterations;
+            _solverParams.MaxOverlapIterations = _maxSolverContactAdjustmentIterations;
             _solverParams.MaxSlopeAngle        = _maxAscendableSlopeAngle;
 
             SetLayerMask(_layerMask);
-            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _overlapTolerance);
+            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _skinWidth);
             _kinematicBody.ResizeHitBuffer(_preallocatedHitBufferSize);
+            _kinematicBody.SetPhysicalProperties(_collisionFriction, _collisionBounciness, _gravityScale);
+
+            #if UNITY_EDITOR
+            _solverParams.VisualizePath      = IsEnabled(EditorVisuals.Moves);
+            _kinematicBody.DrawCastsInEditor = IsEnabled(EditorVisuals.Casts);
+            #endif
         }
 
 
@@ -191,24 +198,24 @@ namespace PQ.Common.Physics
         * Positions are relative to rigidbody position (eg anchor point at bottom center of sprite)
         * Size of box must be non zero and larger than twice our tolerance (ie amount of tolerance must be < 100%)
         */
-        public void SetAABBMinMax(Vector2 localMin, Vector2 localMax, float overlapTolerance)
+        public void SetAABBMinMax(Vector2 localMin, Vector2 localMax, float skinWidth)
         {
             Vector2 localCenter = Vector2.LerpUnclamped(localMin, localMax, 0.50f);
             Vector2 localExtents = new Vector2(
                 x: 0.50f * (localMax.x - localMin.x),
                 y: 0.50f * (localMax.y - localMin.y)
             );
-            if (overlapTolerance < 0f || localExtents.x <= 0 || localExtents.y <= 0)
+            if (skinWidth < 0f || localExtents.x <= 0 || localExtents.y <= 0)
             {
                 throw new ArgumentException(
-                    $"Invalid bounds - expected 0 <= overlapTolerance < extents={localExtents}, " +
-                    $"received from={localMin} to={localMax} overlapTolerance={overlapTolerance}");
+                    $"Invalid bounds - expected 0 <= skinWidth < extents={localExtents}, " +
+                    $"received from={localMin} to={localMax} skinWidth={skinWidth}");
             }
 
-            _kinematicBody.SetLocalBounds(localCenter, 2f * localExtents, overlapTolerance);
-            _overlapTolerance = overlapTolerance;
-            _AABBCornerMin    = localMin;
-            _AABBCornerMax    = localMax;
+            _kinematicBody.SetLocalBounds(localCenter, 2f * localExtents, skinWidth);
+            _skinWidth     = skinWidth;
+            _AABBCornerMin = localMin;
+            _AABBCornerMax = localMax;
         }
         
         #if UNITY_EDITOR
@@ -229,7 +236,7 @@ namespace PQ.Common.Physics
 
         void OnDrawGizmos()
         {
-            Vector2 buffer = new Vector2(_overlapTolerance, _overlapTolerance);
+            Vector2 buffer = new Vector2(_skinWidth, _skinWidth);
 
             if (IsEnabled(EditorVisuals.Positions))
             {

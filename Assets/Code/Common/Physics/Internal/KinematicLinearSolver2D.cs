@@ -20,18 +20,13 @@ namespace PQ.Common.Physics.Internal
             public int   MaxMoveIterations    { get; set; }
             public int   MaxOverlapIterations { get; set; }
             public float MaxSlopeAngle        { get; set; }
+            public bool  VisualizePath        { get; set; }
         }
 
         private Params _params;
         private KinematicRigidbody2D _body;
         private CollisionFlags2D _collisions;
-        
-
-        public override string ToString() =>
-            $"{GetType()}, " +
-                $"Params: {_params}" +
-            $")";
-        
+                
 
         [Pure]
         private static bool ApproximatelyZero(Vector2 delta)
@@ -41,6 +36,11 @@ namespace PQ.Common.Physics.Internal
             // Specifically, Vector2 equality check handles this far better than comparing squares of magnitude/Mathf.Epsilon.
             return delta == Vector2.zero;
         }
+        
+        public override string ToString() =>
+            $"{GetType()}, " +
+                $"Params: {_params}" +
+            $")";
 
         public KinematicLinearSolver2D(KinematicRigidbody2D body, in Params solverParams)
         {
@@ -67,7 +67,8 @@ namespace PQ.Common.Physics.Internal
          */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
+            ResolveOverlaps();
+            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
             if (ApproximatelyZero(deltaPosition))
             {
                 return;
@@ -82,7 +83,7 @@ namespace PQ.Common.Physics.Internal
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckForOverlappingContacts(_body.OverlapTolerance);
+            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
 
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
@@ -92,6 +93,17 @@ namespace PQ.Common.Physics.Internal
             return (_collisions & flags) == flags;
         }
 
+        private void ResolveOverlaps()
+        {
+            for (int i = 0; i < _params.MaxOverlapIterations; i++)
+            {
+                _body.CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders);
+                for (int k = 0; k < colliders.Length; k++)
+                {
+                    _body.MoveBy(ComputeContactAdjustment(colliders[k]));
+                }
+            }
+        }
 
         private void MoveHorizontal(Vector2 initialDelta)
         {
@@ -113,7 +125,7 @@ namespace PQ.Common.Physics.Internal
                     _body.MoveBy(collisionResponse);
                 }
 
-                PushOutIfOverlap(hit);
+                _body.MoveBy(ComputeContactAdjustment(hit.collider));
             }
         }
 
@@ -137,7 +149,7 @@ namespace PQ.Common.Physics.Internal
                     _body.MoveBy(collisionResponse);
                 }
 
-                PushOutIfOverlap(hit);
+                _body.MoveBy(ComputeContactAdjustment(hit.collider));
             }
         }
 
@@ -167,17 +179,34 @@ namespace PQ.Common.Physics.Internal
             return true;
         }
 
-        private void PushOutIfOverlap(RaycastHit2D hit)
+        /*
+        Compute the inverse of the minimum separation between given collider and body.
+        */
+        private Vector2 ComputeContactAdjustment(Collider2D collider)
         {
-            // todo: add skin width support
-            Vector2 overlapAmount = Vector2.positiveInfinity;
-            for (int i = 0; i < _params.MaxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
+            // if sufficiently outside the collider, then no adjustment is needed
+            Vector2 initialPosition = _body.Position;
+            ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
+            // otherwise, move the entire distance needed to resolve the initial overlap
+            _body.MoveBy(initialSeparation.distance * initialSeparation.normal);
+
+            // in the case of a convex collider, we may need additional small adjustments to find a non-overlapping spot
+            for (int i = 0; i < _params.MaxOverlapIterations; i++)
             {
-                if (_body.ComputeOverlap(hit.collider, out overlapAmount))
+                ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
+
+                Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
+                if (ApproximatelyZero(offset))
                 {
-                    _body.MoveBy(overlapAmount);
+                    break;
                 }
+                _body.MoveBy(offset);
             }
+
+            // now that the final position was found, return the rigidbody back to its original state
+            Vector2 finalPosition = _body.Position;
+            _body.MoveTo(initialPosition);
+            return finalPosition - initialPosition;
         }
 
         /*

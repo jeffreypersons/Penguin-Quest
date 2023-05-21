@@ -44,7 +44,7 @@ namespace PQ.Game.Entities.Penguin
         #if UNITY_EDITOR
         void Start()
         {
-            if (UnityEditor.EditorApplication.isPlaying && EventBus == null)
+            if (EditorApplication.isPlaying && EventBus == null)
             {
                 throw new NullReferenceException("Event bus of penguin blob is disconnected - expected assignment prior to start");
             }
@@ -63,7 +63,7 @@ namespace PQ.Game.Entities.Penguin
 
         void OnDrawGizmos()
         {
-            if (UnityEditor.EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying)
             {
                 GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 0.025f, Color.white);
             }
@@ -81,9 +81,9 @@ namespace PQ.Game.Entities.Penguin
             }
 
             // todo: add option to switch between prone and upright default poses, and set bounds accordingly
-            if (!UnityEditor.EditorApplication.isPlaying)
+            if (!EditorApplication.isPlaying)
             {
-                _physicsBody.SetAABBMinMax(_config.boundsMinUpright, _config.boundsMaxUpright, _config.overlapToleranceUpright);
+                _physicsBody.SetAABBMinMax(_config.boundsMinUpright, _config.boundsMaxUpright, _config.skinWidthUpright);
             }
         }
         #endif
