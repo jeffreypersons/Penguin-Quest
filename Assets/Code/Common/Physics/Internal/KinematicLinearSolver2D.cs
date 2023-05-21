@@ -113,7 +113,7 @@ namespace PQ.Common.Physics.Internal
                     _body.MoveBy(collisionResponse);
                 }
 
-                SnapToTouching(hit);
+                _body.MoveBy(ComputeContactAdjustment(hit.collider));
             }
         }
 
@@ -137,7 +137,7 @@ namespace PQ.Common.Physics.Internal
                     _body.MoveBy(collisionResponse);
                 }
 
-                SnapToTouching(hit);
+                _body.MoveBy(ComputeContactAdjustment(hit.collider));
             }
         }
 
@@ -167,19 +167,32 @@ namespace PQ.Common.Physics.Internal
             return true;
         }
 
-        private void SnapToTouching(RaycastHit2D hit)
+        /*
+        Compute the inverse of the minimum separation between given collider and body.
+        */
+        private Vector2 ComputeContactAdjustment(Collider2D collider)
         {
-            // todo: add skin width support, and 'snap' if in radius
+            // if sufficiently outside the collider, then no adjustment is needed
+            ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
+            if (initialSeparation.distance > _body.SkinWidth)
+            {
+                return Vector2.zero;
+            }
+            // otherwise, move the entire distance needed to resolve the initial overlap
+            _body.MoveBy(initialSeparation.distance * initialSeparation.normal);
+
+            // in the case of a convex collider, we may need additional small adjustments to find a non-overlapping spot
             for (int i = 0; i < _params.MaxOverlapIterations; i++)
             {
-                ColliderDistance2D separation = _body.ComputeMinimumSeparation(hit.collider);
-                Debug.Log($"isOverlapped={separation.isOverlapped} distance={separation.distance} normal={separation.normal}");
-
-                if (Mathf.Abs(separation.distance) > _body.SkinWidth)
+                ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
+                Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
+                if (ApproximatelyZero(offset))
                 {
-                    _body.MoveBy(separation.distance * separation.normal);
+                    return Vector2.zero;
                 }
+                _body.MoveBy(offset);
             }
+            return Vector2.zero;
         }
 
         /*

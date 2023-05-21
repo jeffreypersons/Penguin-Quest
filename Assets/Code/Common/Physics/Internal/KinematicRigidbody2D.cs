@@ -19,6 +19,7 @@ namespace PQ.Common.Physics.Internal
         private BoxCollider2D   _boxCollider;
         private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
+        private Collider2D[]    _colliderBuffer;
 
         private float _bounciness   = 0.00f;
         private float _friction     = 0.00f;
@@ -35,7 +36,7 @@ namespace PQ.Common.Physics.Internal
                 $"Up:{Up}," +
                 $"AABB:bounds(center:{Center},extents:{Extents})," +
                 $"Gravity:{GravityScale}," +
-                $"SkinWidth:{SkinWidth}," +
+                $"OverlapTolerance:{SkinWidth}," +
                 $"Friction:{Friction}," +
                 $"LayerMask:{LayerMask}," +
             $"}}";
@@ -80,11 +81,12 @@ namespace PQ.Common.Physics.Internal
                 throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(boxCollider2D)}");
             }
 
-            _transform     = rigidbody2D.transform;
-            _rigidbody     = rigidbody2D;
-            _boxCollider   = boxCollider2D;
-            _contactFilter = new ContactFilter2D();
-            _hitBuffer     = new RaycastHit2D[DefaultHitBufferSize];
+            _transform      = rigidbody2D.transform;
+            _rigidbody      = rigidbody2D;
+            _boxCollider    = boxCollider2D;
+            _contactFilter  = new ContactFilter2D();
+            _hitBuffer      = new RaycastHit2D[DefaultHitBufferSize];
+            _colliderBuffer = new Collider2D[DefaultHitBufferSize];
 
             _rigidbody.isKinematic = true;
             _rigidbody.simulated   = true;
@@ -92,6 +94,12 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
+
+        public void ResizeHitBuffer(int length)
+        {
+            Array.Resize(ref _hitBuffer,      length);
+            Array.Resize(ref _colliderBuffer, length);
+        }
 
         public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
         {
@@ -124,7 +132,6 @@ namespace PQ.Common.Physics.Internal
         }
 
         public void SetLayerMask(LayerMask layerMask) => _contactFilter.SetLayerMask(layerMask);
-        public void ResizeHitBuffer(int length)       => Array.Resize(ref _hitBuffer, length);
         public bool IsAttachedTo(Transform transform) => ReferenceEquals(_transform, transform);
 
         public void TeleportTo(Vector2 position) => _transform.position = position;
@@ -191,6 +198,16 @@ namespace PQ.Common.Physics.Internal
         }
         
         /*
+        Check for overlapping colliders within our bounding box.
+        */
+        public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
+        {
+            int colliderCount = _boxCollider.OverlapCollider(_contactFilter, _colliderBuffer);
+            colliders = _colliderBuffer.AsSpan(0, colliderCount);
+            return !colliders.IsEmpty;
+        }
+
+        /*
         Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
 
         If no layermask provided, uses the one assigned in editor.
@@ -250,10 +267,11 @@ namespace PQ.Common.Physics.Internal
         public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
         {
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            if (collider == !minimumSeparation.isValid)
+            if (!minimumSeparation.isValid)
             {
                 throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
             }
+            Debug.Log($"isOverlapped={minimumSeparation.isOverlapped} distance={minimumSeparation.distance} normal={minimumSeparation.normal}");
             return minimumSeparation;
         }
     }
