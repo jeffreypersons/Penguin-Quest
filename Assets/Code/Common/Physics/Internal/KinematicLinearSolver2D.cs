@@ -67,6 +67,7 @@ namespace PQ.Common.Physics.Internal
          */
         public void SolveMovement(Vector2 deltaPosition)
         {
+            ResolveOverlaps();
             _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
             if (ApproximatelyZero(deltaPosition))
             {
@@ -92,6 +93,17 @@ namespace PQ.Common.Physics.Internal
             return (_collisions & flags) == flags;
         }
 
+        private void ResolveOverlaps()
+        {
+            for (int i = 0; i < _params.MaxOverlapIterations; i++)
+            {
+                _body.CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders);
+                for (int k = 0; k < colliders.Length; k++)
+                {
+                    _body.MoveBy(ComputeContactAdjustment(colliders[k]));
+                }
+            }
+        }
 
         private void MoveHorizontal(Vector2 initialDelta)
         {
