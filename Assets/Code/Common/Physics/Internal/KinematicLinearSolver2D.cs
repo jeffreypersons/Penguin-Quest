@@ -67,8 +67,10 @@ namespace PQ.Common.Physics.Internal
          */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            ResolveOverlaps();
+            SnapToSurfaceIfNearOrInside();
+
             _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
+            Debug.Log(_collisions);
             if (ApproximatelyZero(deltaPosition))
             {
                 return;
@@ -93,7 +95,7 @@ namespace PQ.Common.Physics.Internal
             return (_collisions & flags) == flags;
         }
 
-        private void ResolveOverlaps()
+        private void SnapToSurfaceIfNearOrInside()
         {
             for (int i = 0; i < _params.MaxOverlapIterations; i++)
             {
