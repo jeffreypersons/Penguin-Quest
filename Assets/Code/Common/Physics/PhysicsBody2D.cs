@@ -64,27 +64,27 @@ namespace PQ.Common.Physics
         [Tooltip("Cap on number of overlap resolution solves (exposed only in editor, default suffices most the time)")]
         [SerializeField][Range(0, 50)] private int _maxSolverContactAdjustmentIterations = 2;
 
-        [Tooltip("Size of buffer used to cache cast results (exposed only in editor, default suffices most the time)")]
-        [SerializeField][Range(1, 100)] private int _preallocatedHitBufferSize = 16;
+        [Tooltip("Size of buffer(s) used to internally cache physics results (exposed only in editor, default suffices most the time)")]
+        [SerializeField][Range(1, 100)] private int _preallocatedResultBufferSize = 16;
 
         
         private KinematicLinearSolver2D.Params _solverParams;
         private KinematicRigidbody2D    _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         
-        public Vector2 Position => _kinematicBody.Position;
-        public Vector2 Center   => _kinematicBody.Center;
-        public Vector2 Forward  => _kinematicBody.Forward;
-        public Vector2 Up       => _kinematicBody.Up;
-        public Vector2 Extents  => _kinematicBody.Extents;
-        public float   Depth    => _kinematicBody.Depth;
+        public LayerMask LayerMask => _kinematicBody.LayerMask;
 
         public float Gravity    => _kinematicBody.GravityScale * -Mathf.Abs(Physics2D.gravity.y);
         public float Friction   => _kinematicBody.Friction;
         public float Bounciness => _kinematicBody.Bounciness;
 
-        public LayerMask LayerMask => _kinematicBody.LayerMask;
-        public float SkinWidth => _kinematicBody.SkinWidth;
+        public Vector2 Position  => _kinematicBody.Position;
+        public Vector2 Center    => _kinematicBody.Center;
+        public Vector2 Forward   => _kinematicBody.Forward;
+        public Vector2 Up        => _kinematicBody.Up;
+        public Vector2 Extents   => _kinematicBody.Extents;
+        public float   Depth     => _kinematicBody.Depth;
+        public float   SkinWidth => _kinematicBody.SkinWidth;
 
 
         public override string ToString() =>
@@ -99,7 +99,7 @@ namespace PQ.Common.Physics
                 $"LayerMask:{_layerMask}," +
                 $"MaxSolverMoveIterations:{_maxSolverMoveIterations}," +
                 $"MaxSolverOverlapIterations:{_maxSolverContactAdjustmentIterations}," +
-                $"PreallocatedHitBufferSize:{_preallocatedHitBufferSize}" +
+                $"PreallocatedBufferSize:{_preallocatedResultBufferSize}" +
             $"}}";
         
         
@@ -139,7 +139,7 @@ namespace PQ.Common.Physics
 
             SetLayerMask(_layerMask);
             SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _skinWidth);
-            _kinematicBody.ResizeHitBuffer(_preallocatedHitBufferSize);
+            _kinematicBody.ResizeHitBuffer(_preallocatedResultBufferSize);
             _kinematicBody.SetPhysicalProperties(_collisionFriction, _collisionBounciness, _gravityScale);
 
             #if UNITY_EDITOR

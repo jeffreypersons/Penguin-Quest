@@ -14,17 +14,18 @@ namespace PQ.Common.Physics.Internal
     */
     internal sealed class KinematicRigidbody2D
     {
-        private Transform       _transform;
-        private Rigidbody2D     _rigidbody;
-        private BoxCollider2D   _boxCollider;
-        private ContactFilter2D _contactFilter;
-        private RaycastHit2D[]  _hitBuffer;
-        private Collider2D[]    _colliderBuffer;
+        private Transform        _transform;
+        private Rigidbody2D      _rigidbody;
+        private BoxCollider2D    _boxCollider;
+        private ContactFilter2D  _contactFilter;
+        private RaycastHit2D[]   _hitBuffer;
+        private Collider2D[]     _overlapBuffer;        
+        private ContactPoint2D[] _contactBuffer;
 
         private float _bounciness   = 0.00f;
         private float _friction     = 0.00f;
         private float _gravityScale = 1.00f;
-        private const int DefaultHitBufferSize = 16;
+        private const int DefaultBufferSize = 16;
 
 
         public override string ToString() =>
@@ -41,25 +42,25 @@ namespace PQ.Common.Physics.Internal
                 $"LayerMask:{LayerMask}," +
             $"}}";
 
-
         // todo: cache these
-        public Vector2 Position => _rigidbody.position;
-        public Vector2 Center   => _boxCollider.bounds.center;
-        public Vector2 Forward  => _rigidbody.transform.right.normalized;
-        public Vector2 Up       => _rigidbody.transform.up.normalized;
-        public Vector2 Extents  => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
-        public float   Depth    => _rigidbody.transform.position.z;
-
-        public bool    IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
-        public bool    IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
-
-        public float Friction     => _friction;
-        public float Bounciness   => _bounciness;
-        public float GravityScale => _gravityScale;
-
         public LayerMask LayerMask => _contactFilter.layerMask;
-        public float SkinWidth => _boxCollider.edgeRadius;
-        public Vector2 LocalBoundsOffset => _boxCollider.offset;
+
+        public float Friction       => _friction;
+        public float Bounciness     => _bounciness;
+        public float GravityScale   => _gravityScale;
+
+        public Vector2 Position     => _rigidbody.position;
+        public Vector2 Center       => _boxCollider.bounds.center;
+        public Vector2 Forward      => _rigidbody.transform.right.normalized;
+        public Vector2 Up           => _rigidbody.transform.up.normalized;
+        public Vector2 Extents      => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
+        public float   Depth        => _rigidbody.transform.position.z;
+        public float   SkinWidth    => _boxCollider.edgeRadius;
+        public Vector2 BoundsOffset => _boxCollider.offset;
+
+        public bool  IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
+        public bool  IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
+
 
         #if UNITY_EDITOR
         public bool DrawCastsInEditor { get; set; } = true;
@@ -84,12 +85,13 @@ namespace PQ.Common.Physics.Internal
                 throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(boxCollider2D)}");
             }
 
-            _transform      = rigidbody2D.transform;
-            _rigidbody      = rigidbody2D;
-            _boxCollider    = boxCollider2D;
-            _contactFilter  = new ContactFilter2D();
-            _hitBuffer      = new RaycastHit2D[DefaultHitBufferSize];
-            _colliderBuffer = new Collider2D[DefaultHitBufferSize];
+            _transform     = rigidbody2D.transform;
+            _rigidbody     = rigidbody2D;
+            _boxCollider   = boxCollider2D;
+            _contactFilter = new ContactFilter2D();
+            _hitBuffer     = new RaycastHit2D[DefaultBufferSize];
+            _overlapBuffer = new Collider2D[DefaultBufferSize];
+            _contactBuffer = new ContactPoint2D[DefaultBufferSize];
 
             _rigidbody.isKinematic = true;
             _rigidbody.simulated   = true;
@@ -100,8 +102,9 @@ namespace PQ.Common.Physics.Internal
 
         public void ResizeHitBuffer(int length)
         {
-            Array.Resize(ref _hitBuffer,      length);
-            Array.Resize(ref _colliderBuffer, length);
+            Array.Resize(ref _hitBuffer,     length);
+            Array.Resize(ref _overlapBuffer, length);
+            Array.Resize(ref _contactBuffer, length);
         }
 
         public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
@@ -232,8 +235,8 @@ namespace PQ.Common.Physics.Internal
         */
         public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
         {
-            int colliderCount = _boxCollider.OverlapCollider(_contactFilter, _colliderBuffer);
-            colliders = _colliderBuffer.AsSpan(0, colliderCount);
+            int colliderCount = _boxCollider.OverlapCollider(_contactFilter, _overlapBuffer);
+            colliders = _overlapBuffer.AsSpan(0, colliderCount);
             return !colliders.IsEmpty;
         }
 
