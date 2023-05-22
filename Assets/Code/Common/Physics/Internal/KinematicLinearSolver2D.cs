@@ -111,7 +111,7 @@ namespace PQ.Common.Physics.Internal
             for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
-                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
+                if (!_body.CastAABB_Closest(delta, out RaycastHit2D hit))
                 {
                     _body.MoveBy(delta);
                     delta = Vector2.zero;
@@ -135,7 +135,7 @@ namespace PQ.Common.Physics.Internal
             for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
                 // move directly to target if unobstructed
-                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
+                if (!_body.CastAABB_Closest(delta, out RaycastHit2D hit))
                 {
                     _body.MoveBy(delta);
                     delta = Vector2.zero;
@@ -153,31 +153,6 @@ namespace PQ.Common.Physics.Internal
             }
         }
 
-
-        /*
-        Project AABB along delta, and return CLOSEST hit (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
-        private bool DetectClosestCollision(Vector2 delta, out RaycastHit2D hit)
-        {
-            if (!_body.CastAABB(delta, out ReadOnlySpan<RaycastHit2D> hits))
-            {
-                hit = default;
-                return false;
-            }
-
-            int closestHitIndex = 0;
-            for (int i = 0; i < hits.Length; i++)
-            {
-                if (hits[i].distance < hits[closestHitIndex].distance)
-                {
-                    closestHitIndex = i;
-                }
-            }
-            hit = hits[closestHitIndex];
-            return true;
-        }
 
         /*
         Compute the inverse of the minimum separation between given collider and body.

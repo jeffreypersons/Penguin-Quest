@@ -49,7 +49,10 @@ namespace PQ.Common.Physics.Internal
         public Vector2 Up       => _rigidbody.transform.up.normalized;
         public Vector2 Extents  => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth    => _rigidbody.transform.position.z;
-                
+
+        public bool    IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
+        public bool    IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
+
         public float Friction     => _friction;
         public float Bounciness   => _bounciness;
         public float GravityScale => _gravityScale;
@@ -124,6 +127,7 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
+
         public void SetPhysicalProperties(float friction, float bounciness, float gravityScale)
         {
             _friction     = friction;
@@ -161,7 +165,7 @@ namespace PQ.Common.Physics.Internal
         
         WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
         */
-        public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB_All(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
             if (delta == Vector2.zero)
             {
@@ -197,6 +201,32 @@ namespace PQ.Common.Physics.Internal
             return !hits.IsEmpty;
         }
 
+
+        /*
+        Project AABB along delta, and return CLOSEST hit (if any).
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
+        public bool CastAABB_Closest(Vector2 delta, out RaycastHit2D hit)
+        {
+            if (!CastAABB_All(delta, out ReadOnlySpan<RaycastHit2D> hits))
+            {
+                hit = default;
+                return false;
+            }
+
+            int closestHitIndex = 0;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].distance < hits[closestHitIndex].distance)
+                {
+                    closestHitIndex = i;
+                }
+            }
+            hit = hits[closestHitIndex];
+            return true;
+        }
+
         /*
         Check for overlapping colliders within our bounding box.
         */
@@ -221,19 +251,19 @@ namespace PQ.Common.Physics.Internal
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAABB(extent * right, out _))
+            if (CastAABB_All(extent * right, out _))
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (CastAABB(extent * up, out _))
+            if (CastAABB_All(extent * up, out _))
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (CastAABB(extent * left, out _))
+            if (CastAABB_All(extent * left, out _))
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (CastAABB(extent * down, out _))
+            if (CastAABB_All(extent * down, out _))
             {
                 flags |= CollisionFlags2D.Below;
             }
@@ -257,7 +287,7 @@ namespace PQ.Common.Physics.Internal
             #endif
             return flags;
         }
-        
+
         /*
         Compute distance from center to edge of our bounding box in given direction.
         */
