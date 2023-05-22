@@ -245,8 +245,11 @@ namespace PQ.Common.Physics.Internal
 
         If no layermask provided, uses the one assigned in editor.
         */
-        public CollisionFlags2D CheckForOverlappingContacts(float extent)
+        public CollisionFlags2D CheckForContacts(float extent)
         {
+            bool isTouching = _boxCollider.IsTouching(_contactFilter);
+            return isTouching ? CollisionFlags2D.Below : CollisionFlags2D.None;
+
             Transform transform = _rigidbody.transform;
             Vector2 right = transform.right.normalized;
             Vector2 up    = transform.up.normalized;

@@ -69,7 +69,7 @@ namespace PQ.Common.Physics.Internal
         {
             SnapToSurfaceIfNearOrInside();
 
-            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
+            _collisions = _body.CheckForContacts(_body.SkinWidth);
             Debug.Log(_collisions);
             if (ApproximatelyZero(deltaPosition))
             {
@@ -85,7 +85,7 @@ namespace PQ.Common.Physics.Internal
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
+            _collisions = _body.CheckForContacts(_body.SkinWidth);
 
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
