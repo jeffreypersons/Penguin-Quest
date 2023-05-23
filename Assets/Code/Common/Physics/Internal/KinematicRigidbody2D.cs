@@ -19,7 +19,7 @@ namespace PQ.Common.Physics.Internal
         private BoxCollider2D    _boxCollider;
         private ContactFilter2D  _contactFilter;
         private RaycastHit2D[]   _hitBuffer;
-        private Collider2D[]     _overlapBuffer;        
+        private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
 
         private float _bounciness   = 0.00f;
@@ -45,9 +45,9 @@ namespace PQ.Common.Physics.Internal
         // todo: cache these
         public LayerMask LayerMask => _contactFilter.layerMask;
 
-        public float Friction       => _friction;
-        public float Bounciness     => _bounciness;
-        public float GravityScale   => _gravityScale;
+        public float   Friction     => _friction;
+        public float   Bounciness   => _bounciness;
+        public float   GravityScale => _gravityScale;
 
         public Vector2 Position     => _rigidbody.position;
         public Vector2 Center       => _boxCollider.bounds.center;
@@ -58,10 +58,9 @@ namespace PQ.Common.Physics.Internal
         public float   SkinWidth    => _boxCollider.edgeRadius;
         public Vector2 BoundsOffset => _boxCollider.offset;
 
-        public bool  IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
-        public bool  IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
-
-
+        public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
+        public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
+        
         #if UNITY_EDITOR
         public bool DrawCastsInEditor { get; set; } = true;
         #endif
@@ -93,8 +92,12 @@ namespace PQ.Common.Physics.Internal
             _overlapBuffer = new Collider2D[DefaultBufferSize];
             _contactBuffer = new ContactPoint2D[DefaultBufferSize];
 
-            _rigidbody.isKinematic = true;
+            _contactFilter.useTriggers    = true;
+            _contactFilter.useLayerMask   = true;
+            _contactFilter.useNormalAngle = true;
+
             _rigidbody.simulated   = true;
+            _rigidbody.isKinematic = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
@@ -195,7 +198,7 @@ namespace PQ.Common.Physics.Internal
                     Vector2 edgePoint = hit.point - (hit.distance * direction);
                     Vector2 hitPoint  = hit.point;
                     Vector2 endPoint  = hit.point + (distance * direction);
-                    
+
                     Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
                     Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
                 }
@@ -241,56 +244,42 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
+        Query existing contacts from last physics pass.
+        */
+        public bool CheckForContacts(out ReadOnlySpan<ContactPoint2D> contacts)
+        {
+            int contactCount = _boxCollider.GetContacts(_contactFilter, _contactBuffer);
+            contacts = _contactBuffer.AsSpan(0, contactCount);
+            return !contacts.IsEmpty;
+        }
+
+        /*
         Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
 
         If no layermask provided, uses the one assigned in editor.
         */
-        public CollisionFlags2D CheckForContacts(float extent)
+        public CollisionFlags2D CheckSides()
         {
-            bool isTouching = _boxCollider.IsTouching(_contactFilter);
-            return isTouching ? CollisionFlags2D.Below : CollisionFlags2D.None;
-
-            Transform transform = _rigidbody.transform;
-            Vector2 right = transform.right.normalized;
-            Vector2 up    = transform.up.normalized;
-            Vector2 left  = -right;
-            Vector2 down  = -up;
+            bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
+            bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAABB_All(extent * right, out _))
+            if (HasContactsInNormalRange(315, 45))
             {
-                flags |= CollisionFlags2D.Front;
+                flags |= isFlippedHorizontal? CollisionFlags2D.Behind : CollisionFlags2D.Front;
             }
-            if (CastAABB_All(extent * up, out _))
+            if (HasContactsInNormalRange(45, 135))
             {
-                flags |= CollisionFlags2D.Above;
+                flags |= isFlippedVertical ? CollisionFlags2D.Above : CollisionFlags2D.Below;
             }
-            if (CastAABB_All(extent * left, out _))
+            if (HasContactsInNormalRange(135, 225))
             {
-                flags |= CollisionFlags2D.Behind;
+                flags |= isFlippedHorizontal ? CollisionFlags2D.Front : CollisionFlags2D.Behind;
             }
-            if (CastAABB_All(extent * down, out _))
+            if (HasContactsInNormalRange(225, 315))
             {
-                flags |= CollisionFlags2D.Below;
+                flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
             }
-            
-            #if UNITY_EDITOR
-            // draw the 'scan-lines' whether we get a cast hit or not
-            if (DrawCastsInEditor)
-            {
-                Bounds bounds = _boxCollider.bounds;
-                Vector2 center    = new(bounds.center.x, bounds.center.y);
-                Vector2 skinRatio = new(1f + (extent / bounds.extents.x), 1f + (extent / bounds.extents.y));
-                Vector2 xAxis     = bounds.extents.x * right;
-                Vector2 yAxis     = bounds.extents.y * up;
-
-                float duration = Time.fixedDeltaTime;
-                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
-                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
-            }
-            #endif
             return flags;
         }
 
@@ -317,8 +306,20 @@ namespace PQ.Common.Physics.Internal
             {
                 throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
             }
-            Debug.Log($"isOverlapped={minimumSeparation.isOverlapped} distance={minimumSeparation.distance} normal={minimumSeparation.normal}");
             return minimumSeparation;
+        }
+        
+        
+        private bool HasContactsInNormalRange(float min, float max)
+        {
+            float previousMin = _contactFilter.minNormalAngle;
+            float previousMax = _contactFilter.maxNormalAngle;
+
+            _contactFilter.SetNormalAngle(min, max);
+            bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
+
+            _contactFilter.SetNormalAngle(previousMin, previousMax);
+            return hasContactsInRange;
         }
     }
 }
