@@ -182,7 +182,7 @@ namespace PQ.Common.Physics.Internal
             Bounds bounds = _boxCollider.bounds;
 
             Vector2 center    = bounds.center;
-            Vector2 size      = bounds.size;
+            Vector2 size      = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
             float   distance  = delta.magnitude;
             Vector2 direction = delta / distance;
 
