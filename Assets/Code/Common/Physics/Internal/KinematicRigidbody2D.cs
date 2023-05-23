@@ -280,6 +280,7 @@ namespace PQ.Common.Physics.Internal
             {
                 flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
             }
+            Debug.Log(flags);
             return flags;
         }
 

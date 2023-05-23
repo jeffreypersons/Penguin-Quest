@@ -68,11 +68,9 @@ namespace PQ.Common.Physics.Internal
         public void SolveMovement(Vector2 deltaPosition)
         {
             SnapToSurfaceIfNearOrInside();
-
-            _collisions = _body.CheckSides();
-            Debug.Log(_collisions);
             if (ApproximatelyZero(deltaPosition))
             {
+                _collisions = _body.CheckSides();
                 return;
             }
 
@@ -85,8 +83,9 @@ namespace PQ.Common.Physics.Internal
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckSides();
 
+            SnapToSurfaceIfNearOrInside();
+            _collisions = _body.CheckSides();
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
 
