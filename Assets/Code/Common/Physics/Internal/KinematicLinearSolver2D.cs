@@ -111,22 +111,23 @@ namespace PQ.Common.Physics.Internal
             Vector2 delta = initialDelta;
             for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!_body.CastAABB_Closest(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                ProjectAABBAlongDelta(delta, out float stepDistance, out RaycastHit2D hit);
+                _body.MoveBy(stepDistance * delta);
+
+                float distanceLeft = Mathf.Max(delta.magnitude - stepDistance, 0f);
+                delta = distanceLeft * delta.normalized;
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
+                if (hit && Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
                 }
 
-                _body.MoveBy(ComputeContactAdjustment(hit.collider));
+                if (hit)
+                {
+                    _body.MoveBy(ComputeContactAdjustment(hit.collider));
+                }
             }
         }
 
@@ -135,22 +136,43 @@ namespace PQ.Common.Physics.Internal
             Vector2 delta = initialDelta;
             for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!_body.CastAABB_Closest(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                ProjectAABBAlongDelta(delta, out float stepDistance, out RaycastHit2D hit);
+                _body.MoveBy(stepDistance * delta);
+
+                float distanceLeft = Mathf.Max(delta.magnitude - stepDistance, 0f);
+                delta = distanceLeft * delta.normalized;
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
+                if (hit && Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
                 }
 
-                _body.MoveBy(ComputeContactAdjustment(hit.collider));
+                if (hit)
+                {
+                    _body.MoveBy(ComputeContactAdjustment(hit.collider));
+                }
+            }
+        }
+        
+        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
+        private void ProjectAABBAlongDelta(Vector2 delta, out float distance, out RaycastHit2D hit)
+        {
+            if (delta == Vector2.zero)
+            {
+                hit = default;
+                distance = 0f;
+                return;
+            }
+
+            if (!_body.CastAABB_Closest(delta, out hit))
+            {
+                distance = delta.magnitude;
+            }
+            else
+            {
+                distance = hit.distance;
             }
         }
 
