@@ -26,7 +26,7 @@ namespace PQ.Common.Physics.Internal
         private Params _params;
         private KinematicRigidbody2D _body;
         private CollisionFlags2D _collisions;
-                
+
 
         [Pure]
         private static bool ApproximatelyZero(Vector2 delta)
