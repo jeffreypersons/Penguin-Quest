@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
-namespace PQ._Experimental.SimpleMovement
+namespace PQ._Experimental.SimpleMovement_002
 {
     [Flags]
     public enum CollisionFlags2D

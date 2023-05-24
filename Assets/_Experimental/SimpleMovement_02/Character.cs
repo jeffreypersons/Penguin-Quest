@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-namespace PQ._Experimental.SimpleMovement
+namespace PQ._Experimental.SimpleMovement_002
 {
     public class Character : MonoBehaviour
     {
