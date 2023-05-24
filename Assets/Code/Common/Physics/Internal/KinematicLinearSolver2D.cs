@@ -26,7 +26,7 @@ namespace PQ.Common.Physics.Internal
         private Params _params;
         private KinematicRigidbody2D _body;
         private CollisionFlags2D _collisions;
-                
+
 
         [Pure]
         private static bool ApproximatelyZero(Vector2 delta)
@@ -67,10 +67,10 @@ namespace PQ.Common.Physics.Internal
          */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            ResolveOverlaps();
-            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
+            SnapToSurfaceIfNearOrInside();
             if (ApproximatelyZero(deltaPosition))
             {
+                _collisions = _body.CheckSides();
                 return;
             }
 
@@ -83,8 +83,9 @@ namespace PQ.Common.Physics.Internal
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
 
+            SnapToSurfaceIfNearOrInside();
+            _collisions = _body.CheckSides();
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
 
@@ -93,14 +94,14 @@ namespace PQ.Common.Physics.Internal
             return (_collisions & flags) == flags;
         }
 
-        private void ResolveOverlaps()
+        private void SnapToSurfaceIfNearOrInside()
         {
             for (int i = 0; i < _params.MaxOverlapIterations; i++)
             {
                 _body.CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders);
                 for (int k = 0; k < colliders.Length; k++)
                 {
-                    _body.MoveBy(ComputeContactAdjustment(colliders[k]));
+                    ResolveOverlapWithCollider(colliders[k]);
                 }
             }
         }
@@ -110,22 +111,16 @@ namespace PQ.Common.Physics.Internal
             Vector2 delta = initialDelta;
             for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
-                if (Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
+                if (hit && Vector2.Angle(Vector2.up, hit.normal) <= _params.MaxSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
                 }
 
-                _body.MoveBy(ComputeContactAdjustment(hit.collider));
+                ResolveOverlapWithCollider(hit.collider);
             }
         }
 
@@ -134,59 +129,57 @@ namespace PQ.Common.Physics.Internal
             Vector2 delta = initialDelta;
             for (int i = 0; i < _params.MaxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                if (Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
+                if (hit && Vector2.Angle(Vector2.up, hit.normal) > _params.MaxSlopeAngle)
                 {
                     Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
                     _body.MoveBy(collisionResponse);
                 }
 
-                _body.MoveBy(ComputeContactAdjustment(hit.collider));
+                ResolveOverlapWithCollider(hit.collider);
             }
         }
-
-
-        /*
-        Project AABB along delta, and return CLOSEST hit (if any).
         
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
-        private bool DetectClosestCollision(Vector2 delta, out RaycastHit2D hit)
+        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
+        private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
         {
-            if (!_body.CastAABB(delta, out ReadOnlySpan<RaycastHit2D> hits))
+            if (delta == Vector2.zero)
             {
                 hit = default;
-                return false;
+                return;
             }
 
-            int closestHitIndex = 0;
-            for (int i = 0; i < hits.Length; i++)
+            float remainingDistance = delta.magnitude;
+            Vector2 direction = delta / remainingDistance;
+            Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
+            if (_body.CastAABB_Closest(step, out hit))
             {
-                if (hits[i].distance < hits[closestHitIndex].distance)
-                {
-                    closestHitIndex = i;
-                }
+                step = hit.distance * direction;
             }
-            hit = hits[closestHitIndex];
-            return true;
+
+            _body.MoveBy(step);
+            delta -= step;
         }
+
 
         /*
         Compute the inverse of the minimum separation between given collider and body.
         */
-        private Vector2 ComputeContactAdjustment(Collider2D collider)
+        private void ResolveOverlapWithCollider(Collider2D collider)
         {
+            if (collider == null)
+            {
+                return;
+            }
+
             // if sufficiently outside the collider, then no adjustment is needed
-            Vector2 initialPosition = _body.Position;
             ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
+            if (initialSeparation.distance > _body.SkinWidth)
+            {
+                return;
+            }
             // otherwise, move the entire distance needed to resolve the initial overlap
             _body.MoveBy(initialSeparation.distance * initialSeparation.normal);
 
@@ -202,11 +195,6 @@ namespace PQ.Common.Physics.Internal
                 }
                 _body.MoveBy(offset);
             }
-
-            // now that the final position was found, return the rigidbody back to its original state
-            Vector2 finalPosition = _body.Position;
-            _body.MoveTo(initialPosition);
-            return finalPosition - initialPosition;
         }
 
         /*

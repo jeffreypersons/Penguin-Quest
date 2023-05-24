@@ -94,13 +94,7 @@ namespace PQ._Experimental.SimpleMovement_002
             Vector2 delta = initialDelta;
             for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAngle)
@@ -118,13 +112,7 @@ namespace PQ._Experimental.SimpleMovement_002
             Vector2 delta = initialDelta;
             for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!DetectClosestCollision(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
                 if (Vector2.Angle(Vector2.up, hit.normal) > _maxAngle)
@@ -136,32 +124,7 @@ namespace PQ._Experimental.SimpleMovement_002
                 PushOutIfOverlap(hit);
             }
         }
-        
-        
-        /*
-        Project AABB along delta, and return CLOSEST hit (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
-        private bool DetectClosestCollision(Vector2 delta, out RaycastHit2D hit)
-        {
-            if (!_body.CastAABB(delta, out ReadOnlySpan<RaycastHit2D> hits))
-            {
-                hit = default;
-                return false;
-            }
 
-            int closestHitIndex = 0;
-            for (int i = 0; i < hits.Length; i++)
-            {
-                if (hits[i].distance < hits[closestHitIndex].distance)
-                {
-                    closestHitIndex = i;
-                }
-            }
-            hit = hits[closestHitIndex];
-            return true;
-        }
 
         private void PushOutIfOverlap(RaycastHit2D hit)
         {
@@ -174,6 +137,27 @@ namespace PQ._Experimental.SimpleMovement_002
                     _body.MoveBy(overlapAmount);
                 }
             }
+        }
+        
+        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
+        private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
+        {
+            if (delta == Vector2.zero)
+            {
+                hit = default;
+                return;
+            }
+
+            float remainingDistance = delta.magnitude;
+            Vector2 direction = delta / remainingDistance;
+            Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
+            if (_body.CastAABB_Closest(step, out hit))
+            {
+                step = hit.distance * direction;
+            }
+
+            _body.MoveBy(step);
+            delta -= step;
         }
 
         /*

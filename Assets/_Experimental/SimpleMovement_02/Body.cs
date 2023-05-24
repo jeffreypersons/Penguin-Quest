@@ -144,7 +144,7 @@ namespace PQ._Experimental.SimpleMovement_002
         
         WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
         */
-        public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB_All(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
             _castFilter.SetLayerMask(_layerMask);
 
@@ -157,13 +157,13 @@ namespace PQ._Experimental.SimpleMovement_002
             Bounds bounds = _boxCollider.bounds;
 
             Vector2 center    = bounds.center;
-            Vector2 size      = bounds.size;
+            Vector2 size      = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
             float   distance  = delta.magnitude;
             Vector2 direction = delta / distance;
 
             int hitCount = Physics2D.BoxCast(center, size, 0, direction, _castFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
-
+            
             #if UNITY_EDITOR
             if (_drawCastsInEditor)
             {
@@ -173,13 +173,39 @@ namespace PQ._Experimental.SimpleMovement_002
                     Vector2 edgePoint = hit.point - (hit.distance * direction);
                     Vector2 hitPoint  = hit.point;
                     Vector2 endPoint  = hit.point + (distance * direction);
-                    
+
                     Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
                     Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
                 }
             }
             #endif
             return !hits.IsEmpty;
+        }
+
+
+        /*
+        Project AABB along delta, and return CLOSEST hit (if any).
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
+        public bool CastAABB_Closest(Vector2 delta, out RaycastHit2D hit)
+        {
+            if (!CastAABB_All(delta, out ReadOnlySpan<RaycastHit2D> hits))
+            {
+                hit = default;
+                return false;
+            }
+
+            int closestHitIndex = 0;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].distance < hits[closestHitIndex].distance)
+                {
+                    closestHitIndex = i;
+                }
+            }
+            hit = hits[closestHitIndex];
+            return true;
         }
         
         /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
@@ -192,19 +218,19 @@ namespace PQ._Experimental.SimpleMovement_002
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAABB(skinWidth * right, out _))
+            if (CastAABB_All(skinWidth * right, out _))
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (CastAABB(skinWidth * up, out _))
+            if (CastAABB_All(skinWidth * up, out _))
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (CastAABB(skinWidth * left, out _))
+            if (CastAABB_All(skinWidth * left, out _))
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (CastAABB(skinWidth * down, out _))
+            if (CastAABB_All(skinWidth * down, out _))
             {
                 flags |= CollisionFlags2D.Below;
             }
@@ -226,6 +252,16 @@ namespace PQ._Experimental.SimpleMovement_002
             }
             #endif
             return flags;
+        }
+        
+        /*
+        Compute distance from center to edge of our bounding box in given direction.
+        */
+        public float ComputeDistanceToEdge(Vector2 direction)
+        {
+            Bounds bounds = _boxCollider.bounds;
+            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
+            return distanceFromCenterToEdge;
         }
 
         /*
