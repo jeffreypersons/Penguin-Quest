@@ -254,6 +254,15 @@ namespace PQ._Experimental.SimpleMovement_002
             return flags;
         }
         
+        /*
+        Compute distance from center to edge of our bounding box in given direction.
+        */
+        public float ComputeDistanceToEdge(Vector2 direction)
+        {
+            Bounds bounds = _boxCollider.bounds;
+            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
+            return distanceFromCenterToEdge;
+        }
 
         /*
         Compute vector representing overlap amount between body and given collider, if any.

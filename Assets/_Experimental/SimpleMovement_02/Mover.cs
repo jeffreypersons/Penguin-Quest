@@ -150,6 +150,27 @@ namespace PQ._Experimental.SimpleMovement_002
                 }
             }
         }
+        
+        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
+        private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
+        {
+            if (delta == Vector2.zero)
+            {
+                hit = default;
+                return;
+            }
+
+            float remainingDistance = delta.magnitude;
+            Vector2 direction = delta / remainingDistance;
+            Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
+            if (_body.CastAABB_Closest(step, out hit))
+            {
+                step = hit.distance * direction;
+            }
+
+            _body.MoveBy(step);
+            delta -= step;
+        }
 
         /*
         Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
