@@ -2,7 +2,7 @@
 using UnityEditor;
 
 
-namespace PQ._Experimental.SimpleMovement
+namespace PQ._Experimental.SimpleMovement_001
 {
     /*
     Various utilities for drawing and manipulating gizmos.
