@@ -169,6 +169,11 @@ namespace PQ.Common.Physics.Internal
         */
         private void ResolveOverlapWithCollider(Collider2D collider)
         {
+            if (collider == null)
+            {
+                return;
+            }
+
             // if sufficiently outside the collider, then no adjustment is needed
             ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
             if (initialSeparation.distance > _body.SkinWidth)
