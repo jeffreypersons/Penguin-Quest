@@ -94,13 +94,7 @@ namespace PQ._Experimental.SimpleMovement_002
             Vector2 delta = initialDelta;
             for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!_body.CastAABB_Closest(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
 
                 // unless there's an overly steep slope, move a linear step with properties taken into account
                 if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAngle)
@@ -118,13 +112,7 @@ namespace PQ._Experimental.SimpleMovement_002
             Vector2 delta = initialDelta;
             for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
             {
-                // move directly to target if unobstructed
-                if (!_body.CastAABB_Closest(delta, out RaycastHit2D hit))
-                {
-                    _body.MoveBy(delta);
-                    delta = Vector2.zero;
-                    continue;
-                }
+                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
 
                 // only if there's an overly steep slope, do we want to take action (eg sliding down)
                 if (Vector2.Angle(Vector2.up, hit.normal) > _maxAngle)
