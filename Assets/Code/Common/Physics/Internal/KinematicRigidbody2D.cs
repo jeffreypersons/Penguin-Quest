@@ -292,7 +292,7 @@ namespace PQ.Common.Physics.Internal
             Bounds bounds = _boxCollider.bounds;
             bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
 
-            // for some reason, unlike other ray casts, this can return negative distance if pointing down
+            // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
         }
 
