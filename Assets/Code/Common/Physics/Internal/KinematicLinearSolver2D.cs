@@ -46,6 +46,8 @@ namespace PQ.Common.Physics.Internal
             Vector2 horizontal = deltaPosition - vertical;
             Vector2 position   = _body.Position;
 
+            Debug.Log($"vertical={vertical} horizontal={horizontal} position={position}");
+
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);

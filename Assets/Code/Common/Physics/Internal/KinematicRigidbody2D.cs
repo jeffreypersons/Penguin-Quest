@@ -246,6 +246,7 @@ namespace PQ.Common.Physics.Internal
                 Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
             }
             #endif
+            Debug.Log($"flags={flags}");
             return flags;
         }
 
