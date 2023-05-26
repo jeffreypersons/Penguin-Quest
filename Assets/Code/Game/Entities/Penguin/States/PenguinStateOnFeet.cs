@@ -34,6 +34,8 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnFixedUpdate()
         {
+            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+
             if (!Mathf.Approximately(_horizontalInput.value, 0f))
             {
                 Blob.PhysicsBody.Flip(horizontal: _horizontalInput.value < 0, vertical: false);

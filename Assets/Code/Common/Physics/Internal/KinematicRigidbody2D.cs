@@ -4,14 +4,6 @@ using UnityEngine;
 
 namespace PQ.Common.Physics.Internal
 {
-    /*
-    Internal container for unifying physics calls.
-
-    Notes
-    * Assumes always upright bounding box, with kinematic rigidbody
-    * Corresponding game object is fixed in rotation to enforce alignment with global up
-    * Caching is done only for cast results, position caching is intentionally left to any calling code
-    */
     internal sealed class KinematicRigidbody2D
     {
         private Transform        _transform;
@@ -148,29 +140,12 @@ namespace PQ.Common.Physics.Internal
         public void MoveTo(Vector2 position)     => _rigidbody.position = position;
         public void MoveBy(Vector2 delta)        => _rigidbody.position += delta;
 
-        /*
-        Move body to given frame's start position and perform MovePosition to maintain any interpolation.
-        
-        This allows changes to rigidbody.position be applied without ignoring interpolation settings.
-        
-        Context:
-        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
-        - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
-        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
-          replace the original position _then_ apply MovePosition()
-        */
         public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
         {
             _rigidbody.position = startPositionThisFrame;
             _rigidbody.MovePosition(targetPositionThisFrame);
         }
 
-
-        /*
-        Project AABB along delta, and return ALL hits (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
         public bool CastAABB_All(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
             if (delta == Vector2.zero)
@@ -182,7 +157,7 @@ namespace PQ.Common.Physics.Internal
             Bounds bounds = _boxCollider.bounds;
 
             Vector2 center    = bounds.center;
-            Vector2 size      = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
+            Vector2 size      = bounds.size;
             float   distance  = delta.magnitude;
             Vector2 direction = delta / distance;
 
@@ -207,12 +182,6 @@ namespace PQ.Common.Physics.Internal
             return !hits.IsEmpty;
         }
 
-
-        /*
-        Project AABB along delta, and return CLOSEST hit (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
         public bool CastAABB_Closest(Vector2 delta, out RaycastHit2D hit)
         {
             if (!CastAABB_All(delta, out ReadOnlySpan<RaycastHit2D> hits))
@@ -233,54 +202,50 @@ namespace PQ.Common.Physics.Internal
             return true;
         }
 
-        /*
-        Check for overlapping colliders within our bounding box.
-        */
-        public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
-        {
-            int colliderCount = _boxCollider.OverlapCollider(_contactFilter, _overlapBuffer);
-            colliders = _overlapBuffer.AsSpan(0, colliderCount);
-            return !colliders.IsEmpty;
-        }
 
-        /*
-        Query existing contacts from last physics pass.
-        */
-        public bool CheckForContacts(out ReadOnlySpan<ContactPoint2D> contacts)
+        public CollisionFlags2D CheckForOverlappingContacts(float extent)
         {
-            int contactCount = _boxCollider.GetContacts(_contactFilter, _contactBuffer);
-            contacts = _contactBuffer.AsSpan(0, contactCount);
-            return !contacts.IsEmpty;
-        }
-
-        /*
-        Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
-
-        If no layermask provided, uses the one assigned in editor.
-        */
-        public CollisionFlags2D CheckSides()
-        {
-            bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
-            bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
+            Transform transform = _rigidbody.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (HasContactsInNormalRange(315, 45))
+            if (CastAABB_All(extent * right, out _))
             {
-                flags |= isFlippedHorizontal? CollisionFlags2D.Behind : CollisionFlags2D.Front;
+                flags |= CollisionFlags2D.Front;
             }
-            if (HasContactsInNormalRange(45, 135))
+            if (CastAABB_All(extent * up, out _))
             {
-                flags |= isFlippedVertical ? CollisionFlags2D.Above : CollisionFlags2D.Below;
+                flags |= CollisionFlags2D.Above;
             }
-            if (HasContactsInNormalRange(135, 225))
+            if (CastAABB_All(extent * left, out _))
             {
-                flags |= isFlippedHorizontal ? CollisionFlags2D.Front : CollisionFlags2D.Behind;
+                flags |= CollisionFlags2D.Behind;
             }
-            if (HasContactsInNormalRange(225, 315))
+            if (CastAABB_All(extent * down, out _))
             {
-                flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
+                flags |= CollisionFlags2D.Below;
             }
-            Debug.Log(flags);
+            
+            #if UNITY_EDITOR
+            // draw the 'scan-lines' whether we get a cast hit or not
+            if (DrawCastsInEditor)
+            {
+                Bounds bounds = _boxCollider.bounds;
+                Vector2 center    = new(bounds.center.x, bounds.center.y);
+                Vector2 skinRatio = new(1f + (extent / bounds.extents.x), 1f + (extent / bounds.extents.y));
+                Vector2 xAxis     = bounds.extents.x * right;
+                Vector2 yAxis     = bounds.extents.y * up;
+
+                float duration = Time.fixedDeltaTime;
+                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            }
+            #endif
             return flags;
         }
 
@@ -294,35 +259,6 @@ namespace PQ.Common.Physics.Internal
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
-        }
-
-        /*
-        Compute vector representing overlap amount between body and given collider, if any.
-
-        Uses separating axis theorem to determine overlap - may require more invocations for
-        complex polygons.
-        */
-        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
-        {
-            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            if (!minimumSeparation.isValid)
-            {
-                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
-            }
-            return minimumSeparation;
-        }
-        
-        
-        private bool HasContactsInNormalRange(float min, float max)
-        {
-            float previousMin = _contactFilter.minNormalAngle;
-            float previousMax = _contactFilter.maxNormalAngle;
-
-            _contactFilter.SetNormalAngle(min, max);
-            bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
-
-            _contactFilter.SetNormalAngle(previousMin, previousMax);
-            return hasContactsInRange;
         }
     }
 }
