@@ -99,7 +99,7 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.simulated   = true;
             _rigidbody.isKinematic = true;
             _rigidbody.useFullKinematicContacts = true;
-            _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
 
