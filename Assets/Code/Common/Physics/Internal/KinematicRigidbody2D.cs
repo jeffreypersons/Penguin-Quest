@@ -167,15 +167,10 @@ namespace PQ.Common.Physics.Internal
             #if UNITY_EDITOR
             if (DrawCastsInEditor)
             {
-                float duration = Time.fixedDeltaTime;
+                DrawBoxCast(center, size, direction, distance, hits);
                 foreach (RaycastHit2D hit in hits)
                 {
-                    Vector2 edgePoint = hit.point - (hit.distance * direction);
-                    Vector2 hitPoint  = hit.point;
-                    Vector2 endPoint  = hit.point + (distance * direction);
-
-                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
-                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
+                    DrawCastHit(hit);
                 }
             }
             #endif
@@ -206,25 +201,25 @@ namespace PQ.Common.Physics.Internal
         public CollisionFlags2D CheckForOverlappingContacts(float extent)
         {
             Transform transform = _rigidbody.transform;
-            Vector2 right = transform.right.normalized;
-            Vector2 up    = transform.up.normalized;
+            Vector2 right = (2f * extent + _boxCollider.bounds.extents.x) * transform.right.normalized;
+            Vector2 up    = (2f * extent + _boxCollider.bounds.extents.y) * transform.up.normalized;
             Vector2 left  = -right;
             Vector2 down  = -up;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAABB_All(extent * right, out _))
+            if (CastAABB_All(right, out _))
             {
                 flags |= CollisionFlags2D.Front;
             }
-            if (CastAABB_All(extent * up, out _))
+            if (CastAABB_All(up, out _))
             {
                 flags |= CollisionFlags2D.Above;
             }
-            if (CastAABB_All(extent * left, out _))
+            if (CastAABB_All(left, out _))
             {
                 flags |= CollisionFlags2D.Behind;
             }
-            if (CastAABB_All(extent * down, out _))
+            if (CastAABB_All(down, out _))
             {
                 flags |= CollisionFlags2D.Below;
             }
@@ -235,7 +230,7 @@ namespace PQ.Common.Physics.Internal
             {
                 Bounds bounds = _boxCollider.bounds;
                 Vector2 center    = new(bounds.center.x, bounds.center.y);
-                Vector2 skinRatio = new(1f + (extent / bounds.extents.x), 1f + (extent / bounds.extents.y));
+                Vector2 skinRatio = new(1f + (2f * extent / bounds.extents.x), 1f + (2f * extent / bounds.extents.y));
                 Vector2 xAxis     = bounds.extents.x * right;
                 Vector2 yAxis     = bounds.extents.y * up;
 
@@ -261,5 +256,58 @@ namespace PQ.Common.Physics.Internal
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
         }
+
+
+        #if UNITY_EDITOR
+        private static void DrawCastHit(RaycastHit2D hit)
+        {
+            float duration = Time.fixedDeltaTime;
+            Vector2 direction = (hit.point - hit.centroid).normalized;
+            float hitDistance  = hit.distance;
+            float castDistance = hit.distance + (hit.distance / (1f - hit.fraction));
+
+            Vector2 edgePoint = hit.point - (hitDistance * direction);
+            Vector2 hitPoint  = hit.point;
+            Vector2 endPoint  = hit.point + (castDistance * direction);
+
+            Debug.DrawLine(edgePoint, hitPoint, Color.grey, duration);
+            Debug.DrawLine(hitPoint, endPoint,  Color.red,    duration);
+        }
+
+        private static void DrawBoxCast(Vector2 origin, Vector2 size, Vector2 direction, float distance, ReadOnlySpan<RaycastHit2D> hits)
+        {
+            Color color = Color.grey;
+            float duration = Time.fixedDeltaTime;
+
+            Vector2 extents = 0.50f * size;
+            Vector2 min = origin - extents;
+            Vector2 max = origin + extents;
+            Vector2 delta = distance * direction;
+
+            Vector2 leftBottom    = new(min.x, min.y);
+            Vector2 leftTop       = new(min.x, max.y);
+            Vector2 rightBottom   = new(max.x, min.y);
+            Vector2 rightTop      = new(max.x, max.y);
+            Vector2 leftTerminal  = min + delta;
+            Vector2 rightTerminal = max + delta;
+
+            Debug.DrawLine(leftBottom,  leftTop,       color, duration);
+            Debug.DrawLine(leftTop,     rightTop,      color, duration);
+            Debug.DrawLine(rightTop,    rightBottom,   color, duration);
+            Debug.DrawLine(leftBottom,  leftTerminal,  color, duration);
+            Debug.DrawLine(rightBottom, rightTerminal, color, duration);
+
+            foreach (RaycastHit2D hit in hits)
+            {
+                Vector2 edgePoint = hit.point - (hit.distance * direction);
+                Vector2 hitPoint  = hit.point;
+                Vector2 endPoint  = hit.point + (distance * direction);
+
+                Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
+            }
+        }
+
+        #endif
     }
 }
