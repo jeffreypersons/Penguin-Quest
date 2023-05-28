@@ -42,6 +42,7 @@ namespace PQ.Game.Entities.Penguin
 
 
         #if UNITY_EDITOR
+        private static VisualExtensions _shapeVisualizer = new VisualExtensions(VisualExtensions.DrawMode.Gizmos);
         void Start()
         {
             if (EditorApplication.isPlaying && EventBus == null)
@@ -65,7 +66,8 @@ namespace PQ.Game.Entities.Penguin
         {
             if (EditorApplication.isPlaying)
             {
-                GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 0.025f, Color.white);
+                _shapeVisualizer.Duration = Time.fixedDeltaTime;
+                _shapeVisualizer.DrawCircle(_penguinAnimation.SkeletalRootPosition, 0.025f, Color.white);
             }
         }
 

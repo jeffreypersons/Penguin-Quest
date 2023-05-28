@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Physics.Internal
@@ -55,6 +56,8 @@ namespace PQ.Common.Physics.Internal
         
         #if UNITY_EDITOR
         public bool DrawCastsInEditor { get; set; } = true;
+        
+        private static VisualExtensions _shapeVisualizer = new VisualExtensions(VisualExtensions.DrawMode.Debug);
         #endif
 
         public KinematicRigidbody2D(Transform transform)
@@ -276,26 +279,8 @@ namespace PQ.Common.Physics.Internal
 
         private static void DrawBoxCast(Vector2 origin, Vector2 size, Vector2 direction, float distance, ReadOnlySpan<RaycastHit2D> hits)
         {
-            Color color = Color.grey;
-            float duration = Time.fixedDeltaTime;
-
-            Vector2 extents = 0.50f * size;
-            Vector2 min = origin - extents;
-            Vector2 max = origin + extents;
-            Vector2 delta = distance * direction;
-
-            Vector2 leftBottom    = new(min.x, min.y);
-            Vector2 leftTop       = new(min.x, max.y);
-            Vector2 rightBottom   = new(max.x, min.y);
-            Vector2 rightTop      = new(max.x, max.y);
-            Vector2 leftTerminal  = min + delta;
-            Vector2 rightTerminal = max + delta;
-
-            Debug.DrawLine(leftBottom,  leftTop,       color, duration);
-            Debug.DrawLine(leftTop,     rightTop,      color, duration);
-            Debug.DrawLine(rightTop,    rightBottom,   color, duration);
-            Debug.DrawLine(leftBottom,  leftTerminal,  color, duration);
-            Debug.DrawLine(rightBottom, rightTerminal, color, duration);
+            _shapeVisualizer.DrawBox(origin, 0.50f * size);
+            _shapeVisualizer.DrawBox(origin + distance * direction, 0.50f * size);
 
             foreach (RaycastHit2D hit in hits)
             {
@@ -303,8 +288,8 @@ namespace PQ.Common.Physics.Internal
                 Vector2 hitPoint  = hit.point;
                 Vector2 endPoint  = hit.point + (distance * direction);
 
-                Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
-                Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
+                _shapeVisualizer.DrawLine(edgePoint, hitPoint, Color.green);
+                _shapeVisualizer.DrawLine(hitPoint,  endPoint, Color.red);
             }
         }
 
