@@ -277,9 +277,9 @@ namespace PQ.Common.Physics.Internal
 
         private static void DrawBoxCast(Vector2 origin, Vector2 size, Vector2 direction, float distance, ReadOnlySpan<RaycastHit2D> hits)
         {
-            VisualExtensions.Debug.Duration = Time.fixedDeltaTime;
-            VisualExtensions.Debug.DrawBox(origin, 0.50f * size);
-            VisualExtensions.Debug.DrawBox(origin + distance * direction, 0.50f * size);
+            float duration = Time.fixedDeltaTime;
+            DebugExtensions.DrawRect(origin, 0.50f * size, Color.gray, duration);
+            DebugExtensions.DrawRect(origin + distance * direction, 0.50f * size, Color.gray, duration);
 
             foreach (RaycastHit2D hit in hits)
             {
@@ -287,8 +287,8 @@ namespace PQ.Common.Physics.Internal
                 Vector2 hitPoint  = hit.point;
                 Vector2 endPoint  = hit.point + (distance * direction);
 
-                VisualExtensions.Debug.DrawLine(edgePoint, hitPoint, Color.green);
-                VisualExtensions.Debug.DrawLine(hitPoint,  endPoint, Color.red);
+                DebugExtensions.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                DebugExtensions.DrawLine(hitPoint,  endPoint, Color.red, duration);
             }
         }
         #endif

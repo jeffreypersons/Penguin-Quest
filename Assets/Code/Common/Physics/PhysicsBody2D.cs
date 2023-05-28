@@ -236,24 +236,22 @@ namespace PQ.Common.Physics
 
         void OnDrawGizmos()
         {
-            VisualExtensions.Gizmos.Duration = Time.fixedDeltaTime;
-
             Vector2 buffer = new Vector2(_skinWidth, _skinWidth);
             if (IsEnabled(EditorVisuals.Positions))
             {
-                VisualExtensions.Gizmos.DrawCircle(_kinematicBody.Position, 0.02f, Color.black);
-                VisualExtensions.Gizmos.DrawCircle(_kinematicBody.Center,   0.02f, Color.blue);
+                GizmoExtensions.DrawSphere(_kinematicBody.Position, 0.02f, Color.black);
+                GizmoExtensions.DrawSphere(_kinematicBody.Center,   0.02f, Color.blue);
             }
             if (IsEnabled(EditorVisuals.Axes))
             {
                 Vector2 frontCenter = _kinematicBody.Center + (_kinematicBody.Extents.x) * _kinematicBody.Forward;
                 Vector2 topCenter   = _kinematicBody.Center + (_kinematicBody.Extents.y) * _kinematicBody.Up;
 
-                VisualExtensions.Gizmos.DrawArrow(_kinematicBody.Center, frontCenter, Color.red);
-                VisualExtensions.Gizmos.DrawArrow(_kinematicBody.Center, topCenter,   Color.green);
+                GizmoExtensions.DrawArrow(_kinematicBody.Center, frontCenter, Color.red);
+                GizmoExtensions.DrawArrow(_kinematicBody.Center, topCenter,   Color.green);
 
-                VisualExtensions.Gizmos.DrawLine(frontCenter - buffer.x * _kinematicBody.Forward, frontCenter, Color.black);
-                VisualExtensions.Gizmos.DrawLine(topCenter   - buffer.y * _kinematicBody.Up,      topCenter,   Color.black);
+                GizmoExtensions.DrawLine(frontCenter - buffer.x * _kinematicBody.Forward, frontCenter, Color.black);
+                GizmoExtensions.DrawLine(topCenter   - buffer.y * _kinematicBody.Up,      topCenter,   Color.black);
             }
         }
         #endif

@@ -65,8 +65,7 @@ namespace PQ.Game.Entities.Penguin
         {
             if (EditorApplication.isPlaying)
             {
-                VisualExtensions.Gizmos.Duration = Time.fixedDeltaTime;
-                VisualExtensions.Gizmos.DrawCircle(_penguinAnimation.SkeletalRootPosition, 0.025f, Color.white);
+                GizmoExtensions.DrawSphere(_penguinAnimation.SkeletalRootPosition, 0.025f, Color.white);
             }
         }
 
