@@ -118,8 +118,6 @@ namespace PQ.Common.Physics
         [Tooltip("Settings for easily toggling debug visuals in one place from the inspector")]
         [SerializeField] private EditorVisuals _editorVisuals = EditorVisuals.All;
         private bool IsEnabled(EditorVisuals flags) => (_editorVisuals & flags) == flags;
-
-        private static VisualExtensions _shapeVisualizer = new VisualExtensions(VisualExtensions.DrawMode.Debug);
         #endif
 
 
@@ -238,24 +236,24 @@ namespace PQ.Common.Physics
 
         void OnDrawGizmos()
         {
-            _shapeVisualizer.Duration = Time.fixedDeltaTime;
+            VisualExtensions.Gizmos.Duration = Time.fixedDeltaTime;
 
             Vector2 buffer = new Vector2(_skinWidth, _skinWidth);
             if (IsEnabled(EditorVisuals.Positions))
             {
-                _shapeVisualizer.DrawCircle(_kinematicBody.Position, 0.02f, Color.black);
-                _shapeVisualizer.DrawCircle(_kinematicBody.Center,   0.02f, Color.blue);
+                VisualExtensions.Gizmos.DrawCircle(_kinematicBody.Position, 0.02f, Color.black);
+                VisualExtensions.Gizmos.DrawCircle(_kinematicBody.Center,   0.02f, Color.blue);
             }
             if (IsEnabled(EditorVisuals.Axes))
             {
                 Vector2 frontCenter = _kinematicBody.Center + (_kinematicBody.Extents.x) * _kinematicBody.Forward;
                 Vector2 topCenter   = _kinematicBody.Center + (_kinematicBody.Extents.y) * _kinematicBody.Up;
 
-                _shapeVisualizer.DrawArrow(_kinematicBody.Center, frontCenter, Color.red);
-                _shapeVisualizer.DrawArrow(_kinematicBody.Center, topCenter,   Color.green);
+                VisualExtensions.Gizmos.DrawArrow(_kinematicBody.Center, frontCenter, Color.red);
+                VisualExtensions.Gizmos.DrawArrow(_kinematicBody.Center, topCenter,   Color.green);
 
-                _shapeVisualizer.DrawLine(frontCenter - buffer.x * _kinematicBody.Forward, frontCenter, Color.black);
-                _shapeVisualizer.DrawLine(topCenter   - buffer.y * _kinematicBody.Up,      topCenter,   Color.black);
+                VisualExtensions.Gizmos.DrawLine(frontCenter - buffer.x * _kinematicBody.Forward, frontCenter, Color.black);
+                VisualExtensions.Gizmos.DrawLine(topCenter   - buffer.y * _kinematicBody.Up,      topCenter,   Color.black);
             }
         }
         #endif

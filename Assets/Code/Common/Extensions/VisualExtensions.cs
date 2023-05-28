@@ -8,30 +8,35 @@ namespace PQ.Common.Extensions
 {
     /*
     Various utilities for drawing and manipulating gizmos or debug shapes in editor.
-
-    Includes resetting of color to what it was previously before the call to minimize side effects.
     */
     public sealed class VisualExtensions
     {
         // todo: extend this to use line renderer so it can be used for game-view/builds (eg via a debug menu)
-        public enum DrawMode
+        private enum DrawMode
         {
             Debug,
             Gizmos,
         }
-        // only applies for debug
-        public enum DurationMode
-        {
-            DeltaTime,
-        }
 
-        public DrawMode Mode         { get; set; }
-        public float    Duration     { get; set; }
-        public Color    DefaultColor { get; set; }
+        public const int MinElipsoidSegments =   5;
+        public const int MaxElipsoidSegments = 100;
 
-        public VisualExtensions(DrawMode mode)
+        private DrawMode _mode { get; set; }
+        private Vector2[] _linePoints     = new Vector2[2];
+        private Vector2[] _boxPoints      = new Vector2[4];
+        private Vector2[] _elipsoidPoints = new Vector2[MaxElipsoidSegments];
+
+        public float Duration { get; set; }
+        public Color DefaultColor { get; set; }
+
+        public static readonly VisualExtensions Debug  = new VisualExtensions(DrawMode.Debug);
+        public static readonly VisualExtensions Gizmos = new VisualExtensions(DrawMode.Gizmos);
+
+        private VisualExtensions() {}
+
+        private VisualExtensions(DrawMode mode)
         {
-            Mode         = mode;
+            _mode        = mode;
             Duration     = 0f;
             DefaultColor = Color.white;
         }
@@ -52,9 +57,10 @@ namespace PQ.Common.Extensions
         
         public void DrawLine(Vector2 pointA, Vector2 pointB, Color? color = null)
         {
-            Span<Vector2> endPoints = stackalloc Vector2[] { pointA, pointB };
+            _linePoints[0] = pointA;
+            _linePoints[1] = pointB;
 
-            DrawLinesBetweenPoints(endPoints, Mode, Duration, color.GetValueOrDefault(DefaultColor), connectEnds: false);
+            DrawLinesBetweenPoints(_linePoints.AsSpan(), _mode, Duration, color.GetValueOrDefault(DefaultColor), connectEnds: false);
         }
         
         /*
@@ -81,8 +87,7 @@ namespace PQ.Common.Extensions
 
         public void DrawEllipse(Vector2 center, Vector2 extents, float degrees = 0f, int segments=16, Color? color=null)
         {
-            // assumes >= 5 segments
-            Span<Vector2> points = stackalloc Vector2[segments+1];
+            Span<Vector2> points = _elipsoidPoints.AsSpan(0, Math.Clamp(_elipsoidPoints.Length, MinElipsoidSegments, MaxElipsoidSegments));
 
             float deltaRadians = (Mathf.Deg2Rad * 360f) / segments;
             for (int i = 0; i < segments; i++)
@@ -93,19 +98,16 @@ namespace PQ.Common.Extensions
                 points[i] = AsWorldPoint(center, epsiloidalX, epsiloidalY, degrees);
             }
 
-            DrawLinesBetweenPoints(points, Mode, Duration, color.GetValueOrDefault(DefaultColor), connectEnds: true);
+            DrawLinesBetweenPoints(points, _mode, Duration, color.GetValueOrDefault(DefaultColor), connectEnds: true);
         }
 
         public void DrawBox(Vector2 center, Vector2 extents, float degrees=0f, Color? color = null)
         {
-            Span<Vector2> corners = stackalloc Vector2[]
-            {
-                AsWorldPoint(center, -extents.x, -extents.y, degrees),
-                AsWorldPoint(center, -extents.x,  extents.y, degrees),
-                AsWorldPoint(center,  extents.x,  extents.y, degrees),
-                AsWorldPoint(center,  extents.x, -extents.y, degrees),
-            };
-            DrawLinesBetweenPoints(corners, Mode, Duration, color.GetValueOrDefault(DefaultColor), connectEnds: true);
+            _boxPoints[0] = AsWorldPoint(center, -extents.x, -extents.y, degrees);
+            _boxPoints[1] = AsWorldPoint(center, -extents.x,  extents.y, degrees);
+            _boxPoints[2] = AsWorldPoint(center,  extents.x,  extents.y, degrees);
+            _boxPoints[3] = AsWorldPoint(center,  extents.x, -extents.y, degrees);
+            DrawLinesBetweenPoints(_boxPoints.AsSpan(), _mode, Duration, color.GetValueOrDefault(DefaultColor), connectEnds: true);
         }
 
 
@@ -116,26 +118,24 @@ namespace PQ.Common.Extensions
                 case DrawMode.Debug:
                     for (int i = 1; i < points.Length; i++)
                     {
-                        Debug.DrawLine(points[i - 1], points[i], color, duration);
+                        UnityEngine.Debug.DrawLine(points[i - 1], points[i], color, duration);
                     }
                     if (connectEnds)
                     {
-                        Debug.DrawLine(points[points.Length-1], points[0], color, duration);
+                        UnityEngine.Debug.DrawLine(points[points.Length-1], points[0], color, duration);
                     }
                     break;
 
                 case DrawMode.Gizmos:
-                    Color previousColor = Gizmos.color;
-                    Gizmos.color = color;
+                    UnityEngine.Gizmos.color = color;
                     for (int i = 1; i < points.Length; i++)
                     {
                         Gizmos.DrawLine(points[i - 1], points[i]);
                     }
                     if (connectEnds)
                     {
-                        Debug.DrawLine(points[points.Length - 1], points[0], color, duration);
+                        UnityEngine.Debug.DrawLine(points[points.Length - 1], points[0], color, duration);
                     }
-                    Gizmos.color = previousColor;
                     break;
 
                 default:

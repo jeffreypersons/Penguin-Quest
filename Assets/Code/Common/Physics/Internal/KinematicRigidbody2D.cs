@@ -56,8 +56,6 @@ namespace PQ.Common.Physics.Internal
         
         #if UNITY_EDITOR
         public bool DrawCastsInEditor { get; set; } = true;
-        
-        private static VisualExtensions _shapeVisualizer = new VisualExtensions(VisualExtensions.DrawMode.Debug);
         #endif
 
         public KinematicRigidbody2D(Transform transform)
@@ -274,13 +272,14 @@ namespace PQ.Common.Physics.Internal
             Vector2 endPoint  = hit.point + (castDistance * direction);
 
             Debug.DrawLine(edgePoint, hitPoint, Color.grey, duration);
-            Debug.DrawLine(hitPoint, endPoint,  Color.red,    duration);
+            Debug.DrawLine(hitPoint,  endPoint, Color.red,  duration);
         }
 
         private static void DrawBoxCast(Vector2 origin, Vector2 size, Vector2 direction, float distance, ReadOnlySpan<RaycastHit2D> hits)
         {
-            _shapeVisualizer.DrawBox(origin, 0.50f * size);
-            _shapeVisualizer.DrawBox(origin + distance * direction, 0.50f * size);
+            VisualExtensions.Debug.Duration = Time.fixedDeltaTime;
+            VisualExtensions.Debug.DrawBox(origin, 0.50f * size);
+            VisualExtensions.Debug.DrawBox(origin + distance * direction, 0.50f * size);
 
             foreach (RaycastHit2D hit in hits)
             {
@@ -288,11 +287,10 @@ namespace PQ.Common.Physics.Internal
                 Vector2 hitPoint  = hit.point;
                 Vector2 endPoint  = hit.point + (distance * direction);
 
-                _shapeVisualizer.DrawLine(edgePoint, hitPoint, Color.green);
-                _shapeVisualizer.DrawLine(hitPoint,  endPoint, Color.red);
+                VisualExtensions.Debug.DrawLine(edgePoint, hitPoint, Color.green);
+                VisualExtensions.Debug.DrawLine(hitPoint,  endPoint, Color.red);
             }
         }
-
         #endif
     }
 }
