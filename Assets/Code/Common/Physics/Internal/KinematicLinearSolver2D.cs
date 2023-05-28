@@ -36,7 +36,7 @@ namespace PQ.Common.Physics.Internal
         {
             if (deltaPosition == Vector2.zero)
             {
-                _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
+                _collisions = _body.CheckSides();
                 return;
             }
 
@@ -46,13 +46,11 @@ namespace PQ.Common.Physics.Internal
             Vector2 horizontal = deltaPosition - vertical;
             Vector2 position   = _body.Position;
 
-            Debug.Log($"vertical={vertical} horizontal={horizontal} position={position}");
-
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
 
-            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
+            _collisions = _body.CheckSides();
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
         }
 

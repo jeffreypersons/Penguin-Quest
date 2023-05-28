@@ -198,51 +198,33 @@ namespace PQ.Common.Physics.Internal
             return true;
         }
 
+        /*
+        Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
 
-        public CollisionFlags2D CheckForOverlappingContacts(float extent)
+        If no layermask provided, uses the one assigned in editor.
+        */
+        public CollisionFlags2D CheckSides()
         {
-            Transform transform = _rigidbody.transform;
-            Vector2 right = (2f * extent + _boxCollider.bounds.extents.x) * transform.right.normalized;
-            Vector2 up    = (2f * extent + _boxCollider.bounds.extents.y) * transform.up.normalized;
-            Vector2 left  = -right;
-            Vector2 down  = -up;
+            bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
+            bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
 
             CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAABB_All(right, out _))
+            if (HasContactsInNormalRange(315, 45))
             {
-                flags |= CollisionFlags2D.Front;
+                flags |= isFlippedHorizontal? CollisionFlags2D.Behind : CollisionFlags2D.Front;
             }
-            if (CastAABB_All(up, out _))
+            if (HasContactsInNormalRange(45, 135))
             {
-                flags |= CollisionFlags2D.Above;
+                flags |= isFlippedVertical ? CollisionFlags2D.Above : CollisionFlags2D.Below;
             }
-            if (CastAABB_All(left, out _))
+            if (HasContactsInNormalRange(135, 225))
             {
-                flags |= CollisionFlags2D.Behind;
+                flags |= isFlippedHorizontal ? CollisionFlags2D.Front : CollisionFlags2D.Behind;
             }
-            if (CastAABB_All(down, out _))
+            if (HasContactsInNormalRange(225, 315))
             {
-                flags |= CollisionFlags2D.Below;
+                flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
             }
-            
-            #if UNITY_EDITOR
-            // draw the 'scan-lines' whether we get a cast hit or not
-            if (DrawCastsInEditor)
-            {
-                Bounds bounds = _boxCollider.bounds;
-                Vector2 center    = new(bounds.center.x, bounds.center.y);
-                Vector2 skinRatio = new(1f + (2f * extent / bounds.extents.x), 1f + (2f * extent / bounds.extents.y));
-                Vector2 xAxis     = bounds.extents.x * right;
-                Vector2 yAxis     = bounds.extents.y * up;
-
-                float duration = Time.fixedDeltaTime;
-                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
-                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
-            }
-            #endif
-            Debug.Log($"flags={flags}");
             return flags;
         }
 
@@ -256,6 +238,19 @@ namespace PQ.Common.Physics.Internal
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
+        }
+        
+
+        private bool HasContactsInNormalRange(float min, float max)
+        {
+            float previousMin = _contactFilter.minNormalAngle;
+            float previousMax = _contactFilter.maxNormalAngle;
+
+            _contactFilter.SetNormalAngle(min, max);
+            bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
+
+            _contactFilter.SetNormalAngle(previousMin, previousMax);
+            return hasContactsInRange;
         }
 
 
