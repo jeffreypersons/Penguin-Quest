@@ -5,6 +5,14 @@ using PQ.Common.Extensions;
 
 namespace PQ.Common.Physics.Internal
 {
+    /*
+    Internal container for unifying physics calls.
+
+    Notes
+    * Assumes always upright bounding box, with kinematic rigidbody
+    * Corresponding game object is fixed in rotation to enforce alignment with global up
+    * Caching is done only for cast results, position caching is intentionally left to any calling code
+    */
     internal sealed class KinematicRigidbody2D
     {
         private Transform        _transform;
@@ -87,7 +95,7 @@ namespace PQ.Common.Physics.Internal
 
             _contactFilter.useTriggers    = true;
             _contactFilter.useLayerMask   = true;
-            _contactFilter.useNormalAngle = false;
+            _contactFilter.useNormalAngle = true;
 
             _rigidbody.simulated   = true;
             _rigidbody.isKinematic = true;
@@ -141,12 +149,29 @@ namespace PQ.Common.Physics.Internal
         public void MoveTo(Vector2 position)     => _rigidbody.position = position;
         public void MoveBy(Vector2 delta)        => _rigidbody.position += delta;
 
+        /*
+        Move body to given frame's start position and perform MovePosition to maintain any interpolation.
+        
+        This allows changes to rigidbody.position be applied without ignoring interpolation settings.
+        
+        Context:
+        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
+        - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
+        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
+          replace the original position _then_ apply MovePosition()
+        */
         public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
         {
             _rigidbody.position = startPositionThisFrame;
             _rigidbody.MovePosition(targetPositionThisFrame);
         }
 
+
+        /*
+        Project AABB along delta, and return ALL hits (if any).
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
         public bool CastAABB_All(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
             if (delta == Vector2.zero)
@@ -158,7 +183,7 @@ namespace PQ.Common.Physics.Internal
             Bounds bounds = _boxCollider.bounds;
 
             Vector2 center    = bounds.center;
-            Vector2 size      = bounds.size;
+            Vector2 size      = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
             float   distance  = delta.magnitude;
             Vector2 direction = delta / distance;
 
@@ -172,11 +197,15 @@ namespace PQ.Common.Physics.Internal
                 DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, delta, hits, duration);
             }
             #endif
-            
-            Debug.Log($"{hits.Length}");
             return !hits.IsEmpty;
         }
 
+
+        /*
+        Project AABB along delta, and return CLOSEST hit (if any).
+        
+        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        */
         public bool CastAABB_Closest(Vector2 delta, out RaycastHit2D hit)
         {
             if (!CastAABB_All(delta, out ReadOnlySpan<RaycastHit2D> hits))
@@ -198,14 +227,32 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
+        Check for overlapping colliders within our bounding box.
+        */
+        public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
+        {
+            int colliderCount = _boxCollider.OverlapCollider(_contactFilter, _overlapBuffer);
+            colliders = _overlapBuffer.AsSpan(0, colliderCount);
+            return !colliders.IsEmpty;
+        }
+
+        /*
+        Query existing contacts from last physics pass.
+        */
+        public bool CheckForContacts(out ReadOnlySpan<ContactPoint2D> contacts)
+        {
+            int contactCount = _boxCollider.GetContacts(_contactFilter, _contactBuffer);
+            contacts = _contactBuffer.AsSpan(0, contactCount);
+            return !contacts.IsEmpty;
+        }
+
+        /*
         Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
 
         If no layermask provided, uses the one assigned in editor.
         */
         public CollisionFlags2D CheckSides()
         {
-            _contactFilter.useNormalAngle = true;
-
             bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
             bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
 
@@ -226,8 +273,7 @@ namespace PQ.Common.Physics.Internal
             {
                 flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
             }
-
-            _contactFilter.useNormalAngle = false;
+            Debug.Log(flags);
             return flags;
         }
 
@@ -242,8 +288,24 @@ namespace PQ.Common.Physics.Internal
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
         }
-        
 
+        /*
+        Compute vector representing overlap amount between body and given collider, if any.
+
+        Uses separating axis theorem to determine overlap - may require more invocations for
+        complex polygons.
+        */
+        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
+        {
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            if (!minimumSeparation.isValid)
+            {
+                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
+            }
+            return minimumSeparation;
+        }
+        
+        
         private bool HasContactsInNormalRange(float min, float max)
         {
             float previousMin = _contactFilter.minNormalAngle;
