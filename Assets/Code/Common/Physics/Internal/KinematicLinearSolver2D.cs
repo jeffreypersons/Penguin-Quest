@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using UnityEngine;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Physics.Internal
@@ -67,10 +68,9 @@ namespace PQ.Common.Physics.Internal
          */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            SnapToSurfaceIfNearOrInside();
-            if (ApproximatelyZero(deltaPosition))
+            _collisions = _body.CheckSides();
+            if (deltaPosition == Vector2.zero)
             {
-                _collisions = _body.CheckSides();
                 return;
             }
 
@@ -142,6 +142,7 @@ namespace PQ.Common.Physics.Internal
             }
         }
         
+
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
         {
@@ -158,6 +159,15 @@ namespace PQ.Common.Physics.Internal
             {
                 step = hit.distance * direction;
             }
+
+            #if UNITY_EDITOR
+            Vector2 origin = _body.Position;
+            Vector2 max = remainingDistance * direction;
+            float duration = Time.fixedDeltaTime;
+
+            DebugExtensions.DrawLine(origin, origin + delta, Color.white, duration);
+            DebugExtensions.DrawRayCast(origin, step, hit, duration);
+            #endif
 
             _body.MoveBy(step);
             delta -= step;

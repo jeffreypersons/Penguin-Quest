@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Physics.Internal
@@ -193,15 +194,7 @@ namespace PQ.Common.Physics.Internal
             if (DrawCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
-                foreach (RaycastHit2D hit in hits)
-                {
-                    Vector2 edgePoint = hit.point - (hit.distance * direction);
-                    Vector2 hitPoint  = hit.point;
-                    Vector2 endPoint  = hit.point + (distance * direction);
-
-                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
-                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
-                }
+                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, delta, hits, duration);
             }
             #endif
             return !hits.IsEmpty;
