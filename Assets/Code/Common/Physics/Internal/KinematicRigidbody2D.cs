@@ -87,7 +87,7 @@ namespace PQ.Common.Physics.Internal
 
             _contactFilter.useTriggers    = true;
             _contactFilter.useLayerMask   = true;
-            _contactFilter.useNormalAngle = true;
+            _contactFilter.useNormalAngle = false;
 
             _rigidbody.simulated   = true;
             _rigidbody.isKinematic = true;
@@ -204,6 +204,8 @@ namespace PQ.Common.Physics.Internal
         */
         public CollisionFlags2D CheckSides()
         {
+            _contactFilter.useNormalAngle = true;
+
             bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
             bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
 
@@ -224,6 +226,8 @@ namespace PQ.Common.Physics.Internal
             {
                 flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
             }
+
+            _contactFilter.useNormalAngle = false;
             return flags;
         }
 
@@ -245,7 +249,7 @@ namespace PQ.Common.Physics.Internal
             float previousMin = _contactFilter.minNormalAngle;
             float previousMax = _contactFilter.maxNormalAngle;
 
-            _contactFilter.SetNormalAngle(min, max-Mathf.Epsilon);
+            _contactFilter.SetNormalAngle(min, max);
             bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
 
             _contactFilter.SetNormalAngle(previousMin, previousMax);
