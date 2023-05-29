@@ -9,6 +9,35 @@ namespace PQ.Common.Extensions
     */
     public static class DebugExtensions
     {
+        private struct OrientedRect
+        {
+            public readonly Vector2 P0;
+            public readonly Vector2 P1;
+            public readonly Vector2 P2;
+            public readonly Vector2 P3;
+            
+            public OrientedRect(Vector2 origin, Vector2 extents, float degrees)
+            {
+                float cosTheta = Mathf.Cos(Mathf.Deg2Rad * degrees);
+                float sinTheta = Mathf.Sin(Mathf.Deg2Rad * degrees);
+                
+                Vector2 xAxis = extents.x * new Vector2( cosTheta, sinTheta);
+                Vector2 yAxis = extents.y * new Vector2(-sinTheta, cosTheta);
+                P0 = origin - xAxis - yAxis;
+                P1 = origin - xAxis + yAxis;
+                P2 = origin + xAxis + yAxis;
+                P3 = origin + xAxis - yAxis;
+            }
+
+            public void Draw(Color color, float duration)
+            {
+                Debug.DrawLine(P0, P1, color, duration);
+                Debug.DrawLine(P1, P2, color, duration);
+                Debug.DrawLine(P2, P3, color, duration);
+                Debug.DrawLine(P3, P0, color, duration);
+            }
+        }
+
         public static Color DefaultLineColor     { get; set; } = Color.white;
         public static Color DefaultCastMissColor { get; set; } = Color.red;
         public static Color DefaultCastHitColor  { get; set; } = Color.green;
@@ -44,25 +73,28 @@ namespace PQ.Common.Extensions
         }
 
         /* Draw sides of rectangle corresponding to the area represented by given relative origin and extents (AABB). */
-        public static void DrawRect(Vector2 origin, Vector2 extents, Color? color=null, float duration=0f)
+        public static void DrawBox(Vector2 origin, Vector2 extents, float degrees, Color? color=null, float duration=0f)
         {
             Color drawColor = color.GetValueOrDefault(DefaultLineColor);
+            
+            float cosTheta = Mathf.Cos(Mathf.Deg2Rad * degrees);
+            float sinTheta = Mathf.Sin(Mathf.Deg2Rad * degrees);
+            Vector2 xAxis = extents.x * new Vector2( cosTheta, sinTheta);
+            Vector2 yAxis = extents.y * new Vector2(-sinTheta, cosTheta);
 
-            Vector2 min = origin - extents;
-            Vector2 max = origin + extents;
-            Vector2 leftBottom  = new(min.x, min.y);
-            Vector2 leftTop     = new(min.x, max.y);
-            Vector2 rightBottom = new(max.x, min.y);
-            Vector2 rightTop    = new(max.x, max.y);
+            Vector2 p0 = origin - xAxis - yAxis;
+            Vector2 p1 = origin - xAxis + yAxis;
+            Vector2 p2 = origin + xAxis + yAxis;
+            Vector2 p3 = origin + xAxis - yAxis;
 
-            Debug.DrawLine(leftTop,     rightTop,    drawColor, duration);
-            Debug.DrawLine(leftBottom,  rightBottom, drawColor, duration);
-            Debug.DrawLine(leftBottom,  leftTop,     drawColor, duration);
-            Debug.DrawLine(rightBottom, rightTop,    drawColor, duration);
+            Debug.DrawLine(p0, p1, drawColor, duration);
+            Debug.DrawLine(p1, p2, drawColor, duration);
+            Debug.DrawLine(p2, p3, drawColor, duration);
+            Debug.DrawLine(p3, p0, drawColor, duration);
         }
 
         /* Draw lines between given points. */
-        public static void DrawWaypoints(Vector2[] points, Color? color=null, float duration=0f, bool connectEnds=false)
+        public static void DrawWaypoints(ReadOnlySpan<Vector2> points, Color? color=null, float duration=0f, bool connectEnds=false)
         {
             if (points == null || points.Length <= 1)
             {
@@ -116,33 +148,17 @@ namespace PQ.Common.Extensions
         public static void DrawBoxCast(Vector2 origin, Vector2 extents, float degrees, Vector2 delta,
             Color? color=null, float duration=0f)
         {
-            float radians = degrees * Mathf.Deg2Rad;
-            float cosTheta = Mathf.Cos(radians);
-            float sinTheta = Mathf.Sin(radians);
-            Vector2 forward = extents.x * new Vector2( cosTheta, sinTheta);
-            Vector2 up      = extents.y * new Vector2(-sinTheta, cosTheta);
-
-            Span<Vector2> original = stackalloc Vector2[]
-            {
-                origin + forward + up,
-                origin + forward - up,
-                origin - forward - up,
-                origin - forward + up,
-            };
-            Span<Vector2> shifted = stackalloc Vector2[original.Length];
-            for (int i = 0; i < original.Length; i++)
-            {
-                shifted[i] = original[i] + delta;
-            }
-
             Color drawColor = color.GetValueOrDefault(DefaultLineColor);
-            for (int i = 1; i < original.Length; i++)
-            {
-                Debug.DrawLine(original[i-1], original[i], drawColor, duration);
-                Debug.DrawLine(shifted [i-1], shifted [i], drawColor, duration);
-                Debug.DrawLine(original[i],   shifted [i], drawColor, duration);
-                DrawArrow(original[i], shifted[i], drawColor, duration);
-            }
+            OrientedRect original = new(origin, extents, degrees);
+            OrientedRect shifted  = new(origin + delta, extents, degrees);
+
+            original.Draw(drawColor, duration);
+            shifted .Draw(drawColor,  duration);
+            Debug.DrawLine(original.P0, shifted.P0, drawColor, duration);
+            Debug.DrawLine(original.P1, shifted.P1, drawColor, duration);
+            Debug.DrawLine(original.P2, shifted.P2, drawColor, duration);
+            Debug.DrawLine(original.P3, shifted.P3, drawColor, duration);
+            DrawArrow(origin, origin + delta, drawColor, duration);
         }
     }
 }
