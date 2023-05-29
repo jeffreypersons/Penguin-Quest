@@ -41,16 +41,13 @@ namespace PQ.Common.Extensions
         public static Color DefaultLineColor     { get; set; } = Color.white;
         public static Color DefaultCastMissColor { get; set; } = Color.red;
         public static Color DefaultCastHitColor  { get; set; } = Color.green;
-
-        public static float ArrowheadSizeRatio { get; set; } = 0.10f;
+        public static float ArrowheadSizeRatio   { get; set; } = 0.10f;
 
 
         /* Draw line between given world positions. */
         public static void DrawLine(Vector2 from, Vector2 to, Color? color=null, float duration=0f)
         {
-            Color drawColor = color.GetValueOrDefault(DefaultLineColor);
-
-            Debug.DrawLine(from, to, drawColor, duration);
+            Debug.DrawLine(from, to, color.GetValueOrDefault(DefaultLineColor), duration);
         }
 
         /*
