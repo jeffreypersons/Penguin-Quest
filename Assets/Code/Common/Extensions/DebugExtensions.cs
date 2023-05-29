@@ -69,6 +69,19 @@ namespace PQ.Common.Extensions
             Debug.DrawLine(arrowheadBottom + arrowheadOffset, to, drawColor, duration);
         }
 
+        /* Draw plus + as two perpendicular lines at given point/rotation. */
+        public static void DrawPlus(Vector2 origin, Vector2 extents, float degrees, Color? color=null, float duration=0f)
+        {
+            float cosTheta = Mathf.Cos(Mathf.Deg2Rad * degrees);
+            float sinTheta = Mathf.Sin(Mathf.Deg2Rad * degrees);
+            Vector2 xAxis = extents.x * new Vector2( cosTheta, sinTheta);
+            Vector2 yAxis = extents.y * new Vector2(-sinTheta, cosTheta);
+
+            Color drawColor = color.GetValueOrDefault(DefaultLineColor);
+            Debug.DrawLine(origin - xAxis, origin + xAxis, drawColor, duration);
+            Debug.DrawLine(origin - yAxis, origin + yAxis, drawColor, duration);
+        }
+
         /* Draw sides of rectangle corresponding to the area represented by given relative origin and extents (AABB). */
         public static void DrawBox(Vector2 origin, Vector2 extents, float degrees, Color? color=null, float duration=0f)
         {
@@ -150,12 +163,13 @@ namespace PQ.Common.Extensions
             OrientedRect shifted  = new(origin + delta, extents, degrees);
 
             original.Draw(drawColor, duration);
-            shifted .Draw(drawColor,  duration);
+            shifted .Draw(drawColor, duration);
             Debug.DrawLine(original.P0, shifted.P0, drawColor, duration);
             Debug.DrawLine(original.P1, shifted.P1, drawColor, duration);
             Debug.DrawLine(original.P2, shifted.P2, drawColor, duration);
             Debug.DrawLine(original.P3, shifted.P3, drawColor, duration);
             DrawArrow(origin, origin + delta, drawColor, duration);
+            DrawPlus(origin, ArrowheadSizeRatio * extents, 45f, drawColor, duration);
         }
     }
 }
