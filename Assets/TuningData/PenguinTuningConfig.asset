@@ -15,10 +15,10 @@ MonoBehaviour:
   maxVerticalSpeedFalling: 5
   maxVerticalSpeedJumping: 5
   maxHorizontalSpeedUpright: 5
-  overlapToleranceUpright: 0.04
-  boundsMinUpright: {x: -0.25, y: 0}
-  boundsMaxUpright: {x: 0.25, y: 1.15}
+  skinWidthUpright: 0.04
+  boundsMinUpright: {x: -0.22, y: 0.075}
+  boundsMaxUpright: {x: 0.22, y: 1.075}
   maxHorizontalSpeedProne: 20
-  overlapToleranceProne: 0.04
+  skinWidthProne: 0.04
   boundsMinProne: {x: -0.575, y: 0}
   boundsMaxProne: {x: 0.575, y: 0.5}
