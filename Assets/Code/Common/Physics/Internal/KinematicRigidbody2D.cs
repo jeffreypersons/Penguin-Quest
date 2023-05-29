@@ -169,7 +169,7 @@ namespace PQ.Common.Physics.Internal
             if (DrawCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, distance * direction, Color.gray, duration);
+                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, delta, hits, duration);
             }
             #endif
             return !hits.IsEmpty;
@@ -249,14 +249,5 @@ namespace PQ.Common.Physics.Internal
             _contactFilter.SetNormalAngle(previousMin, previousMax);
             return hasContactsInRange;
         }
-
-
-        #if UNITY_EDITOR
-        private static void DrawBoxCast(Vector2 origin, Vector2 size, Vector2 direction, float distance, ReadOnlySpan<RaycastHit2D> hits)
-        {
-            DebugExtensions.DrawBoxCast(origin, 0.50f * size, 0f, distance * direction, Color.white, Time.fixedDeltaTime);
-            DebugExtensions.DrawCastHit(distance * direction, hits.IsEmpty? default : hits[0], Color.gray, Color.red, Color.green, Time.fixedDeltaTime);
-        }
-        #endif
     }
 }

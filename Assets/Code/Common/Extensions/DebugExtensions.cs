@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 
 namespace PQ.Common.Extensions
@@ -38,16 +39,16 @@ namespace PQ.Common.Extensions
             }
         }
 
-        public static Color DefaultLineColor     { get; set; } = Color.white;
-        public static Color DefaultCastMissColor { get; set; } = Color.red;
-        public static Color DefaultCastHitColor  { get; set; } = Color.green;
-        public static float ArrowheadSizeRatio   { get; set; } = 0.10f;
+        public static Color LineColor          { get; set; } = Color.white;
+        public static Color CastMissColor      { get; set; } = Color.red;
+        public static Color CastHitColor       { get; set; } = Color.green;
+        public static float ArrowheadSizeRatio { get; set; } = 0.10f;
 
 
         /* Draw line between given world positions. */
         public static void DrawLine(Vector2 from, Vector2 to, Color? color=null, float duration=0f)
         {
-            Debug.DrawLine(from, to, color.GetValueOrDefault(DefaultLineColor), duration);
+            Debug.DrawLine(from, to, color.GetValueOrDefault(LineColor), duration);
         }
 
         /*
@@ -58,7 +59,7 @@ namespace PQ.Common.Extensions
         */
         public static void DrawArrow(Vector2 from, Vector2 to, Color? color=null, float duration=0f)
         {
-            Color drawColor = color.GetValueOrDefault(DefaultLineColor);
+            Color drawColor = color.GetValueOrDefault(LineColor);
 
             Vector2 vector = to - from;
             Vector2 arrowheadBottom = to - ArrowheadSizeRatio * vector;
@@ -77,7 +78,7 @@ namespace PQ.Common.Extensions
             Vector2 xAxis = extents.x * new Vector2( cosTheta, sinTheta);
             Vector2 yAxis = extents.y * new Vector2(-sinTheta, cosTheta);
 
-            Color drawColor = color.GetValueOrDefault(DefaultLineColor);
+            Color drawColor = color.GetValueOrDefault(LineColor);
             Debug.DrawLine(origin - xAxis, origin + xAxis, drawColor, duration);
             Debug.DrawLine(origin - yAxis, origin + yAxis, drawColor, duration);
         }
@@ -85,7 +86,7 @@ namespace PQ.Common.Extensions
         /* Draw sides of rectangle corresponding to the area represented by given relative origin and extents (AABB). */
         public static void DrawBox(Vector2 origin, Vector2 extents, float degrees, Color? color=null, float duration=0f)
         {
-            Color drawColor = color.GetValueOrDefault(DefaultLineColor);
+            Color drawColor = color.GetValueOrDefault(LineColor);
             
             float cosTheta = Mathf.Cos(Mathf.Deg2Rad * degrees);
             float sinTheta = Mathf.Sin(Mathf.Deg2Rad * degrees);
@@ -111,7 +112,7 @@ namespace PQ.Common.Extensions
                 return;
             }
 
-            Color drawColor = color.GetValueOrDefault(DefaultLineColor);
+            Color drawColor = color.GetValueOrDefault(LineColor);
             for (int i = 1; i < points.Length; i++)
             {
                 Debug.DrawLine(points[i - 1], points[i], drawColor, duration);
@@ -124,52 +125,57 @@ namespace PQ.Common.Extensions
 
 
         /* Draw line for given delta, with hit (if any) highlighted in given color. If shape cast, draws line from center to edge. */
-        public static void DrawCastHit(Vector2 delta, RaycastHit2D hit, Color? lineColor=null, Color? hitColor=null, Color? missColor = null, float duration=0f)
+        public static void DrawRayCast(Vector2 origin, Vector2 delta, RaycastHit2D hit, float duration=0f)
         {
+            Vector2 terminalPoint = origin + delta;
+            if (!hit)
+            {
+                Debug.DrawLine(origin, terminalPoint, CastMissColor, duration);
+                return;
+            }
+
             Vector2 centroidPoint = hit.centroid;
-            Vector2 edgePoint     = hit.point - (hit.distance * delta.normalized);
-            Vector2 hitPoint      = hit.point;
-            Vector2 terminalPoint = edgePoint + delta;
+            Vector2 edgePoint = hit.point - (hit.distance * delta.normalized);
+            Vector2 hitPoint = hit.point;
 
             // if not approximately same, it was a shape cast, so draw from center of original shape to the edge where the delta starts
             if (centroidPoint != edgePoint)
             {
-                Debug.DrawLine(centroidPoint, edgePoint, lineColor.GetValueOrDefault(DefaultLineColor), duration);
+                Debug.DrawLine(centroidPoint, edgePoint + delta, LineColor, duration);
             }
 
-            if (hit)
-            {
-                Debug.DrawLine(edgePoint, hitPoint,      hitColor.GetValueOrDefault(DefaultCastHitColor),   duration);
-                Debug.DrawLine(hitPoint,  terminalPoint, missColor.GetValueOrDefault(DefaultCastMissColor), duration);
-            }
-            else
-            {
-                Debug.DrawLine(edgePoint, terminalPoint, missColor.GetValueOrDefault(DefaultCastMissColor), duration);
-            }
-        }
-
-        /* Draw line from origin to offset from origin. */
-        public static void DrawRayCast(Vector2 origin, Vector2 delta, Color? color=null, float duration=0f)
-        {
-            Debug.DrawLine(origin, origin + delta, color.GetValueOrDefault(DefaultLineColor), duration);
+            Debug.DrawLine(edgePoint, hitPoint,      CastHitColor,   duration);
+            Debug.DrawLine(hitPoint,  terminalPoint, CastMissColor, duration);
         }
 
         /* Draw box cast from given origin along delta. */
-        public static void DrawBoxCast(Vector2 origin, Vector2 extents, float degrees, Vector2 delta,
-            Color? color=null, float duration=0f)
+        public static void DrawBoxCast(Vector2 origin, Vector2 extents, float degrees, Vector2 delta, ReadOnlySpan<RaycastHit2D> hits, float duration=0f)
         {
-            Color drawColor = color.GetValueOrDefault(DefaultLineColor);
+            Vector2 terminalPoint = origin + delta;
             OrientedRect original = new(origin, extents, degrees);
             OrientedRect shifted  = new(origin + delta, extents, degrees);
 
-            original.Draw(drawColor, duration);
-            shifted .Draw(drawColor, duration);
-            Debug.DrawLine(original.P0, shifted.P0, drawColor, duration);
-            Debug.DrawLine(original.P1, shifted.P1, drawColor, duration);
-            Debug.DrawLine(original.P2, shifted.P2, drawColor, duration);
-            Debug.DrawLine(original.P3, shifted.P3, drawColor, duration);
-            DrawArrow(origin, origin + delta, drawColor, duration);
-            DrawPlus(origin, ArrowheadSizeRatio * extents, 45f, drawColor, duration);
+            original.Draw(LineColor, duration);
+            shifted .Draw(LineColor, duration);
+
+            Debug.DrawLine(original.P0, shifted.P0, LineColor, duration);
+            Debug.DrawLine(original.P1, shifted.P1, LineColor, duration);
+            Debug.DrawLine(original.P2, shifted.P2, LineColor, duration);
+            Debug.DrawLine(original.P3, shifted.P3, LineColor, duration);
+
+            DrawArrow(origin, terminalPoint, LineColor, duration);
+            DrawPlus(origin, ArrowheadSizeRatio * extents, 45f, LineColor, duration);
+
+            for (int i = 0; i < hits.Length; i++)
+            {
+                Vector2 centroidPoint = hits[i].centroid;
+                Vector2 edgePoint = hits[i].point - (hits[i].distance * delta.normalized);
+                Vector2 hitPoint = hits[i].point;
+                
+                Debug.DrawLine(centroidPoint, edgePoint + delta, LineColor, duration);
+                Debug.DrawLine(edgePoint, hitPoint, CastHitColor, duration);
+                Debug.DrawLine(hitPoint, terminalPoint, CastMissColor, duration);
+            }
         }
     }
 }

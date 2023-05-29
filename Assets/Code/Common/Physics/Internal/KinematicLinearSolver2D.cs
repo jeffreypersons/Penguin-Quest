@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PQ.Common.Extensions;
 
 
 namespace PQ.Common.Physics.Internal
@@ -34,6 +35,8 @@ namespace PQ.Common.Physics.Internal
 
         public void SolveMovement(Vector2 deltaPosition)
         {
+            MoveAABBAlongDelta(ref deltaPosition, out RaycastHit2D _);
+            return;
             if (deltaPosition == Vector2.zero)
             {
                 _collisions = _body.CheckSides();
@@ -90,15 +93,23 @@ namespace PQ.Common.Physics.Internal
 
             float remainingDistance = delta.magnitude;
             Vector2 direction = delta / remainingDistance;
-            Debug.Log($"{_body.ComputeDistanceToEdge(direction)}, {remainingDistance}");
             Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
             if (_body.CastAABB_Closest(step, out hit))
             {
                 step = hit.distance * direction;
             }
 
-            _body.MoveBy(step);
-            delta -= step;
+            #if UNITY_EDITOR
+            Vector2 origin = _body.Position;
+            Vector2 max = remainingDistance * direction;
+            float duration = Time.fixedDeltaTime;
+
+            DebugExtensions.DrawLine(origin, origin + delta, Color.white, duration);
+            DebugExtensions.DrawRayCast(origin, step, hit, duration);
+            #endif
+
+            //_body.MoveBy(step);
+            //delta -= step;
         }
 
         /*
