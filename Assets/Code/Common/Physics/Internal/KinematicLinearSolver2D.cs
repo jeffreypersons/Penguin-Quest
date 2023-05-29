@@ -78,6 +78,7 @@ namespace PQ.Common.Physics.Internal
             }
         }
         
+
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
         {
@@ -89,6 +90,7 @@ namespace PQ.Common.Physics.Internal
 
             float remainingDistance = delta.magnitude;
             Vector2 direction = delta / remainingDistance;
+            Debug.Log($"{_body.ComputeDistanceToEdge(direction)}, {remainingDistance}");
             Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
             if (_body.CastAABB_Closest(step, out hit))
             {

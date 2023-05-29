@@ -84,7 +84,7 @@ namespace PQ.Common.Extensions
             Gizmos.color = previousColor;
         }
 
-        /* Draw a 3d sphere at given world position. */
+        /* Draw a 3D sphere at given world position. */
         public static void DrawSphere(Vector2 origin, float radius, Color? color = null)
         {
             Color previousColor = Gizmos.color;

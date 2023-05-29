@@ -168,10 +168,11 @@ namespace PQ.Common.Physics.Internal
             #if UNITY_EDITOR
             if (DrawCastsInEditor)
             {
-                DrawBoxCast(center, size, direction, distance, hits);
+                float duration = Time.fixedDeltaTime;
+                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, distance * direction, Color.gray, duration);
                 foreach (RaycastHit2D hit in hits)
                 {
-                    DrawCastHit(hit);
+                    DebugExtensions.DrawCastHit(distance * direction, hits.IsEmpty ? default : hits[0], Color.red, Color.green, duration);
                 }
             }
             #endif
@@ -255,36 +256,10 @@ namespace PQ.Common.Physics.Internal
 
 
         #if UNITY_EDITOR
-        private static void DrawCastHit(RaycastHit2D hit)
-        {
-            float duration = Time.fixedDeltaTime;
-            Vector2 direction = (hit.point - hit.centroid).normalized;
-            float hitDistance  = hit.distance;
-            float castDistance = hit.distance + (hit.distance / (1f - hit.fraction));
-
-            Vector2 edgePoint = hit.point - (hitDistance * direction);
-            Vector2 hitPoint  = hit.point;
-            Vector2 endPoint  = hit.point + (castDistance * direction);
-
-            Debug.DrawLine(edgePoint, hitPoint, Color.grey, duration);
-            Debug.DrawLine(hitPoint,  endPoint, Color.red,  duration);
-        }
-
         private static void DrawBoxCast(Vector2 origin, Vector2 size, Vector2 direction, float distance, ReadOnlySpan<RaycastHit2D> hits)
         {
-            float duration = Time.fixedDeltaTime;
-            DebugExtensions.DrawRect(origin, 0.50f * size, Color.gray, duration);
-            DebugExtensions.DrawRect(origin + distance * direction, 0.50f * size, Color.gray, duration);
-
-            foreach (RaycastHit2D hit in hits)
-            {
-                Vector2 edgePoint = hit.point - (hit.distance * direction);
-                Vector2 hitPoint  = hit.point;
-                Vector2 endPoint  = hit.point + (distance * direction);
-
-                DebugExtensions.DrawLine(edgePoint, hitPoint, Color.green, duration);
-                DebugExtensions.DrawLine(hitPoint,  endPoint, Color.red, duration);
-            }
+            DebugExtensions.DrawBoxCast(origin, 0.50f * size, 0f, distance * direction, Color.gray, Time.fixedDeltaTime);
+            DebugExtensions.DrawCastHit(distance * direction, hits.IsEmpty? default : hits[0], Color.red, Color.green, Time.fixedDeltaTime);
         }
         #endif
     }
