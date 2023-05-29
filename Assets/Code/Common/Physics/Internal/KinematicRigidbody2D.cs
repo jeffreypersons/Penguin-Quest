@@ -172,6 +172,8 @@ namespace PQ.Common.Physics.Internal
                 DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, delta, hits, duration);
             }
             #endif
+            
+            Debug.Log($"{hits.Length}");
             return !hits.IsEmpty;
         }
 
@@ -243,7 +245,7 @@ namespace PQ.Common.Physics.Internal
             float previousMin = _contactFilter.minNormalAngle;
             float previousMax = _contactFilter.maxNormalAngle;
 
-            _contactFilter.SetNormalAngle(min, max);
+            _contactFilter.SetNormalAngle(min, max-Mathf.Epsilon);
             bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
 
             _contactFilter.SetNormalAngle(previousMin, previousMax);

@@ -35,11 +35,9 @@ namespace PQ.Common.Physics.Internal
 
         public void SolveMovement(Vector2 deltaPosition)
         {
-            MoveAABBAlongDelta(ref deltaPosition, out RaycastHit2D _);
-            return;
+            _collisions = _body.CheckSides();
             if (deltaPosition == Vector2.zero)
             {
-                _collisions = _body.CheckSides();
                 return;
             }
 
@@ -108,8 +106,8 @@ namespace PQ.Common.Physics.Internal
             DebugExtensions.DrawRayCast(origin, step, hit, duration);
             #endif
 
-            //_body.MoveBy(step);
-            //delta -= step;
+            _body.MoveBy(step);
+            delta -= step;
         }
 
         /*

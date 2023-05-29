@@ -128,24 +128,11 @@ namespace PQ.Common.Extensions
         public static void DrawRayCast(Vector2 origin, Vector2 delta, RaycastHit2D hit, float duration=0f)
         {
             Vector2 terminalPoint = origin + delta;
-            if (!hit)
+            Debug.DrawLine(origin, terminalPoint, CastMissColor, duration);
+            if (hit)
             {
-                Debug.DrawLine(origin, terminalPoint, CastMissColor, duration);
-                return;
+                Debug.DrawLine(origin, hit.point, CastHitColor, duration);
             }
-
-            Vector2 centroidPoint = hit.centroid;
-            Vector2 edgePoint = hit.point - (hit.distance * delta.normalized);
-            Vector2 hitPoint = hit.point;
-
-            // if not approximately same, it was a shape cast, so draw from center of original shape to the edge where the delta starts
-            if (centroidPoint != edgePoint)
-            {
-                Debug.DrawLine(centroidPoint, edgePoint + delta, LineColor, duration);
-            }
-
-            Debug.DrawLine(edgePoint, hitPoint,      CastHitColor,   duration);
-            Debug.DrawLine(hitPoint,  terminalPoint, CastMissColor, duration);
         }
 
         /* Draw box cast from given origin along delta. */
@@ -168,13 +155,7 @@ namespace PQ.Common.Extensions
 
             for (int i = 0; i < hits.Length; i++)
             {
-                Vector2 centroidPoint = hits[i].centroid;
-                Vector2 edgePoint = hits[i].point - (hits[i].distance * delta.normalized);
-                Vector2 hitPoint = hits[i].point;
-                
-                Debug.DrawLine(centroidPoint, edgePoint + delta, LineColor, duration);
-                Debug.DrawLine(edgePoint, hitPoint, CastHitColor, duration);
-                Debug.DrawLine(hitPoint, terminalPoint, CastMissColor, duration);
+                DrawRayCast(origin, delta, hits[i], duration);
             }
         }
     }
