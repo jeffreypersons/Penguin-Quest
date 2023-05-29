@@ -69,7 +69,7 @@ namespace PQ.Common.Physics.Internal
         public void SolveMovement(Vector2 deltaPosition)
         {
             _collisions = _body.CheckSides();
-            if (deltaPosition == Vector2.zero)
+            if (ApproximatelyZero(deltaPosition))
             {
                 return;
             }
@@ -146,7 +146,7 @@ namespace PQ.Common.Physics.Internal
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
         {
-            if (delta == Vector2.zero)
+            if (ApproximatelyZero(delta))
             {
                 hit = default;
                 return;
