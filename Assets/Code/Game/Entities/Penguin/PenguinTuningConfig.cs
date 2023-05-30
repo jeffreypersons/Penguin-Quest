@@ -9,7 +9,7 @@ namespace PQ.Game.Entities.Penguin
     Collection of penguin specific tuning data.
     */
     // todo: figure out how to make this work automatically with inheritance
-    [CreateAssetMenu(fileName = "PenguinTuningConfig", menuName = "TuningConfigs/PenguinTuningConfig", order = 1)]
+    [CreateAssetMenu(fileName="PenguinTuningConfig", menuName="TuningConfigs/PenguinTuningConfig", order=1)]
     public sealed class PenguinTuningConfig : TuningConfig
     {
         [Header("General")]

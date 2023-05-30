@@ -1,24 +1,16 @@
 using System;
 using UnityEngine;
+using PQ.Common.Tuning;
 
 
 namespace PQ.Game.Peformance
 {
-    [CreateAssetMenu(
-        fileName = "RuntimeSettings",
-        menuName = "ScriptableObjects/RuntimeSettings",
-        order    = 1)]
-    public class RuntimeSettings : ScriptableObject
+    [CreateAssetMenu(fileName="RuntimeSettings", menuName="TuningConfigs/RuntimeSettings", order=1)]
+    public sealed class RuntimeSettings : TuningConfig
     {
-        // Any time script is loaded, or field values are modified, where do we want that input to go?
-        // Note that since we treat there editor-configured settings as input, we deliberately expose a single listener at a time
-        public Action OnChanged { set; get; }
-        private void OnValidate() => OnChanged?.Invoke();
-
-
+        // todo: add a custom editor attribute used for tuning config instances, to denote non-persistent fields
         [Header("Timing")]
-
-        [Tooltip("What time scale to use (note useful to scale down when debugging movement)?")]
+        [Tooltip("Time scale used during runtime (useful for debugging movement)")]
         [Range(0.10f, 5f)][SerializeField] public float timeScale = 1.00f;
 
 

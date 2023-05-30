@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -36,21 +37,36 @@ namespace PQ.Game.Peformance
 
         void Awake()
         {
-            _initialTimeScale = TimeScale;
-            _settings.OnChanged = UpdateCurrentSettings;
+            if (_settings == null)
+            {
+                throw new MissingReferenceException($"Runtime settings not set");
+            }
 
-            UpdateCurrentSettings();
+            _initialTimeScale = TimeScale;
+            _settings.OnChanged.AddHandler(SyncPropertiesWithSettings);
+
+            SyncPropertiesWithSettings();
             Debug.Log($"Starting up {this}");
         }
         
         void OnDestroy()
         {
             TimeScale = _initialTimeScale;
+            _settings.OnChanged.RemoveHandler(SyncPropertiesWithSettings);
         }
 
 
-        private void UpdateCurrentSettings()
+        private void SyncPropertiesWithSettings()
         {
+            if (_settings == null)
+            {
+                Debug.LogWarning($"Runtime settings not set - using defaults");
+                VSyncCount = 0;
+                TargetFrameRate = 60;
+                TimeScale = 1;
+                return;
+            }
+
             // For all current conceivable cases, we never want to await vertical synchronization to
             // occur between frames, as it can effectively cap frame rate by doing so by matching platform refresh rate.
             // 
