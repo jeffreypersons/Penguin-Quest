@@ -253,6 +253,7 @@ namespace PQ.Common.Physics.Internal
         */
         public CollisionFlags2D CheckSides()
         {
+            _contactFilter.useNormalAngle = true;
             bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
             bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
 
@@ -273,6 +274,7 @@ namespace PQ.Common.Physics.Internal
             {
                 flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
             }
+            _contactFilter.useNormalAngle = false;
             Debug.Log(flags);
             return flags;
         }
