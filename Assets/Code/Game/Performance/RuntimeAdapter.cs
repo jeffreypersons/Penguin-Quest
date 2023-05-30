@@ -21,6 +21,7 @@ namespace PQ.Game.Peformance
         private int   VSyncCount      { get => QualitySettings.vSyncCount;        set => QualitySettings.vSyncCount  = value;    }
         private int   TargetFrameRate { get => Application.targetFrameRate;       set => Application.targetFrameRate = value;    }
         private int   QualityLevel    { get => QualitySettings.GetQualityLevel(); set => QualitySettings.SetQualityLevel(value); }
+
         private float TimeScale       { get => Time.timeScale;                    set => Time.timeScale = value;                 }
 
         public override string ToString()
@@ -35,11 +36,14 @@ namespace PQ.Game.Peformance
             return $"{GetType()}(VSync:{vSync}, TargetFps:{fps}, Quality:{quality}, TimeScale:{timeScale})";
         }
 
+
         void Awake()
         {
             if (_settings == null)
             {
-                throw new MissingReferenceException($"Runtime settings not set");
+                // todo: replace the below with a new generic instantiation method in TuningConfig base
+                _settings = ScriptableObject.CreateInstance<RuntimeSettings>();
+                Debug.LogError($"Runtime settings not set - falling back to defaults");
             }
 
             _initialTimeScale = TimeScale;
@@ -58,15 +62,6 @@ namespace PQ.Game.Peformance
 
         private void SyncPropertiesWithSettings()
         {
-            if (_settings == null)
-            {
-                Debug.LogWarning($"Runtime settings not set - using defaults");
-                VSyncCount = 0;
-                TargetFrameRate = 60;
-                TimeScale = 1;
-                return;
-            }
-
             // For all current conceivable cases, we never want to await vertical synchronization to
             // occur between frames, as it can effectively cap frame rate by doing so by matching platform refresh rate.
             // 
