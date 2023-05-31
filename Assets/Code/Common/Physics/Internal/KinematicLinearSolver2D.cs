@@ -68,9 +68,9 @@ namespace PQ.Common.Physics.Internal
          */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            _collisions = _body.CheckSides();
             if (ApproximatelyZero(deltaPosition))
             {
+                _collisions = _body.CheckSides();
                 return;
             }
 
