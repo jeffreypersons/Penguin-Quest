@@ -203,13 +203,10 @@ namespace PQ.Common.Physics.Internal
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
         {
-            if ((distance * direction) == Vector2.zero)
-            {
-                hits = _hitBuffer.AsSpan(0, 0);
-                return false;
-            }
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
 
             Bounds bounds = _boxCollider.bounds;
 
@@ -227,7 +224,7 @@ namespace PQ.Common.Physics.Internal
             }
             #endif
             
-            Debug.Log(hits.IsEmpty? default : $"{hits[0].distance}");
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
             return !hits.IsEmpty;
         }
 
