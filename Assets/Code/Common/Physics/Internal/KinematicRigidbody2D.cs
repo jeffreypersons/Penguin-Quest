@@ -214,11 +214,14 @@ namespace PQ.Common.Physics.Internal
             Bounds bounds = _boxCollider.bounds;
 
             Vector2 center = bounds.center;
-            Vector2 size   = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
+            Vector2 size   = bounds.size;
 
+
+            _boxCollider.enabled = false;
             int hitCount = Physics2D.BoxCast(center, size, 0, direction, _contactFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
-            
+            _boxCollider.enabled = true;
+
             #if UNITY_EDITOR
             if (DrawCastsInEditor)
             {
