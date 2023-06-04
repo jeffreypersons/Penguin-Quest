@@ -155,9 +155,10 @@ namespace PQ.Common.Physics.Internal
             }
 
             float remainingDistance = delta.magnitude;
-            Vector2 direction = delta / remainingDistance;
+            float   distance  = delta.magnitude;
+            Vector2 direction = delta / distance;
             Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
-            if (_body.CastAABB(step, out ReadOnlySpan<RaycastHit2D> hits))
+            if (_body.CastAABB(direction, distance, out ReadOnlySpan<RaycastHit2D> hits))
             {
                 hit  = hits[0];
                 step = hits[0].distance * direction;
