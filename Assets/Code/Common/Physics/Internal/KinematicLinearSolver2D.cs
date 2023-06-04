@@ -68,10 +68,6 @@ namespace PQ.Common.Physics.Internal
         */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            Vector2 delta = new Vector2(0.005f, 0);
-            MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
-            return;
-
             SnapToSurfaceIfNearOrInside();
             if (ApproximatelyZero(deltaPosition))
             {
@@ -90,8 +86,9 @@ namespace PQ.Common.Physics.Internal
             MoveVertical(vertical);
 
             SnapToSurfaceIfNearOrInside();
-            _collisions = _body.CheckSides();
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
+
+            _collisions = _body.CheckSides();
         }
 
         public bool InContact(CollisionFlags2D flags)
@@ -155,16 +152,12 @@ namespace PQ.Common.Physics.Internal
             Vector2 direction          = delta / distanceLeft;
             float   distanceToAABBEdge = _body.ComputeDistanceToEdge(direction);
 
-            float stepDistance;
-            if (_body.CastAABB(direction, distanceLeft, out ReadOnlySpan<RaycastHit2D> hits, includeAlreadyOverlappingColliders: true) && hits[0].distance <= distanceToAABBEdge)
+            obstruction = default;
+            float stepDistance = Mathf.Min(distanceToAABBEdge, distanceLeft);
+            if (_body.CastAABB(direction, stepDistance, out ReadOnlySpan<RaycastHit2D> hits, includeAlreadyOverlappingColliders: true))
             {
                 obstruction  = hits[0];
                 stepDistance = hits[0].distance;
-            }
-            else
-            {
-                obstruction  = default;
-                stepDistance = distanceLeft < distanceToAABBEdge ? distanceLeft : distanceToAABBEdge;
             }
 
             Vector2 step = stepDistance * direction;
