@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEditor;
 using PQ.Common.Extensions;
 using PQ.Common.Physics.Internal;
 
@@ -164,16 +163,20 @@ namespace PQ.Common.Physics
         /* Immediately set facing of horizontal/vertical axes. */
         public void Move(Vector2 delta)
         {
+            // note that we don't free position as that would disable the movement we 'schedule' and interpolate with
             _kinematicSolver.SolveMovement(delta);
         }
 
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
         {
+            // note that the constraints may need to be removed if we switch to doing interpolated rotation
+            _kinematicBody.SetConstraints(RigidbodyConstraints2D.None);
             _kinematicBody.SetFlippedAmount(
                 horizontalRatio: horizontal ? 1f : 0f,
                 verticalRatio:   vertical   ? 1f : 0f
              );
+            _kinematicBody.SetConstraints(RigidbodyConstraints2D.FreezeRotation);
         }
 
 

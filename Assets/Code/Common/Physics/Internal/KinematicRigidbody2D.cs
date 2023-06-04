@@ -3,6 +3,7 @@ using UnityEngine;
 using PQ.Common.Extensions;
 
 
+// todo: cache list of all colliders attached to rigidbody, so these can be toggled on/off for certain casts/etc
 namespace PQ.Common.Physics.Internal
 {
     /*
@@ -12,6 +13,7 @@ namespace PQ.Common.Physics.Internal
     * Assumes always upright bounding box, with kinematic rigidbody
     * Corresponding game object is fixed in rotation to enforce alignment with global up
     * Caching is done only for cast results, position caching is intentionally left to any calling code
+    * Any result are intended to be used right away, as any subsequent casts may change the result(s)
     */
     internal sealed class KinematicRigidbody2D
     {
@@ -93,14 +95,14 @@ namespace PQ.Common.Physics.Internal
             _overlapBuffer = new Collider2D[DefaultBufferSize];
             _contactBuffer = new ContactPoint2D[DefaultBufferSize];
 
-            _contactFilter.useTriggers    = true;
+            _contactFilter.useTriggers    = false;
             _contactFilter.useLayerMask   = true;
-            _contactFilter.useNormalAngle = true;
+            _contactFilter.useNormalAngle = false;
 
             _rigidbody.simulated   = true;
             _rigidbody.isKinematic = true;
             _rigidbody.useFullKinematicContacts = true;
-            _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
+            _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
 
@@ -109,6 +111,13 @@ namespace PQ.Common.Physics.Internal
             Array.Resize(ref _hitBuffer,     length);
             Array.Resize(ref _overlapBuffer, length);
             Array.Resize(ref _contactBuffer, length);
+        }
+        
+        public void SetPhysicalProperties(float friction, float bounciness, float gravityScale)
+        {
+            _friction     = friction;
+            _bounciness   = bounciness;
+            _gravityScale = gravityScale;
         }
 
         public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
@@ -123,23 +132,20 @@ namespace PQ.Common.Physics.Internal
             }
         }
 
+
         /* Given amount between 0 and 1, set rotation about y axis, and rotation about x axis. Note we never allow z rotation. */
         public void SetFlippedAmount(float horizontalRatio, float verticalRatio)
         {
-            _rigidbody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+            // todo: when we do lerped rotations we will need to likely utilize _rigidbody.transform.right.normalized, etc
             _rigidbody.transform.localEulerAngles = new Vector3(
                 x: verticalRatio   * 180f,
                 y: horizontalRatio * 180f,
                 z: 0f);
-            _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
-
-        public void SetPhysicalProperties(float friction, float bounciness, float gravityScale)
+        public void SetConstraints(RigidbodyConstraints2D constraints)
         {
-            _friction     = friction;
-            _bounciness   = bounciness;
-            _gravityScale = gravityScale;
+            _rigidbody.constraints = constraints;
         }
 
         public void SetLayerMask(LayerMask layerMask) => _contactFilter.SetLayerMask(layerMask);
@@ -225,6 +231,7 @@ namespace PQ.Common.Physics.Internal
             hit = hits[closestHitIndex];
             return true;
         }
+
 
         /*
         Check for overlapping colliders within our bounding box.
