@@ -20,7 +20,7 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField][Range(0, 100)] public float maxVerticalSpeedJumping = 5f;
 
         // todo: add jump, sliding 'launch' thresholds, etc
-
+        // todo: use min/max sliders for bounds
 
         [Header("Upright")]
 
