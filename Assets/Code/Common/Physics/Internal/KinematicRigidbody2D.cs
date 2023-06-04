@@ -13,7 +13,7 @@ namespace PQ.Common.Physics.Internal
     * Assumes always upright bounding box, with kinematic rigidbody
     * Corresponding game object is fixed in rotation to enforce alignment with global up
     * Caching is done only for cast results, position caching is intentionally left to any calling code
-    * Any result are intended to be used right away, as any subsequent casts may change the result(s)
+    * Any result (from physics queries) are intended to be used right away, as any subsequent casts may change the result(s)
     */
     internal sealed class KinematicRigidbody2D
     {
@@ -29,6 +29,7 @@ namespace PQ.Common.Physics.Internal
         private float _friction     = 0.00f;
         private float _gravityScale = 1.00f;
         private const int DefaultBufferSize = 16;
+        private const float DefaultRayMaxDistance = 100f;
 
 
         public override string ToString() =>
@@ -172,13 +173,37 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.MovePosition(targetPositionThisFrame);
         }
 
+        /*
+        Project line along given delta and local offset from AABB center, and outputs ALL hits (if any).
+
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        */
+        public bool CastRay(Vector2 centerOffset, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
+        {
+            Vector2 origin = (Vector2)_boxCollider.bounds.center + centerOffset;
+
+            _boxCollider.enabled = false;
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+            hits = _hitBuffer.AsSpan(0, hitCount);
+            _boxCollider.enabled = true;
+
+            #if UNITY_EDITOR
+            if (DrawCastsInEditor)
+            {
+                float duration = Time.fixedDeltaTime;
+                DebugExtensions.DrawRayCast(origin, distance * direction, hits.IsEmpty? default : hits[0], duration);
+            }
+            #endif
+            return !hits.IsEmpty;
+        }
+
 
         /*
-        Project AABB along delta, and return ALL hits (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        Cast AABB along given delta from AABB center, and outputs ALL hits (if any).
+
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastAABB_All(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
         {
             if (delta == Vector2.zero)
             {
@@ -204,32 +229,6 @@ namespace PQ.Common.Physics.Internal
             }
             #endif
             return !hits.IsEmpty;
-        }
-
-
-        /*
-        Project AABB along delta, and return CLOSEST hit (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
-        */
-        public bool CastAABB_Closest(Vector2 delta, out RaycastHit2D hit)
-        {
-            if (!CastAABB_All(delta, out ReadOnlySpan<RaycastHit2D> hits))
-            {
-                hit = default;
-                return false;
-            }
-
-            int closestHitIndex = 0;
-            for (int i = 0; i < hits.Length; i++)
-            {
-                if (hits[i].distance < hits[closestHitIndex].distance)
-                {
-                    closestHitIndex = i;
-                }
-            }
-            hit = hits[closestHitIndex];
-            return true;
         }
 
 

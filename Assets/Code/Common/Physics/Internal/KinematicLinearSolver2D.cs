@@ -147,18 +147,20 @@ namespace PQ.Common.Physics.Internal
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
         {
+            hit = default;
+
             if (ApproximatelyZero(delta))
             {
-                hit = default;
                 return;
             }
 
             float remainingDistance = delta.magnitude;
             Vector2 direction = delta / remainingDistance;
             Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
-            if (_body.CastAABB_Closest(step, out hit))
+            if (_body.CastAABB(step, out ReadOnlySpan<RaycastHit2D> hits))
             {
-                step = hit.distance * direction;
+                hit  = hits[0];
+                step = hits[0].distance * direction;
             }
 
             #if UNITY_EDITOR
@@ -167,7 +169,7 @@ namespace PQ.Common.Physics.Internal
             float duration = Time.fixedDeltaTime;
 
             DebugExtensions.DrawLine(origin, origin + delta, Color.white, duration);
-            DebugExtensions.DrawRayCast(origin, step, hit, duration);
+            DebugExtensions.DrawRayCast(origin, step, hits.IsEmpty? default: hits[0], duration);
             #endif
 
             _body.MoveBy(step);
