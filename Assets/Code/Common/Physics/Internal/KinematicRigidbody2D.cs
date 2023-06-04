@@ -14,6 +14,7 @@ namespace PQ.Common.Physics.Internal
     * Corresponding game object is fixed in rotation to enforce alignment with global up
     * Caching is done only for cast results, position caching is intentionally left to any calling code
     * Any result (from physics queries) are intended to be used right away, as any subsequent casts may change the result(s)
+    * Assumes any given direction is normalized
     */
     internal sealed class KinematicRigidbody2D
     {
@@ -197,15 +198,14 @@ namespace PQ.Common.Physics.Internal
             return !hits.IsEmpty;
         }
 
-
         /*
         Cast AABB along given delta from AABB center, and outputs ALL hits (if any).
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastAABB(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
         {
-            if (delta == Vector2.zero)
+            if ((distance * direction) == Vector2.zero)
             {
                 hits = _hitBuffer.AsSpan(0, 0);
                 return false;
@@ -213,10 +213,8 @@ namespace PQ.Common.Physics.Internal
 
             Bounds bounds = _boxCollider.bounds;
 
-            Vector2 center    = bounds.center;
-            Vector2 size      = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
-            float   distance  = delta.magnitude;
-            Vector2 direction = delta / distance;
+            Vector2 center = bounds.center;
+            Vector2 size   = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
 
             int hitCount = Physics2D.BoxCast(center, size, 0, direction, _contactFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
@@ -225,7 +223,7 @@ namespace PQ.Common.Physics.Internal
             if (DrawCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, delta, hits, duration);
+                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, distance * direction, hits, duration);
             }
             #endif
             return !hits.IsEmpty;

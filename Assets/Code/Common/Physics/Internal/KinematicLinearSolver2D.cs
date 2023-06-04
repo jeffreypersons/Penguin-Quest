@@ -154,18 +154,26 @@ namespace PQ.Common.Physics.Internal
                 return;
             }
 
-            float remainingDistance = delta.magnitude;
-            Vector2 direction = delta / remainingDistance;
-            Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
-            if (_body.CastAABB(step, out ReadOnlySpan<RaycastHit2D> hits))
+            float   distanceLeft    = delta.magnitude;
+            Vector2 direction       = delta / distanceLeft;
+            float   bodyRadius      = _body.ComputeDistanceToEdge(direction);
+            float   maxStepDistance = Mathf.Min(bodyRadius, distanceLeft);
+
+            Vector2 step;
+            if (_body.CastAABB(direction, maxStepDistance, out ReadOnlySpan<RaycastHit2D> hits))
             {
                 hit  = hits[0];
                 step = hits[0].distance * direction;
             }
+            else
+            {
+                hit  = default;
+                step = maxStepDistance * direction;
+            }
 
             #if UNITY_EDITOR
             Vector2 origin = _body.Position;
-            Vector2 max = remainingDistance * direction;
+            Vector2 max = distanceLeft * direction;
             float duration = Time.fixedDeltaTime;
 
             DebugExtensions.DrawLine(origin, origin + delta, Color.white, duration);
