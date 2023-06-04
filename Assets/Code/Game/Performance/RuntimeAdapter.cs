@@ -47,7 +47,7 @@ namespace PQ.Game.Peformance
             }
 
             _initialTimeScale = TimeScale;
-            _settings.OnChanged.AddHandler(SyncPropertiesWithSettings);
+            _settings.OnChangedInEditor.AddHandler(SyncPropertiesWithSettings);
 
             SyncPropertiesWithSettings();
             Debug.Log($"Starting up {this}");
@@ -56,7 +56,7 @@ namespace PQ.Game.Peformance
         void OnDestroy()
         {
             TimeScale = _initialTimeScale;
-            _settings.OnChanged.RemoveHandler(SyncPropertiesWithSettings);
+            _settings.OnChangedInEditor.RemoveHandler(SyncPropertiesWithSettings);
         }
 
 

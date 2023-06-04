@@ -17,7 +17,7 @@ namespace PQ.Game.Entities.Penguin
         {
             RegisterEvent(Blob.EventBus.standUpCommand,      HandleStandUpInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange, HandleMoveHorizontalChanged);
-            RegisterEvent(Blob.Config.OnChanged,             HandleConfigChanged);
+            RegisterEvent(Blob.Config.OnChangedInEditor,     HandleConfigChanged);
         }
 
         protected override void OnEnter()
