@@ -203,29 +203,28 @@ namespace PQ.Common.Physics.Internal
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
         {
-            if ((distance * direction) == Vector2.zero)
-            {
-                hits = _hitBuffer.AsSpan(0, 0);
-                return false;
-            }
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
 
             Bounds bounds = _boxCollider.bounds;
 
             Vector2 center = bounds.center;
-            Vector2 size   = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
+            Vector2 size   = bounds.size;
 
-            int hitCount = Physics2D.BoxCast(center, size, 0, direction, _contactFilter, _hitBuffer, distance);
+            int hitCount = _boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance, ignoreSiblingColliders: true);
             hits = _hitBuffer.AsSpan(0, hitCount);
-            
+
             #if UNITY_EDITOR
             if (DrawCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, distance * direction, hits, duration);
+                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, distance * direction, hits, 0.5f);
             }
             #endif
+            
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
             return !hits.IsEmpty;
         }
 
@@ -294,15 +293,20 @@ namespace PQ.Common.Physics.Internal
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
         }
-
+        
         /*
         Compute vector representing overlap amount between body and given collider, if any.
 
-        Uses separating axis theorem to determine overlap - may require more invocations for
-        complex polygons.
+        Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
+        for complex collider shapes (eg convex polygons).
         */
         public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
         {
+            if (collider == null)
+            {
+                throw new ArgumentNullException("Error state - invalid minimum separation between body and given collider");
+            }
+
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
             if (!minimumSeparation.isValid)
             {
@@ -310,7 +314,62 @@ namespace PQ.Common.Physics.Internal
             }
             return minimumSeparation;
         }
-        
+
+        /*
+        Compute signed distance representing overlap amount between body and given collider, if any.
+
+        Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
+        */
+        public float ComputeSeparationAlongDelta(Collider2D collider, Vector2 delta)
+        {
+            // todo: how to handle zero delta?
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            if (collider == null || !minimumSeparation.isValid)
+            {
+                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
+            }
+
+            Debug.Log(delta);
+            Vector2 minOffset = minimumSeparation.distance * minimumSeparation.normal;
+            if (minOffset == Vector2.zero)
+            {
+                return 0f;
+            }
+
+            Vector2 pointA = minimumSeparation.pointA;
+            Vector2 pointB = minimumSeparation.pointB;
+            Vector2 closestAABBPoint = Vector2.LerpUnclamped(pointA, pointB, 0.50f) + minOffset;
+            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -delta.normalized : delta.normalized;
+
+            RaycastHit2D hit = default;
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = true;
+            int hitCount = Physics2D.Raycast(closestAABBPoint, directionToSurface, _contactFilter, _hitBuffer);
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (ReferenceEquals(_hitBuffer[i].collider, collider))
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
+            }
+            if (!hit)
+            {
+                Debug.LogWarning("This shouldn't happen!");
+            }
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
+
+            // todo: should we use collider's closest point method as well to get a more precise edge point?
+            float separation = hit? hit.distance : 0f;
+            
+            #if UNITY_EDITOR
+            float duration = 2f;
+            DebugExtensions.DrawRayCast(closestAABBPoint, delta, hit, duration);
+            DebugExtensions.DrawLine(minimumSeparation.pointA, minimumSeparation.pointB, Color.magenta, duration);
+            #endif
+            return separation;
+        }
+
         
         private bool HasContactsInNormalRange(float min, float max)
         {

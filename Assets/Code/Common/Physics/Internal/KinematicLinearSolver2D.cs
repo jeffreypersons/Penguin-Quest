@@ -65,7 +65,7 @@ namespace PQ.Common.Physics.Internal
         - For flexibility, any external movement such as gravity must be accounted for in given delta
         - Movement is only opted-out if within floating point tolerances of zero, as anything larger will lead to
           skipping movement when deltas are small due to the timestep/world-scale/frame-rate used to compute it prior
-         */
+        */
         public void SolveMovement(Vector2 deltaPosition)
         {
             SnapToSurfaceIfNearOrInside();
@@ -86,8 +86,9 @@ namespace PQ.Common.Physics.Internal
             MoveVertical(vertical);
 
             SnapToSurfaceIfNearOrInside();
-            _collisions = _body.CheckSides();
             _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
+
+            _collisions = _body.CheckSides();
         }
 
         public bool InContact(CollisionFlags2D flags)
@@ -145,31 +146,21 @@ namespace PQ.Common.Physics.Internal
         
 
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
-        private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
+        private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D obstruction)
         {
-            hit = default;
+            float   distanceLeft       = delta.magnitude;
+            Vector2 direction          = delta / distanceLeft;
+            float   distanceToAABBEdge = _body.ComputeDistanceToEdge(direction);
 
-            if (ApproximatelyZero(delta))
+            obstruction = default;
+            float stepDistance = Mathf.Min(distanceToAABBEdge, distanceLeft);
+            if (_body.CastAABB(direction, stepDistance, out ReadOnlySpan<RaycastHit2D> hits, includeAlreadyOverlappingColliders: true))
             {
-                return;
+                obstruction  = hits[0];
+                stepDistance = hits[0].distance;
             }
 
-            float   distanceLeft    = delta.magnitude;
-            Vector2 direction       = delta / distanceLeft;
-            float   bodyRadius      = _body.ComputeDistanceToEdge(direction);
-            float   maxStepDistance = Mathf.Min(bodyRadius, distanceLeft);
-
-            Vector2 step;
-            if (_body.CastAABB(direction, maxStepDistance, out ReadOnlySpan<RaycastHit2D> hits))
-            {
-                hit  = hits[0];
-                step = hits[0].distance * direction;
-            }
-            else
-            {
-                hit  = default;
-                step = maxStepDistance * direction;
-            }
+            Vector2 step = stepDistance * direction;
 
             #if UNITY_EDITOR
             Vector2 origin = _body.Position;
