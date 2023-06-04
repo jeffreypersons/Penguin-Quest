@@ -65,7 +65,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!61 &3059268163222020866
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -135,7 +135,7 @@ MonoBehaviour:
   _collisionBounciness: 0
   _gravityScale: 1
   _maxSolverMoveIterations: 10
-  _maxSolverContactAdjustmentIterations: 2
+  _maxSolverContactAdjustmentIterations: 0
   _preallocatedResultBufferSize: 16
   _editorVisuals: -1
 --- !u!114 &2002890420633338778
