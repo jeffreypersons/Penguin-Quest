@@ -68,7 +68,7 @@ namespace PQ.Common.Physics.Internal
         */
         public void SolveMovement(Vector2 deltaPosition)
         {
-            Vector2 delta = new Vector2(1, 0);
+            Vector2 delta = new Vector2(0.005f, 0);
             MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
             return;
 
@@ -154,9 +154,11 @@ namespace PQ.Common.Physics.Internal
             float   distanceLeft       = delta.magnitude;
             Vector2 direction          = delta / distanceLeft;
             float   distanceToAABBEdge = _body.ComputeDistanceToEdge(direction);
-
+            Debug.Log($"distancetoedge={distanceToAABBEdge}");
             float stepDistance;
-            if (_body.CastAABB(direction, distanceLeft, out ReadOnlySpan<RaycastHit2D> hits) && hits[0].distance <= distanceToAABBEdge)
+
+
+            if (_body.CastAABB(direction, 100f, out ReadOnlySpan<RaycastHit2D> hits) && hits[0].distance <= distanceToAABBEdge)
             {
                 obstruction  = hits[0];
                 stepDistance = hits[0].distance;
