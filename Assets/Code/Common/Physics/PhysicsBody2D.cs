@@ -218,21 +218,13 @@ namespace PQ.Common.Physics
             _AABBCornerMax = localMax;
         }
         
+
         #if UNITY_EDITOR
         void OnValidate()
         {
-            // avoid updating with inspector if loading the original prefab from disk (which occurs before loading the instance)
-            // otherwise the default inspector values are used. By skipping persistent objects, we effectively only update when values are
-            // changed in the inspector
-            if (EditorUtility.IsPersistent(this))
-            {
-                return;
-            }
-
             Initialize(force: false);
             SyncProperties();
         }
-
 
         void OnDrawGizmos()
         {
