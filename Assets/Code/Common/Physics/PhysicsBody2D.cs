@@ -106,12 +106,13 @@ namespace PQ.Common.Physics
         [Flags]
         public enum EditorVisuals
         {
-            None      = 0,
-            Axes      = 1 << 1,
-            Positions = 1 << 2,
-            Casts     = 1 << 3,
-            Moves     = 1 << 4,
-            All       = ~0,
+            None       = 0,
+            Axes       = 1 << 1,
+            Positions  = 1 << 2,
+            RayCasts   = 1 << 3,
+            ShapeCasts = 1 << 4,
+            Moves      = 1 << 5,
+            All        = ~0,
         }
 
         [Tooltip("Settings for easily toggling debug visuals in one place from the inspector")]
@@ -142,8 +143,9 @@ namespace PQ.Common.Physics
             _kinematicBody.SetPhysicalProperties(_collisionFriction, _collisionBounciness, _gravityScale);
 
             #if UNITY_EDITOR
-            _solverParams.VisualizePath      = IsEnabled(EditorVisuals.Moves);
-            _kinematicBody.DrawCastsInEditor = IsEnabled(EditorVisuals.Casts);
+            _solverParams.VisualizePath           = IsEnabled(EditorVisuals.Moves);
+            _kinematicBody.DrawRayCastsInEditor   = IsEnabled(EditorVisuals.RayCasts);
+            _kinematicBody.DrawShapeCastsInEditor = IsEnabled(EditorVisuals.ShapeCasts);
             #endif
         }
 

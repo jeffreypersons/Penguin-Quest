@@ -164,8 +164,11 @@ namespace PQ.Common.Physics.Internal
             _body.MoveBy(stepDistance * direction);
 
             #if UNITY_EDITOR
-            DebugExtensions.DrawArrow(position, position + distance * direction, Color.white, Time.fixedDeltaTime);
-            DebugExtensions.DrawRayCast(position, direction, distance, hits.IsEmpty? default: hits[0], Time.fixedDeltaTime);
+            if (_params.VisualizePath)
+            {
+                DebugExtensions.DrawArrow(position, position + distance * direction, Color.white, Time.fixedDeltaTime);
+                DebugExtensions.DrawRayCast(position, direction, distance, hits.IsEmpty ? default : hits[0], Time.fixedDeltaTime);
+            }
             #endif
         }
 

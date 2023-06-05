@@ -67,7 +67,8 @@ namespace PQ.Common.Physics.Internal
         public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
         
         #if UNITY_EDITOR
-        public bool DrawCastsInEditor { get; set; } = true;
+        public bool DrawShapeCastsInEditor { get; set; } = true;
+        public bool DrawRayCastsInEditor   { get; set; } = true;
         #endif
 
         public KinematicRigidbody2D(Transform transform)
@@ -189,7 +190,7 @@ namespace PQ.Common.Physics.Internal
             _boxCollider.enabled = true;
 
             #if UNITY_EDITOR
-            if (DrawCastsInEditor)
+            if (DrawRayCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
                 DebugExtensions.DrawRayCast(origin, direction, distance, hits.IsEmpty? default : hits[0], duration);
@@ -217,7 +218,7 @@ namespace PQ.Common.Physics.Internal
             hits = _hitBuffer.AsSpan(0, hitCount);
 
             #if UNITY_EDITOR
-            if (DrawCastsInEditor)
+            if (DrawShapeCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
                 DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, direction, distance, hits, 0.5f);
@@ -361,9 +362,12 @@ namespace PQ.Common.Physics.Internal
             float separation = hit? hit.distance : 0f;
             
             #if UNITY_EDITOR
-            float duration = 2f;
-            DebugExtensions.DrawRayCast(closestAABBPoint, direction, minOffset.magnitude, hit, duration);
-            DebugExtensions.DrawLine(minimumSeparation.pointA, minimumSeparation.pointB, Color.magenta, duration);
+            if (DrawRayCastsInEditor)
+            {
+                float duration = 2f;
+                DebugExtensions.DrawRayCast(closestAABBPoint, direction, minOffset.magnitude, hit, duration);
+                DebugExtensions.DrawLine(minimumSeparation.pointA, minimumSeparation.pointB, Color.magenta, duration);
+            }
             #endif
             return separation;
         }
