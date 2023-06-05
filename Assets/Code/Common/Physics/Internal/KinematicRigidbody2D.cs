@@ -192,7 +192,7 @@ namespace PQ.Common.Physics.Internal
             if (DrawCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawRayCast(origin, distance * direction, hits.IsEmpty? default : hits[0], duration);
+                DebugExtensions.DrawRayCast(origin, direction, distance, hits.IsEmpty? default : hits[0], duration);
             }
             #endif
             return !hits.IsEmpty;
@@ -220,7 +220,7 @@ namespace PQ.Common.Physics.Internal
             if (DrawCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, distance * direction, hits, 0.5f);
+                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, direction, distance, hits, 0.5f);
             }
             #endif
             
@@ -320,16 +320,14 @@ namespace PQ.Common.Physics.Internal
 
         Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
         */
-        public float ComputeSeparationAlongDelta(Collider2D collider, Vector2 delta)
+        public float ComputeSeparationAlongDelta(Collider2D collider, Vector2 direction)
         {
-            // todo: how to handle zero delta?
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
             if (collider == null || !minimumSeparation.isValid)
             {
                 throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
             }
 
-            Debug.Log(delta);
             Vector2 minOffset = minimumSeparation.distance * minimumSeparation.normal;
             if (minOffset == Vector2.zero)
             {
@@ -339,7 +337,7 @@ namespace PQ.Common.Physics.Internal
             Vector2 pointA = minimumSeparation.pointA;
             Vector2 pointB = minimumSeparation.pointB;
             Vector2 closestAABBPoint = Vector2.LerpUnclamped(pointA, pointB, 0.50f) + minOffset;
-            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -delta.normalized : delta.normalized;
+            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
 
             RaycastHit2D hit = default;
             bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
@@ -364,7 +362,7 @@ namespace PQ.Common.Physics.Internal
             
             #if UNITY_EDITOR
             float duration = 2f;
-            DebugExtensions.DrawRayCast(closestAABBPoint, delta, hit, duration);
+            DebugExtensions.DrawRayCast(closestAABBPoint, direction, minOffset.magnitude, hit, duration);
             DebugExtensions.DrawLine(minimumSeparation.pointA, minimumSeparation.pointB, Color.magenta, duration);
             #endif
             return separation;

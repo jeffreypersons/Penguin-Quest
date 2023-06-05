@@ -148,31 +148,25 @@ namespace PQ.Common.Physics.Internal
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D obstruction)
         {
-            float   distanceLeft       = delta.magnitude;
-            Vector2 direction          = delta / distanceLeft;
+            Vector2 position           = _body.Position;
+            float   distance           = delta.magnitude;
+            Vector2 direction          = delta / distance;
             float   distanceToAABBEdge = _body.ComputeDistanceToEdge(direction);
 
+            // move box along delta a distance no greater than bound-extents, stopping at the first collision (if any)
             obstruction = default;
-            float stepDistance = Mathf.Min(distanceToAABBEdge, distanceLeft);
+            float stepDistance = Mathf.Min(distance, distanceToAABBEdge);
             if (_body.CastAABB(direction, stepDistance, out ReadOnlySpan<RaycastHit2D> hits, includeAlreadyOverlappingColliders: true))
             {
-                obstruction  = hits[0];
-                stepDistance = hits[0].distance;
+                obstruction = hits[0];
+                stepDistance = obstruction.distance;
             }
-
-            Vector2 step = stepDistance * direction;
+            _body.MoveBy(stepDistance * direction);
 
             #if UNITY_EDITOR
-            Vector2 origin = _body.Position;
-            Vector2 max = distanceLeft * direction;
-            float duration = Time.fixedDeltaTime;
-
-            DebugExtensions.DrawLine(origin, origin + delta, Color.white, duration);
-            DebugExtensions.DrawRayCast(origin, step, hits.IsEmpty? default: hits[0], duration);
+            DebugExtensions.DrawArrow(position, position + distance * direction, Color.white, Time.fixedDeltaTime);
+            DebugExtensions.DrawRayCast(position, direction, distance, hits.IsEmpty? default: hits[0], Time.fixedDeltaTime);
             #endif
-
-            _body.MoveBy(step);
-            delta -= step;
         }
 
 
