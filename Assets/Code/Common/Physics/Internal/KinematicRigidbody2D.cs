@@ -176,18 +176,23 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
-        Project line along given delta and local offset from AABB center, and outputs ALL hits (if any).
+        Project point along given delta and local offset from AABB center, and outputs ALL hits (if any).
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastRay(Vector2 centerOffset, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastRay(Vector2 centerOffset, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
         {
             Vector2 origin = (Vector2)_boxCollider.bounds.center + centerOffset;
 
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
             _boxCollider.enabled = false;
+
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
             hits = _hitBuffer.AsSpan(0, hitCount);
             _boxCollider.enabled = true;
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
 
             #if UNITY_EDITOR
             if (DrawRayCastsInEditor)
@@ -200,7 +205,48 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
-        Cast AABB along given delta from AABB center, and outputs ALL hits (if any).
+        Cast against a specific collider.
+        */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
+        {
+            // note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of
+            // checking a specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it)
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
+
+            _boxCollider.enabled = false;
+            LayerMask previousLayerMask = _contactFilter.layerMask;
+            _contactFilter.SetLayerMask(collider.gameObject.layer);
+
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
+            _contactFilter.SetLayerMask(previousLayerMask);
+            _boxCollider.enabled = true;
+
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
+
+            hit = default;
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_hitBuffer[i].collider == collider)
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
+            }
+
+            #if UNITY_EDITOR
+            if (DrawRayCastsInEditor)
+            {
+                float duration = Time.fixedDeltaTime;
+                DebugExtensions.DrawRayCast(origin, direction, distance, hit, duration);
+            }
+            #endif
+            return hit;
+        }
+
+        /*
+        Project AABB along given delta from AABB center, and outputs ALL hits (if any).
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
@@ -217,15 +263,15 @@ namespace PQ.Common.Physics.Internal
             int hitCount = _boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance, ignoreSiblingColliders: true);
             hits = _hitBuffer.AsSpan(0, hitCount);
 
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
+
             #if UNITY_EDITOR
             if (DrawShapeCastsInEditor)
             {
                 float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, direction, distance, hits, 0.5f);
+                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, direction, distance, hits, 0.50f);
             }
             #endif
-            
-            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
             return !hits.IsEmpty;
         }
 
@@ -313,6 +359,14 @@ namespace PQ.Common.Physics.Internal
             {
                 throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
             }
+
+            #if UNITY_EDITOR
+            if (DrawRayCastsInEditor)
+            {
+                DebugExtensions.DrawPlus(minimumSeparation.pointA, new Vector2(0.05f, 0.05f), 45f, Color.cyan, 0.50f);
+                DebugExtensions.DrawPlus(minimumSeparation.pointB, new Vector2(0.05f, 0.05f), 45f, Color.blue, 0.50f);
+            }
+            #endif
             return minimumSeparation;
         }
 
@@ -321,55 +375,18 @@ namespace PQ.Common.Physics.Internal
 
         Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
         */
-        public float ComputeSeparationAlongDelta(Collider2D collider, Vector2 direction)
+        public bool ComputeSeparationAlongDelta(Collider2D collider, Vector2 direction, float maxDistance, out float separation)
         {
-            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            if (collider == null || !minimumSeparation.isValid)
-            {
-                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
-            }
-
-            Vector2 minOffset = minimumSeparation.distance * minimumSeparation.normal;
-            if (minOffset == Vector2.zero)
-            {
-                return 0f;
-            }
-
-            Vector2 pointA = minimumSeparation.pointA;
-            Vector2 pointB = minimumSeparation.pointB;
-            Vector2 closestAABBPoint = Vector2.LerpUnclamped(pointA, pointB, 0.50f) + minOffset;
+            ColliderDistance2D minimumSeparation = ComputeMinimumSeparation(collider);
             Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
 
-            RaycastHit2D hit = default;
-            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
-            Physics2D.queriesStartInColliders = true;
-            int hitCount = Physics2D.Raycast(closestAABBPoint, directionToSurface, _contactFilter, _hitBuffer);
-            for (int i = 0; i < hitCount; i++)
+            separation = 0f;
+            if (CastRayAt(collider, minimumSeparation.pointA, directionToSurface, maxDistance, out RaycastHit2D hit, true))
             {
-                if (ReferenceEquals(_hitBuffer[i].collider, collider))
-                {
-                    hit = _hitBuffer[i];
-                    break;
-                }
+                separation = minimumSeparation.isOverlapped? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
             }
-            if (!hit)
-            {
-                Debug.LogWarning("This shouldn't happen!");
-            }
-            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
-
-            // todo: should we use collider's closest point method as well to get a more precise edge point?
-            float separation = hit? hit.distance : 0f;
-            
-            #if UNITY_EDITOR
-            if (DrawRayCastsInEditor)
-            {
-                float duration = 2f;
-                DebugExtensions.DrawRayCast(closestAABBPoint, direction, minOffset.magnitude, hit, duration);
-                DebugExtensions.DrawLine(minimumSeparation.pointA, minimumSeparation.pointB, Color.magenta, duration);
-            }
-            #endif
-            return separation;
+            Debug.Log(separation * direction);
+            return (separation * direction) == Vector2.zero;
         }
 
         
