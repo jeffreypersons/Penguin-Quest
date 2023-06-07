@@ -154,10 +154,10 @@ namespace PQ.Common.Extensions
             DrawPlus(origin, plusSignExtents, 45f, LineColor, duration);
             DrawArrow(original.Center, shifted.Center, LineColor, duration);
 
-            // render any 'hits' by coloring the line segment between box origin at hit and intersection point
+            // render any 'hits' by coloring a line segment showing the hit point and distance
             for (int i = 0; i < hits.Length; i++)
             {
-                Debug.DrawLine(hits[i].centroid, hits[i].point, CastHitColor, duration);
+                Debug.DrawLine(hits[i].point, hits[i].point + (hits[i].distance * -direction), CastHitColor, duration);
             }
         }
     }
