@@ -189,8 +189,8 @@ namespace PQ.Common.Physics.Internal
             _boxCollider.enabled = false;
 
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
-
             hits = _hitBuffer.AsSpan(0, hitCount);
+
             _boxCollider.enabled = true;
             Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
 
@@ -255,11 +255,6 @@ namespace PQ.Common.Physics.Internal
             bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
             Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
 
-            Bounds bounds = _boxCollider.bounds;
-
-            Vector2 center = bounds.center;
-            Vector2 size   = bounds.size;
-
             int hitCount = _boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance, ignoreSiblingColliders: true);
             hits = _hitBuffer.AsSpan(0, hitCount);
 
@@ -268,8 +263,7 @@ namespace PQ.Common.Physics.Internal
             #if UNITY_EDITOR
             if (DrawShapeCastsInEditor)
             {
-                float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawBoxCast(center, 0.50f * size, 0f, direction, distance, hits, 0.50f);
+                DebugExtensions.DrawBoxCast(_boxCollider.bounds.center, _boxCollider.bounds.extents, 0f, direction, distance, hits, Time.fixedDeltaTime);
             }
             #endif
             return !hits.IsEmpty;
@@ -385,7 +379,6 @@ namespace PQ.Common.Physics.Internal
             {
                 separation = minimumSeparation.isOverlapped? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
             }
-            Debug.Log(separation * direction);
             return (separation * direction) == Vector2.zero;
         }
 
