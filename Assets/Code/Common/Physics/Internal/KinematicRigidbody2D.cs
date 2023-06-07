@@ -175,8 +175,9 @@ namespace PQ.Common.Physics.Internal
             _rigidbody.MovePosition(targetPositionThisFrame);
         }
 
+
         /*
-        Project point along given delta and local offset from AABB center, and outputs ALL hits (if any).
+        Project point along given direction and local offset from AABB center, and outputs ALL hits (if any).
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
@@ -191,8 +192,8 @@ namespace PQ.Common.Physics.Internal
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
 
-            _boxCollider.enabled = true;
             Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
+            _boxCollider.enabled = true;
 
             #if UNITY_EDITOR
             if (DrawRayCastsInEditor)
@@ -205,25 +206,23 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
-        Cast against a specific collider.
+        Project a point along given direction until specific given collider is hit.
         */
         public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
         {
             // note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of
             // checking a specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it)
             bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
-            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
-
-            _boxCollider.enabled = false;
             LayerMask previousLayerMask = _contactFilter.layerMask;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
             _contactFilter.SetLayerMask(collider.gameObject.layer);
+            _boxCollider.enabled = false;
 
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
 
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
             _contactFilter.SetLayerMask(previousLayerMask);
             _boxCollider.enabled = true;
-
-            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
 
             hit = default;
             for (int i = 0; i < hitCount; i++)
@@ -238,8 +237,7 @@ namespace PQ.Common.Physics.Internal
             #if UNITY_EDITOR
             if (DrawRayCastsInEditor)
             {
-                float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawRayCast(origin, direction, distance, hit, duration);
+                DebugExtensions.DrawRayCast(origin, direction, distance, hit, Time.fixedDeltaTime);
             }
             #endif
             return hit;
@@ -323,6 +321,7 @@ namespace PQ.Common.Physics.Internal
             return flags;
         }
 
+
         /*
         Compute distance from center to edge of our bounding box in given direction.
         */
@@ -357,8 +356,8 @@ namespace PQ.Common.Physics.Internal
             #if UNITY_EDITOR
             if (DrawRayCastsInEditor)
             {
-                DebugExtensions.DrawPlus(minimumSeparation.pointA, new Vector2(0.05f, 0.05f), 45f, Color.cyan, 0.50f);
-                DebugExtensions.DrawPlus(minimumSeparation.pointB, new Vector2(0.05f, 0.05f), 45f, Color.blue, 0.50f);
+                DebugExtensions.DrawPlus(minimumSeparation.pointA, new Vector2(0.05f, 0.05f), 45f, Color.cyan, Time.fixedDeltaTime);
+                DebugExtensions.DrawPlus(minimumSeparation.pointB, new Vector2(0.05f, 0.05f), 45f, Color.blue, Time.fixedDeltaTime);
             }
             #endif
             return minimumSeparation;
