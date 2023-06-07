@@ -261,7 +261,11 @@ namespace PQ.Common.Physics.Internal
             #if UNITY_EDITOR
             if (DrawShapeCastsInEditor)
             {
-                DebugExtensions.DrawBoxCast(_boxCollider.bounds.center, _boxCollider.bounds.extents, 0f, direction, distance, hits, Time.fixedDeltaTime);
+                // note that this won't be a perfect representation as it doesn't account for the rounded edges,
+                // but close enough for our purposes to visualize the cast
+                Vector2 center  = _boxCollider.bounds.center;
+                Vector2 extents = _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
+                DebugExtensions.DrawBoxCast(center, extents, 0f, direction, distance, hits, Time.fixedDeltaTime);
             }
             #endif
             return !hits.IsEmpty;
