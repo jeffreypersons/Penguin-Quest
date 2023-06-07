@@ -15,7 +15,7 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField] private PenguinColliderConstraints _colliderConstraints = PenguinColliderConstraints.None;
 
         [Header("Collider References")]
-        [SerializeField] private BoxCollider2D     _outerCollider;
+        [SerializeField] private CapsuleCollider2D _outerCollider;
         [SerializeField] private CapsuleCollider2D _headCollider;
         [SerializeField] private CapsuleCollider2D _torsoCollider;
         [SerializeField] private CapsuleCollider2D _frontFlipperUpperCollider;
@@ -23,7 +23,7 @@ namespace PQ.Game.Entities.Penguin
         [SerializeField] private CapsuleCollider2D _frontFootCollider;
         [SerializeField] private CapsuleCollider2D _backFootCollider;
 
-        public BoxCollider2D     OuterCollider             => _outerCollider;
+        public CapsuleCollider2D OuterCollider             => _outerCollider;
         public CapsuleCollider2D ColliderHead              => _headCollider;
         public CapsuleCollider2D ColliderTorso             => _torsoCollider;
         public CapsuleCollider2D ColliderFrontFlipperUpper => _frontFlipperUpperCollider;

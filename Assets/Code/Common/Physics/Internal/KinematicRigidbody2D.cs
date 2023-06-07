@@ -20,7 +20,7 @@ namespace PQ.Common.Physics.Internal
     {
         private Transform        _transform;
         private Rigidbody2D      _rigidbody;
-        private BoxCollider2D    _boxCollider;
+        private CapsuleCollider2D _boxCollider;
         private ContactFilter2D  _contactFilter;
         private RaycastHit2D[]   _hitBuffer;
         private Collider2D[]     _overlapBuffer;
@@ -58,9 +58,9 @@ namespace PQ.Common.Physics.Internal
         public Vector2 Center       => _boxCollider.bounds.center;
         public Vector2 Forward      => _rigidbody.transform.right.normalized;
         public Vector2 Up           => _rigidbody.transform.up.normalized;
-        public Vector2 Extents      => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
+        public Vector2 Extents      => _boxCollider.bounds.extents + new Vector3(0f, 0f, 0f);
         public float   Depth        => _rigidbody.transform.position.z;
-        public float   SkinWidth    => _boxCollider.edgeRadius;
+        public float   SkinWidth    => 0f;
         public Vector2 BoundsOffset => _boxCollider.offset;
 
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
@@ -81,7 +81,7 @@ namespace PQ.Common.Physics.Internal
             {
                 throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(transform)}");
             }
-            if (!transform.TryGetComponent(out BoxCollider2D boxCollider2D))
+            if (!transform.TryGetComponent(out CapsuleCollider2D boxCollider2D))
             {
                 throw new MissingComponentException($"Expected attached {nameof(BoxCollider2D)} - not found on {nameof(transform)}");
             }
@@ -123,15 +123,13 @@ namespace PQ.Common.Physics.Internal
             _gravityScale = gravityScale;
         }
 
-        public void SetLocalBounds(Vector2 offset, Vector2 size, float outerEdgeRadius)
+        public void SetLocalBounds(Vector2 offset, Vector2 size)
         {
             if (_boxCollider.offset != offset ||
-                _boxCollider.size   != size   ||
-                !Mathf.Approximately(_boxCollider.edgeRadius, outerEdgeRadius))
+                _boxCollider.size   != size)
             {
-                _boxCollider.offset     = offset;
-                _boxCollider.size       = size;
-                _boxCollider.edgeRadius = outerEdgeRadius;
+                _boxCollider.offset = offset;
+                _boxCollider.size   = size;
             }
         }
 

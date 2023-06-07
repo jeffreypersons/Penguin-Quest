@@ -217,7 +217,7 @@ namespace PQ.Common.Physics
                     $"received from={localMin} to={localMax} skinWidth={skinWidth}");
             }
 
-            _kinematicBody.SetLocalBounds(localCenter, 2f * localExtents, skinWidth);
+            _kinematicBody.SetLocalBounds(localCenter, 2f * localExtents);
             _skinWidth     = skinWidth;
             _AABBCornerMin = localMin;
             _AABBCornerMax = localMax;
