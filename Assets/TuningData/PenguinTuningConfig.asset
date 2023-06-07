@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PenguinTuningConfig
   m_EditorClassIdentifier: 
   maxVerticalSpeedFalling: 5
-  maxVerticalSpeedJumping: 5
-  maxHorizontalSpeedUpright: 5
+  maxVerticalSpeedJumping: 7
+  maxHorizontalSpeedUpright: 0.5
   skinWidthUpright: 0.04
   boundsMinUpright: {x: -0.22, y: 0.075}
   boundsMaxUpright: {x: 0.22, y: 1.075}
