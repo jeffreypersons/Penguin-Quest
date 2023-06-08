@@ -215,7 +215,7 @@ namespace PQ.Common.Physics.Internal
             bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
             LayerMask previousLayerMask = _contactFilter.layerMask;
             Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
-            _contactFilter.SetLayerMask(collider.gameObject.layer);
+            _contactFilter.SetLayerMask(~collider.gameObject.layer);
             _boxCollider.enabled = false;
 
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
@@ -372,17 +372,31 @@ namespace PQ.Common.Physics.Internal
 
         Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
         */
-        public bool ComputeSeparationAlongDelta(Collider2D collider, Vector2 direction, float maxDistance, out float separation)
+        public bool ComputeSeparation(Collider2D collider, Vector2 direction, float maxDistance, out float separation)
         {
-            ColliderDistance2D minimumSeparation = ComputeMinimumSeparation(collider);
-            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
-
             separation = 0f;
-            if (CastRayAt(collider, minimumSeparation.pointA, directionToSurface, maxDistance, out RaycastHit2D hit, true))
+
+            ColliderDistance2D minimumSeparation = ComputeMinimumSeparation(collider);
+            if (minimumSeparation.distance * minimumSeparation.normal == Vector2.zero)
             {
-                separation = minimumSeparation.isOverlapped? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
+                return false;
             }
-            return (separation * direction) == Vector2.zero;
+
+            Vector2 pointOnAABBEdge = minimumSeparation.pointA;
+            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
+            if (CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxDistance, out RaycastHit2D hit, true))
+            {
+                separation = minimumSeparation.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
+                Debug.Log(separation);
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Given {collider} not found between " +
+                    $"{pointOnAABBEdge} and {pointOnAABBEdge + maxDistance * direction}");
+            }
+
+            return (separation * direction) != Vector2.zero;
         }
 
         
