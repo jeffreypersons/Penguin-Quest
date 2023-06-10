@@ -6,20 +6,14 @@ namespace PQ._Experimental.SimpleMovement_002
 {
     public class Body : MonoBehaviour
     {
-        [SerializeField] private Rigidbody2D   _rigidBody;
+        [SerializeField] private Rigidbody2D   _rigidbody;
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.01f;
+        [SerializeField] [Range(0,   1)] private float _skinWidth = 0.01f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
-        #if UNITY_EDITOR
-        [SerializeField] private bool _drawCastsInEditor = true;        
-        [SerializeField] private bool _drawMovesInEditor = true;
-        #endif
-
-        private bool _initialized;
-        private ContactFilter2D _castFilter;
+        private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
 
         public override string ToString() =>
@@ -31,11 +25,11 @@ namespace PQ._Experimental.SimpleMovement_002
                 $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
             $"}}";
 
-        public Vector2 Position  => _rigidBody.position;
-        public float   Depth     => _rigidBody.transform.position.z;
+        public Vector2 Position  => _rigidbody.position;
+        public float   Depth     => _rigidbody.transform.position.z;
         public Bounds  Bounds    => _boxCollider.bounds;
-        public Vector2 Forward   => _rigidBody.transform.right.normalized;
-        public Vector2 Up        => _rigidBody.transform.up.normalized;
+        public Vector2 Forward   => _rigidbody.transform.right.normalized;
+        public Vector2 Up        => _rigidbody.transform.up.normalized;
         public float   SkinWidth => _skinWidth;
 
 
@@ -50,254 +44,243 @@ namespace PQ._Experimental.SimpleMovement_002
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
 
-            _castFilter = new ContactFilter2D();
-            _hitBuffer  = new RaycastHit2D[_preallocatedHitBufferSize];
-            _castFilter.useLayerMask = true;
-            _castFilter.SetLayerMask(_layerMask);
+            _contactFilter = new ContactFilter2D();
+            _hitBuffer     = new RaycastHit2D[_preallocatedHitBufferSize];
 
-            float buffer = Mathf.Clamp01(_skinWidth);
-            _boxCollider.edgeRadius = buffer;
-            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
+            _boxCollider.edgeRadius = _skinWidth;
+            _boxCollider.size = new Vector2(1f - _skinWidth, 1f - _skinWidth);
 
-            _rigidBody.isKinematic = true;
-            _rigidBody.simulated   = true;
-            _rigidBody.useFullKinematicContacts = true;
-            _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
+            _rigidbody.isKinematic = true;
+            _rigidbody.simulated   = true;
+            _rigidbody.useFullKinematicContacts = true;
+            _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-            _initialized = true;
+            _contactFilter.useTriggers    = false;
+            _contactFilter.useNormalAngle = false;
+            _contactFilter.SetLayerMask(_layerMask);
         }
 
 
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
         {
-            _rigidBody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
-            _rigidBody.transform.localEulerAngles = new Vector3(
+            _rigidbody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+            _rigidbody.transform.localEulerAngles = new Vector3(
                 x: vertical   ? 180f : 0f,
                 y: horizontal ? 180f : 0f,
                 z: 0f);
-            _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
-        }
-
-        /* Set world transform to given point, ignoring physics. */
-        public void TeleportTo(Vector2 position)
-        {
-            transform.position = position;
-        }
-
-        /* Immediately move body to given point. */
-        public void MoveTo(Vector2 position)
-        {
-            #if UNITY_EDITOR
-            if (_drawMovesInEditor)
-            {
-                Debug.DrawLine(_rigidBody.position, position, Color.grey, Time.fixedDeltaTime);
-            }
-            #endif
-            _rigidBody.position = position;
+            _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
         /* Immediately move body by given amount. */
         public void MoveBy(Vector2 delta)
         {
-            #if UNITY_EDITOR
-            if (_drawMovesInEditor)
-            {
-                Debug.DrawLine(_rigidBody.position, _rigidBody.position + delta, Color.grey, Time.fixedDeltaTime);
-            }
-            #endif
-            _rigidBody.position += delta;
+            _rigidbody.position += delta;
         }
 
-        /*
-        Move body to given frame's start position and perform MovePosition to maintain any interpolation.
-        
-        Context:
-        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
-        - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
-        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
-          replace the original position _then_ apply MovePosition()
-
-        Reference:
-        - https://illogika-studio.gitbooks.io/unity-best-practices/content/physics-rigidbody-interpolation-and-fixedtimestep.html
-
-        Warning:
-        - Only use if you know exactly what you are doing with physics
-        - Interpolation can still be broken if position directly modified again in the same physics frame
-        */
-        public void InterpolatedMoveTo(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
+        /* Interpolated move this amount. */
+        public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
         {
-            // todo: look into encapsulating this inside a FixedUpdate call and a KinematicBody interpolation mode instead
-            //       would require storing any changes for current frame and 'undoing' and repllaying via MovePosition() like below
-            #if UNITY_EDITOR
-            if (_drawMovesInEditor)
-            {
-                Debug.DrawLine(startPositionThisFrame, targetPositionThisFrame, Color.grey, Time.fixedDeltaTime);
-            }
-            #endif
-            _rigidBody.position = startPositionThisFrame;
-            _rigidBody.MovePosition(targetPositionThisFrame);
+            _rigidbody.position = startPositionThisFrame;
+            _rigidbody.MovePosition(targetPositionThisFrame);
         }
-
-        /*
-        Project AABB along delta, and return ALL hits (if any).
         
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        /*
+        Project point along given direction and local offset from AABB center, and outputs ALL hits (if any).
+
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastAABB_All(Vector2 delta, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastRay(Vector2 centerOffset, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
         {
-            _castFilter.SetLayerMask(_layerMask);
+            Vector2 origin = (Vector2)_boxCollider.bounds.center + centerOffset;
 
-            if (delta == Vector2.zero)
-            {
-                hits = _hitBuffer.AsSpan(0, 0);
-                return false;
-            }
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
+            _boxCollider.enabled = false;
 
-            Bounds bounds = _boxCollider.bounds;
-
-            Vector2 center    = bounds.center;
-            Vector2 size      = bounds.size - new Vector3(2f * _boxCollider.edgeRadius, 2f * _boxCollider.edgeRadius, 0f);
-            float   distance  = delta.magnitude;
-            Vector2 direction = delta / distance;
-
-            int hitCount = Physics2D.BoxCast(center, size, 0, direction, _castFilter, _hitBuffer, distance);
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
-            
-            #if UNITY_EDITOR
-            if (_drawCastsInEditor)
-            {
-                float duration = Time.fixedDeltaTime;
-                foreach (RaycastHit2D hit in hits)
-                {
-                    Vector2 edgePoint = hit.point - (hit.distance * direction);
-                    Vector2 hitPoint  = hit.point;
-                    Vector2 endPoint  = hit.point + (distance * direction);
 
-                    Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
-                    Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
-                }
-            }
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
+            _boxCollider.enabled = true;
+
+            #if UNITY_EDITOR
+            float duration = Time.fixedDeltaTime;
+            Vector2 edgePoint = hits[0].point - (hits[0].distance * direction);
+            Vector2 hitPoint  = hits[0].point;
+            Vector2 endPoint  = hits[0].point + (distance * direction);
+
+            Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+            Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
             #endif
             return !hits.IsEmpty;
         }
 
-
         /*
-        Project AABB along delta, and return CLOSEST hit (if any).
-        
-        WARNING: Hits are intended to be used right away, as any subsequent casts will change the result.
+        Project a point along given direction until specific given collider is hit.
         */
-        public bool CastAABB_Closest(Vector2 delta, out RaycastHit2D hit)
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
         {
-            if (!CastAABB_All(delta, out ReadOnlySpan<RaycastHit2D> hits))
-            {
-                hit = default;
-                return false;
-            }
+            // note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of
+            // checking a specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it)
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            LayerMask previousLayerMask = _contactFilter.layerMask;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
+            _contactFilter.SetLayerMask(~collider.gameObject.layer);
+            _boxCollider.enabled = false;
 
-            int closestHitIndex = 0;
-            for (int i = 0; i < hits.Length; i++)
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
+            _contactFilter.SetLayerMask(previousLayerMask);
+            _boxCollider.enabled = true;
+
+            hit = default;
+            for (int i = 0; i < hitCount; i++)
             {
-                if (hits[i].distance < hits[closestHitIndex].distance)
+                if (_hitBuffer[i].collider == collider)
                 {
-                    closestHitIndex = i;
+                    hit = _hitBuffer[i];
+                    break;
                 }
             }
-            hit = hits[closestHitIndex];
-            return true;
-        }
-        
-        /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
-        public CollisionFlags2D CheckForOverlappingContacts(float skinWidth)
-        {
-            Transform transform = _rigidBody.transform;
-            Vector2 right = transform.right.normalized;
-            Vector2 up    = transform.up.normalized;
-            Vector2 left  = -right;
-            Vector2 down  = -up;
 
-            CollisionFlags2D flags = CollisionFlags2D.None;
-            if (CastAABB_All(skinWidth * right, out _))
-            {
-                flags |= CollisionFlags2D.Front;
-            }
-            if (CastAABB_All(skinWidth * up, out _))
-            {
-                flags |= CollisionFlags2D.Above;
-            }
-            if (CastAABB_All(skinWidth * left, out _))
-            {
-                flags |= CollisionFlags2D.Behind;
-            }
-            if (CastAABB_All(skinWidth * down, out _))
-            {
-                flags |= CollisionFlags2D.Below;
-            }
-            
             #if UNITY_EDITOR
-            if (_drawCastsInEditor)
-            {
-                Bounds bounds = _boxCollider.bounds;
-                Vector2 center    = new(bounds.center.x, bounds.center.y);
-                Vector2 skinRatio = new(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
-                Vector2 xAxis     = bounds.extents.x * right;
-                Vector2 yAxis     = bounds.extents.y * up;
+            float duration = Time.fixedDeltaTime;
+            Vector2 edgePoint = hit.point - (hit.distance * direction);
+            Vector2 hitPoint = hit.point;
+            Vector2 endPoint = hit.point + (distance * direction);
 
-                float duration = Time.fixedDeltaTime;
-                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
-                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+            Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
+            #endif
+            return hit;
+        }
+
+
+        /* Project AABB along delta, and return ALL hits (if any). */
+        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
+        {
+            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
+
+            int hitCount = _boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance, ignoreSiblingColliders: true);
+            hits = _hitBuffer.AsSpan(0, hitCount);
+
+            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
+
+            #if UNITY_EDITOR
+            float duration = Time.fixedDeltaTime;
+            foreach (RaycastHit2D hit in hits)
+            {
+                Vector2 edgePoint = hit.point - (hit.distance * direction);
+                Vector2 hitPoint = hit.point;
+                Vector2 endPoint = hit.point + (distance * direction);
+
+                Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
+                Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
             }
             #endif
-            return flags;
+            return !hits.IsEmpty;
         }
         
+        
         /*
-        Compute distance from center to edge of our bounding box in given direction.
+        Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
+
+        If no layermask provided, uses the one assigned in editor.
         */
+        public CollisionFlags2D CheckSides()
+        {
+            _contactFilter.useNormalAngle = true;
+            bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
+            bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
+
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            if (HasContactsInNormalRange(315, 45))
+            {
+                flags |= isFlippedHorizontal? CollisionFlags2D.Behind : CollisionFlags2D.Front;
+            }
+            if (HasContactsInNormalRange(45, 135))
+            {
+                flags |= isFlippedVertical ? CollisionFlags2D.Above : CollisionFlags2D.Below;
+            }
+            if (HasContactsInNormalRange(135, 225))
+            {
+                flags |= isFlippedHorizontal ? CollisionFlags2D.Front : CollisionFlags2D.Behind;
+            }
+            if (HasContactsInNormalRange(225, 315))
+            {
+                flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
+            }
+            _contactFilter.useNormalAngle = false;
+            Debug.Log(flags);
+            return flags;
+        }
+
+        
+        /* Compute distance from center to edge of our bounding box in given direction. */
         public float ComputeDistanceToEdge(Vector2 direction)
         {
             Bounds bounds = _boxCollider.bounds;
             bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
-            return distanceFromCenterToEdge;
+
+            // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
+            return Mathf.Abs(distanceFromCenterToEdge);
         }
-
+        
         /*
-        Compute vector representing overlap amount between body and given collider, if any.
+        Compute signed distance representing overlap amount between body and given collider, if any.
 
-        Uses separating axis theorem to determine overlap - may require more invocations for
-        complex polygons.
+        Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
         */
-        public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
+        public bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxScanDistance, out float separation)
         {
-            if (collider == null)
-            {
-                amount = Vector2.zero;
-                return false;
-            }
+            separation = 0f;
 
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            Debug.Log(minimumSeparation.distance);
-            if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
+            if (minimumSeparation.distance * minimumSeparation.normal == Vector2.zero)
             {
-                amount = Vector2.zero;
                 return false;
             }
 
-            amount = minimumSeparation.distance * minimumSeparation.normal;
-            return true;
+            Vector2 pointOnAABBEdge = minimumSeparation.pointA;
+            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
+            if (CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxScanDistance, out RaycastHit2D hit, false))
+            {
+                separation = minimumSeparation.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
+                Debug.Log(separation);
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Given {collider} not found between " +
+                    $"{pointOnAABBEdge} and {pointOnAABBEdge + maxScanDistance * direction}");
+            }
+
+            return (separation * direction) != Vector2.zero;
         }
+        
+        
+        private bool HasContactsInNormalRange(float min, float max)
+        {
+            float previousMin = _contactFilter.minNormalAngle;
+            float previousMax = _contactFilter.maxNormalAngle;
 
+            _contactFilter.SetNormalAngle(min, max);
+            bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
 
+            _contactFilter.SetNormalAngle(previousMin, previousMax);
+            return hasContactsInRange;
+        }
+        
+        #if UNITY_EDITOR
         void OnValidate()
         {
-            float buffer = Mathf.Clamp01(_skinWidth);
-            _boxCollider.edgeRadius = buffer;
-            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
-
-            if (!Application.IsPlaying(this) || !_initialized)
+            _boxCollider.edgeRadius = _skinWidth;
+            _boxCollider.size = new Vector2(1f - _skinWidth, 1f - _skinWidth);
+            if (!Application.IsPlaying(this))
             {
                 return;
             }
@@ -324,5 +307,6 @@ namespace PQ._Experimental.SimpleMovement_002
             GizmoExtensions.DrawArrow(from: center, to: center + xAxis, color: Color.red);
             GizmoExtensions.DrawArrow(from: center, to: center + yAxis, color: Color.green);
         }
+        #endif
     }
 }

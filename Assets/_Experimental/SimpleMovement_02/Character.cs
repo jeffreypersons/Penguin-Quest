@@ -6,12 +6,10 @@ namespace PQ._Experimental.SimpleMovement_002
 {
     public class Character : MonoBehaviour
     {
-        [Range(0, 10)] [SerializeField] private float _timeScale            = 1f;
-        [Range(0, 10)] [SerializeField] private float _horizontalSpeed      = 5f;
-        [Range(0, 50)] [SerializeField] private float _gravitySpeed         = 10f;
-        [Range(0, 90)] [SerializeField] private float _maxSlopeAngle        = 90f;
-        [Range(0, 50)] [SerializeField] private int   _maxMoveIterations    = 10;        
-        [Range(0, 10)] [SerializeField] private int   _maxOverlapIterations = 2;
+        [Range(0, 10)] [SerializeField] private float _timeScale         = 1f;
+        [Range(0, 10)] [SerializeField] private float _horizontalSpeed   = 5f;
+        [Range(0, 50)] [SerializeField] private float _gravitySpeed      = 10f;
+        [Range(0, 50)] [SerializeField] private int   _maxMoveIterations = 10;
 
         private bool    _grounded  = true;
         private Vector2 _inputAxis = Vector2.zero;
@@ -22,11 +20,10 @@ namespace PQ._Experimental.SimpleMovement_002
                 $"horizontalSpeed:{_horizontalSpeed}," +
                 $"gravitySpeed:{_gravitySpeed}," +
                 $"maxMoveIterations:{_maxMoveIterations}," +
-                $"maxOverlapIterations:{_maxOverlapIterations}" +
             $"}}";
 
         
-        private void Awake()
+        void Awake()
         {
             // set fps to 60 for more determinism when testing movement
             Application.targetFrameRate = 60;
@@ -41,7 +38,7 @@ namespace PQ._Experimental.SimpleMovement_002
                 y: (Keyboard.current[Key.S].isPressed ? -1f : 0f) + (Keyboard.current[Key.W].isPressed ? 1f : 0f)
             );
 
-            _mover.SetParams(_maxSlopeAngle, _maxMoveIterations, _maxOverlapIterations);
+            _mover.SetParams(_maxMoveIterations);
             Time.timeScale = _timeScale;
         }
 

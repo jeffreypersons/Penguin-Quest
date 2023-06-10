@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
@@ -18,20 +17,9 @@ namespace PQ._Experimental.SimpleMovement_002
     public sealed class Mover
     {
         private Body _body;
-        private float _maxAngle;
         private int _maxMoveIterations;
-        private int _maxOverlapIterations;
         private CollisionFlags2D _collisions;
 
-
-        [Pure]
-        private static bool ApproximatelyZero(Vector2 delta)
-        {
-            // Since a movement amount can be exceedingly tiny depending on the timestep/world-scale/frame-rate,
-            // it's more reliable to consider it zero when within floating-point tolerances, rather than custom amounts.
-            // Specifically, Vector2 equality check handles this far better than comparing squares of magnitude/Mathf.Epsilon.
-            return delta == Vector2.zero;
-        }
 
         public Mover(Transform transform)
         {
@@ -40,11 +28,9 @@ namespace PQ._Experimental.SimpleMovement_002
             _body.Flip(horizontal: false, vertical: false);
         }
 
-        public void SetParams(float maxSlopeAngle, int maxMoveIterations, int maxOverlapIterations)
+        public void SetParams(int maxMoveIterations)
         {
-            _maxAngle = maxSlopeAngle;
             _maxMoveIterations = maxMoveIterations;
-            _maxOverlapIterations = maxOverlapIterations;
         }
 
         public void Flip(bool horizontal)
@@ -61,11 +47,13 @@ namespace PQ._Experimental.SimpleMovement_002
         - For flexibility, any external movement such as gravity must be accounted for in given delta
         - Movement is only opted-out if within floating point tolerances of zero, as anything larger will lead to
           skipping movement when deltas are small due to the timestep/world-scale/frame-rate used to compute it prior
-         */
+        */
         public void Move(Vector2 deltaPosition)
         {
-            if (ApproximatelyZero(deltaPosition))
+            if (deltaPosition == Vector2.zero)
             {
+                // todo: look into adding min separation resolution here for any overlapping colliders
+                _collisions = _body.CheckSides();
                 return;
             }
 
@@ -78,9 +66,10 @@ namespace PQ._Experimental.SimpleMovement_002
             // note that we resolve horizontal first as the movement is simpler than vertical
             MoveHorizontal(horizontal);
             MoveVertical(vertical);
-            _collisions = _body.CheckForOverlappingContacts(_body.SkinWidth);
 
-            _body.InterpolatedMoveTo(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
+            _body.MovePosition(startPositionThisFrame: position, targetPositionThisFrame: _body.Position);
+
+            _collisions = _body.CheckSides();
         }
 
         public bool InContact(CollisionFlags2D flags)
@@ -91,95 +80,64 @@ namespace PQ._Experimental.SimpleMovement_002
 
         private void MoveHorizontal(Vector2 initialDelta)
         {
-            Vector2 delta = initialDelta;
-            for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
+            float distanceLeft = initialDelta.magnitude;
+            Vector2 currentDirection = initialDelta / distanceLeft;
+            for (int i = 0; i < _maxMoveIterations; i++)
             {
-                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
-
-                // unless there's an overly steep slope, move a linear step with properties taken into account
-                if (Vector2.Angle(Vector2.up, hit.normal) <= _maxAngle)
+                if (!MoveAABBAlongDelta(currentDirection, ref distanceLeft, out float step, out RaycastHit2D obstruction))
                 {
-                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
-                    _body.MoveBy(collisionResponse);
+                    break;
                 }
-
-                PushOutIfOverlap(hit);
             }
         }
 
         private void MoveVertical(Vector2 initialDelta)
         {
-            Vector2 delta = initialDelta;
-            for (int i = 0; i < _maxMoveIterations && !ApproximatelyZero(delta); i++)
+            float distanceLeft = initialDelta.magnitude;
+            Vector2 currentDirection = initialDelta / distanceLeft;
+            for (int i = 0; i < _maxMoveIterations; i++)
             {
-                MoveAABBAlongDelta(ref delta, out RaycastHit2D hit);
-
-                // only if there's an overly steep slope, do we want to take action (eg sliding down)
-                if (Vector2.Angle(Vector2.up, hit.normal) > _maxAngle)
+                if (!MoveAABBAlongDelta(currentDirection, ref distanceLeft, out float step, out RaycastHit2D obstruction))
                 {
-                    Vector2 collisionResponse = ComputeCollisionDelta(hit.distance * delta.normalized, hit.normal);
-                    _body.MoveBy(collisionResponse);
-                }
-
-                PushOutIfOverlap(hit);
-            }
-        }
-
-
-        private void PushOutIfOverlap(RaycastHit2D hit)
-        {
-            // todo: add skin width support
-            Vector2 overlapAmount = Vector2.positiveInfinity;
-            for (int i = 0; i < _maxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
-            {
-                if (_body.ComputeOverlap(hit.collider, out overlapAmount))
-                {
-                    _body.MoveBy(overlapAmount);
+                    break;
                 }
             }
         }
+
         
-        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
-        private void MoveAABBAlongDelta(ref Vector2 delta, out RaycastHit2D hit)
+        /* Project AABB along delta until (if any) obstruction. Assumes no initial overlaps. Max distance caps at body-radius to prevent tunneling. */
+        private bool MoveAABBAlongDelta(Vector2 direction, ref float distanceLeft, out float step, out RaycastHit2D obstruction)
         {
-            if (delta == Vector2.zero)
+            // todo: verify small differences, and that things don't go negative, etc
+            float distanceToAABBEdge = _body.ComputeDistanceToEdge(direction);
+
+            // move box along delta a distance no greater than bound-extents, stopping at the first collision (if any)
+            obstruction = default;
+            step = Mathf.Min(distanceToAABBEdge, distanceLeft);
+            if (_body.CastAABB(direction, step, out ReadOnlySpan<RaycastHit2D> hits, false))
             {
-                hit = default;
-                return;
+                obstruction = hits[0];
+                step = hits[0].distance;
+            }
+            _body.MoveBy(step * direction);
+
+            // if there was an obstruction, apply any depenetration
+            if (obstruction && _body.ComputeDepenetration(obstruction.collider, direction, step, out float separation) && separation < 0)
+            {
+                _body.MoveBy(separation * direction);
+                step -= separation;
             }
 
-            float remainingDistance = delta.magnitude;
-            Vector2 direction = delta / remainingDistance;
-            Vector2 step = Mathf.Min(_body.ComputeDistanceToEdge(direction), remainingDistance) * direction;
-            if (_body.CastAABB_Closest(step, out hit))
+            // if no step to take, there's no more that can move
+            Vector2 deltaStep = step * direction;
+            if (deltaStep == Vector2.zero)
             {
-                step = hit.distance * direction;
+                step = 0f;
+                distanceLeft = 0f;
+                return false;
             }
-
-            _body.MoveBy(step);
-            delta -= step;
-        }
-
-        /*
-        Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
-
-        In other words, for a given collision what is the adjusted delta when taking impact angle, velocity, bounciness,
-        and friction into account (using a linear model similar to Unity's dynamic physics)?
-        
-        Note that collisions are resolved via: adjustedDelta = moveDistance * [(Sbounciness)Snormal + (1-Sfriction)Stangent]
-        * where bounciness is from 0 (no bounciness) to 1 (completely reflected)
-        * friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance)
-        */
-        private Vector2 ComputeCollisionDelta(Vector2 delta, Vector2 hitNormal, float bounciness=0f, float friction=0f)
-        {
-            float remainingDistance = delta.magnitude;
-            Vector2 reflected  = Vector2.Reflect(delta, hitNormal);
-            Vector2 projection = Vector2.Dot(reflected, hitNormal) * hitNormal;
-            Vector2 tangent    = reflected - projection;
-
-            Vector2 perpendicularContribution = (bounciness * remainingDistance) * projection.normalized;
-            Vector2 tangentialContribution    = ((1f - friction) * remainingDistance) * tangent.normalized;
-            return perpendicularContribution + tangentialContribution;
+            distanceLeft -= step;
+            return true;
         }
     }
 }
