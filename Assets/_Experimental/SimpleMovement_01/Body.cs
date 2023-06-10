@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-namespace PQ._Experimental.SimpleMovement_001
+namespace PQ._Experimental.SimpleMovement_01
 {
     public class Body : MonoBehaviour
     {
