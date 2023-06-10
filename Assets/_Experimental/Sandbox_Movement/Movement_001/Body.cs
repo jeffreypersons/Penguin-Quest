@@ -6,7 +6,7 @@ namespace PQ._Experimental.Movement_001
 {
     public class Body : MonoBehaviour
     {
-        [SerializeField] private Rigidbody2D   _rigidBody;
+        [SerializeField] private Rigidbody2D   _rigidbody;
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
@@ -31,11 +31,11 @@ namespace PQ._Experimental.Movement_001
                 $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
             $"}}";
 
-        public Vector2 Position  => _rigidBody.position;
-        public float   Depth     => _rigidBody.transform.position.z;
+        public Vector2 Position  => _rigidbody.position;
+        public float   Depth     => _rigidbody.transform.position.z;
         public Bounds  Bounds    => _boxCollider.bounds;
-        public Vector2 Forward   => _rigidBody.transform.right.normalized;
-        public Vector2 Up        => _rigidBody.transform.up.normalized;
+        public Vector2 Forward   => _rigidbody.transform.right.normalized;
+        public Vector2 Up        => _rigidbody.transform.up.normalized;
         public float   SkinWidth => _skinWidth;
 
 
@@ -59,10 +59,10 @@ namespace PQ._Experimental.Movement_001
             _boxCollider.edgeRadius = buffer;
             _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
 
-            _rigidBody.isKinematic = true;
-            _rigidBody.simulated   = true;
-            _rigidBody.useFullKinematicContacts = true;
-            _rigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            _rigidbody.isKinematic = true;
+            _rigidbody.simulated   = true;
+            _rigidbody.useFullKinematicContacts = true;
+            _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             _initialized = true;
         }
@@ -71,12 +71,12 @@ namespace PQ._Experimental.Movement_001
         /* Immediately set facing of horizontal/vertical axes. */
         public void Flip(bool horizontal, bool vertical)
         {
-            _rigidBody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
-            _rigidBody.transform.localEulerAngles = new Vector3(
+            _rigidbody.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+            _rigidbody.transform.localEulerAngles = new Vector3(
                 x: vertical   ? 180f : 0f,
                 y: horizontal ? 180f : 0f,
                 z: 0f);
-            _rigidBody.constraints |= RigidbodyConstraints2D.FreezeRotation;
+            _rigidbody.constraints |= RigidbodyConstraints2D.FreezeRotation;
         }
 
         /* Set world transform to given point, ignoring physics. */
@@ -91,10 +91,10 @@ namespace PQ._Experimental.Movement_001
             #if UNITY_EDITOR
             if (_drawMovesInEditor)
             {
-                Debug.DrawLine(_rigidBody.position, position, Color.grey, Time.fixedDeltaTime);
+                Debug.DrawLine(_rigidbody.position, position, Color.grey, Time.fixedDeltaTime);
             }
             #endif
-            _rigidBody.position = position;
+            _rigidbody.position = position;
         }
 
         /* Immediately move body by given amount. */
@@ -103,10 +103,10 @@ namespace PQ._Experimental.Movement_001
             #if UNITY_EDITOR
             if (_drawMovesInEditor)
             {
-                Debug.DrawLine(_rigidBody.position, _rigidBody.position + delta, Color.grey, Time.fixedDeltaTime);
+                Debug.DrawLine(_rigidbody.position, _rigidbody.position + delta, Color.grey, Time.fixedDeltaTime);
             }
             #endif
-            _rigidBody.position += delta;
+            _rigidbody.position += delta;
         }
 
         /*
@@ -135,8 +135,8 @@ namespace PQ._Experimental.Movement_001
                 Debug.DrawLine(startPositionThisFrame, targetPositionThisFrame, Color.grey, Time.fixedDeltaTime);
             }
             #endif
-            _rigidBody.position = startPositionThisFrame;
-            _rigidBody.MovePosition(targetPositionThisFrame);
+            _rigidbody.position = startPositionThisFrame;
+            _rigidbody.MovePosition(targetPositionThisFrame);
         }
 
         /*
@@ -185,7 +185,7 @@ namespace PQ._Experimental.Movement_001
         /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
         public CollisionFlags2D CheckForOverlappingContacts(float skinWidth)
         {
-            Transform transform = _rigidBody.transform;
+            Transform transform = _rigidbody.transform;
             Vector2 right = transform.right.normalized;
             Vector2 up    = transform.up.normalized;
             Vector2 left  = -right;
