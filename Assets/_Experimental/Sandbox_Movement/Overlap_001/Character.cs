@@ -1,19 +1,21 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 namespace PQ._Experimental.Overlap_001
 {
     public class Character : MonoBehaviour
     {
-        private Mover _mover;
-        private Vector2? _requestedPosition;
+        [SerializeField] private Mover _mover;
 
+        private Vector2? _requestedPosition;
+        private bool _overlapResolveRequested;
         
-        void Awake()
+        void Start()
         {
             Application.targetFrameRate = 60;
-            _mover = new Mover(gameObject.transform);
             _requestedPosition = null;
+            _overlapResolveRequested = false;
         }
 
         void Update()
@@ -21,11 +23,15 @@ namespace PQ._Experimental.Overlap_001
             if (!_requestedPosition.HasValue && Mouse.current.leftButton.wasPressedThisFrame)
             {
                 _requestedPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-                Debug.Log(_requestedPosition);
             }
             else
             {
                 _requestedPosition = null;
+            }
+
+            if (Keyboard.current[Key.Space].isPressed)
+            {
+                _overlapResolveRequested = true;
             }
         }
 
@@ -34,6 +40,10 @@ namespace PQ._Experimental.Overlap_001
             if (_requestedPosition.HasValue)
             {
                 _mover.MoveTo(_requestedPosition.Value);
+            }
+            if (_overlapResolveRequested)
+            {
+                _mover.ResolveOverlapInLastDirectionMoved();
             }
         }
     }

@@ -61,6 +61,7 @@ namespace PQ._Experimental.Overlap_001
             _contactFilter.SetLayerMask(_layerMask);
         }
 
+
         /* Immediately move body by given amount. */
         public void MoveBy(Vector2 delta)
         {
@@ -75,7 +76,6 @@ namespace PQ._Experimental.Overlap_001
         }
 
 
-        /* Project AABB along delta, and return ALL hits (if any). */
         public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
         {
             bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
@@ -86,18 +86,6 @@ namespace PQ._Experimental.Overlap_001
 
             Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
 
-            #if UNITY_EDITOR
-            float duration = Time.fixedDeltaTime;
-            foreach (RaycastHit2D hit in hits)
-            {
-                Vector2 edgePoint = hit.point - (hit.distance * direction);
-                Vector2 hitPoint = hit.point;
-                Vector2 endPoint = hit.point + (distance * direction);
-
-                Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
-                Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
-            }
-            #endif
             return !hits.IsEmpty;
         }
         
@@ -112,55 +100,7 @@ namespace PQ._Experimental.Overlap_001
             return Mathf.Abs(distanceFromCenterToEdge);
         }
         
-        /*
-        Compute signed distance representing overlap amount between body and given collider, if any.
-
-        Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
-        */
-        public bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxScanDistance, out float separation)
-        {
-            separation = 0f;
-
-            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            if (minimumSeparation.distance * minimumSeparation.normal == Vector2.zero)
-            {
-                return false;
-            }
-
-            Vector2 pointOnAABBEdge = minimumSeparation.pointA;
-            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
-            if (CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxScanDistance, out RaycastHit2D hit, false))
-            {
-                separation = minimumSeparation.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
-                Debug.Log(separation);
-            }
-            else
-            {
-                throw new InvalidOperationException(
-                    $"Given {collider} not found between " +
-                    $"{pointOnAABBEdge} and {pointOnAABBEdge + maxScanDistance * direction}");
-            }
-
-            return (separation * direction) != Vector2.zero;
-        }
-        
-        
-        private bool HasContactsInNormalRange(float min, float max)
-        {
-            float previousMin = _contactFilter.minNormalAngle;
-            float previousMax = _contactFilter.maxNormalAngle;
-
-            _contactFilter.SetNormalAngle(min, max);
-            bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
-
-            _contactFilter.SetNormalAngle(previousMin, previousMax);
-            return hasContactsInRange;
-        }
-
-        /*
-        Project a point along given direction until specific given collider is hit.
-        */
-        private bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
         {
             // note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of
             // checking a specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it)
@@ -185,17 +125,28 @@ namespace PQ._Experimental.Overlap_001
                     break;
                 }
             }
-
-            #if UNITY_EDITOR
-            float duration = Time.fixedDeltaTime;
-            Vector2 edgePoint = hit.point - (hit.distance * direction);
-            Vector2 hitPoint = hit.point;
-            Vector2 endPoint = hit.point + (distance * direction);
-
-            Debug.DrawLine(edgePoint, hitPoint, Color.green, duration);
-            Debug.DrawLine(hitPoint,  endPoint, Color.red,   duration);
-            #endif
             return hit;
+        }
+        
+        /*
+        Compute vector representing overlap amount between body and given collider, if any.
+
+        Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
+        for complex collider shapes (eg convex polygons).
+        */
+        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
+        {
+            if (collider == null)
+            {
+                throw new ArgumentNullException("Error state - invalid minimum separation between body and given collider");
+            }
+
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            if (!minimumSeparation.isValid)
+            {
+                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
+            }
+            return minimumSeparation;
         }
 
 

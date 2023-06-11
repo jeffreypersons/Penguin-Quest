@@ -5,10 +5,12 @@ using UnityEngine;
 
 namespace PQ._Experimental.Overlap_001
 {
-    public sealed class Mover
+    public sealed class Mover : MonoBehaviour
     {
         private Body _body;
-        
+
+        private (Vector2 from, Vector2 to) _previousMove;
+
         [Pure]
         private (float distance, Vector2 direction) DecomposeDelta(Vector2 delta)
         {
@@ -26,15 +28,22 @@ namespace PQ._Experimental.Overlap_001
         }
 
 
-        public Mover(Transform transform)
+        void Awake()
         {
             _body = transform.GetComponent<Body>();
+            _previousMove = (Vector2.zero, Vector2.zero);
         }
 
         public void MoveTo(Vector2 target)
         {
+            _previousMove = (_body.Position, target);
+            _body.MoveBy(_previousMove.to - _previousMove.from);
+        }
+
+        public void ResolveOverlapInLastDirectionMoved()
+        {
             RaycastHit2D obstruction = default;
-            (float step, Vector2 direction) = DecomposeDelta(target - _body.Position);
+            (float step, Vector2 direction) = DecomposeDelta(_previousMove.to - _previousMove.from);
             if (_body.CastAABB(direction, step, out ReadOnlySpan<RaycastHit2D> hits, false))
             {
                 obstruction = hits[0];
@@ -43,10 +52,51 @@ namespace PQ._Experimental.Overlap_001
             _body.MoveBy(step * direction);
 
             // if there was an obstruction, apply any depenetration
-            if (obstruction && _body.ComputeDepenetration(obstruction.collider, direction, step, out float separation) && separation < 0)
+            if (obstruction && ComputeDepenetration(obstruction.collider, direction, step, out float separation) && separation < 0)
             {
                 _body.MoveBy(separation * direction);
             }
         }
+        
+
+        /*
+        Compute signed distance representing overlap amount between body and given collider, if any.
+
+        Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
+        */
+        private bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxScanDistance, out float separation)
+        {
+            separation = 0f;
+
+            ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
+            if (minimumSeparation.distance * minimumSeparation.normal == Vector2.zero)
+            {
+                return false;
+            }
+
+            Vector2 pointOnAABBEdge = minimumSeparation.pointA;
+            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
+            if (_body.CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxScanDistance, out RaycastHit2D hit, false))
+            {
+                separation = minimumSeparation.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
+                Debug.Log(separation);
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    $"Given {collider} not found between " +
+                    $"{pointOnAABBEdge} and {pointOnAABBEdge + maxScanDistance * direction}");
+            }
+
+            return (separation * direction) != Vector2.zero;
+        }
+        
+        
+        #if UNITY_EDITOR
+        void OnDrawGizmos()
+        {
+            GizmoExtensions.DrawArrow(_previousMove.from, _previousMove.to, Color.blue);
+        }
+        #endif
     }
 }
