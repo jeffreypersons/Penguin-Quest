@@ -285,7 +285,7 @@ namespace PQ._Experimental.Movement_002
                 return;
             }
 
-            if (_preallocatedHitBufferSize != _hitBuffer.Length)
+            if (_hitBuffer == null || _preallocatedHitBufferSize != _hitBuffer.Length)
             {
                 _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
             }

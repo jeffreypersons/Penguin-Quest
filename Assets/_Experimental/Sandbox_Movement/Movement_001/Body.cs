@@ -10,7 +10,7 @@ namespace PQ._Experimental.Movement_001
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.01f;
+        [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.075f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         #if UNITY_EDITOR
@@ -18,7 +18,6 @@ namespace PQ._Experimental.Movement_001
         [SerializeField] private bool _drawMovesInEditor = true;
         #endif
 
-        private bool _initialized;
         private ContactFilter2D _castFilter;
         private RaycastHit2D[]  _hitBuffer;
 
@@ -63,8 +62,6 @@ namespace PQ._Experimental.Movement_001
             _rigidbody.simulated   = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
-
-            _initialized = true;
         }
 
 
@@ -257,16 +254,15 @@ namespace PQ._Experimental.Movement_001
 
         void OnValidate()
         {
-            float buffer = Mathf.Clamp01(_skinWidth);
-            _boxCollider.edgeRadius = buffer;
-            _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
+            _boxCollider.edgeRadius = _skinWidth;
+            _boxCollider.size       = new Vector2(1f - _skinWidth, 1f - _skinWidth);
 
-            if (!Application.IsPlaying(this) || !_initialized)
+            if (!Application.IsPlaying(this))
             {
                 return;
             }
 
-            if (_preallocatedHitBufferSize != _hitBuffer.Length)
+            if (_hitBuffer == null || _preallocatedHitBufferSize != _hitBuffer.Length)
             {
                 _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
             }

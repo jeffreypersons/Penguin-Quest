@@ -135,18 +135,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoxBoyV1
       objectReference: {fileID: 0}
-    - target: {fileID: 6068203031854652124, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
-      propertyPath: m_Size.x
-      value: 0.99
-      objectReference: {fileID: 0}
-    - target: {fileID: 6068203031854652124, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
-      propertyPath: m_Size.y
-      value: 0.99
-      objectReference: {fileID: 0}
-    - target: {fileID: 6068203031854652124, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
-      propertyPath: m_EdgeRadius
-      value: 0.01
-      objectReference: {fileID: 0}
     - target: {fileID: 7577363344085367854, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -252,7 +240,7 @@ MonoBehaviour:
   _layerMask:
     serializedVersion: 2
     m_Bits: 4096
-  _skinWidth: 0.01
+  _skinWidth: 0.075
   _preallocatedHitBufferSize: 16
   _drawCastsInEditor: 1
   _drawMovesInEditor: 1
