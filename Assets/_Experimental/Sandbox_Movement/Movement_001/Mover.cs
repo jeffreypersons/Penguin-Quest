@@ -33,6 +33,23 @@ namespace PQ._Experimental.Movement_001
             return delta == Vector2.zero;
         }
 
+        [Pure]
+        private (Vector2 direction, float distance) DecomposeDelta(Vector2 delta)
+        {
+            // the below gets behavior exactly consistent with (delta.normalized, delta.magnitude),
+            // without extra square root call, and without the NaNs that arise if delta is zero and
+            // divided by it's magnitude without epsilon checks (that Unity does in delta.normalized)
+            float squaredMagnitude = delta.sqrMagnitude;
+            if (squaredMagnitude <= 1E-010f)
+            {
+                return (Vector2.zero, 0f);
+            }
+
+            float magnitude = Mathf.Sqrt(squaredMagnitude);
+            delta /= magnitude;
+            return (delta, magnitude);
+        }
+
         public Mover(Transform transform)
         {
             _body = transform.GetComponent<Body>();
