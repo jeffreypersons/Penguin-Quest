@@ -10,7 +10,7 @@ namespace PQ._Experimental.Movement_002
         [SerializeField] private BoxCollider2D _boxCollider;
 
         [SerializeField] private LayerMask _layerMask = default;
-        [SerializeField] [Range(0,   1)] private float _skinWidth = 0.01f;
+        [SerializeField] [Range(0,   1)] private float _skinWidth = 0.075f;
         [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
 
         private ContactFilter2D _contactFilter;
