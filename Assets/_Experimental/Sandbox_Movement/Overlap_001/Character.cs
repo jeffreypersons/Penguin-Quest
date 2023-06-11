@@ -1,62 +1,40 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 namespace PQ._Experimental.Overlap_001
 {
     public class Character : MonoBehaviour
     {
-        [Range(0, 10)] [SerializeField] private float _timeScale         = 1f;
-        [Range(0, 10)] [SerializeField] private float _horizontalSpeed   = 5f;
-        [Range(0, 50)] [SerializeField] private float _gravitySpeed      = 10f;
-        [Range(0, 50)] [SerializeField] private int   _maxMoveIterations = 10;
-
-        private bool    _grounded  = true;
-        private Vector2 _inputAxis = Vector2.zero;
-        private Mover   _mover;
-
-        public override string ToString() =>
-            $"Character{{" +
-                $"horizontalSpeed:{_horizontalSpeed}," +
-                $"gravitySpeed:{_gravitySpeed}," +
-                $"maxMoveIterations:{_maxMoveIterations}," +
-            $"}}";
+        private Mover _mover;
+        private Vector2? _requestedPosition;
 
         
         void Awake()
         {
-            // set fps to 60 for more determinism when testing movement
             Application.targetFrameRate = 60;
-
             _mover = new Mover(gameObject.transform);
+            _requestedPosition = null;
         }
 
         void Update()
         {
-            _inputAxis = new(
-                x: (Keyboard.current[Key.A].isPressed ? -1f : 0f) + (Keyboard.current[Key.D].isPressed ? 1f : 0f),
-                y: (Keyboard.current[Key.S].isPressed ? -1f : 0f) + (Keyboard.current[Key.W].isPressed ? 1f : 0f)
-            );
-
-            _mover.SetParams(_maxMoveIterations);
-            Time.timeScale = _timeScale;
+            if (!_requestedPosition.HasValue && Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                _requestedPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+                Debug.Log(_requestedPosition);
+            }
+            else
+            {
+                _requestedPosition = null;
+            }
         }
 
         void FixedUpdate()
         {
-            if (!Mathf.Approximately(_inputAxis.x, 0f))
+            if (_requestedPosition.HasValue)
             {
-                _mover.Flip(horizontal: _inputAxis.x < 0);
+                _mover.MoveTo(_requestedPosition.Value);
             }
-
-            float time = Time.fixedDeltaTime;
-            Vector2 velocity = new(
-                x: _inputAxis.x * _horizontalSpeed,
-                y: _grounded? 0 : -_gravitySpeed
-            );
-
-            _mover.Move(time * velocity);
-            _grounded = _mover.InContact(CollisionFlags2D.Below);
         }
     }
 }

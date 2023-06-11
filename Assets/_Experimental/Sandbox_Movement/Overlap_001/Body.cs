@@ -61,16 +61,6 @@ namespace PQ._Experimental.Overlap_001
             _contactFilter.SetLayerMask(_layerMask);
         }
 
-
-        /* Immediately set facing of horizontal/vertical axes. */
-        public void Flip(bool horizontal, bool vertical)
-        {
-            _rigidbody.transform.localEulerAngles = new Vector3(
-                x: vertical   ? 180f : 0f,
-                y: horizontal ? 180f : 0f,
-                z: 0f);
-        }
-
         /* Immediately move body by given amount. */
         public void MoveBy(Vector2 delta)
         {
@@ -111,40 +101,6 @@ namespace PQ._Experimental.Overlap_001
             return !hits.IsEmpty;
         }
         
-        
-        /*
-        Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
-
-        If no layermask provided, uses the one assigned in editor.
-        */
-        public CollisionFlags2D CheckSides()
-        {
-            _contactFilter.useNormalAngle = true;
-            bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
-            bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
-
-            CollisionFlags2D flags = CollisionFlags2D.None;
-            if (HasContactsInNormalRange(315, 45))
-            {
-                flags |= isFlippedHorizontal? CollisionFlags2D.Behind : CollisionFlags2D.Front;
-            }
-            if (HasContactsInNormalRange(45, 135))
-            {
-                flags |= isFlippedVertical ? CollisionFlags2D.Above : CollisionFlags2D.Below;
-            }
-            if (HasContactsInNormalRange(135, 225))
-            {
-                flags |= isFlippedHorizontal ? CollisionFlags2D.Front : CollisionFlags2D.Behind;
-            }
-            if (HasContactsInNormalRange(225, 315))
-            {
-                flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
-            }
-            _contactFilter.useNormalAngle = false;
-            Debug.Log(flags);
-            return flags;
-        }
-
         
         /* Compute distance from center to edge of our bounding box in given direction. */
         public float ComputeDistanceToEdge(Vector2 direction)
