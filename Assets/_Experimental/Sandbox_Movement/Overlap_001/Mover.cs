@@ -43,6 +43,7 @@ namespace PQ._Experimental.Overlap_001
             _previousDepenetrate = (_body.Position, _body.Position);
             if (obstruction && ComputeDepenetration(obstruction.collider, direction, maxDistance, out float separation) && separation < 0)
             {
+                Debug.Log(separation);
                 _previousDepenetrate = (_body.Position, _body.Position + separation * direction);
                 _body.MoveTo(_previousDepenetrate.after);
             }
@@ -74,7 +75,6 @@ namespace PQ._Experimental.Overlap_001
             if (_body.CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxScanDistance, out RaycastHit2D hit, false))
             {
                 separation = _minSep.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
-                Debug.Log(separation);
             }
             else
             {
