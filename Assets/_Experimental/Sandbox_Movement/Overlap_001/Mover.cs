@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
@@ -10,6 +9,7 @@ namespace PQ._Experimental.Overlap_001
         private Body _body;
 
         private ColliderDistance2D _minSep;
+        private (Vector2 from, Vector2 to) _previousMove;
         private (Vector2 before, Vector2 after) _previousDepenetrate;
 
 
@@ -17,15 +17,20 @@ namespace PQ._Experimental.Overlap_001
         {
             _body = transform.GetComponent<Body>();
             _minSep = default;
+            _previousMove = (_body.Position, _body.Position);
+            _previousDepenetrate = (_body.Position, _body.Position);
         }
 
         public void MoveTo(Vector2 target)
         {
-            _body.MoveTo(target);
+            _previousMove = (_body.Position, target);
+            _body.MoveBy(_previousMove.to - _previousMove.from);
         }
 
-        public void Depenetrate(Vector2 direction)
+        // if direction was zero, then resolve to min separation
+        public void DepenetrateAlongLastMove()
         {
+            Vector2 direction = (_previousMove.to - _previousMove.from).normalized;
             float maxDistance = _body.ComputeDistanceToEdge(direction);
 
             RaycastHit2D obstruction = default;
@@ -58,6 +63,11 @@ namespace PQ._Experimental.Overlap_001
             {
                 return false;
             }
+            if (direction == Vector2.zero)
+            {
+                separation = _minSep.isOverlapped ? -Mathf.Abs(_minSep.distance) : Mathf.Abs(_minSep.distance);
+                return (separation * direction) != Vector2.zero;
+            }
 
             Vector2 pointOnAABBEdge = _minSep.pointA;
             Vector2 directionToSurface = _minSep.isOverlapped ? -direction : direction;
@@ -80,10 +90,10 @@ namespace PQ._Experimental.Overlap_001
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
+            GizmoExtensions.DrawArrow(_previousMove.from, _previousMove.to, Color.white);
             GizmoExtensions.DrawSphere(_minSep.pointA, 0.01f, Color.blue);
             GizmoExtensions.DrawSphere(_minSep.pointB, 0.01f, Color.cyan);
             GizmoExtensions.DrawArrow(_previousDepenetrate.before, _previousDepenetrate.after, Color.green);
-
         }
         #endif
     }
