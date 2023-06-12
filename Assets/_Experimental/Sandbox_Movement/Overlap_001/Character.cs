@@ -43,7 +43,7 @@ namespace PQ._Experimental.Overlap_001
             }
             if (_overlapResolveRequested)
             {
-                _mover.ResolveOverlapInLastDirectionMoved();
+                _mover.ResolveDepenetrationAlongLastMove();
             }
         }
     }

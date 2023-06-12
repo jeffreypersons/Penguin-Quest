@@ -61,6 +61,11 @@ namespace PQ._Experimental.Overlap_001
             _contactFilter.SetLayerMask(_layerMask);
         }
 
+        /* Immediately move body to given point. */
+        public void MoveTo(Vector2 position)
+        {
+            _rigidbody.position = position;
+        }
 
         /* Immediately move body by given amount. */
         public void MoveBy(Vector2 delta)

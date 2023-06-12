@@ -41,10 +41,13 @@ namespace PQ._Experimental.Overlap_001
         {
             _previousMove = (_body.Position, target);
             _body.MoveBy(_previousMove.to - _previousMove.from);
-            ResolveOverlapInLastDirectionMoved(false);
+
+            Vector2 position = _body.Position;
+            ResolveDepenetrationAlongLastMove();
+            _body.MoveTo(position);
         }
 
-        public void ResolveOverlapInLastDirectionMoved(bool actuallyMove = true)
+        public void ResolveDepenetrationAlongLastMove()
         {
             RaycastHit2D obstruction = default;
             (float step, Vector2 direction) = DecomposeDelta(_previousMove.to - _previousMove.from);
@@ -53,18 +56,12 @@ namespace PQ._Experimental.Overlap_001
                 obstruction = hits[0];
                 step = hits[0].distance;
             }
-            if (actuallyMove)
-            {
-                _body.MoveBy(step * direction);
-            }
+            _body.MoveBy(step * direction);
 
             // if there was an obstruction, apply any depenetration
             if (obstruction && ComputeDepenetration(obstruction.collider, direction, step, out float separation) && separation < 0)
             {
-                if (actuallyMove)
-                {
-                    _body.MoveBy(separation * direction);
-                }
+                _body.MoveBy(separation * direction);
             }
         }
         
