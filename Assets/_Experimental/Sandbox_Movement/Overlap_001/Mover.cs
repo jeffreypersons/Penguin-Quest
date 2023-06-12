@@ -30,6 +30,7 @@ namespace PQ._Experimental.Overlap_001
         // note - resolves to min separation if the last move distance was zero
         public void DepenetrateAlongLastMove()
         {
+            Vector2 position  = _body.Position;
             Vector2 direction = (_previousMove.to - _previousMove.from).normalized;
             float maxDistance = _body.ComputeDistanceToEdge(direction);
 
@@ -40,12 +41,11 @@ namespace PQ._Experimental.Overlap_001
             }
 
             // if there was an obstruction, apply any depenetration
-            _previousDepenetrate = (_body.Position, _body.Position);
-            if (obstruction && ComputeDepenetration(obstruction.collider, direction, maxDistance, out float separation) && separation < 0)
+            _previousDepenetrate = (position, position);
+            if (obstruction && ComputeDepenetration(obstruction.collider, direction, maxDistance, out float separation, out Vector2 resolveNormal))
             {
-                Debug.Log(separation);
-                _previousDepenetrate = (_body.Position, _body.Position + separation * direction);
-                _body.MoveTo(_previousDepenetrate.after);
+                _body.MoveBy(separation * resolveNormal);
+                _previousDepenetrate = (position, position + separation * resolveNormal);
             }
         }
         
@@ -55,9 +55,10 @@ namespace PQ._Experimental.Overlap_001
 
         Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
         */
-        private bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxScanDistance, out float separation)
+        private bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxScanDistance, out float separation, out Vector2 resolveNormal)
         {
             separation = 0f;
+            resolveNormal = direction;
 
             _minSep = _body.ComputeMinimumSeparation(collider);
             if (_minSep.distance * _minSep.normal == Vector2.zero)
@@ -67,7 +68,8 @@ namespace PQ._Experimental.Overlap_001
             if (direction == Vector2.zero)
             {
                 separation = _minSep.isOverlapped ? -Mathf.Abs(_minSep.distance) : Mathf.Abs(_minSep.distance);
-                return (separation * direction) != Vector2.zero;
+                resolveNormal = _minSep.normal;
+                return (separation * resolveNormal) != Vector2.zero;
             }
 
             Vector2 pointOnAABBEdge = _minSep.pointA;
@@ -82,7 +84,6 @@ namespace PQ._Experimental.Overlap_001
                     $"Given {collider} not found between " +
                     $"{pointOnAABBEdge} and {pointOnAABBEdge + maxScanDistance * direction}");
             }
-
             return (separation * direction) != Vector2.zero;
         }
         
