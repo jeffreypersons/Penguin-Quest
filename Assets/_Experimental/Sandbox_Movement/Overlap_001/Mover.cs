@@ -42,7 +42,7 @@ namespace PQ._Experimental.Overlap_001
 
             // if there was an obstruction, apply any depenetration
             _previousDepenetrate = (position, position);
-            if (obstruction && ComputeDepenetration(obstruction.collider, direction, maxDistance, out float separation, out Vector2 resolveNormal))
+            if (obstruction && ComputeDepenetration(obstruction.collider, direction, 2f * _body.Extents.magnitude, out float separation, out Vector2 resolveNormal))
             {
                 _body.MoveBy(separation * resolveNormal);
                 _previousDepenetrate = (position, position + separation * resolveNormal);
@@ -55,7 +55,7 @@ namespace PQ._Experimental.Overlap_001
 
         Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
         */
-        private bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxScanDistance, out float separation, out Vector2 resolveNormal)
+        private bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxDepenetrateAmount, out float separation, out Vector2 resolveNormal)
         {
             separation = 0f;
             resolveNormal = direction;
@@ -74,7 +74,7 @@ namespace PQ._Experimental.Overlap_001
 
             Vector2 pointOnAABBEdge = _minSep.pointA;
             Vector2 directionToSurface = _minSep.isOverlapped ? -direction : direction;
-            if (_body.CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxScanDistance, out RaycastHit2D hit, false))
+            if (_body.CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxDepenetrateAmount, out RaycastHit2D hit, false))
             {
                 separation = _minSep.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
             }
@@ -82,7 +82,7 @@ namespace PQ._Experimental.Overlap_001
             {
                 throw new InvalidOperationException(
                     $"Given {collider} not found between " +
-                    $"{pointOnAABBEdge} and {pointOnAABBEdge + maxScanDistance * direction}");
+                    $"{pointOnAABBEdge} and {pointOnAABBEdge + maxDepenetrateAmount * direction}");
             }
             return (separation * direction) != Vector2.zero;
         }

@@ -31,6 +31,7 @@ namespace PQ._Experimental.Overlap_001
         public Vector2 Forward   => _rigidbody.transform.right.normalized;
         public Vector2 Up        => _rigidbody.transform.up.normalized;
         public float   SkinWidth => _skinWidth;
+        public Vector2 Extents   => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
 
 
         void Awake()
