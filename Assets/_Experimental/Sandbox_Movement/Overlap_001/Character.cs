@@ -20,7 +20,7 @@ namespace PQ._Experimental.Overlap_001
 
         void Update()
         {
-            _overlapResolveRequested = Keyboard.current[Key.Space].isPressed;
+            _overlapResolveRequested = Keyboard.current[Key.Space].wasPressedThisFrame;
             if (!_requestedPosition.HasValue && Mouse.current.leftButton.wasPressedThisFrame)
             {
                 _requestedPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
