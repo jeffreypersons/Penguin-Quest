@@ -74,13 +74,16 @@ namespace PQ._Experimental.Overlap_001
 
             Vector2 pointOnAABBEdge = _minSep.pointA;
             Vector2 directionToSurface = _minSep.isOverlapped ? -direction : direction;
+
+            Debug.DrawLine(pointOnAABBEdge, pointOnAABBEdge + maxDepenetrateAmount * directionToSurface, Color.red, 2f);
             if (_body.CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxDepenetrateAmount, out RaycastHit2D hit, false))
             {
                 separation = _minSep.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
+                Debug.DrawLine(pointOnAABBEdge, pointOnAABBEdge + separation * directionToSurface, Color.green, 2f);
             }
             else
             {
-                throw new InvalidOperationException(
+                throw new InvalidOperationException( 
                     $"Given {collider} not found between " +
                     $"{pointOnAABBEdge} and {pointOnAABBEdge + maxDepenetrateAmount * direction}");
             }
