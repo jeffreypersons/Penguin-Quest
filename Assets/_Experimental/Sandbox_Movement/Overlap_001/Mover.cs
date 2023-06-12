@@ -27,7 +27,7 @@ namespace PQ._Experimental.Overlap_001
             _body.MoveBy(_previousMove.to - _previousMove.from);
         }
 
-        // note - resolves to min separation if the last move's distance was zero
+        // note - resolves to min separation if the last move distance was zero
         public void DepenetrateAlongLastMove()
         {
             Vector2 direction = (_previousMove.to - _previousMove.from).normalized;
