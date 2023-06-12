@@ -9,59 +9,37 @@ namespace PQ._Experimental.Overlap_001
     {
         private Body _body;
 
-        private float _previousDepenetration;
-        private ColliderDistance2D _previousMinSeparation;
-        private (Vector2 from, Vector2 to) _previousMove;
-
-        [Pure]
-        private (float distance, Vector2 direction) DecomposeDelta(Vector2 delta)
-        {
-            // below is exactly equivalent to (delta.normalized, delta.magnitude) without the redundant
-            // sqrt call (benchmarks showed ~54% faster), and without NaNs on zero length vectors by just dividing distance
-            float squaredMagnitude = delta.sqrMagnitude;
-            if (squaredMagnitude <= 1E-010f)
-            {
-                return (0f, Vector2.zero);
-            }
-
-            float magnitude = Mathf.Sqrt(squaredMagnitude);
-            delta /= magnitude;
-            return (magnitude, delta);
-        }
+        private ColliderDistance2D _minSep;
+        private (Vector2 before, Vector2 after) _previousDepenetrate;
 
 
         void Awake()
         {
             _body = transform.GetComponent<Body>();
-            _previousMinSeparation = default;
-            _previousMove = (Vector2.zero, Vector2.zero);
+            _minSep = default;
         }
 
         public void MoveTo(Vector2 target)
         {
-            _previousMove = (_body.Position, target);
-            _body.MoveBy(_previousMove.to - _previousMove.from);
-
-            Vector2 position = _body.Position;
-            ResolveDepenetrationAlongLastMove();
-            _body.MoveTo(position);
+            _body.MoveTo(target);
         }
 
-        public void ResolveDepenetrationAlongLastMove()
+        public void Depenetrate(Vector2 direction)
         {
+            float maxDistance = _body.ComputeDistanceToEdge(direction);
+
             RaycastHit2D obstruction = default;
-            (float step, Vector2 direction) = DecomposeDelta(_previousMove.to - _previousMove.from);
-            if (_body.CastAABB(direction, step, out ReadOnlySpan<RaycastHit2D> hits, false))
+            if (_body.CastAABB(direction, maxDistance, out ReadOnlySpan<RaycastHit2D> hits, true))
             {
                 obstruction = hits[0];
-                step = hits[0].distance;
             }
-            _body.MoveBy(step * direction);
 
             // if there was an obstruction, apply any depenetration
-            if (obstruction && ComputeDepenetration(obstruction.collider, direction, step, out float separation) && separation < 0)
+            _previousDepenetrate = (_body.Position, _body.Position);
+            if (obstruction && ComputeDepenetration(obstruction.collider, direction, maxDistance, out float separation) && separation < 0)
             {
-                _body.MoveBy(separation * direction);
+                _previousDepenetrate = (_body.Position, _body.Position + separation * direction);
+                _body.MoveTo(_previousDepenetrate.after);
             }
         }
         
@@ -74,20 +52,18 @@ namespace PQ._Experimental.Overlap_001
         private bool ComputeDepenetration(Collider2D collider, Vector2 direction, float maxScanDistance, out float separation)
         {
             separation = 0f;
-            _previousDepenetration = separation;
 
-            ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
-            _previousMinSeparation = minimumSeparation;
-            if (minimumSeparation.distance * minimumSeparation.normal == Vector2.zero)
+            _minSep = _body.ComputeMinimumSeparation(collider);
+            if (_minSep.distance * _minSep.normal == Vector2.zero)
             {
                 return false;
             }
 
-            Vector2 pointOnAABBEdge = minimumSeparation.pointA;
-            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
+            Vector2 pointOnAABBEdge = _minSep.pointA;
+            Vector2 directionToSurface = _minSep.isOverlapped ? -direction : direction;
             if (_body.CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxScanDistance, out RaycastHit2D hit, false))
             {
-                separation = minimumSeparation.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
+                separation = _minSep.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
                 Debug.Log(separation);
             }
             else
@@ -97,7 +73,6 @@ namespace PQ._Experimental.Overlap_001
                     $"{pointOnAABBEdge} and {pointOnAABBEdge + maxScanDistance * direction}");
             }
 
-            _previousDepenetration = separation;
             return (separation * direction) != Vector2.zero;
         }
         
@@ -105,11 +80,9 @@ namespace PQ._Experimental.Overlap_001
         #if UNITY_EDITOR
         void OnDrawGizmos()
         {
-            GizmoExtensions.DrawArrow(_previousMove.from, _previousMove.to, Color.white);
-
-            GizmoExtensions.DrawSphere(_previousMinSeparation.pointA, 0.05f, Color.blue);
-            GizmoExtensions.DrawSphere(_previousMinSeparation.pointB, 0.05f, Color.cyan);
-            GizmoExtensions.DrawArrow(_previousMove.to, _previousMove.to - _previousDepenetration * (_previousMove.to - _previousMove.from).normalized, Color.black);
+            GizmoExtensions.DrawSphere(_minSep.pointA, 0.01f, Color.blue);
+            GizmoExtensions.DrawSphere(_minSep.pointB, 0.01f, Color.cyan);
+            GizmoExtensions.DrawArrow(_previousDepenetrate.before, _previousDepenetrate.after, Color.green);
 
         }
         #endif

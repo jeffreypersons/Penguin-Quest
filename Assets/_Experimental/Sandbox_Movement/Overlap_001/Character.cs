@@ -33,6 +33,10 @@ namespace PQ._Experimental.Overlap_001
             {
                 _overlapResolveRequested = true;
             }
+            else
+            {
+                _overlapResolveRequested = false;
+            }
         }
 
         void FixedUpdate()
@@ -43,7 +47,7 @@ namespace PQ._Experimental.Overlap_001
             }
             if (_overlapResolveRequested)
             {
-                _mover.ResolveDepenetrationAlongLastMove();
+                _mover.Depenetrate(Vector2.right);
             }
         }
     }
