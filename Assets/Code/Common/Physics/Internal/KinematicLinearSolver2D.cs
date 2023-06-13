@@ -184,21 +184,25 @@ namespace PQ.Common.Physics.Internal
             }
 
             // if sufficiently outside the collider, then no adjustment is needed
-            if (_body.ComputeSeparation(collider, Vector2.zero, out float separation, out Vector2 direction, out bool overlapped) && !overlapped && separation > _body.SkinWidth)
+            ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
+            if (initialSeparation.distance > _body.SkinWidth)
             {
                 return;
             }
             // otherwise, move the entire distance needed to resolve the initial overlap
-            _body.MoveBy(separation * direction);
+            _body.MoveBy(initialSeparation.distance * initialSeparation.normal);
 
             // in the case of a convex collider, we may need additional small adjustments to find a non-overlapping spot
             for (int i = 0; i < _params.MaxOverlapIterations; i++)
             {
-                if (!_body.ComputeSeparation(collider, Vector2.zero, out separation, out direction, out overlapped) || !overlapped)
+                ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
+
+                Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
+                if (ApproximatelyZero(offset))
                 {
                     break;
                 }
-                _body.MoveBy(separation * direction);
+                _body.MoveBy(offset);
             }
         }
 
