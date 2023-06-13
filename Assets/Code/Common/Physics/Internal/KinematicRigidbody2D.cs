@@ -340,64 +340,47 @@ namespace PQ.Common.Physics.Internal
         }
         
         /*
-        Compute vector representing overlap amount between body and given collider, if any.
+        Compute vector needed to resolve separation amount between AABB and collider along axis, if any.
 
-        Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
-        for complex collider shapes (eg convex polygons).
+        If colliders are overlapping with no axis specified (ie zero), then depenetrates along minimum separation.
+        Note that exceptions are thrown if colliders are in invalid states (ie null/disabled, or not found along direction).
+        Note that since separating axis theorem is used, many invocations may be needed for complex polygons.
         */
-        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
+        public bool ComputeSeparation(Collider2D collider, Vector2 axis, out float separation, out Vector2 direction, out bool overlapped)
         {
-            if (collider == null)
-            {
-                throw new ArgumentNullException("Error state - invalid minimum separation between body and given collider");
-            }
-
+            // ensure it's possible to get a valid minimum separation (ie both non-null and enabled)
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
             if (!minimumSeparation.isValid)
             {
-                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
+                throw new InvalidOperationException($"Invalid minimum separation distance between body and collider={collider}");
             }
 
-            #if UNITY_EDITOR
-            if (DrawRayCastsInEditor)
+            // use our minimum separation if axis not specified or no overlap
+            Vector2 minimumOffset = minimumSeparation.distance * minimumSeparation.normal;
+            if (axis == Vector2.zero || !minimumSeparation.isOverlapped)
             {
-                DebugExtensions.DrawPlus(minimumSeparation.pointA, new Vector2(0.05f, 0.05f), 45f, Color.cyan, Time.fixedDeltaTime);
-                DebugExtensions.DrawPlus(minimumSeparation.pointB, new Vector2(0.05f, 0.05f), 45f, Color.blue, Time.fixedDeltaTime);
-            }
-            #endif
-            return minimumSeparation;
-        }
-
-        /*
-        Compute signed distance representing overlap amount between body and given collider, if any.
-
-        Uses separating axis theorem to determine overlap - may require more invocations for complex polygons.
-        */
-        public bool ComputeSeparation(Collider2D collider, Vector2 direction, float maxDistance, out float separation)
-        {
-            separation = 0f;
-
-            ColliderDistance2D minimumSeparation = ComputeMinimumSeparation(collider);
-            if (minimumSeparation.distance * minimumSeparation.normal == Vector2.zero)
-            {
-                return false;
+                separation = minimumSeparation.distance;
+                direction  = minimumSeparation.normal;
+                overlapped = minimumSeparation.isOverlapped;
+                return minimumOffset != Vector2.zero;
             }
 
+            // todo: figure out a reasonable way to limit the raycast distance here without it being explicitly passed in
+            // todo: verify if this still works with edge radius and casted from inside (if not, might need to use closest point or similar)
+            // todo: using pointA as our origin only valid for some overlap cases, special casing depenetration checks
+            //       to perform min separation twice should account for cases of two or three overlapping AABB corners
+            direction = -axis;
             Vector2 pointOnAABBEdge = minimumSeparation.pointA;
-            Vector2 directionToSurface = minimumSeparation.isOverlapped ? -direction : direction;
-            if (CastRayAt(collider, pointOnAABBEdge, directionToSurface, maxDistance, out RaycastHit2D hit, true))
+            if (!CastRayAt(collider, pointOnAABBEdge, -direction, Mathf.Infinity, out RaycastHit2D hit, false))
             {
-                separation = minimumSeparation.isOverlapped ? -Mathf.Abs(hit.distance) : Mathf.Abs(hit.distance);
-                Debug.Log(separation);
-            }
-            else
-            {
-                throw new InvalidOperationException(
-                    $"Given {collider} not found between " +
-                    $"{pointOnAABBEdge} and {pointOnAABBEdge + maxDistance * direction}");
+                throw new InvalidOperationException($"Collider={collider} not found along direction={direction}");
             }
 
-            return (separation * direction) != Vector2.zero;
+            // todo: make sure the distance isn't negative even if starting inside collider (like how bounds.intersect does it)
+            separation = hit.distance;
+            direction  = -axis;
+            overlapped = true;
+            return true;
         }
 
         
