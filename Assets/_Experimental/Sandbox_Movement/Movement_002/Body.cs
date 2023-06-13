@@ -117,24 +117,27 @@ namespace PQ._Experimental.Movement_002
             return !hits.IsEmpty;
         }
 
+
         /*
         Project a point along given direction until specific given collider is hit.
+
+        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
+        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
         */
         public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
         {
-            // note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of
-            // checking a specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it)
-            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
-            LayerMask previousLayerMask = _contactFilter.layerMask;
+            int layer = collider.gameObject.layer;
+            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
+            LayerMask includeLayers = _contactFilter.layerMask;
+            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
             Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
             _contactFilter.SetLayerMask(~collider.gameObject.layer);
-            _boxCollider.enabled = false;
 
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
 
-            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
-            _contactFilter.SetLayerMask(previousLayerMask);
-            _boxCollider.enabled = true;
+            collider.gameObject.layer = layer;
+            _contactFilter.SetLayerMask(includeLayers);
+            Physics2D.queriesStartInColliders = queriesStartInColliders;
 
             hit = default;
             for (int i = 0; i < hitCount; i++)
@@ -145,7 +148,6 @@ namespace PQ._Experimental.Movement_002
                     break;
                 }
             }
-
             #if UNITY_EDITOR
             float duration = Time.fixedDeltaTime;
             Vector2 edgePoint = hit.point - (hit.distance * direction);
