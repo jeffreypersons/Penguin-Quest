@@ -95,17 +95,6 @@ namespace PQ._Experimental.Overlap_001
             return !hits.IsEmpty;
         }
 
-
-        /* Compute distance from center to edge of our bounding box in given direction. */
-        public float ComputeDistanceToEdge(Vector2 direction)
-        {
-            Bounds bounds = _boxCollider.bounds;
-            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
-
-            // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
-            return Mathf.Abs(distanceFromCenterToEdge);
-        }
-
         /*
         Project a point along given direction until specific given collider is hit.
 
@@ -137,6 +126,17 @@ namespace PQ._Experimental.Overlap_001
                 }
             }
             return hit;
+        }
+        
+
+        /* Compute distance from center to edge of our bounding box in given direction. */
+        public float ComputeDistanceToEdge(Vector2 direction)
+        {
+            Bounds bounds = _boxCollider.bounds;
+            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
+
+            // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
+            return Mathf.Abs(distanceFromCenterToEdge);
         }
         
         /*
