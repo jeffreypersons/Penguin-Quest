@@ -137,10 +137,10 @@ namespace PQ._Experimental.Movement_002
             _body.MoveBy(step * direction);
 
             // if there was an obstruction, apply any depenetration
-            if (obstruction && _body.ComputeDepenetration(obstruction.collider, direction, step, out float separation) && separation < 0)
+            if (obstruction && _body.ComputeSeparation(obstruction.collider, direction, out float resolveAmount, out Vector2 resolveDirection, out bool overlapped) && overlapped)
             {
-                _body.MoveBy(separation * direction);
-                step -= separation;
+                _body.MoveBy(resolveAmount * resolveDirection);
+                step -= resolveAmount;
             }
 
             // if no step to take, there's no more that can move
