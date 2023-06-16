@@ -34,33 +34,35 @@ namespace PQ._Experimental.Overlap_002
 
         private void HandleOverlapCheck(Vector2 castDirection, float castDistance, float drawDuration=10f)
         {
-            Vector2 origin = _body.Position;
-
-            Debug.DrawLine(origin, origin + castDistance * castDirection, Color.red, drawDuration);
-            if (_body.CastAABB(castDirection, castDistance, out RaycastHit2D hit))
-            {
-                Debug.DrawLine(origin, origin + hit.distance * castDirection, Color.green, drawDuration);
-            }
+            _body.CastAABB(castDirection, castDistance, out RaycastHit2D hit);
 
             for (int i = 0; i < 2; i++)
             {
                 ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
-                Debug.DrawLine(minimumSeparation.pointB, minimumSeparation.pointA, Color.white, drawDuration);
+                float distance = minimumSeparation.distance;
+                Vector2 pointA = minimumSeparation.pointA;
+                Vector2 pointB = minimumSeparation.pointB;
+                Vector2 normal = minimumSeparation.normal;
+                Vector2 markerExtents = 0.075f * Vector2.Perpendicular(normal);
 
-                Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
+                Debug.DrawLine(pointA, pointB, Color.white, drawDuration);
+                Debug.DrawLine(pointA - markerExtents, pointA + markerExtents, Color.red, drawDuration);
+
+                Vector2 offset;
+                if (minimumSeparation.isOverlapped)
+                {
+                    offset = minimumSeparation.distance * minimumSeparation.normal;
+                }
+                else
+                {
+                    offset = -minimumSeparation.distance * minimumSeparation.normal;
+                }
+
                 if (offset == Vector2.zero)
                 {
                     break;
                 }
-
-                if (!minimumSeparation.isOverlapped)
-                {
-                    _body.MoveBy(-offset);
-                }
-                else
-                {
-                    _body.MoveBy(offset);
-                }
+                _body.MoveBy(offset);
             }
         }
     }
