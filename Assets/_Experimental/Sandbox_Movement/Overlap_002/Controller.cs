@@ -42,18 +42,26 @@ namespace PQ._Experimental.Overlap_002
                 Debug.DrawLine(origin, origin + hit.distance * castDirection, Color.green, drawDuration);
             }
 
-            ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
+            for (int i = 0; i < 2; i++)
+            {
+                ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
+                Debug.DrawLine(minimumSeparation.pointB, minimumSeparation.pointA, Color.white, drawDuration);
 
-            Vector2 pointA        = minimumSeparation.pointA;
-            Vector2 pointB        = minimumSeparation.pointB;
-            Vector2 offset        = -minimumSeparation.distance * minimumSeparation.normal;
-            Vector2 markerExtents = 0.05f * Vector2.Perpendicular(offset);
+                Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
+                if (offset == Vector2.zero)
+                {
+                    break;
+                }
 
-            Debug.DrawLine(pointB, pointA, Color.black, drawDuration);
-            Debug.DrawLine(pointA - markerExtents, pointA + markerExtents, Color.black, drawDuration);
-
-            Debug.DrawLine(origin, origin + offset, Color.blue, drawDuration);
-            _body.MoveBy(offset);
+                if (!minimumSeparation.isOverlapped)
+                {
+                    _body.MoveBy(-offset);
+                }
+                else
+                {
+                    _body.MoveBy(offset);
+                }
+            }
         }
     }
 }

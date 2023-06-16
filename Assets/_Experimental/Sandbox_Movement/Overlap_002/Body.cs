@@ -98,15 +98,10 @@ namespace PQ._Experimental.Overlap_002
         {
             if (collider == null)
             {
-                throw new ArgumentNullException("Error state - invalid minimum separation between body and given collider");
+                return default;
             }
-
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            if (!minimumSeparation.isValid)
-            {
-                throw new InvalidOperationException("Error state - invalid minimum separation between body and given collider");
-            }
-            return minimumSeparation;
+            return minimumSeparation.isValid ? minimumSeparation : default;
         }
     }
 }
