@@ -46,7 +46,7 @@ namespace PQ._Experimental.Overlap_002
 
             Vector2 pointA        = minimumSeparation.pointA;
             Vector2 pointB        = minimumSeparation.pointB;
-            Vector2 offset        = minimumSeparation.distance * minimumSeparation.normal;
+            Vector2 offset        = -minimumSeparation.distance * minimumSeparation.normal;
             Vector2 markerExtents = 0.05f * Vector2.Perpendicular(offset);
 
             Debug.DrawLine(pointB, pointA, Color.black, drawDuration);
