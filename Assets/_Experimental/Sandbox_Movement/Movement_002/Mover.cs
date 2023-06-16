@@ -123,6 +123,13 @@ namespace PQ._Experimental.Movement_002
         /* Project AABB along delta until (if any) obstruction. Assumes no initial overlaps. Max distance caps at body-radius to prevent tunneling. */
         private bool MoveAABBAlongDelta(Vector2 direction, ref float distanceLeft, out float step, out RaycastHit2D obstruction)
         {
+            if (direction == Vector2.zero)
+            {
+                distanceLeft = 0f;
+                step = 0f;
+                obstruction = default;
+                return false;
+            }
             // todo: verify small differences, and that things don't go negative, etc
             float distanceToAABBEdge = _body.ComputeDistanceToEdge(direction);
 
