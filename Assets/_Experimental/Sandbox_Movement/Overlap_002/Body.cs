@@ -29,16 +29,20 @@ namespace PQ._Experimental.Overlap_002
         public Vector2 Up       => _rigidbody.transform.up.normalized;
         public Vector2 Extents  => _boxCollider.bounds.extents;
 
+
         void Awake()
         {
-            if (!transform.TryGetComponent<Rigidbody2D>(out var _))
+            if (!transform.TryGetComponent<Rigidbody2D>(out var rigidbody))
             {
                 throw new MissingComponentException($"Expected attached rigidbody2D - not found on {transform}");
             }
-            if (!transform.TryGetComponent<BoxCollider2D>(out var _))
+            if (!transform.TryGetComponent<BoxCollider2D>(out var boxCollider))
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
+
+            _rigidbody   = rigidbody;
+            _boxCollider = boxCollider;
 
             _contactFilter = new ContactFilter2D();
             _hitBuffer     = new RaycastHit2D[_preallocatedHitBufferSize];
