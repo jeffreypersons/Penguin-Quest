@@ -68,6 +68,7 @@ namespace PQ._Experimental.Overlap_003
             Vector2 startPosition = _body.Position;
             for (int i = 0; i < _maxMinSeparationSolves; i++)
             {
+                minSeparation = _body.ComputeMinimumSeparation(collider);
                 Vector2 offset = minSeparation.distance * minSeparation.normal;
                 if (offset == Vector2.zero)
                 {
