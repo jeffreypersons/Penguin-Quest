@@ -99,7 +99,7 @@ namespace PQ._Experimental.Overlap_003
         Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
         specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
         */
-        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders, bool draw)
         {
             int layer = collider.gameObject.layer;
             bool queriesStartInColliders = Physics2D.queriesStartInColliders;
@@ -115,11 +115,13 @@ namespace PQ._Experimental.Overlap_003
             Physics2D.queriesStartInColliders = queriesStartInColliders;
 
             hit = default;
+            if (draw) Debug.DrawLine(origin, origin + distance * direction, Color.red, 10f);
             for (int i = 0; i < hitCount; i++)
             {
                 if (_hitBuffer[i].collider == collider)
                 {
                     hit = _hitBuffer[i];
+                    if (draw) Debug.DrawLine(origin, hit.point, Color.green, 10f);
                     break;
                 }
             }
@@ -156,7 +158,7 @@ namespace PQ._Experimental.Overlap_003
         public float ComputeDistanceToEdge(Vector2 direction)
         {
             Vector2 startPosition = _circleCollider.bounds.center;
-            CastRayAt(_circleCollider, startPosition, direction, _circleCollider.bounds.extents.magnitude, out RaycastHit2D hit, true);
+            CastRayAt(_circleCollider, startPosition, direction, _circleCollider.bounds.extents.magnitude, out RaycastHit2D hit, true, false);
             return hit.distance < 0f? -hit.distance : hit.distance;
         }
     }

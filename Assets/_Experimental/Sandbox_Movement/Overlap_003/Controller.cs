@@ -27,44 +27,36 @@ namespace PQ._Experimental.Overlap_003
         {
             if (_nextButtonPressed)
             {
-                Vector2 targetOffset = _target.bounds.center - _body.Bounds.center;
-
-                float distance = targetOffset.magnitude;
-                Vector2 direction = targetOffset.normalized;
-                _body.CastCircle(direction, distance, out RaycastHit2D hit, true);
-
-                Debug.DrawLine(_body.Bounds.center, (Vector2)_body.Bounds.center + targetOffset, Color.red, 10f);
-                _body.CastRayAt(hit.collider, _body.Bounds.center, direction, distance, out RaycastHit2D hit2, true);
-                if (hit2) Debug.DrawLine(_body.Bounds.center, hit2.point, Color.green, 10f);
-                return;
-                Depenetrate(hit.collider, direction);
+                CheckForObstructionAlongPathToTarget(out RaycastHit2D obstruction);
+                MoveAwayFromObstruction(obstruction);
+                SnapToCollider(obstruction.collider);
             }
         }
 
 
-        private void Depenetrate(Collider2D collider, Vector2 direction)
+        private void CheckForObstructionAlongPathToTarget(out RaycastHit2D obstruction)
         {
-            MoveAwayFromSurface(collider, direction);
-            SnapToCollider(collider);
+            Vector2 targetOffset = _target.bounds.center - _body.Bounds.center;
 
+            float distance = targetOffset.magnitude;
+            Vector2 direction = targetOffset.normalized;
+            _body.CastCircle(direction, distance, out RaycastHit2D hit, true);
+            obstruction = hit;
         }
 
-        private void MoveAwayFromSurface(Collider2D collider, Vector2 direction)
+        private void MoveAwayFromObstruction(RaycastHit2D obstruction)
         {
-            Vector2 startPosition = _body.Bounds.center;
+            Vector2 direction = (obstruction.point - obstruction.centroid).normalized;
             float distanceToEdge = _body.ComputeDistanceToEdge(direction);
-            Debug.DrawLine(startPosition, startPosition + distanceToEdge * direction, Color.blue, 10f);
 
-            _body.CastRayAt(collider, startPosition, direction, distanceToEdge, out RaycastHit2D hit, true);
-            Debug.DrawLine(startPosition, startPosition + distanceToEdge * direction, Color.red, 10f);
-            Debug.DrawLine(startPosition, hit.point, Color.green, 10f);
+            _body.CastRayAt(obstruction.collider, _body.Bounds.center, direction, distanceToEdge, out RaycastHit2D hit, true, draw: true);
 
             Debug.Log(hit.collider.name);
         }
 
         private void SnapToCollider(Collider2D collider)
         {
-            Vector2 startPosition = _body.Position;
+            Vector2 startPosition = _body.Bounds.center;
             for (int i = 0; i < _maxMinSeparationSolves; i++)
             {
                 ColliderDistance2D minSeparation = _body.ComputeMinimumSeparation(collider);
@@ -75,7 +67,7 @@ namespace PQ._Experimental.Overlap_003
                 }
                 _body.MoveBy(offset);
             }
-            Vector2 endPosition = _body.Position;
+            Vector2 endPosition = _body.Bounds.center;
 
             if (startPosition != endPosition)
             {
