@@ -68,5 +68,11 @@ namespace PQ._Experimental.Overlap_002
                 _body.MoveBy(offset);
             }
         }
+
+
+        void OnDrawGizmos()
+        {
+            
+        }
     }
 }
