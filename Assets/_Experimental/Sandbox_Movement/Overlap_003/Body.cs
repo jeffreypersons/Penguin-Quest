@@ -88,7 +88,6 @@ namespace PQ._Experimental.Overlap_003
             {
                 hit = _hitBuffer[0];
             }
-
             Physics2D.queriesStartInColliders = queriesStartInColliders;
             return hit;
         }
@@ -101,6 +100,12 @@ namespace PQ._Experimental.Overlap_003
         */
         public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders, bool draw)
         {
+            if (collider == null)
+            {
+                hit = default;
+                return false;
+            }
+
             int layer = collider.gameObject.layer;
             bool queriesStartInColliders = Physics2D.queriesStartInColliders;
             LayerMask includeLayers = _contactFilter.layerMask;
