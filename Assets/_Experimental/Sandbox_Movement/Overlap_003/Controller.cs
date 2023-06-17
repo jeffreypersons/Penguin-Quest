@@ -33,6 +33,10 @@ namespace PQ._Experimental.Overlap_003
                 Vector2 direction = targetOffset.normalized;
                 _body.CastCircle(direction, distance, out RaycastHit2D hit, true);
 
+                Debug.DrawLine(_body.Bounds.center, (Vector2)_body.Bounds.center + targetOffset, Color.red, 10f);
+                _body.CastRayAt(hit.collider, Vector2.zero, direction, distance, out RaycastHit2D hit2, true);
+                if (hit2) Debug.DrawLine(_target.bounds.center, hit2.point + targetOffset, Color.green, 10f);
+                return;
                 Depenetrate(hit.collider, direction);
             }
         }
