@@ -146,5 +146,18 @@ namespace PQ._Experimental.Overlap_003
             ColliderDistance2D minimumSeparation = _circleCollider.Distance(collider);
             return minimumSeparation.isValid ? minimumSeparation : default;
         }
+        
+        /*
+        Compute vector representing overlap amount between body and given collider, if any.
+
+        Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
+        for complex collider shapes (eg convex polygons).
+        */
+        public float ComputeDistanceToEdge(Vector2 direction)
+        {
+            Vector2 startPosition = _circleCollider.bounds.center;
+            CastRayAt(_circleCollider, startPosition, direction, _circleCollider.bounds.extents.magnitude, out RaycastHit2D hit, true);
+            return hit.distance < 0f? -hit.distance : hit.distance;
+        }
     }
 }

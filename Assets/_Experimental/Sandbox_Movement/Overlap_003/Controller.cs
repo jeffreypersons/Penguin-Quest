@@ -7,6 +7,7 @@ namespace PQ._Experimental.Overlap_003
     public class Controller : MonoBehaviour
     {
         [SerializeField] private Body _body;
+        [SerializeField] private Collider2D _target;
         [SerializeField] [Range(0, 100)] private int _maxMinSeparationSolves = 10;
 
         private bool _nextButtonPressed;
@@ -26,18 +27,32 @@ namespace PQ._Experimental.Overlap_003
         {
             if (_nextButtonPressed)
             {
-                HandleOverlapCheck(castDirection: Vector2.down, castDistance: 10f);
+                Vector2 targetOffset = _target.bounds.center - _body.Bounds.center;
+
+                float distance = targetOffset.magnitude;
+                Vector2 direction = targetOffset.normalized;
+                _body.CastCircle(direction, distance, out RaycastHit2D hit, true);
+
+                Depenetrate(hit.collider, direction);
             }
         }
 
 
-        private void HandleOverlapCheck(Vector2 castDirection, float castDistance)
+        private void Depenetrate(Collider2D collider, Vector2 direction)
         {
-            _body.CastCircle(castDirection, castDistance, out RaycastHit2D hit, true);
-            SnapToCollider(hit.collider);
-            Debug.Log(_body.IsTouching(hit.collider));
+            MoveAwayFromSurface(collider, direction);
+            SnapToCollider(collider);
+
         }
 
+        private void MoveAwayFromSurface(Collider2D collider, Vector2 direction)
+        {
+            float distanceToEdge = _body.ComputeDistanceToEdge(direction);
+            Debug.DrawLine(_body.Bounds.center, distanceToEdge * direction, Color.blue, 10f);
+
+            _body.CastRayAt(collider, _body.Bounds.center, direction, distanceToEdge, out RaycastHit2D hit, true);
+            Debug.Log(hit.collider.name);
+        }
 
         private void SnapToCollider(Collider2D collider)
         {
@@ -57,7 +72,7 @@ namespace PQ._Experimental.Overlap_003
             if (startPosition != endPosition)
             {
                 Vector2 markerExtents = 0.075f * Vector2.Perpendicular(endPosition - startPosition);
-                Debug.DrawLine(startPosition - markerExtents, startPosition + markerExtents, Color.red,   10f);
+                Debug.DrawLine(startPosition - markerExtents, startPosition + markerExtents, Color.red, 10f);
                 Debug.DrawLine(startPosition, endPosition, Color.white, 10f);
             }
         }
