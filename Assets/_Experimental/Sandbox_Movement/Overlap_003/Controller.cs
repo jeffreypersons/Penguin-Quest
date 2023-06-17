@@ -35,38 +35,21 @@ namespace PQ._Experimental.Overlap_003
             Physics2D.queriesStartInColliders = true;
             _body.CastCapsule(castDirection, castDistance, out RaycastHit2D hit);
 
-            Physics2D.queriesStartInColliders = false;
-            for (int i = 0; i < 2; i++)
+            Physics2D.queriesStartInColliders = true;
+            ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
+            float distance = minimumSeparation.distance;
+            Vector2 pointA = minimumSeparation.pointA;
+            Vector2 pointB = minimumSeparation.pointB;
+            Vector2 normal = minimumSeparation.normal;
+            Debug.DrawLine(pointA, pointB, Color.white, drawDuration);
+
+            Debug.Log(distance);
+            if (pointA != pointB)
             {
-                ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
-                float distance = minimumSeparation.distance;
-                Vector2 pointA = minimumSeparation.pointA;
-                Vector2 pointB = minimumSeparation.pointB;
-                Vector2 normal = minimumSeparation.normal;
-
-                Debug.DrawLine(pointA, pointB, Color.white, drawDuration);
-                if (pointA != pointB)
-                {
-                    Vector2 markerExtents = 0.075f * Vector2.Perpendicular(normal);
-                    Debug.DrawLine(pointA - markerExtents, pointA + markerExtents, Color.red, drawDuration);
-                }
-
-                Vector2 offset;
-                if (minimumSeparation.isOverlapped)
-                {
-                    offset = minimumSeparation.distance * minimumSeparation.normal;
-                }
-                else
-                {
-                    offset = -minimumSeparation.distance * minimumSeparation.normal;
-                }
-
-                if (offset == Vector2.zero)
-                {
-                    break;
-                }
-                _body.MoveBy(offset);
+                Vector2 markerExtents = 0.075f * Vector2.Perpendicular(normal);
+                Debug.DrawLine(pointA - markerExtents, pointA + markerExtents, Color.red, drawDuration);
             }
+            _body.MoveBy(distance * normal);
         }
 
 
