@@ -77,7 +77,7 @@ namespace PQ._Experimental.Overlap_003
         }
 
 
-        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
+        public bool CastCapsule(Vector2 direction, float distance, out RaycastHit2D hit)
         {
             hit = default;
             if (_capsuleCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)

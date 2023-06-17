@@ -13,8 +13,6 @@ namespace PQ._Experimental.Overlap_003
         void Awake()
         {
             Application.targetFrameRate = 60;
-            Physics2D.queriesStartInColliders = true;
-
             _nextButtonPressed = false;
         }
 
@@ -34,8 +32,10 @@ namespace PQ._Experimental.Overlap_003
 
         private void HandleOverlapCheck(Vector2 castDirection, float castDistance, float drawDuration=10f)
         {
-            _body.CastAABB(castDirection, castDistance, out RaycastHit2D hit);
+            Physics2D.queriesStartInColliders = true;
+            _body.CastCapsule(castDirection, castDistance, out RaycastHit2D hit);
 
+            Physics2D.queriesStartInColliders = false;
             for (int i = 0; i < 2; i++)
             {
                 ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
