@@ -1,17 +1,16 @@
-using System;
 using UnityEngine;
 
 
-namespace PQ._Experimental.Overlap_002
+namespace PQ._Experimental.Overlap_003
 {
     public class Body : MonoBehaviour
     {
         private const int _preallocatedHitBufferSize = 16;
 
-        private Rigidbody2D     _rigidbody;
-        private BoxCollider2D   _boxCollider;
-        private RaycastHit2D[]  _hitBuffer;
-        private ContactFilter2D _contactFilter;
+        private Rigidbody2D       _rigidbody;
+        private CapsuleCollider2D _capsuleCollider;
+        private RaycastHit2D[]    _hitBuffer;
+        private ContactFilter2D   _contactFilter;
 
         public override string ToString() =>
             $"Mover{{" +
@@ -24,10 +23,10 @@ namespace PQ._Experimental.Overlap_002
 
         public Vector2 Position => _rigidbody.position;
         public float   Depth    => _rigidbody.transform.position.z;
-        public Bounds  Bounds   => _boxCollider.bounds;
+        public Bounds  Bounds   => _capsuleCollider.bounds;
         public Vector2 Forward  => _rigidbody.transform.right.normalized;
         public Vector2 Up       => _rigidbody.transform.up.normalized;
-        public Vector2 Extents  => _boxCollider.bounds.extents;
+        public Vector2 Extents  => _capsuleCollider.bounds.extents;
 
 
         void Awake()
@@ -36,13 +35,13 @@ namespace PQ._Experimental.Overlap_002
             {
                 throw new MissingComponentException($"Expected attached rigidbody2D - not found on {transform}");
             }
-            if (!transform.TryGetComponent<BoxCollider2D>(out var boxCollider))
+            if (!transform.TryGetComponent<CapsuleCollider2D>(out var capsuleCollider))
             {
                 throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
             }
 
-            _rigidbody   = rigidbody;
-            _boxCollider = boxCollider;
+            _rigidbody       = rigidbody;
+            _capsuleCollider = capsuleCollider;
 
             _contactFilter = new ContactFilter2D();
             _hitBuffer     = new RaycastHit2D[_preallocatedHitBufferSize];
@@ -81,7 +80,7 @@ namespace PQ._Experimental.Overlap_002
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
             hit = default;
-            if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
+            if (_capsuleCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
             }
@@ -100,7 +99,7 @@ namespace PQ._Experimental.Overlap_002
             {
                 return default;
             }
-            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            ColliderDistance2D minimumSeparation = _capsuleCollider.Distance(collider);
             return minimumSeparation.isValid ? minimumSeparation : default;
         }
     }
