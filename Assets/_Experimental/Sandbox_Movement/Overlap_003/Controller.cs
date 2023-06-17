@@ -47,10 +47,14 @@ namespace PQ._Experimental.Overlap_003
 
         private void MoveAwayFromSurface(Collider2D collider, Vector2 direction)
         {
+            Vector2 startPosition = _body.Bounds.center;
             float distanceToEdge = _body.ComputeDistanceToEdge(direction);
-            Debug.DrawLine(_body.Bounds.center, distanceToEdge * direction, Color.blue, 10f);
+            Debug.DrawLine(startPosition, startPosition + distanceToEdge * direction, Color.blue, 10f);
 
-            _body.CastRayAt(collider, _body.Bounds.center, direction, distanceToEdge, out RaycastHit2D hit, true);
+            _body.CastRayAt(collider, startPosition, direction, distanceToEdge, out RaycastHit2D hit, true);
+            Debug.DrawLine(startPosition, startPosition + distanceToEdge * direction, Color.red, 10f);
+            Debug.DrawLine(startPosition, hit.point, Color.green, 10f);
+
             Debug.Log(hit.collider.name);
         }
 
