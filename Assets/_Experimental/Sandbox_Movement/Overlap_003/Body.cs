@@ -126,6 +126,11 @@ namespace PQ._Experimental.Overlap_003
             return hit;
         }
 
+        public bool IsTouching(Collider2D collider)
+        {
+            return _circleCollider.IsTouching(collider);
+        }
+
         /*
         Compute vector representing overlap amount between body and given collider, if any.
 
