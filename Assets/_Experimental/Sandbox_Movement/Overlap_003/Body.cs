@@ -7,10 +7,10 @@ namespace PQ._Experimental.Overlap_003
     {
         private const int _preallocatedHitBufferSize = 16;
 
-        private Rigidbody2D       _rigidbody;
-        private CapsuleCollider2D _capsuleCollider;
-        private RaycastHit2D[]    _hitBuffer;
-        private ContactFilter2D   _contactFilter;
+        private Rigidbody2D      _rigidbody;
+        private CircleCollider2D _circleCollider;
+        private RaycastHit2D[]   _hitBuffer;
+        private ContactFilter2D  _contactFilter;
 
         public override string ToString() =>
             $"Mover{{" +
@@ -23,25 +23,25 @@ namespace PQ._Experimental.Overlap_003
 
         public Vector2 Position => _rigidbody.position;
         public float   Depth    => _rigidbody.transform.position.z;
-        public Bounds  Bounds   => _capsuleCollider.bounds;
+        public Bounds  Bounds   => _circleCollider.bounds;
         public Vector2 Forward  => _rigidbody.transform.right.normalized;
         public Vector2 Up       => _rigidbody.transform.up.normalized;
-        public Vector2 Extents  => _capsuleCollider.bounds.extents;
+        public Vector2 Extents  => _circleCollider.bounds.extents;
 
 
         void Awake()
         {
             if (!transform.TryGetComponent<Rigidbody2D>(out var rigidbody))
             {
-                throw new MissingComponentException($"Expected attached rigidbody2D - not found on {transform}");
+                throw new MissingComponentException($"Expected attached Rigidbody2D - not found on {transform}");
             }
-            if (!transform.TryGetComponent<CapsuleCollider2D>(out var capsuleCollider))
+            if (!transform.TryGetComponent<CircleCollider2D>(out var circleCollider))
             {
-                throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
+                throw new MissingComponentException($"Expected attached CircleCollider2D - not found on {transform}");
             }
 
-            _rigidbody       = rigidbody;
-            _capsuleCollider = capsuleCollider;
+            _rigidbody      = rigidbody;
+            _circleCollider = circleCollider;
 
             _contactFilter = new ContactFilter2D();
             _hitBuffer     = new RaycastHit2D[_preallocatedHitBufferSize];
@@ -77,12 +77,51 @@ namespace PQ._Experimental.Overlap_003
         }
 
 
-        public bool CastCapsule(Vector2 direction, float distance, out RaycastHit2D hit)
+        public bool CastCircle(Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
         {
             hit = default;
-            if (_capsuleCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
+
+            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
+
+            if (_circleCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
+            }
+
+            Physics2D.queriesStartInColliders = queriesStartInColliders;
+            return hit;
+        }
+        
+        /*
+        Project a point along given direction until specific given collider is hit.
+
+        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
+        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
+        */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
+        {
+            int layer = collider.gameObject.layer;
+            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
+            LayerMask includeLayers = _contactFilter.layerMask;
+            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
+            _contactFilter.SetLayerMask(~collider.gameObject.layer);
+
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
+            collider.gameObject.layer = layer;
+            _contactFilter.SetLayerMask(includeLayers);
+            Physics2D.queriesStartInColliders = queriesStartInColliders;
+
+            hit = default;
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_hitBuffer[i].collider == collider)
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
             }
             return hit;
         }
@@ -99,7 +138,7 @@ namespace PQ._Experimental.Overlap_003
             {
                 return default;
             }
-            ColliderDistance2D minimumSeparation = _capsuleCollider.Distance(collider);
+            ColliderDistance2D minimumSeparation = _circleCollider.Distance(collider);
             return minimumSeparation.isValid ? minimumSeparation : default;
         }
     }

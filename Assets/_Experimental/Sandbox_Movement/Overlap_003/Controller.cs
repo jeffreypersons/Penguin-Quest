@@ -7,6 +7,7 @@ namespace PQ._Experimental.Overlap_003
     public class Controller : MonoBehaviour
     {
         [SerializeField] private Body _body;
+        [SerializeField] [Range(0, 100)] private int _maxMinSeparationSolves = 10;
 
         private bool _nextButtonPressed;
 
@@ -32,8 +33,9 @@ namespace PQ._Experimental.Overlap_003
 
         private void HandleOverlapCheck(Vector2 castDirection, float castDistance, float drawDuration=10f)
         {
-            Physics2D.queriesStartInColliders = true;
-            _body.CastCapsule(castDirection, castDistance, out RaycastHit2D hit);
+            _body.CastCircle(castDirection, castDistance, out RaycastHit2D hit, true);
+
+            Debug.Log(ComputeOverlapDistance(hit.collider));
 
             Physics2D.queriesStartInColliders = true;
             ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
@@ -50,12 +52,33 @@ namespace PQ._Experimental.Overlap_003
                 Debug.DrawLine(pointA - markerExtents, pointA + markerExtents, Color.red, drawDuration);
             }
             _body.MoveBy(distance * normal);
+
+            Debug.Log(ComputeOverlapDistance(hit.collider));
         }
 
 
-        void OnDrawGizmos()
+        private float ComputeOverlapDistance(Collider2D collider)
         {
-            
+            ColliderDistance2D minSeparation = _body.ComputeMinimumSeparation(collider);
+            if (minSeparation.distance >= 0f)
+            {
+                return 0f;
+            }
+
+            Vector2 startPosition = _body.Position;
+            for (int i = 0; i < _maxMinSeparationSolves; i++)
+            {
+                Vector2 offset = minSeparation.distance * minSeparation.normal;
+                if (offset == Vector2.zero)
+                {
+                    break;
+                }
+                _body.MoveBy(offset);
+            }
+            Vector2 endPosition = _body.Position;
+
+            _body.MoveTo(startPosition);
+            return Vector2.Distance(startPosition, endPosition);
         }
     }
 }
