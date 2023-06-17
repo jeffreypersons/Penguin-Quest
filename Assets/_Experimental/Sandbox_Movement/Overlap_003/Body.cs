@@ -113,7 +113,7 @@ namespace PQ._Experimental.Overlap_003
             Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
             _contactFilter.SetLayerMask(~collider.gameObject.layer);
 
-            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+            int hitCount = Physics2D.Linecast(origin, origin + distance * direction, _contactFilter, _hitBuffer);
 
             collider.gameObject.layer = layer;
             _contactFilter.SetLayerMask(includeLayers);
@@ -160,11 +160,9 @@ namespace PQ._Experimental.Overlap_003
         Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
         for complex collider shapes (eg convex polygons).
         */
-        public float ComputeDistanceToEdge(Vector2 direction)
+        public float ComputeDistanceToEdge()
         {
-            Vector2 startPosition = _circleCollider.bounds.center;
-            CastRayAt(_circleCollider, startPosition, direction, _circleCollider.bounds.extents.magnitude, out RaycastHit2D hit, true, false);
-            return hit.distance < 0f? -hit.distance : hit.distance;
+            return _circleCollider.radius;
         }
     }
 }

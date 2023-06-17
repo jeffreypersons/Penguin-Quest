@@ -40,16 +40,20 @@ namespace PQ._Experimental.Overlap_003
 
             float distance = targetOffset.magnitude;
             Vector2 direction = targetOffset.normalized;
-            Debug.Log($"distance={distance} direction={direction}");
             _body.CastCircle(direction, distance, out RaycastHit2D hit, true);
             obstruction = hit;
         }
 
         private void MoveAwayFromObstruction(Collider2D collider)
         {
-            Vector2 direction = (_target.bounds.center - _body.Bounds.center).normalized;
-            float distanceToEdge = _body.ComputeDistanceToEdge(direction);
+            if (collider == null)
+            {
+                return;
+            }
 
+            Vector2 direction = (_target.bounds.center - _body.Bounds.center).normalized;
+            float distanceToEdge = _body.ComputeDistanceToEdge();
+            Debug.Log($"direction={direction} distance={distanceToEdge}");
             _body.CastRayAt(collider, _body.Bounds.center, direction, distanceToEdge, out RaycastHit2D hit, true, draw: true);
         }
 
