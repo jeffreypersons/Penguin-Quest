@@ -11,7 +11,7 @@ namespace PQ._Experimental.Movement_001
 
         [SerializeField] private LayerMask _layerMask = default;
         [SerializeField] [Range(0, 1)]   private float _skinWidth = 0.075f;
-        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
+        [SerializeField] [Range(1, 100)] private int _preallocatedBufferSize = 16;
 
         #if UNITY_EDITOR
         [SerializeField] private bool _drawCastsInEditor = true;        
@@ -50,7 +50,7 @@ namespace PQ._Experimental.Movement_001
             }
 
             _castFilter = new ContactFilter2D();
-            _hitBuffer  = new RaycastHit2D[_preallocatedHitBufferSize];
+            _hitBuffer  = new RaycastHit2D[_preallocatedBufferSize];
             _castFilter.useLayerMask = true;
             _castFilter.SetLayerMask(_layerMask);
 
@@ -262,9 +262,9 @@ namespace PQ._Experimental.Movement_001
                 return;
             }
 
-            if (_hitBuffer == null || _preallocatedHitBufferSize != _hitBuffer.Length)
+            if (_hitBuffer == null || _preallocatedBufferSize != _hitBuffer.Length)
             {
-                _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
+                _hitBuffer = new RaycastHit2D[_preallocatedBufferSize];
             }
         }
 

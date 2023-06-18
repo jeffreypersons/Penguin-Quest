@@ -5,7 +5,7 @@ namespace PQ._Experimental.Overlap_003
 {
     public class Body : MonoBehaviour
     {
-        private const int _preallocatedHitBufferSize = 16;
+        private const int _preallocatedBufferSize = 16;
 
         private Rigidbody2D      _rigidbody;
         private CircleCollider2D _circleCollider;
@@ -44,7 +44,7 @@ namespace PQ._Experimental.Overlap_003
             _circleCollider = circleCollider;
 
             _contactFilter = new ContactFilter2D();
-            _hitBuffer     = new RaycastHit2D[_preallocatedHitBufferSize];
+            _hitBuffer     = new RaycastHit2D[_preallocatedBufferSize];
 
             _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
             _rigidbody.isKinematic = true;
