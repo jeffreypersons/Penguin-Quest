@@ -6,16 +6,22 @@ namespace PQ._Experimental.Overlap_004
 {
     public class Controller : MonoBehaviour
     {
-        [SerializeField] private Body _body;
+        [SerializeField] private Transform _transform;
         [SerializeField] private Collider2D _target;
-        [SerializeField] [Range(0, 100)] private int _maxMinSeparationSolves = 10;
+        [SerializeField][Range(0, 100)] private int _maxMinSeparationSolves = 10;
 
+        private Internal.KinematicBody2D _kinematicBody;
+        private Internal.KinematicLinearSolver2D _kinematicSolver;
         private bool _nextButtonPressed;
+
 
         void Awake()
         {
             Application.targetFrameRate = 60;
             _nextButtonPressed = false;
+
+            _kinematicBody   = new Internal.KinematicBody2D(_transform);
+            _kinematicSolver = new Internal.KinematicLinearSolver2D(_kinematicBody);
         }
 
         void Update()
@@ -27,57 +33,7 @@ namespace PQ._Experimental.Overlap_004
         {
             if (_nextButtonPressed)
             {
-                CheckForObstructionAlongPathToTarget(out RaycastHit2D obstruction);
-                MoveAwayFromObstruction(obstruction);
-                SnapToCollider(obstruction.collider);
-            }
-        }
-
-
-        private void CheckForObstructionAlongPathToTarget(out RaycastHit2D obstruction)
-        {
-            Vector2 targetOffset = _target.bounds.center - _body.Bounds.center;
-
-            float distance = targetOffset.magnitude;
-            Vector2 direction = targetOffset.normalized;
-            _body.CastCircle(direction, distance, out RaycastHit2D hit, true);
-            obstruction = hit;
-        }
-
-        private void MoveAwayFromObstruction(RaycastHit2D obstruction)
-        {
-            if (obstruction.collider == null)
-            {
-                return;
-            }
-
-            Debug.Log(obstruction.normal);
-            Vector2 direction = (_target.bounds.center - _body.Bounds.center).normalized;
-            float distanceToEdge = _body.ComputeDistanceToEdge();
-            Debug.Log($"direction={direction} distance={distanceToEdge}");
-            _body.CastRayAt(obstruction.collider, _body.Bounds.center + new Vector3(0f, 0.05f), direction, distanceToEdge, out RaycastHit2D hit, true, draw: true);
-        }
-
-        private void SnapToCollider(Collider2D collider)
-        {
-            Vector2 startPosition = _body.Bounds.center;
-            for (int i = 0; i < _maxMinSeparationSolves; i++)
-            {
-                ColliderDistance2D minSeparation = _body.ComputeMinimumSeparation(collider);
-                Vector2 offset = minSeparation.distance * minSeparation.normal;
-                if (offset == Vector2.zero)
-                {
-                    break;
-                }
-                _body.MoveBy(offset);
-            }
-            Vector2 endPosition = _body.Bounds.center;
-
-            if (startPosition != endPosition)
-            {
-                Vector2 markerExtents = 0.075f * Vector2.Perpendicular(endPosition - startPosition);
-                Debug.DrawLine(startPosition - markerExtents, startPosition + markerExtents, Color.red, 10f);
-                Debug.DrawLine(startPosition, endPosition, Color.white, 10f);
+                _kinematicSolver.MoveUnobstructedAlongDelta((Vector2)_target.bounds.center - _kinematicBody.Position);
             }
         }
     }

@@ -400,14 +400,16 @@ PrefabInstance:
       addedObject: {fileID: 732108742}
     - targetCorrespondingSourceObject: {fileID: 5726160129927588184, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 732108746}
-    - targetCorrespondingSourceObject: {fileID: 5726160129927588184, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 732108747}
+      addedObject: {fileID: 732108743}
   m_SourcePrefab: {fileID: 100100000, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
 --- !u!1 &732108735 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5726160129927588184, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
+  m_PrefabInstance: {fileID: 732108734}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &732108736 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7577363344085367854, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
   m_PrefabInstance: {fileID: 732108734}
   m_PrefabAsset: {fileID: 0}
 --- !u!58 &732108742
@@ -445,7 +447,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &732108746
+--- !u!114 &732108743
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -454,22 +456,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 732108735}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05b91ca5690031844bcb8d9ba94e2d78, type: 3}
+  m_Script: {fileID: 11500000, guid: 589ada43eacb08349bb2d4270770b631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &732108747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732108735}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2948cc5518c46584982a9152b088ba98, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _body: {fileID: 732108746}
+  _transform: {fileID: 732108736}
   _target: {fileID: 373807058}
   _maxMinSeparationSolves: 10
 --- !u!1001 &2007588694
