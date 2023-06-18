@@ -7,6 +7,8 @@ namespace PQ._Experimental.Overlap_003
     public class Controller : MonoBehaviour
     {
         [SerializeField] private Body _body;
+        [SerializeField] private Collider2D _target;
+        [SerializeField] [Range(0, 100)] private int _maxMinSeparationSolves = 10;
 
         private bool _nextButtonPressed;
 
@@ -25,54 +27,58 @@ namespace PQ._Experimental.Overlap_003
         {
             if (_nextButtonPressed)
             {
-                HandleOverlapCheck(castDirection: Vector2.down, castDistance: 10f);
+                CheckForObstructionAlongPathToTarget(out RaycastHit2D obstruction);
+                MoveAwayFromObstruction(obstruction);
+                SnapToCollider(obstruction.collider);
             }
         }
 
 
-        private void HandleOverlapCheck(Vector2 castDirection, float castDistance, float drawDuration=10f)
+        private void CheckForObstructionAlongPathToTarget(out RaycastHit2D obstruction)
         {
-            Physics2D.queriesStartInColliders = true;
-            _body.CastCapsule(castDirection, castDistance, out RaycastHit2D hit);
+            Vector2 targetOffset = _target.bounds.center - _body.Bounds.center;
 
-            Physics2D.queriesStartInColliders = false;
-            for (int i = 0; i < 2; i++)
+            float distance = targetOffset.magnitude;
+            Vector2 direction = targetOffset.normalized;
+            _body.CastCircle(direction, distance, out RaycastHit2D hit, true);
+            obstruction = hit;
+        }
+
+        private void MoveAwayFromObstruction(RaycastHit2D obstruction)
+        {
+            if (obstruction.collider == null)
             {
-                ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(hit.collider);
-                float distance = minimumSeparation.distance;
-                Vector2 pointA = minimumSeparation.pointA;
-                Vector2 pointB = minimumSeparation.pointB;
-                Vector2 normal = minimumSeparation.normal;
+                return;
+            }
 
-                Debug.DrawLine(pointA, pointB, Color.white, drawDuration);
-                if (pointA != pointB)
-                {
-                    Vector2 markerExtents = 0.075f * Vector2.Perpendicular(normal);
-                    Debug.DrawLine(pointA - markerExtents, pointA + markerExtents, Color.red, drawDuration);
-                }
+            Debug.Log(obstruction.normal);
+            Vector2 direction = (_target.bounds.center - _body.Bounds.center).normalized;
+            float distanceToEdge = _body.ComputeDistanceToEdge();
+            Debug.Log($"direction={direction} distance={distanceToEdge}");
+            _body.CastRayAt(obstruction.collider, _body.Bounds.center + new Vector3(0f, 0.05f), direction, distanceToEdge, out RaycastHit2D hit, true, draw: true);
+        }
 
-                Vector2 offset;
-                if (minimumSeparation.isOverlapped)
-                {
-                    offset = minimumSeparation.distance * minimumSeparation.normal;
-                }
-                else
-                {
-                    offset = -minimumSeparation.distance * minimumSeparation.normal;
-                }
-
+        private void SnapToCollider(Collider2D collider)
+        {
+            Vector2 startPosition = _body.Bounds.center;
+            for (int i = 0; i < _maxMinSeparationSolves; i++)
+            {
+                ColliderDistance2D minSeparation = _body.ComputeMinimumSeparation(collider);
+                Vector2 offset = minSeparation.distance * minSeparation.normal;
                 if (offset == Vector2.zero)
                 {
                     break;
                 }
                 _body.MoveBy(offset);
             }
-        }
+            Vector2 endPosition = _body.Bounds.center;
 
-
-        void OnDrawGizmos()
-        {
-            
+            if (startPosition != endPosition)
+            {
+                Vector2 markerExtents = 0.075f * Vector2.Perpendicular(endPosition - startPosition);
+                Debug.DrawLine(startPosition - markerExtents, startPosition + markerExtents, Color.red, 10f);
+                Debug.DrawLine(startPosition, endPosition, Color.white, 10f);
+            }
         }
     }
 }

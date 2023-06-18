@@ -1,36 +1,41 @@
+using System;
 using UnityEngine;
 
 
-namespace PQ._Experimental.Overlap_003
+namespace PQ._Experimental.Overlap_004.Internal
 {
-    public class Body : MonoBehaviour
+    internal sealed class KinematicBody2D
     {
-        private const int _preallocatedBufferSize = 16;
+        private const int DefaultBufferSize = 16;
 
         private Rigidbody2D      _rigidbody;
         private CircleCollider2D _circleCollider;
-        private RaycastHit2D[]   _hitBuffer;
         private ContactFilter2D  _contactFilter;
+        private RaycastHit2D[]   _hitBuffer;
+        private Collider2D[]     _overlapBuffer;
+        private ContactPoint2D[] _contactBuffer;
+
 
         public override string ToString() =>
             $"Mover{{" +
                 $"Position:{Position}," +
-                $"Depth:{Depth}," +
                 $"Forward:{Forward}," +
                 $"Up:{Up}," +
-                $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
+                $"Radius: {Radius}," +
             $"}}";
 
         public Vector2 Position => _rigidbody.position;
-        public float   Depth    => _rigidbody.transform.position.z;
-        public Bounds  Bounds   => _circleCollider.bounds;
-        public Vector2 Forward  => _rigidbody.transform.right.normalized;
-        public Vector2 Up       => _rigidbody.transform.up.normalized;
-        public Vector2 Extents  => _circleCollider.bounds.extents;
+        public float   Radius   => _circleCollider.radius;
+        public Vector2 Forward  => _rigidbody.transform.localEulerAngles.y >= 90f ? Vector2.left : Vector2.right;
+        public Vector2 Up       => _rigidbody.transform.localEulerAngles.x >= 90f ? Vector2.down : Vector2.up;
 
 
-        void Awake()
+        public KinematicBody2D(Transform transform)
         {
+            if (transform == null)
+            {
+                throw new ArgumentNullException($"Expected non-null {nameof(Transform)}");
+            }
             if (!transform.TryGetComponent<Rigidbody2D>(out var rigidbody))
             {
                 throw new MissingComponentException($"Expected attached Rigidbody2D - not found on {transform}");
@@ -44,9 +49,10 @@ namespace PQ._Experimental.Overlap_003
             _circleCollider = circleCollider;
 
             _contactFilter = new ContactFilter2D();
-            _hitBuffer     = new RaycastHit2D[_preallocatedBufferSize];
+            _hitBuffer     = new RaycastHit2D[DefaultBufferSize];
+            _overlapBuffer = new Collider2D[DefaultBufferSize];
+            _contactBuffer = new ContactPoint2D[DefaultBufferSize];
 
-            _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
             _rigidbody.isKinematic = true;
             _rigidbody.simulated   = true;
             _rigidbody.useFullKinematicContacts = true;
@@ -57,26 +63,29 @@ namespace PQ._Experimental.Overlap_003
             _contactFilter.SetLayerMask(LayerMask.GetMask("Solids"));
         }
 
-        /* Immediately move body to given point. */
-        public void MoveTo(Vector2 position)
+
+        public void MoveTo(Vector2 position) => _rigidbody.position = position;
+        public void MoveBy(Vector2 delta) => _rigidbody.position += delta;
+        public bool IsTouching(Collider2D collider) => _circleCollider.IsTouching(collider);
+
+        /* Check for overlapping colliders within our bounding box. */
+        public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
         {
-            _rigidbody.position = position;
+            int colliderCount = _circleCollider.OverlapCollider(_contactFilter, _overlapBuffer);
+            colliders = _overlapBuffer.AsSpan(0, colliderCount);
+            return !colliders.IsEmpty;
         }
 
-        /* Immediately move body by given amount. */
-        public void MoveBy(Vector2 delta)
+        /* Query existing contacts from last physics pass. If in middle of fixedUpdate after modifying position, will need to syncTransforms. */
+        public bool CheckForContacts(out ReadOnlySpan<ContactPoint2D> contacts)
         {
-            _rigidbody.position += delta;
-        }
-
-        /* Interpolated move this amount. */
-        public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
-        {
-            _rigidbody.position = startPositionThisFrame;
-            _rigidbody.MovePosition(targetPositionThisFrame);
+            int contactCount = _circleCollider.GetContacts(_contactFilter, _contactBuffer);
+            contacts = _contactBuffer.AsSpan(0, contactCount);
+            return !contacts.IsEmpty;
         }
 
 
+        /* Project collider along given path. */
         public bool CastCircle(Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
         {
             hit = default;
@@ -92,13 +101,8 @@ namespace PQ._Experimental.Overlap_003
             return hit;
         }
         
-        /*
-        Project a point along given direction until specific given collider is hit.
-
-        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
-        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
-        */
-        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders, bool draw)
+        /* Cast a line at a specific collider, ignoring everything else. */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
         {
             if (collider == null)
             {
@@ -120,30 +124,19 @@ namespace PQ._Experimental.Overlap_003
             Physics2D.queriesStartInColliders = queriesStartInColliders;
 
             hit = default;
-            if (draw) Debug.DrawLine(origin, origin + distance * direction, Color.red, 10f);
             for (int i = 0; i < hitCount; i++)
             {
                 if (_hitBuffer[i].collider == collider)
                 {
                     hit = _hitBuffer[i];
-                    if (draw) Debug.DrawLine(origin, hit.point, Color.green, 10f);
                     break;
                 }
             }
             return hit;
         }
-
-        public bool IsTouching(Collider2D collider)
-        {
-            return _circleCollider.IsTouching(collider);
-        }
-
-        /*
-        Compute vector representing overlap amount between body and given collider, if any.
-
-        Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
-        for complex collider shapes (eg convex polygons).
-        */
+        
+        
+        /* Query existing contacts from last physics pass. If in middle of fixedUpdate after modifying position, will need to syncTransforms. */
         public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
         {
             if (collider == null)
@@ -152,17 +145,6 @@ namespace PQ._Experimental.Overlap_003
             }
             ColliderDistance2D minimumSeparation = _circleCollider.Distance(collider);
             return minimumSeparation.isValid ? minimumSeparation : default;
-        }
-        
-        /*
-        Compute vector representing overlap amount between body and given collider, if any.
-
-        Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
-        for complex collider shapes (eg convex polygons).
-        */
-        public float ComputeDistanceToEdge()
-        {
-            return _circleCollider.radius;
         }
     }
 }

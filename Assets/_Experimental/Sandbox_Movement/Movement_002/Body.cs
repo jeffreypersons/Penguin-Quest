@@ -11,7 +11,7 @@ namespace PQ._Experimental.Movement_002
 
         [SerializeField] private LayerMask _layerMask = default;
         [SerializeField] [Range(0,   1)] private float _skinWidth = 0.075f;
-        [SerializeField] [Range(1, 100)] private int _preallocatedHitBufferSize = 16;
+        [SerializeField] [Range(1, 100)] private int _preallocatedBufferSize = 16;
 
         private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
@@ -45,7 +45,7 @@ namespace PQ._Experimental.Movement_002
             }
 
             _contactFilter = new ContactFilter2D();
-            _hitBuffer     = new RaycastHit2D[_preallocatedHitBufferSize];
+            _hitBuffer     = new RaycastHit2D[_preallocatedBufferSize];
 
             _boxCollider.edgeRadius = _skinWidth;
             _boxCollider.size = new Vector2(1f - _skinWidth, 1f - _skinWidth);
@@ -299,9 +299,9 @@ namespace PQ._Experimental.Movement_002
                 return;
             }
 
-            if (_hitBuffer == null || _preallocatedHitBufferSize != _hitBuffer.Length)
+            if (_hitBuffer == null || _preallocatedBufferSize != _hitBuffer.Length)
             {
-                _hitBuffer = new RaycastHit2D[_preallocatedHitBufferSize];
+                _hitBuffer = new RaycastHit2D[_preallocatedBufferSize];
             }
         }
 
