@@ -28,7 +28,7 @@ namespace PQ._Experimental.Overlap_003
             if (_nextButtonPressed)
             {
                 CheckForObstructionAlongPathToTarget(out RaycastHit2D obstruction);
-                MoveAwayFromObstruction(obstruction.collider);
+                MoveAwayFromObstruction(obstruction);
                 SnapToCollider(obstruction.collider);
             }
         }
@@ -44,17 +44,18 @@ namespace PQ._Experimental.Overlap_003
             obstruction = hit;
         }
 
-        private void MoveAwayFromObstruction(Collider2D collider)
+        private void MoveAwayFromObstruction(RaycastHit2D obstruction)
         {
-            if (collider == null)
+            if (obstruction.collider == null)
             {
                 return;
             }
 
+            Debug.Log(obstruction.normal);
             Vector2 direction = (_target.bounds.center - _body.Bounds.center).normalized;
             float distanceToEdge = _body.ComputeDistanceToEdge();
             Debug.Log($"direction={direction} distance={distanceToEdge}");
-            _body.CastRayAt(collider, _body.Bounds.center, direction, distanceToEdge, out RaycastHit2D hit, true, draw: true);
+            _body.CastRayAt(obstruction.collider, _body.Bounds.center + new Vector3(0f, 0.05f), direction, distanceToEdge, out RaycastHit2D hit, true, draw: true);
         }
 
         private void SnapToCollider(Collider2D collider)
