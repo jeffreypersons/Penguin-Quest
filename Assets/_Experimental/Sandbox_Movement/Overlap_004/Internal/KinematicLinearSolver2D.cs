@@ -30,12 +30,32 @@ namespace PQ._Experimental.Overlap_004.Internal
                 return;
             }
 
-            MoveCircleAlongDelta();
+            _body.MoveBy(obstruction.fraction * delta);
+            SnapToCollider(obstruction.collider);
         }
 
-        private void MoveCircleAlongDelta()
-        {
 
+        private void SnapToCollider(Collider2D collider)
+        {
+            Vector2 startPosition = _body.Position;
+            for (int i = 0; i < _maxMinSeparationSolves; i++)
+            {
+                ColliderDistance2D minSeparation = _body.ComputeMinimumSeparation(collider);
+                Vector2 offset = minSeparation.distance * minSeparation.normal;
+                if (offset == Vector2.zero)
+                {
+                    break;
+                }
+                _body.MoveBy(offset);
+            }
+            Vector2 endPosition = _body.Position;
+
+            if (startPosition != endPosition)
+            {
+                Vector2 markerExtents = 0.075f * Vector2.Perpendicular(endPosition - startPosition);
+                Debug.DrawLine(startPosition - markerExtents, startPosition + markerExtents, Color.red, 10f);
+                Debug.DrawLine(startPosition, endPosition, Color.white, 10f);
+            }
         }
     }
 }
