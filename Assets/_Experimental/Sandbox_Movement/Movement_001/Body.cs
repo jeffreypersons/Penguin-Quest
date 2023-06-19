@@ -231,24 +231,14 @@ namespace PQ._Experimental.Movement_001
         Uses separating axis theorem to determine overlap - may require more invocations for
         complex polygons.
         */
-        public bool ComputeOverlap(Collider2D collider, out Vector2 amount)
+        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
         {
             if (collider == null)
             {
-                amount = Vector2.zero;
-                return false;
+                return default;
             }
-
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            Debug.Log(minimumSeparation.distance);
-            if (!minimumSeparation.isValid || minimumSeparation.distance >= 0)
-            {
-                amount = Vector2.zero;
-                return false;
-            }
-
-            amount = minimumSeparation.distance * minimumSeparation.normal;
-            return true;
+            return minimumSeparation.isValid ? minimumSeparation : default;
         }
 
 

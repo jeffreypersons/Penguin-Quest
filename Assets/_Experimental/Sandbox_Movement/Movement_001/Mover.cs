@@ -126,7 +126,7 @@ namespace PQ._Experimental.Movement_001
                     _body.MoveBy(collisionResponse);
                 }
 
-                PushOutIfOverlap(hit);
+                SnapToCollider(hit.collider);
             }
         }
 
@@ -150,7 +150,7 @@ namespace PQ._Experimental.Movement_001
                     _body.MoveBy(collisionResponse);
                 }
 
-                PushOutIfOverlap(hit);
+                SnapToCollider(hit.collider);
             }
         }
         
@@ -180,16 +180,26 @@ namespace PQ._Experimental.Movement_001
             return true;
         }
 
-        private void PushOutIfOverlap(RaycastHit2D hit)
+        private void SnapToCollider(Collider2D collider)
         {
-            // todo: add skin width support
-            Vector2 overlapAmount = Vector2.positiveInfinity;
-            for (int i = 0; i < _maxOverlapIterations && !ApproximatelyZero(overlapAmount); i++)
+            Vector2 startPosition = _body.Position;
+            for (int i = 0; i < _maxOverlapIterations; i++)
             {
-                if (_body.ComputeOverlap(hit.collider, out overlapAmount))
+                ColliderDistance2D minSeparation = _body.ComputeMinimumSeparation(collider);
+                Vector2 offset = minSeparation.distance * minSeparation.normal;
+                if (offset == Vector2.zero)
                 {
-                    _body.MoveBy(overlapAmount);
+                    break;
                 }
+                _body.MoveBy(offset);
+            }
+            Vector2 endPosition = _body.Position;
+
+            if (startPosition != endPosition)
+            {
+                Vector2 markerExtents = 0.075f * Vector2.Perpendicular(endPosition - startPosition);
+                Debug.DrawLine(startPosition - markerExtents, startPosition + markerExtents, Color.red, 10f);
+                Debug.DrawLine(startPosition, endPosition, Color.white, 10f);
             }
         }
 
