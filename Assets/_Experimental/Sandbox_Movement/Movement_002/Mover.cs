@@ -143,12 +143,13 @@ namespace PQ._Experimental.Movement_002
             }
             _body.MoveBy(step * direction);
 
+            // ----- disabled for now - causing 'overlap fighting where it goes up and down repeatedly due to incorrect resolution
             // if there was an obstruction, apply any depenetration
-            if (obstruction && _body.ComputeSeparation(obstruction.collider, direction, out float resolveAmount, out Vector2 resolveDirection, out bool overlapped) && overlapped)
+            /*if (obstruction && _body.ComputeSeparation(obstruction.collider, direction, out float resolveAmount, out Vector2 resolveDirection, out bool overlapped) && overlapped)
             {
                 _body.MoveBy(resolveAmount * resolveDirection);
                 step -= resolveAmount;
-            }
+            }*/
 
             // if no step to take, there's no more that can move
             Vector2 deltaStep = step * direction;

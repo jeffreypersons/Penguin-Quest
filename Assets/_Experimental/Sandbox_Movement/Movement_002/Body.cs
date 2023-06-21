@@ -276,6 +276,50 @@ namespace PQ._Experimental.Movement_002
             return true;
         }
         
+        /*
+        Compute vector needed to resolve separation amount between AABB and collider along axis, if any.
+
+        If colliders are overlapping with no axis specified (ie zero), then depenetrates along minimum separation.
+        Note that exceptions are thrown if colliders are in invalid states (ie null/disabled, or not found along direction).
+        Note that since separating axis theorem is used, many invocations may be needed for complex polygons.
+        */
+        public bool ComputeSeparation2(Collider2D collider, Vector2 axis, out float separation, out Vector2 direction, out bool overlapped)
+        {
+            // ensure it's possible to get a valid minimum separation (ie both non-null and enabled)
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            if (!minimumSeparation.isValid)
+            {
+                throw new InvalidOperationException($"Invalid minimum separation distance between body and collider={collider}");
+            }
+
+            // use our minimum separation if axis not specified or no overlap
+            Vector2 minimumOffset = minimumSeparation.distance * minimumSeparation.normal;
+            if (axis == Vector2.zero || !minimumSeparation.isOverlapped)
+            {
+                separation = minimumSeparation.distance;
+                direction  = minimumSeparation.normal;
+                overlapped = minimumSeparation.isOverlapped;
+                return minimumOffset != Vector2.zero;
+            }
+
+            // todo: figure out a reasonable way to limit the raycast distance here without it being explicitly passed in
+            // todo: verify if this still works with edge radius and casted from inside (if not, might need to use closest point or similar)
+            // todo: using pointA as our origin only valid for some overlap cases, special casing depenetration checks
+            //       to perform min separation twice should account for cases of two or three overlapping AABB corners
+            direction = -axis;
+            Vector2 pointOnAABBEdge = minimumSeparation.pointA;
+            if (!CastRayAt(collider, pointOnAABBEdge, -direction, Mathf.Infinity, out RaycastHit2D hit, false))
+            {
+                throw new InvalidOperationException($"Collider={collider} not found along direction={direction}");
+            }
+
+            // todo: make sure the distance isn't negative even if starting inside collider (like how bounds.intersect does it)
+            separation = hit.distance;
+            direction  = -axis;
+            overlapped = true;
+            return true;
+        }
+
         
         private bool HasContactsInNormalRange(float min, float max)
         {
