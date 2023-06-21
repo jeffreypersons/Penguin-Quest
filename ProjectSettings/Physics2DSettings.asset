@@ -9,7 +9,7 @@ Physics2DSettings:
   m_VelocityIterations: 10
   m_PositionIterations: 10
   m_VelocityThreshold: 1
-  m_MaxLinearCorrection: 0.02
+  m_MaxLinearCorrection: 0.01
   m_MaxAngularCorrection: 5
   m_MaxTranslationSpeed: 100
   m_MaxRotationSpeed: 360
@@ -18,7 +18,7 @@ Physics2DSettings:
   m_TimeToSleep: 0.5
   m_LinearSleepTolerance: 0.005
   m_AngularSleepTolerance: 1
-  m_DefaultContactOffset: 0.005
+  m_DefaultContactOffset: 0.01
   m_JobOptions:
     serializedVersion: 2
     useMultithreading: 0
