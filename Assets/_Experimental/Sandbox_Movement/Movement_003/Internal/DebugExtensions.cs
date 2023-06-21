@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PQ._Experimental.Overlap_005.Internal
+namespace PQ._Experimental.Movement_003.Internal
 {
     public static class DebugExtensions
     {
