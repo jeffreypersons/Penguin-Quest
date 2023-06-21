@@ -31,7 +31,6 @@ namespace PQ._Experimental.Overlap_005.Internal
             }
 
             _body.MoveBy(obstruction.fraction * delta);
-            SnapToCollider(obstruction.collider);
         }
 
 
