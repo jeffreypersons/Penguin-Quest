@@ -135,6 +135,10 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 553913253703583256, guid: 12c8238c6fa5faa408c167c54c2ccf84, type: 3}
+      propertyPath: m_EdgeRadius
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 2830441547269114762, guid: 12c8238c6fa5faa408c167c54c2ccf84, type: 3}
       propertyPath: m_Name
       value: Preset_Platform_Simple
