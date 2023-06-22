@@ -23,12 +23,15 @@ namespace PQ._Experimental.Movement_003.Internal
         {
             float distance = delta.magnitude;
             Vector2 direction = delta.normalized;
+            Vector2 castOffset = _body.SkinWidth * direction;
 
+            _body.MoveBy(-castOffset);
             if (!_body.CastAABB(direction, distance, out RaycastHit2D obstruction))
             {
                 _body.MoveBy(delta);
                 return;
             }
+            _body.MoveBy(castOffset);
 
             Debug.Log($"name={obstruction.collider.name}, delta={obstruction.fraction}");
             _body.MoveBy(obstruction.fraction * delta);
