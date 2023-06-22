@@ -28,7 +28,7 @@ namespace PQ._Experimental.Movement_003.Internal
             _body.MoveBy(-castOffset);
             if (!_body.CastAABB(direction, distance, out RaycastHit2D obstruction))
             {
-                _body.MoveBy(delta);
+                _body.MoveBy(delta + castOffset);
                 return;
             }
             _body.MoveBy(castOffset);
