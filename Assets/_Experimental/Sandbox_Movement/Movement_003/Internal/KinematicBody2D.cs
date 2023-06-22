@@ -187,6 +187,9 @@ namespace PQ._Experimental.Movement_003.Internal
         */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
+            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
+            Physics2D.queriesStartInColliders = true;
+
             if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
@@ -195,6 +198,7 @@ namespace PQ._Experimental.Movement_003.Internal
             {
                 hit = default;
             }
+            Physics2D.queriesStartInColliders = queriesStartInColliders;
             return hit;
         }
 

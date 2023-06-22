@@ -30,6 +30,7 @@ namespace PQ._Experimental.Movement_003.Internal
                 return;
             }
 
+            Debug.Log($"name={obstruction.collider.name}, delta={obstruction.fraction}");
             _body.MoveBy(obstruction.fraction * delta);
         }
     }
