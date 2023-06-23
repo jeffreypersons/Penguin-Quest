@@ -21,20 +21,20 @@ namespace PQ._Experimental.Movement_003.Internal
 
         public void MoveUnobstructedAlongDelta(Vector2 delta)
         {
-            float distance = delta.magnitude;
             Vector2 direction = delta.normalized;
-            Vector2 castOffset = _body.SkinWidth * direction;
+            float startOffset = _body.SkinWidth;
+            float distanceRemaining = delta.magnitude;
+            float distanceToEdge = _body.ComputeDistanceToEdge(direction);
 
-            _body.MoveBy(-castOffset);
-            if (!_body.CastAABB(direction, distance, out RaycastHit2D obstruction))
+            _body.MoveBy(-startOffset * direction);
+
+            float step = distanceRemaining < distanceToEdge ? distanceRemaining : distanceToEdge;
+            if (_body.CastAABB(direction, step + startOffset, out RaycastHit2D obstruction))
             {
-                _body.MoveBy(delta + castOffset);
-                return;
+                step = obstruction.distance - startOffset;
             }
-            _body.MoveBy(castOffset);
 
-            Debug.Log($"name={obstruction.collider.name}, delta={obstruction.fraction}");
-            _body.MoveBy(obstruction.fraction * delta);
+            _body.MoveBy((step + startOffset) * direction);
         }
     }
 }
