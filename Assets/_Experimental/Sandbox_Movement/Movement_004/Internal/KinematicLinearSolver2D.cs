@@ -2,11 +2,13 @@ using System;
 using UnityEngine;
 
 
-namespace PQ._Experimental.Movement_003.Internal
+namespace PQ._Experimental.Movement_004.Internal
 {
     internal sealed class KinematicLinearSolver2D
     {
         private KinematicBody2D _body;
+        private int _maxMinSeparationSolves = 10;
+
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
