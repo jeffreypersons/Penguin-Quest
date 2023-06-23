@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-namespace PQ._Experimental.Movement_003.Internal
+namespace PQ._Experimental.Movement_004.Internal
 {
     internal sealed class KinematicBody2D
     {

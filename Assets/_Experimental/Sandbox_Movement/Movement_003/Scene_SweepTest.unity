@@ -137,7 +137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 553913253703583256, guid: 12c8238c6fa5faa408c167c54c2ccf84, type: 3}
       propertyPath: m_EdgeRadius
-      value: 0.02
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2830441547269114762, guid: 12c8238c6fa5faa408c167c54c2ccf84, type: 3}
       propertyPath: m_Name
@@ -186,6 +186,10 @@ PrefabInstance:
     - target: {fileID: 6103950630539887461, guid: 12c8238c6fa5faa408c167c54c2ccf84, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8300534203704951807, guid: 12c8238c6fa5faa408c167c54c2ccf84, type: 3}
+      propertyPath: m_Creator
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
