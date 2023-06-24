@@ -8,7 +8,6 @@ namespace PQ._Experimental.Physics.LinearStep_002
     {
         [SerializeField] private Transform _transform;
         [SerializeField] private Collider2D _target;
-        [SerializeField][Range(0, 100)] private int _maxMinSeparationSolves = 10;
 
         private KinematicBody2D _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;

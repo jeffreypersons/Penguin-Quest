@@ -7,7 +7,6 @@ namespace PQ._Experimental.Physics.LinearStep_002
     internal sealed class KinematicLinearSolver2D
     {
         private KinematicBody2D _body;
-        private int _maxMinSeparationSolves = 10;
 
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)

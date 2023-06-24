@@ -7,6 +7,7 @@ namespace PQ._Experimental.Physics.Overlap_001
     public class Controller : MonoBehaviour
     {
         [SerializeField] private Body _body;
+        //[SerializeField][Range(0, 100)] private int _maxMinSeparationSolves = 10; // need many if surfaces are complex, concave shapes
 
         private bool _nextButtonPressed;
 
