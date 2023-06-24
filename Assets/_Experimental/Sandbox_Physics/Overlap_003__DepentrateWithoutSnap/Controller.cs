@@ -20,8 +20,8 @@ namespace PQ._Experimental.Physics.Overlap_003
             Application.targetFrameRate = 60;
             _nextButtonPressed = false;
 
-            _kinematicBody   = new Internal.KinematicBody2D(_transform);
-            _kinematicSolver = new Internal.KinematicLinearSolver2D(_kinematicBody);
+            _kinematicBody   = new KinematicBody2D(_transform);
+            _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
         }
 
         void Update()
