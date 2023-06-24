@@ -2,7 +2,7 @@
 using UnityEditor;
 
 
-namespace PQ._Experimental.Physics.Move_001
+namespace PQ._Experimental.Physics.Move_002
 {
     /*
     Various utilities for drawing and manipulating gizmos.

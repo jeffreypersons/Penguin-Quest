@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
-namespace PQ._Experimental.Physics.Move_001
+namespace PQ._Experimental.Physics.Move_002
 {
     [Flags]
     public enum CollisionFlags2D
