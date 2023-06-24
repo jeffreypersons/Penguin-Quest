@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-namespace PQ._Experimental.Overlap_005
+namespace PQ._Experimental.Physics.Overlap_003
 {
     public class Controller : MonoBehaviour
     {
@@ -10,8 +10,8 @@ namespace PQ._Experimental.Overlap_005
         [SerializeField] private Collider2D _target;
         [SerializeField][Range(0, 100)] private int _maxMinSeparationSolves = 10;
 
-        private Internal.KinematicBody2D _kinematicBody;
-        private Internal.KinematicLinearSolver2D _kinematicSolver;
+        private KinematicBody2D _kinematicBody;
+        private KinematicLinearSolver2D _kinematicSolver;
         private bool _nextButtonPressed;
 
 

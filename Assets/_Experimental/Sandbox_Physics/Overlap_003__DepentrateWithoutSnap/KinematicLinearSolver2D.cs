@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-namespace PQ._Experimental.Overlap_005.Internal
+namespace PQ._Experimental.Physics.Overlap_003
 {
     internal sealed class KinematicLinearSolver2D
     {

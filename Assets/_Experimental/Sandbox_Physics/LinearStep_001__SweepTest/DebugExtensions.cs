@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PQ._Experimental.Movement_003.Internal
+namespace PQ._Experimental.Physics.LinearStep_001
 {
     public static class DebugExtensions
     {

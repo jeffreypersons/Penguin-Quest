@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-namespace PQ._Experimental.Movement_003
+namespace PQ._Experimental.Physics.LinearStep_001
 {
     public class Controller : MonoBehaviour
     {
@@ -10,8 +10,8 @@ namespace PQ._Experimental.Movement_003
         [SerializeField] private Collider2D _target;
         [SerializeField][Range(0, 100)] private int _maxMinSeparationSolves = 10;
 
-        private Internal.KinematicBody2D _kinematicBody;
-        private Internal.KinematicLinearSolver2D _kinematicSolver;
+        private KinematicBody2D _kinematicBody;
+        private KinematicLinearSolver2D _kinematicSolver;
         private bool _nextButtonPressed;
 
 
@@ -20,8 +20,8 @@ namespace PQ._Experimental.Movement_003
             Application.targetFrameRate = 60;
             _nextButtonPressed = false;
 
-            _kinematicBody   = new Internal.KinematicBody2D(_transform);
-            _kinematicSolver = new Internal.KinematicLinearSolver2D(_kinematicBody);
+            _kinematicBody   = new KinematicBody2D(_transform);
+            _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
         }
 
         void Update()

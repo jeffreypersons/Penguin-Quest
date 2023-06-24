@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-namespace PQ._Experimental.Overlap_002
+namespace PQ._Experimental.Physics.Overlap_001
 {
     public class Controller : MonoBehaviour
     {
