@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-namespace PQ._Experimental.Movement_001
+namespace PQ._Experimental.Physics.Move_001
 {
     public class Body : MonoBehaviour
     {
