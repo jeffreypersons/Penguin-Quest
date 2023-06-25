@@ -9,6 +9,8 @@ namespace PQ._Experimental.Physics.LinearStep_002
     {
         private KinematicBody2D _body;
 
+        private float   moveDistance;
+        private Vector2 moveDirection;
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
@@ -17,23 +19,37 @@ namespace PQ._Experimental.Physics.LinearStep_002
                 throw new ArgumentNullException($"Expected non-null {nameof(KinematicLinearSolver2D)}");
             }
             _body = kinematicBody2D;
+
+            moveDistance  = 0f;
+            moveDirection = Vector2.right;
         }
 
         public void MoveUnobstructedAlongDelta(Vector2 delta)
         {
+            // todo: maintain the below distance when we implement momentum
+            moveDistance = 0f;
+
             (float distanceRemaining, Vector2 direction) = DecomposeDelta(delta);
             float startOffset = _body.SkinWidth;
             float distanceToEdge = _body.ComputeDistanceToEdge(direction);
 
             _body.MoveBy(-startOffset * direction);
 
-            float step = distanceRemaining < distanceToEdge ? distanceRemaining : distanceToEdge;
-            if (_body.CastAABB(direction, step + startOffset, out RaycastHit2D obstruction))
+            float stepDistance = distanceRemaining < distanceToEdge ? distanceRemaining : distanceToEdge;
+            if (_body.CastAABB(direction, stepDistance + startOffset, out RaycastHit2D obstruction))
             {
-                step = obstruction.distance - startOffset;
+                stepDistance = obstruction.distance - startOffset;
             }
 
-            _body.MoveBy((step + startOffset) * direction);
+            // todo: avoid extra project calls
+            Vector2 stepDelta = (stepDistance + startOffset) * direction;
+            if (obstruction)
+            {
+                stepDelta = ProjectDeltaOnToSurface(stepDelta, obstruction);
+            }
+
+            (moveDistance, moveDirection) = DecomposeDelta(stepDelta);
+            _body.MoveBy(stepDelta);
         }
 
 
