@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
@@ -20,9 +21,8 @@ namespace PQ._Experimental.Physics.LinearStep_002
 
         public void MoveUnobstructedAlongDelta(Vector2 delta)
         {
-            Vector2 direction = delta.normalized;
+            (float distanceRemaining, Vector2 direction) = DecomposeDelta(delta);
             float startOffset = _body.SkinWidth;
-            float distanceRemaining = delta.magnitude;
             float distanceToEdge = _body.ComputeDistanceToEdge(direction);
 
             _body.MoveBy(-startOffset * direction);
@@ -34,6 +34,24 @@ namespace PQ._Experimental.Physics.LinearStep_002
             }
 
             _body.MoveBy((step + startOffset) * direction);
+        }
+
+
+        [Pure]
+        private (float distance, Vector2 direction) DecomposeDelta(Vector2 delta)
+        {
+            // the below gets behavior exactly consistent with (delta.normalized, delta.magnitude),
+            // without extra square root call, and without the NaNs that arise if delta is zero and
+            // divided by it's magnitude without epsilon checks (that Unity does in delta.normalized)
+            float squaredMagnitude = delta.sqrMagnitude;
+            if (squaredMagnitude <= 1E-010f)
+            {
+                return (0f, Vector2.zero);
+            }
+
+            float magnitude = Mathf.Sqrt(squaredMagnitude);
+            delta /= magnitude;
+            return (magnitude, delta);
         }
     }
 }
