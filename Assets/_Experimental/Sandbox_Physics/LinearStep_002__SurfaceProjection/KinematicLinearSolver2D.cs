@@ -56,15 +56,16 @@ namespace PQ._Experimental.Physics.LinearStep_002
         [Pure]
         private Vector2 ProjectDeltaOnToSurface(Vector2 delta, RaycastHit2D hit)
         {
-            // take the perpendicular of the surface normal, aligned with body orientation
+            // take perpendicular of surface normal in direction of body
             Vector2 surfaceTangent = _body.IsFlippedHorizontal
                 ? new Vector2(-hit.normal.y,  hit.normal.x)
                 : new Vector2( hit.normal.y, -hit.normal.x);
 
             // vector projection of delta onto to surface tangent (2D equivelant of 3D method ProjectOnPlane())
-            float dot1 = Vector2.Dot(surfaceTangent, surfaceTangent);
-            float dot2 = Vector2.Dot(delta,          surfaceTangent);
-            return new Vector2((surfaceTangent.x * dot2) / dot1, (surfaceTangent.y * dot2) / dot1);
+            // assumes non-zero normal (ie given hit is valid)
+            float aDotB = Vector2.Dot(delta,          surfaceTangent);
+            float bDotB = Vector2.Dot(surfaceTangent, surfaceTangent);
+            return (aDotB / bDotB) * surfaceTangent;
         }
     }
 }
