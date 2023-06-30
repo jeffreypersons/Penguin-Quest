@@ -2,20 +2,24 @@ using UnityEngine.SceneManagement;
 using UnityEditor.SceneTemplate;
 
 
-public class DefaultSceneTemplatePipeline : ISceneTemplatePipeline
+namespace PQ._Experimental.Physics
 {
-    public virtual bool IsValidTemplateForInstantiation(SceneTemplateAsset sceneTemplateAsset)
+    // template for physics test scenes
+    public class DefaultSceneTemplatePipeline : ISceneTemplatePipeline
     {
-        return true;
-    }
+        public virtual bool IsValidTemplateForInstantiation(SceneTemplateAsset sceneTemplateAsset)
+        {
+            return true;
+        }
 
-    public virtual void BeforeTemplateInstantiation(SceneTemplateAsset sceneTemplateAsset, bool isAdditive, string sceneName)
-    {
-        
-    }
+        public virtual void BeforeTemplateInstantiation(SceneTemplateAsset sceneTemplateAsset, bool isAdditive, string sceneName)
+        {
+            // no op
+        }
 
-    public virtual void AfterTemplateInstantiation(SceneTemplateAsset sceneTemplateAsset, Scene scene, bool isAdditive, string sceneName)
-    {
-        
+        public virtual void AfterTemplateInstantiation(SceneTemplateAsset sceneTemplateAsset, Scene scene, bool isAdditive, string sceneName)
+        {
+            // no op
+        }
     }
 }
