@@ -77,8 +77,8 @@ namespace PQ.Common.Containers
             }
             else
             {
-                Decrement(ref _frontIndex);
                 _buffer[_frontIndex] = item;
+                Decrement(ref _frontIndex);
                 ++_size;
             }
         }
