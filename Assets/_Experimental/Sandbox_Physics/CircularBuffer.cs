@@ -49,14 +49,14 @@ namespace PQ._Experimental.Physics
         {
             if (_size == _buffer.Length)
             {
+                _buffer[_frontIndex] = item;
                 Decrement(ref _frontIndex);
                 Decrement(ref _backIndex);
-                _buffer[_frontIndex] = item;
             }
             else
             {
-                Decrement(ref _frontIndex);
                 _buffer[_frontIndex] = item;
+                Decrement(ref _frontIndex);
                 ++_size;
             }
         }
@@ -65,14 +65,14 @@ namespace PQ._Experimental.Physics
         {
             if (_size == _buffer.Length)
             {
+                _buffer[_backIndex] = item;
                 Increment(ref _frontIndex);
                 Increment(ref _backIndex);
-                _buffer[_backIndex] = item;
             }
             else
             {
-                Increment(ref _backIndex);
                 _buffer[_backIndex] = item;
+                Increment(ref _backIndex);
                 ++_size;
             }
         }
