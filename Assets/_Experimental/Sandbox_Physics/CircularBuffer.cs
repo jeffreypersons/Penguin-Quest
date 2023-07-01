@@ -23,16 +23,8 @@ namespace PQ._Experimental.Physics
 
         public T this[int index]
         {
-            get
-            {
-                // note: rely on array for bounds checks instead of adding here,
-                // since in this case since most the time this will called in a loop
-                return _buffer[InternalIndex(index)];
-            }
-            set
-            {
-                _buffer[InternalIndex(index)] = value;
-            }
+            get => _buffer[InternalIndex(index)];
+            set => _buffer[InternalIndex(index)] = value;
         }
 
         public CircularBuffer(int capacity)
