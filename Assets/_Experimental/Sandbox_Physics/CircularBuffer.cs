@@ -5,14 +5,8 @@ namespace PQ._Experimental.Physics
 {
     /*
     Simple memory efficient buffer useful for storing fixed number of items (eg log history).
-
-    Notes
-    - Implemented as a double-ended queue with a fixed capacity
-    - O(1) lookups (whether at back, front, or in between)
-    - Empty size is permitted (avoids edge cases when popping)
-    - No memory allocation after initial construction
-    - No erasure of previous data, everything is handled internally with indices
-    - To avoid allocations from IEnumerable, we expose an indexer and size
+    
+    Implemented as a double-ended queue with a fixed capacity, providing O(1) lookups and pop/push.
     */
     public sealed class CircularBuffer<T>
     {

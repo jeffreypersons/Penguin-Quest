@@ -15,15 +15,18 @@ namespace PQ.Common.Containers
       this takes care of all the bit-shifting and validation needed to work with subsets of enums
 
     Properties
-    - plain enums only      : all enum fields default to unique integers from 0 to size-1
     - intrinsically ordered : keys are stored in the order defined by the enum
     - low memory footprint  : garbage free type conversions, up-front allocation, and one-time only enum validation/caching
-    - scalable              : constant time contains/get/add/remove, constant memory usage
+    - O(1) memory           : constant size as we rely on bit fields internally
+    - O(1) lookups          : constant time lookups by enum value (keys)
+    - O(1) contains         : constant time set membership checks
+    - O(1) add/remove       : constant time add or remove set operations
 
     Notes
+    - All enum fields default to unique integers from 0 to size-1
     - C# collection interfaces intentionally avoided as this is a very specialized container, and we want to avoid extra boxing/virtual calls
-    - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
-    - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
+    - While the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
+    - Unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
     public sealed class EnumSet<TKey>
         where TKey : struct, Enum

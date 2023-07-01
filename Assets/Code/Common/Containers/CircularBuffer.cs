@@ -6,13 +6,20 @@ namespace PQ.Common.Containers
     /*
     Simple memory efficient buffer useful for storing fixed number of items (eg log history).
 
+    Overview
+    - A simple memory/cpu/cache friendly efficient data structure that allows adding or removing from either end,
+      with a fixed capacity that is never exceeded by its size
+
+    Properties
+    - low memory footprint : up-front allocation
+    - O(1) lookups         : constant time lookups (whether at back, front, or an index in between)
+    - O(1) pop/push        : constant time mutations when adding to front or back of queue
+
     Notes
     - Implemented as a double-ended queue with a fixed capacity
-    - O(1) lookups (whether at back, front, or in between)
+    - To avoid allocations from IEnumerable, we expose an indexer and size    
+    - No erasure of previous data, everything is handled internally with indices    
     - Empty size is permitted (avoids edge cases when popping)
-    - No memory allocation after initial construction
-    - No erasure of previous data, everything is handled internally with indices
-    - To avoid allocations from IEnumerable, we expose an indexer and size
     */
     public sealed class CircularBuffer<T>
     {
@@ -49,7 +56,7 @@ namespace PQ.Common.Containers
             Clear();
         }
 
-
+        /* Reset buffer data without reallocations. */
         public void Clear()
         {
             _size       = 0;
@@ -57,6 +64,7 @@ namespace PQ.Common.Containers
             _backIndex  = 0;
         }
 
+        /* Add item to front (head) of buffer, removing item at back if full. */
         public void PushFront(T item)
         {
             if (_size == _buffer.Length)
@@ -73,6 +81,7 @@ namespace PQ.Common.Containers
             }
         }
 
+        /* Add item to back (tail) of buffer, removing item at front if full. */
         public void PushBack(T item)
         {
             if (_size == _buffer.Length)
@@ -89,12 +98,14 @@ namespace PQ.Common.Containers
             }
         }
 
+        /* Remove item from front (head) of buffer. */
         public void PopFront()
         {
             Increment(ref _frontIndex);
             --_size;
         }
 
+        /* Remove item from back (tail) of buffer. */
         public void PopBack()
         {
             Decrement(ref _backIndex);
