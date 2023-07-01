@@ -165,7 +165,7 @@ namespace PQ.Common.Containers
             }
 
             _flags &= mask;
-            _count--;
+            --_count;
         }
 
 
@@ -180,7 +180,7 @@ namespace PQ.Common.Containers
             }
 
             _flags |= mask;
-            _count++;
+            ++_count;
             return true;
         }
 
@@ -195,7 +195,7 @@ namespace PQ.Common.Containers
             }
 
             _flags &= mask;
-            _count--;
+            --_count;
             return true;
         }
 
