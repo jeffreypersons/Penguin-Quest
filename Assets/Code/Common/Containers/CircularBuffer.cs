@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 
-namespace PQ._Experimental.Physics
+namespace PQ.Common.Containers
 {
     /*
     Simple memory efficient buffer useful for storing fixed number of items (eg log history).
