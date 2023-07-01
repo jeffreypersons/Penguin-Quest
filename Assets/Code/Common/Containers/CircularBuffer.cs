@@ -38,6 +38,8 @@ namespace PQ.Common.Containers
         {
             get
             {
+                // note: rely on array for bounds checks instead of adding here,
+                // since in this case since most the time this will called in a loop
                 return _buffer[InternalIndex(index)];
             }
             set
