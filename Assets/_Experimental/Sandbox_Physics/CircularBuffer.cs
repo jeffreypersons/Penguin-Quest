@@ -6,7 +6,6 @@ namespace PQ._Experimental.Physics
     /*
     Simple memory efficient buffer useful for storing fixed number of items (eg log history).
 
-
     Notes
     - Implemented as a double-ended queue with a fixed capacity
     - O(1) lookups (whether at back, front, or in between)
@@ -31,18 +30,10 @@ namespace PQ._Experimental.Physics
         {
             get
             {
-                if (index >= _size)
-                {
-                    throw new IndexOutOfRangeException($"Given index={index} is outside range [0,size={_size})");
-                }
                 return _buffer[InternalIndex(index)];
             }
             set
             {
-                if (index >= _size)
-                {
-                    throw new IndexOutOfRangeException($"Given index={index} is outside range [0,size={_size})");
-                }
                 _buffer[InternalIndex(index)] = value;
             }
         }
@@ -136,6 +127,5 @@ namespace PQ._Experimental.Physics
             }
             --index;
         }
-
     }
 }
