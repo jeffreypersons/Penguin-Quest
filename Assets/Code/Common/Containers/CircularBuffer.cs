@@ -13,7 +13,7 @@ namespace PQ.Common.Containers
     Properties
     - low memory footprint : up-front allocation
     - O(1) lookups         : constant time lookups (whether at back, front, or an index in between)
-    - O(1) pop/push        : constant time mutations when adding to front or back of queue
+    - O(1) pop/push        : constant time insertions to front or back of queue
 
     Notes
     - Implemented as a double-ended queue with a fixed capacity
