@@ -39,7 +39,7 @@ namespace PQ._Experimental.Physics
         }
 
         /* Draw sides of rectangle corresponding to the area represented by given relative origin and axes. */
-        public static void DrawRect(Vector2 origin, Vector2 xAxis, Vector2 yAxis, Color? color = null)
+        public static void DrawRect(Vector2 origin, Vector2 xAxis, Vector2 yAxis, Color? color=null)
         {
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DefaultColor);
@@ -60,7 +60,7 @@ namespace PQ._Experimental.Physics
         }
         
         /* Draw lines between given points. */
-        public static void DrawWaypoints(Vector2[] points, Color? color = null)
+        public static void DrawWaypoints(Vector2[] points, Color? color=null)
         {
             if (points == null || points.Length < 2)
             {
@@ -79,7 +79,7 @@ namespace PQ._Experimental.Physics
         }
 
         /* Draw a 3d sphere at given world position. */
-        public static void DrawSphere(Vector2 origin, float radius, Color? color = null)
+        public static void DrawSphere(Vector2 origin, float radius, Color? color=null)
         {
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DefaultColor);
@@ -95,9 +95,9 @@ namespace PQ._Experimental.Physics
         Note that arrow head length and height are configured to be the same length for simplicity,
         and sized relative to length of line.
         */
-        public static void DrawArrow(Vector2 from, Vector2 to, Color? color = null,
-            float arrowheadSizeRatio = 0.10f)
+        public static void DrawArrow(Vector2 from, Vector2 to, Color? color=null, float arrowheadSizeRatio=0.10f)
         {
+            Debug.Log($"from={from} to={to}");
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
