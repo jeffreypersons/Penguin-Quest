@@ -1,12 +1,28 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 
 namespace PQ._Experimental.Physics
 {
     /*
     Simple memory efficient buffer useful for storing fixed number of items (eg log history).
+
     
     Implemented as a double-ended queue with a fixed capacity, providing O(1) lookups and pop/push.
+
+    Overview
+    - A simple memory/cpu/cache friendly efficient data structure that allows adding or removing from either end,
+      with a fixed capacity that is never exceeded by its size
+
+    Properties
+    - O(1) lookups  : constant time lookups (whether at back, front, or an index in between)
+    - O(1) pop/push : constant time insertions to front or back of queue
+
+    Notes
+    - To avoid allocations from IEnumerable, we expose an indexer and size    
+    - No erasure of previous data, everything is handled internally with indices    
+    - Empty size is permitted (avoids edge cases when popping)
     */
     public sealed class CircularBuffer<T>
     {
@@ -15,10 +31,10 @@ namespace PQ._Experimental.Physics
         private int _size;
         private int _frontIndex;
         private int _backIndex;
-        
+
         public int Size     => _size;
         public int Capacity => _buffer.Length;
-        public T   Front    => _buffer[_frontIndex];        
+        public T   Front    => _buffer[_frontIndex];
         public T   Back     => _buffer[_backIndex];
 
         public T this[int index]
@@ -26,6 +42,17 @@ namespace PQ._Experimental.Physics
             get => _buffer[InternalIndex(index)];
             set => _buffer[InternalIndex(index)] = value;
         }
+
+        public IEnumerable<T> Items()
+        {
+            for (int i = 0; i < _size; i++)
+            {
+                yield return this[i];
+            }
+        }
+
+        public override string ToString() => "[" + string.Join(",", Items().Select((T item) => item.ToString())) + "]";
+
 
         public CircularBuffer(int capacity)
         {
@@ -36,7 +63,6 @@ namespace PQ._Experimental.Physics
             _buffer = new T[capacity];
             Clear();
         }
-
 
         public void Clear()
         {
