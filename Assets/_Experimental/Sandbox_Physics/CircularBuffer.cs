@@ -12,6 +12,7 @@ namespace PQ._Experimental.Physics
     - Empty size is permitted (avoids edge cases when popping)
     - No memory allocation after initial construction
     - No erasure of previous data, everything is handled internally with indices
+    - To avoid allocations from IEnumerable, we expose an indexer and size
     */
     public sealed class CircularBuffer<T>
     {
