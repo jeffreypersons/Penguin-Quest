@@ -17,6 +17,26 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
+        [TestCase("A", "B", "C", "D", "E")]
+        public void FillToCapacityAndRemove(params string[] items)
+        {
+            CircularBuffer<string> circularBuffer = new(capacity: items.Length);
+            foreach (var item in items)
+            {
+                circularBuffer.PushBack(item);
+            }
+            foreach (var item in items)
+            {
+                circularBuffer.PopBack();
+            }
+
+            Assert.Throws<Exception>(() => new string(circularBuffer[1]));
+            Assert.Throws<Exception>(() => new string(circularBuffer.Back));
+            Assert.Throws<Exception>(() => new string(circularBuffer.Front));
+        }
+
+        [Test]
+        [TestCase(-1)]
         public void CycleThroughFullBuffer()
         {
             CircularBuffer<char> circularBuffer = new(capacity: 5);
