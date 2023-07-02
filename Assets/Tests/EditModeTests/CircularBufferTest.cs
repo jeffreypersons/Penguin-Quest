@@ -8,9 +8,9 @@ namespace PQ.Tests.EditMode
     public class CircularBufferTest
     {
         [Test]
-        public void EmptyCaseShouldThrowException()
+        public void ThrowExceptionIfNoCapacity()
         {
-            CircularBuffer<char> circularBuffer = new(capacity: 0);
+            CircularBuffer<string> circularBuffer = new(capacity: 0);
             Assert.Throws<Exception>(() => new CircularBuffer<char>(0));
         }
 
