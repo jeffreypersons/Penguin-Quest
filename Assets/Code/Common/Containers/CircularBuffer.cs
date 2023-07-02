@@ -56,9 +56,9 @@ namespace PQ.Common.Containers
 
         public CircularBuffer(int capacity)
         {
-            if (capacity < 0)
+            if (capacity < 1)
             {
-                throw new ArgumentException($"Circular buffer cannot have zero or negative capacity, received capacity={capacity}");
+                throw new ArgumentException($"Circular buffer must have room for at least one element, received capacity={capacity}");
             }
             _buffer = new T[capacity];
             Clear();

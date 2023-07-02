@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using PQ.Common.Containers;
 
@@ -9,7 +10,8 @@ namespace PQ.Tests.EditMode
         [Test]
         public void EmptyCaseShouldThrowException()
         {
-            CircularBuffer<char> circularBuffer = new(capacity: 5);
+            CircularBuffer<char> circularBuffer = new(capacity: 0);
+            Assert.Throws<Exception>(() => new CircularBuffer<char>(0));
         }
 
         [Test]
