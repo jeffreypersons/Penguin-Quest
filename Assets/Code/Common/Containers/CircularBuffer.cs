@@ -32,10 +32,10 @@ namespace PQ.Common.Containers
         private int _frontIndex;
         private int _backIndex;
 
-        public int Size => _size;
+        public int Size     => _size;
         public int Capacity => _buffer.Length;
-        public T   Front => _buffer[_frontIndex];
-        public T   Back => _buffer[_backIndex];
+        public T   Front    => _buffer[_frontIndex];
+        public T   Back     => _buffer[_backIndex];
 
         public T this[int index]
         {
@@ -58,10 +58,22 @@ namespace PQ.Common.Containers
         {
             if (capacity < 1)
             {
-                throw new ArgumentException($"Circular buffer must have room for at least one element, received capacity={capacity}");
+                throw new ArgumentException($"Capacity must be >= 1 - received capacity={capacity}");
             }
             _buffer = new T[capacity];
             Clear();
+        }
+
+        public CircularBuffer(int capacity, T[] items) : this(capacity)
+        {
+            if (capacity < items.Length)
+            {
+                throw new ArgumentException($"Capacity must be >= items.Length - received capacity={capacity}, items.Length={items.Length}");
+            }
+            for (int i = 0; i < items.Length; i++)
+            {
+                PushBack(items[i]);
+            }
         }
 
         /* Reset buffer data without reallocations. */
