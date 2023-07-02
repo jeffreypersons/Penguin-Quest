@@ -1,5 +1,6 @@
-using System.Collections;
 using NUnit.Framework;
+using PQ.Common;
+using PQ.Common.Containers;
 
 
 namespace PQ.Tests.EditMode
@@ -9,19 +10,19 @@ namespace PQ.Tests.EditMode
         [Test]
         public void EmptyCaseShouldThrowException()
         {
-            // TBD
+            CircularBuffer<char> circularBuffer = new(capacity: 5);
         }
 
         [Test]
         public void CycleThroughFullBuffer()
         {
-            // TBD
+            CircularBuffer<char> circularBuffer = new(capacity: 5);
         }
 
         [Test]
         public void PushAndPopThroughHalfFullBuffer()
         {
-            // TBD
+            CircularBuffer<char> circularBuffer = new(capacity: 5);
         }
     }
 }
