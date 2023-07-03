@@ -96,9 +96,19 @@ namespace PQ.Tests.EditMode
         [TestCase("A")]
         [TestCase("A B")]
         [TestCase("A B C")]
-        public void CycleThroughFullBuffer()
+        public void CycleThroughFullBuffer(params string[] items)
         {
-            CircularBuffer<char> circularBuffer = new(capacity: 5);
+            CircularBuffer<string> circularBuffer = new(items.Length, items);
+            for (int i = 0; i < items.Length; i++)
+            {
+                circularBuffer.PushBack(items[i]);
+            }
+            Assert.AreEqual(items.ToArray(), circularBuffer.Items());
+            for (int i = items.Length-1; i >= 0; i--)
+            {
+                circularBuffer.PushBack(items[i]);
+            }
+            Assert.AreEqual(items.Reverse().ToArray(), circularBuffer.Items());
         }
     }
 }
