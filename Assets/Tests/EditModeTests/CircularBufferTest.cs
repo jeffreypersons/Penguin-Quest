@@ -9,14 +9,9 @@ namespace PQ.Tests.EditMode
     public class CircularBufferTest
     {
         [Test]
-        public void Construct_LessThanOneCapacity_ShouldThrow()
-        {
-            Assert.Throws<ArgumentException>(() => new CircularBuffer<int>(0));
-        }
-
-        [Test]
         public void Construct_InsufficientCapacity_ShouldThrow()
         {
+            Assert.Throws<ArgumentException>(() => new CircularBuffer<int>(0));
             Assert.Throws<ArgumentException>(() => new CircularBuffer<int>(capacity: 1, items: new int[] { 0, 1 }));
         }
 
@@ -25,16 +20,6 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<int> circularBuffer = new(capacity: 1);
             Assert.AreEqual(0, circularBuffer.Size);
-        }
-
-        [Test]
-        public void Construct_SingleItem_ShouldBeAtFrontAndBack()
-        {
-            var items = new int[] { 0 };
-            CircularBuffer<int> circularBuffer = new(1, items);
-            Assert.AreEqual(1, circularBuffer.Size);
-            Assert.AreEqual(1, circularBuffer.Size);
-            Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
         }
 
         [Test]
@@ -53,10 +38,12 @@ namespace PQ.Tests.EditMode
             circularBuffer.PushFront(0);
             Assert.AreEqual(new int[] { 0 }, circularBuffer.Items().ToArray());
             Assert.AreEqual(1, circularBuffer.Size);
+            Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
 
             circularBuffer.PopBack();
             Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
+            Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
         }
 
         [Test]
@@ -102,7 +89,7 @@ namespace PQ.Tests.EditMode
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
-        public void CycleThroughFullBuffer(params char[] items)
+        public void FillAndEmpty_FullCycle(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             for (int i = 0; i < items.Length; i++)
