@@ -67,10 +67,12 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
+            Assert.AreEqual(items.ToArray(), circularBuffer.Items());
             foreach (var _ in items)
             {
                 circularBuffer.PopFront();
             }
+            Assert.AreEqual(items.ToArray(), new int[] { });
         }
 
         [Test]
@@ -85,10 +87,12 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushBack(item);
             }
+            Assert.AreEqual(items.ToArray(), circularBuffer.Items());
             foreach (var _ in items)
             {
                 circularBuffer.PopBack();
             }
+            Assert.AreEqual(items.ToArray(), new int[] { });
         }
 
         [Test]
@@ -96,9 +100,9 @@ namespace PQ.Tests.EditMode
         [TestCase("A")]
         [TestCase("A B")]
         [TestCase("A B C")]
-        public void CycleThroughFullBuffer(params string[] items)
+        public void CycleThroughFullBuffer(params char[] items)
         {
-            CircularBuffer<string> circularBuffer = new(items.Length, items);
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
             for (int i = 0; i < items.Length; i++)
             {
                 circularBuffer.PushBack(items[i]);
