@@ -27,7 +27,7 @@ namespace PQ.Tests.EditMode
         {
             var items = new int[] { 0, 1 };
             CircularBuffer<int> circularBuffer = new(capacity: items.Length, items);
-            Assert.AreEqual(items, circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
         }
 
 
@@ -39,7 +39,7 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.Clear();
-            Assert.AreEqual(new char[] { }, circularBuffer.Items());
+            Assert.AreEqual(new char[] { }, circularBuffer.Items().ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
             Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
         }
@@ -50,12 +50,12 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<int> circularBuffer = new(1);
             circularBuffer.PushFront(0);
-            Assert.AreEqual(new int[] { 0 }, circularBuffer.Items());
+            Assert.AreEqual(new int[] { 0 }, circularBuffer.Items().ToArray());
             Assert.AreEqual(1, circularBuffer.Size);
             Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
 
             circularBuffer.PopBack();
-            Assert.AreEqual(new int[] { }, circularBuffer.Items());
+            Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
             Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
         }
@@ -73,12 +73,12 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushBack(item);
             }
-            Assert.AreEqual(items, circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
             foreach (var _ in items)
             {
                 circularBuffer.PopBack();
             }
-            Assert.AreEqual(new char[] { }, circularBuffer.Items());
+            Assert.AreEqual(new char[] { }, circularBuffer.Items().ToArray());
         }
         
         [Test]
@@ -94,7 +94,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(items, circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
             foreach (var _ in items)
             {
                 circularBuffer.PopFront();
@@ -116,7 +116,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushBack(items[i]);
             }
-            Assert.AreEqual(items, circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushBack(items[i]);
             }
-            Assert.AreEqual(items.Reverse(), circularBuffer.Items());
+            Assert.AreEqual(items.Reverse().ToArray(), circularBuffer.Items().ToArray());
         }
 
         [Test]
@@ -148,12 +148,12 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(items[i]);
             }
-            Assert.AreEqual(items, circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
             for (int i = 0; i < items.Length; i++)
             {
                 circularBuffer.PushBack(items[i]);
             }
-            Assert.AreEqual(items, circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
         }
 
         [Test]
@@ -169,7 +169,7 @@ namespace PQ.Tests.EditMode
 
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.PushBack(target);
-            Assert.AreEqual(expected, circularBuffer.Items());
+            Assert.AreEqual(expected, circularBuffer.Items().ToArray());
         }
 
         [Test]
@@ -185,7 +185,7 @@ namespace PQ.Tests.EditMode
 
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.PushBack(target);
-            Assert.AreEqual(expected, circularBuffer.Items());
+            Assert.AreEqual(expected, circularBuffer.Items().ToArray());
         }
     }
 }
