@@ -65,7 +65,7 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C')]
         public void FillAndEmpty_FromFront(params char[] items)
         {
-            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            CircularBuffer<char> circularBuffer = new(items.Length);
             foreach (var item in items)
             {
                 circularBuffer.PushFront(item);
@@ -84,7 +84,7 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C')]
         public void FillAndEmpty_FromBack(params char[] items)
         {
-            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            CircularBuffer<char> circularBuffer = new(items.Length);
             foreach (var item in items)
             {
                 circularBuffer.PushBack(item);
@@ -110,7 +110,35 @@ namespace PQ.Tests.EditMode
                 circularBuffer.PushBack(items[i]);
             }
             Assert.AreEqual(items, circularBuffer.Items());
+            for (int i = items.Length - 1; i >= 0; i--)
+            {
+                circularBuffer.PushBack(items[i]);
+            }
+            Assert.AreEqual(items.Reverse().ToArray(), circularBuffer.Items());
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        public void FillAndEmpty_FullCycle_InOrder(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
             for (int i = items.Length-1; i >= 0; i--)
+            {
+                circularBuffer.PushBack(items[i]);
+            }
+            Assert.AreEqual(items.ToArray(), circularBuffer.Items());
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        public void FillAndEmpty_FullCycle_InReverse(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            for (int i = items.Length - 1; i >= 0; i--)
             {
                 circularBuffer.PushBack(items[i]);
             }
