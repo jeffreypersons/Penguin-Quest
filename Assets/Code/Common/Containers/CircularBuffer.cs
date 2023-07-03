@@ -135,6 +135,10 @@ namespace PQ.Common.Containers
 
         private int InternalIndex(int index)
         {
+            if (index < 0 || index >= _size)
+            {
+                throw new IndexOutOfRangeException($"Given index={index} outside of range [0, size={_size})");
+            }
             int actualIndex = _frontIndex + index;
             if (actualIndex >= _buffer.Length)
             {
