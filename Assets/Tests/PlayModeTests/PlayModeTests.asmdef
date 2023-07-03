@@ -2,9 +2,14 @@
     "name": "PlayModeTests",
     "rootNamespace": "",
     "references": [
-        "UnityEngine.TestRunner"
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:1055875f31a469a4d8bfd49e0e5b22cc"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor",
+        "WebGL",
+        "WindowsStandalone64"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

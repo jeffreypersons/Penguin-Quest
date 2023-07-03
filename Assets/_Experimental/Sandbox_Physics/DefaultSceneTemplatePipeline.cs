@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneTemplate;
 
@@ -23,3 +24,4 @@ namespace PQ._Experimental.Physics
         }
     }
 }
+#endif

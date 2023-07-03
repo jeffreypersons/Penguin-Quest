@@ -21,7 +21,7 @@ namespace PQ.Common.Containers
     Note that despite enums being defined at compile time and thus are fully static, we don't enforce singleton/static
     such that it's up to client code whether it's instanced in a thread-safe context or not.
     */
-    public class EnumMetadata<TEnum>
+    public sealed class EnumMetadata<TEnum>
         where TEnum : struct, Enum
     {
         private readonly int      _size;

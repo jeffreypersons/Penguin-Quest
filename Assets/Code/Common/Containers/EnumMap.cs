@@ -18,12 +18,15 @@ namespace PQ.Common.Containers
     - plain enums only      : all enum fields default to unique integers from 0 to size-1
     - intrinsically ordered : keys and corresponding map values are stored in the order defined by the enum
     - low memory footprint  : garbage free type conversions, up-front allocation, and one-time only enum validation/caching
-    - scalable complexity   : constant time contains/get/add/remove, linear memory usage
+    - O(1) memory           : constant size as we rely on bit fields internally
+    - O(1) lookups          : constant time lookups by enum value (keys)
+    - O(1) contains         : constant time set membership checks
+    - O(1) add/remove       : constant time add or remove set operations
 
     Notes
     - C# collection interfaces intentionally avoided as this is a very specialized container, and we want to avoid extra boxing/virtual calls
-    - while the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
-    - unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
+    - While the 64 max enum size restriction _could_ be lifted, though possibly a bad ROI as we shouldn't have such huge enums anyways
+    - Unlike the enum Flags attribute, the first/last value is NOT treated as a none and all field (and thus not needed in its declaration)
     */
     public sealed class EnumMap<TKey, TValue>
         where TKey : struct, Enum
@@ -49,7 +52,6 @@ namespace PQ.Common.Containers
 
         /* What are all the fields defined in the backing enum, in order? */
         public IReadOnlyList<TKey> EnumFields => _keys.EnumFields;
-
 
 
         public EnumMap()
@@ -78,14 +80,14 @@ namespace PQ.Common.Containers
                    $"{{ {string.Join(", ", ExtractValues(_keys, _values))} }}";
         }
 
-        /* Is key included in our set of keys? */
+        /* True if key is in our set of keys. */
         [Pure]
         public bool Contains(TKey key)
         {
             return _keys.Contains(key);
         }
 
-        /* Is the other set a equivalent OR a subset of our keys? */
+        /* True if other set is equivalent OR a subset of our keys. */
         [Pure]
         public bool Contains(in EnumSet<TKey> other)
         {
