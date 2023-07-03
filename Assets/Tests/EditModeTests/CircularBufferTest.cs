@@ -109,7 +109,7 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C')]
         [TestCase('A', 'B', 'C', 'D')]
         [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Cycle_AllItems_InOrder(params char[] items)
+        public void Cycle_AllItems_InOrder_Once(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             for (int i = 0; i < items.Length; i++)
@@ -125,7 +125,7 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C')]
         [TestCase('A', 'B', 'C', 'D')]
         [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Cycle_AllItems_InReverse(params char[] items)
+        public void Cycle_AllItems_InReverse_Once(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             for (int i = items.Length-1; i >= 0; i--)
@@ -133,6 +133,59 @@ namespace PQ.Tests.EditMode
                 circularBuffer.PushBack(items[i]);
             }
             Assert.AreEqual(items.Reverse(), circularBuffer.Items());
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void Cycle_AllItems_InOrder_Twice(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            for (int i = 0; i < items.Length; i++)
+            {
+                circularBuffer.PushFront(items[i]);
+            }
+            Assert.AreEqual(items, circularBuffer.Items());
+            for (int i = 0; i < items.Length; i++)
+            {
+                circularBuffer.PushBack(items[i]);
+            }
+            Assert.AreEqual(items, circularBuffer.Items());
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void Shift_AllItems_Left_Once(params char[] items)
+        {
+            var target = items[0];
+            var expected = items.Skip(0).Append(target);
+
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            circularBuffer.PushBack(target);
+            Assert.AreEqual(expected, circularBuffer.Items());
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void Shift_AllItems_Right_Once(params char[] items)
+        {
+            var target = items[^1];
+            var expected = items.SkipLast(0).Prepend(target);
+
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            circularBuffer.PushBack(target);
+            Assert.AreEqual(expected, circularBuffer.Items());
         }
     }
 }
