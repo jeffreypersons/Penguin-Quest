@@ -110,7 +110,7 @@ namespace PQ.Tests.EditMode
                 circularBuffer.PushBack(items[i]);
             }
             Assert.AreEqual(items, circularBuffer.Items());
-            for (int i = items.Length - 1; i >= 0; i--)
+            for (int i = items.Length-1; i >= 0; i--)
             {
                 circularBuffer.PushBack(items[i]);
             }
@@ -138,7 +138,7 @@ namespace PQ.Tests.EditMode
         public void FillAndEmpty_FullCycle_InReverse(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
-            for (int i = items.Length - 1; i >= 0; i--)
+            for (int i = items.Length-1; i >= 0; i--)
             {
                 circularBuffer.PushBack(items[i]);
             }
