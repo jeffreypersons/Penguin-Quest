@@ -44,6 +44,7 @@ namespace PQ.Tests.EditMode
             Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
         }
 
+
         [Test]
         public void FillAndEmpty_SingleItem()
         {
@@ -57,25 +58,6 @@ namespace PQ.Tests.EditMode
             Assert.AreEqual(new int[] { }, circularBuffer.Items());
             Assert.AreEqual(0, circularBuffer.Size);
             Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
-        }
-
-        [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        public void FillAndEmpty_FromFront(params char[] items)
-        {
-            CircularBuffer<char> circularBuffer = new(items.Length);
-            foreach (var item in items)
-            {
-                circularBuffer.PushFront(item);
-            }
-            Assert.AreEqual(items, circularBuffer.Items());
-            foreach (var _ in items)
-            {
-                circularBuffer.PopFront();
-            }
-            Assert.AreEqual(new char[] { }, items);
         }
 
         [Test]
@@ -96,13 +78,32 @@ namespace PQ.Tests.EditMode
             }
             Assert.AreEqual(new char[] { }, circularBuffer.Items());
         }
+        
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        public void FillAndEmpty_FromFront(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length);
+            foreach (var item in items)
+            {
+                circularBuffer.PushFront(item);
+            }
+            Assert.AreEqual(items, circularBuffer.Items());
+            foreach (var _ in items)
+            {
+                circularBuffer.PopFront();
+            }
+            Assert.AreEqual(new char[] { }, items);
+        }
 
 
         [Test]
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
-        public void FillAndEmpty_FullCycle(params char[] items)
+        public void Cycle_AllItems_InOrder(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             for (int i = 0; i < items.Length; i++)
@@ -110,32 +111,13 @@ namespace PQ.Tests.EditMode
                 circularBuffer.PushBack(items[i]);
             }
             Assert.AreEqual(items, circularBuffer.Items());
-            for (int i = items.Length-1; i >= 0; i--)
-            {
-                circularBuffer.PushBack(items[i]);
-            }
-            Assert.AreEqual(items.Reverse(), circularBuffer.Items());
         }
 
         [Test]
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
-        public void FillAndEmpty_FullCycle_InOrder(params char[] items)
-        {
-            CircularBuffer<char> circularBuffer = new(items.Length, items);
-            for (int i = items.Length-1; i >= 0; i--)
-            {
-                circularBuffer.PushBack(items[i]);
-            }
-            Assert.AreEqual(items, circularBuffer.Items());
-        }
-
-        [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        public void FillAndEmpty_FullCycle_InReverse(params char[] items)
+        public void Cycle_AllItems_InReverse(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             for (int i = items.Length-1; i >= 0; i--)
