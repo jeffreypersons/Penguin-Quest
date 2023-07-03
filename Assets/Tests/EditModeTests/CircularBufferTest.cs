@@ -32,6 +32,19 @@ namespace PQ.Tests.EditMode
 
 
         [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        public void Clear_AllItems(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            circularBuffer.Clear();
+            Assert.AreEqual(new char[] { }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(0, circularBuffer.Size);
+            Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
+        }
+
+        [Test]
         public void FillAndEmpty_SingleItem()
         {
             CircularBuffer<int> circularBuffer = new(1);
