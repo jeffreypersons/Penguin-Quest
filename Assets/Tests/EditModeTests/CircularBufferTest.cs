@@ -50,9 +50,11 @@ namespace PQ.Tests.EditMode
             CircularBuffer<int> circularBuffer = new(1);
             circularBuffer.PushFront(0);
             Assert.AreEqual(circularBuffer.Items().ToArray(), new int[] { 0 });
+            Assert.AreEqual(circularBuffer.Size, 1);
 
             circularBuffer.PopBack();
             Assert.AreEqual(circularBuffer.Items().ToArray(), new int[] { });
+            Assert.AreEqual(circularBuffer.Size, 0);
         }
 
         [Test]
