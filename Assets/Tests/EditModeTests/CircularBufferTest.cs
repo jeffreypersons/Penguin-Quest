@@ -64,6 +64,8 @@ namespace PQ.Tests.EditMode
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
         public void FillAndEmpty_FromBack(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length);
@@ -83,6 +85,8 @@ namespace PQ.Tests.EditMode
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
         public void FillAndEmpty_FromFront(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length);
@@ -103,6 +107,8 @@ namespace PQ.Tests.EditMode
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
         public void Cycle_AllItems_InOrder(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
@@ -117,6 +123,8 @@ namespace PQ.Tests.EditMode
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
         public void Cycle_AllItems_InReverse(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
