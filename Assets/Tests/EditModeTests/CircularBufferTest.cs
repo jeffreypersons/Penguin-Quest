@@ -56,7 +56,6 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
-        [TestCase()]
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
@@ -76,7 +75,6 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
-        [TestCase()]
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
@@ -97,7 +95,6 @@ namespace PQ.Tests.EditMode
 
 
         [Test]
-        [TestCase()]
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
