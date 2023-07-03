@@ -57,7 +57,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(items.ToArray(), circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
             foreach (var _ in items)
             {
                 circularBuffer.PopFront();
@@ -76,12 +76,12 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushBack(item);
             }
-            Assert.AreEqual(items.ToArray(), circularBuffer.Items());
+            Assert.AreEqual(items, circularBuffer.Items().ToArray());
             foreach (var _ in items)
             {
                 circularBuffer.PopBack();
             }
-            Assert.AreEqual(new char[] { }, items.ToArray());
+            Assert.AreEqual(new char[] { }, circularBuffer.Items().ToArray());
         }
 
 
