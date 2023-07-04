@@ -125,23 +125,25 @@ namespace PQ.Tests.EditMode
         [Test]
         public void PushBack_SingleItem()
         {
+            var item = 'A';
             CircularBuffer<char> circularBuffer = new(1);
-            circularBuffer.PushBack('A');
-            Assert.AreEqual(new char[] { 'A' }, circularBuffer.Items().ToArray());
-            Assert.AreEqual(1, circularBuffer.Size);
-            Assert.AreEqual(1, circularBuffer.Front);
-            Assert.AreEqual(1, circularBuffer.Back);
+            circularBuffer.PushBack(item);
+            Assert.AreEqual(new char[] { item }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(1,    circularBuffer.Size);
+            Assert.AreEqual(item, circularBuffer.Front);
+            Assert.AreEqual(item, circularBuffer.Back);
         }
 
         [Test]
         public void PushFront_SingleItem()
         {
+            var item = 'A';
             CircularBuffer<char> circularBuffer = new(1);
-            circularBuffer.PushFront('A');
-            Assert.AreEqual(new char[] { 'A' }, circularBuffer.Items().ToArray());
-            Assert.AreEqual(1, circularBuffer.Size);
-            Assert.AreEqual(1, circularBuffer.Front);
-            Assert.AreEqual(1, circularBuffer.Back);
+            circularBuffer.PushFront(item);
+            Assert.AreEqual(new char[] { item }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(1,    circularBuffer.Size);
+            Assert.AreEqual(item, circularBuffer.Front);
+            Assert.AreEqual(item, circularBuffer.Back);
         }
         #endregion
     }
