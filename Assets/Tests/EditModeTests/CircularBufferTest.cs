@@ -10,24 +10,38 @@ namespace PQ.Tests.EditMode
     {
         #region CircularBuffer Instantiation
         [Test]
-        public void Construct_InsufficientCapacity_ShouldThrow()
+        public void Construct_CapacityLessThanOne_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => new CircularBuffer<int>(0));
-            Assert.Throws<ArgumentException>(() => new CircularBuffer<int>(capacity: 1, items: new int[] { 0, 1 }));
+            Assert.Throws<ArgumentException>(() => new CircularBuffer<char>(0));
+        }
+
+        [Test]
+        public void Construct_CapacityLessThanSize_ShouldThrow()
+        {
+            Assert.Throws<ArgumentException>(() => new CircularBuffer<char>(capacity: 1, items: new char[2]));
         }
 
         [Test]
         public void Construct_Empty_SizeShouldBeZero()
         {
-            CircularBuffer<int> circularBuffer = new(capacity: 1);
+            CircularBuffer<char> circularBuffer = new(capacity: 1);
             Assert.AreEqual(0, circularBuffer.Size);
         }
 
         [Test]
-        public void Construct_ItemsShouldMatch()
+        public void Construct_NonEmpty_SizeShouldMatchParams()
         {
-            var items = new int[] { 0, 1 };
-            CircularBuffer<int> circularBuffer = new(capacity: items.Length, items);
+            CircularBuffer<char> circularBuffer = new(capacity: 2, items: new char[2]);
+            Assert.AreEqual(2, circularBuffer.Size);
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        public void Construct_NonEmpty_ItemsShouldMatchParams(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
             Assert.AreEqual(items, circularBuffer.Items().ToArray());
         }
         #endregion
@@ -45,6 +59,28 @@ namespace PQ.Tests.EditMode
             Assert.AreEqual(new char[] { }, circularBuffer.Items().ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
             Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
+        }
+
+        [Test]
+        public void PopBack_Empty()
+        {
+            CircularBuffer<int> circularBuffer = new(capacity: 1);
+            circularBuffer.PopBack();
+            Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(0, circularBuffer.Size);
+            Assert.AreEqual(0, circularBuffer.Front);
+            Assert.AreEqual(0, circularBuffer.Back);
+        }
+
+        [Test]
+        public void PopFront_Empty()
+        {
+            CircularBuffer<int> circularBuffer = new(capacity: 1, items: new int[] { 0 });
+            circularBuffer.PopBack();
+            Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(1, circularBuffer.Size);
+            Assert.AreEqual(1, circularBuffer.Front);
+            Assert.AreEqual(1, circularBuffer.Back);
         }
 
         [Test]
