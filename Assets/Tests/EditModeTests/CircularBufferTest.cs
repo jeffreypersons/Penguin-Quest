@@ -165,7 +165,7 @@ namespace PQ.Tests.EditMode
         public void Shift_AllItems_Left_Once(params char[] items)
         {
             var target = items[0];
-            var expected = items.Skip(0).Append(target);
+            var expected = items.Skip(0).Append(target).ToArray();
 
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.PushBack(target);
@@ -181,7 +181,7 @@ namespace PQ.Tests.EditMode
         public void Shift_AllItems_Right_Once(params char[] items)
         {
             var target = items[^1];
-            var expected = items.SkipLast(0).Prepend(target);
+            var expected = items.SkipLast(0).Prepend(target).ToArray();
 
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.PushBack(target);
