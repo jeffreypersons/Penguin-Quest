@@ -144,7 +144,7 @@ namespace PQ.Tests.EditMode
         [Test]
         public void PushFront_SingleItem()
         {
-            CircularBuffer<int> circularBuffer = new(1);
+            CircularBuffer<char> circularBuffer = new(1);
             circularBuffer.PushFront('A');
             Assert.AreEqual(new char[] { 'A' }, circularBuffer.Items().ToArray());
             Assert.AreEqual(1, circularBuffer.Size);
