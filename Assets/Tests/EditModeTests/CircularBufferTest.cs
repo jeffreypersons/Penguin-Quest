@@ -47,6 +47,30 @@ namespace PQ.Tests.EditMode
         #endregion
 
 
+        #region CircularBuffer Lookups
+        [Test]
+        public void Lookup_Empty_AccessingFirst_ShouldThrow()
+        {
+            CircularBuffer<char> circularBuffer = new(1);
+            Assert.Throws<ArgumentException>(() => circularBuffer[0].ToString());
+        }
+
+        [Test]
+        public void Lookup_NonEmpty_AccessingBeyondLength_ShouldThrow()
+        {
+            CircularBuffer<char> circularBuffer = new(1, new char[1]);
+            Assert.Throws<ArgumentException>(() => circularBuffer[1].ToString());
+        }
+
+        [Test]
+        public void Lookup_SingleItem_BackShouldEqualFront()
+        {
+            CircularBuffer<char> circularBuffer = new(1, new char[1] { 'A' });
+            Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
+        }
+        #endregion
+
+
         #region CircularBuffer Deletions
         [Test]
         [TestCase('A')]
@@ -56,17 +80,15 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.Clear();
-            Assert.AreEqual(new char[] { }, circularBuffer.Items().ToArray());
-            Assert.AreEqual(0, circularBuffer.Size);
-            Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
         }
 
         [Test]
         public void PopBack_Empty()
         {
-            CircularBuffer<int> circularBuffer = new(capacity: 1);
+            CircularBuffer<char> circularBuffer = new(capacity: 1);
             circularBuffer.PopBack();
-            Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
             Assert.AreEqual(0, circularBuffer.Front);
             Assert.AreEqual(0, circularBuffer.Back);
@@ -75,34 +97,34 @@ namespace PQ.Tests.EditMode
         [Test]
         public void PopFront_Empty()
         {
-            CircularBuffer<int> circularBuffer = new(capacity: 1, items: new int[] { 0 });
+            CircularBuffer<char> circularBuffer = new(capacity: 1);
             circularBuffer.PopBack();
-            Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
-            Assert.AreEqual(1, circularBuffer.Size);
-            Assert.AreEqual(1, circularBuffer.Front);
-            Assert.AreEqual(1, circularBuffer.Back);
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(0, circularBuffer.Size);
+            Assert.AreEqual(0, circularBuffer.Front);
+            Assert.AreEqual(0, circularBuffer.Back);
         }
 
         [Test]
         public void PopBack_SingleItem()
         {
-            CircularBuffer<int> circularBuffer = new(capacity: 1, items: new int[] { 1 });
+            CircularBuffer<char> circularBuffer = new(capacity: 1, items: new char[] { 'A' });
             circularBuffer.PopBack();
-            Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
-            Assert.AreEqual(1, circularBuffer.Size);
-            Assert.AreEqual(1, circularBuffer.Front);
-            Assert.AreEqual(1, circularBuffer.Back);
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(0, circularBuffer.Size);
+            Assert.AreEqual(0, circularBuffer.Front);
+            Assert.AreEqual(0, circularBuffer.Back);
         }
 
         [Test]
         public void PopFront_SingleItem()
         {
-            CircularBuffer<int> circularBuffer = new(capacity: 1, items: new int[] { 0 });
+            CircularBuffer<char> circularBuffer = new(capacity: 1, items: new char[] { 'A' });
             circularBuffer.PopBack();
-            Assert.AreEqual(new int[] { }, circularBuffer.Items().ToArray());
-            Assert.AreEqual(1, circularBuffer.Size);
-            Assert.AreEqual(1, circularBuffer.Front);
-            Assert.AreEqual(1, circularBuffer.Back);
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(0, circularBuffer.Size);
+            Assert.AreEqual(0, circularBuffer.Front);
+            Assert.AreEqual(0, circularBuffer.Back);
         }
         #endregion
 
@@ -111,9 +133,9 @@ namespace PQ.Tests.EditMode
         [Test]
         public void PushBack_SingleItem()
         {
-            CircularBuffer<int> circularBuffer = new(1);
-            circularBuffer.PushFront(0);
-            Assert.AreEqual(new int[] { 1 }, circularBuffer.Items().ToArray());
+            CircularBuffer<char> circularBuffer = new(1);
+            circularBuffer.PushBack('A');
+            Assert.AreEqual(new char[] { 'A' }, circularBuffer.Items().ToArray());
             Assert.AreEqual(1, circularBuffer.Size);
             Assert.AreEqual(1, circularBuffer.Front);
             Assert.AreEqual(1, circularBuffer.Back);
@@ -123,8 +145,8 @@ namespace PQ.Tests.EditMode
         public void PushFront_SingleItem()
         {
             CircularBuffer<int> circularBuffer = new(1);
-            circularBuffer.PushFront(0);
-            Assert.AreEqual(new int[] { 1 }, circularBuffer.Items().ToArray());
+            circularBuffer.PushFront('A');
+            Assert.AreEqual(new char[] { 'A' }, circularBuffer.Items().ToArray());
             Assert.AreEqual(1, circularBuffer.Size);
             Assert.AreEqual(1, circularBuffer.Front);
             Assert.AreEqual(1, circularBuffer.Back);
