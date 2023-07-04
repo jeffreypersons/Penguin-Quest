@@ -146,5 +146,36 @@ namespace PQ.Tests.EditMode
             Assert.AreEqual(item, circularBuffer.Back);
         }
         #endregion
+
+
+        [Test]
+        public void FullState_SingleItem_ReplaceFromBack()
+        {
+            var first  = 'A';
+            var second = 'B';
+            CircularBuffer<char> circularBuffer = new(1);
+            circularBuffer.PushBack(first);
+            circularBuffer.PushBack(second);
+
+            Assert.AreEqual(new char[] { second }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(1,      circularBuffer.Size);
+            Assert.AreEqual(second, circularBuffer.Front);
+            Assert.AreEqual(second, circularBuffer.Back);
+        }
+
+        [Test]
+        public void FullState_SingleItem_ReplaceFromFront()
+        {
+            var first  = 'A';
+            var second = 'B';
+            CircularBuffer<char> circularBuffer = new(1);
+            circularBuffer.PushFront(first);
+            circularBuffer.PushFront(second);
+
+            Assert.AreEqual(new char[] { second }, circularBuffer.Items().ToArray());
+            Assert.AreEqual(1,      circularBuffer.Size);
+            Assert.AreEqual(second, circularBuffer.Front);
+            Assert.AreEqual(second, circularBuffer.Back);
+        }
     }
 }
