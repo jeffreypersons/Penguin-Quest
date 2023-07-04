@@ -34,8 +34,8 @@ namespace PQ.Common.Containers
 
         public int Size     => _size;
         public int Capacity => _buffer.Length;
-        public T   Front    => _buffer[_frontIndex];
-        public T   Back     => _buffer[_backIndex];
+        public T   Front    => this[0];
+        public T   Back     => this[_size-1];
 
         public T this[int index]
         {
@@ -141,7 +141,7 @@ namespace PQ.Common.Containers
 
         private int InternalIndex(int index)
         {
-            if (index < 0 || index >= _size)
+            if (_size == 0 || index < 0 || index >= _size)
             {
                 throw new IndexOutOfRangeException($"Given index={index} outside of range [0, size={_size})");
             }
