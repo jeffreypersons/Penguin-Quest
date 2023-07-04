@@ -121,15 +121,21 @@ namespace PQ.Common.Containers
         /* Remove item from front (head) of buffer. */
         public void PopFront()
         {
-            Increment(ref _frontIndex);
-            --_size;
+            if (_size != 0)
+            {
+                Increment(ref _frontIndex);
+                --_size;
+            }
         }
 
         /* Remove item from back (tail) of buffer. */
         public void PopBack()
         {
-            Decrement(ref _backIndex);
-            --_size;
+            if (_size != 0)
+            {
+                Decrement(ref _backIndex);
+                --_size;
+            }
         }
 
 
