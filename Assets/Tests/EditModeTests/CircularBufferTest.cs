@@ -52,14 +52,14 @@ namespace PQ.Tests.EditMode
         public void Lookup_Empty_AccessingFirst_ShouldThrow()
         {
             CircularBuffer<char> circularBuffer = new(1);
-            Assert.Throws<ArgumentException>(() => circularBuffer[0].ToString());
+            Assert.Throws<IndexOutOfRangeException>(() => circularBuffer[0].ToString());
         }
 
         [Test]
         public void Lookup_NonEmpty_AccessingBeyondLength_ShouldThrow()
         {
             CircularBuffer<char> circularBuffer = new(1, new char[1]);
-            Assert.Throws<ArgumentException>(() => circularBuffer[1].ToString());
+            Assert.Throws<IndexOutOfRangeException>(() => circularBuffer[1].ToString());
         }
 
         [Test]
