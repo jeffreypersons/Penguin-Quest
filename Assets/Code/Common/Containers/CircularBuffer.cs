@@ -45,27 +45,9 @@ namespace PQ.Common.Containers
 
         public IEnumerable<T> Items()
         {
-            if (_size == 0)
+            for (int i = 0; i < _size; i++)
             {
-                yield break;
-            }
-            else if (_frontIndex < _backIndex)
-            {
-                for (int i = _frontIndex; i < _backIndex+1; i++)
-                {
-                    yield return _buffer[i];
-                }
-            }
-            else
-            {
-                for (int i = _frontIndex; i < _buffer.Length; i++)
-                {
-                    yield return _buffer[i];
-                }
-                for (int i = 0; i < _frontIndex+1; i++)
-                {
-                    yield return _buffer[i];
-                }
+                yield return this[i];
             }
         }
 
