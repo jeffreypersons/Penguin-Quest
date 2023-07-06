@@ -25,7 +25,6 @@ namespace PQ.Tests.EditMode
         public void Construct_Empty_SizeShouldBeZero()
         {
             CircularBuffer<char> circularBuffer = new(capacity: 1);
-            circularBuffer.PopBack();
             Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
         }

@@ -29,8 +29,8 @@ namespace PQ.Common.Containers
         private readonly T[] _buffer;
 
         private int _size;
-        private int _frontIndex;
-        private int _backIndex;
+        private int _head;
+        private int _tail;
 
         public int Size     => _size;
         public int Capacity => _buffer.Length;
@@ -73,16 +73,16 @@ namespace PQ.Common.Containers
             }
             Array.Copy(items, _buffer, size);
             _size = size;
-            _frontIndex = 0;
-            _backIndex = size-1;
+            _head = -1;
+            _tail = size;
         }
 
         /* Reset buffer data without reallocations. */
         public void Clear()
         {
-            _size       = 0;
-            _frontIndex = 0;
-            _backIndex  = 0;
+            _size = -1;
+            _head = 0;
+            _tail = 1;
         }
 
         /* Add item to back (tail) of buffer, removing item at front if full. */
@@ -90,12 +90,12 @@ namespace PQ.Common.Containers
         {
             if (_size == _buffer.Length)
             {
-                Decrement(ref _backIndex);
+                Decrement(ref _tail);
                 --_size;
             }
 
-            Increment(ref _backIndex);
-            _buffer[_backIndex] = item;
+            Increment(ref _tail);
+            _buffer[_tail] = item;
             ++_size;
         }
 
@@ -104,12 +104,12 @@ namespace PQ.Common.Containers
         {
             if (_size == _buffer.Length)
             {
-                Increment(ref _frontIndex);
+                Increment(ref _head);
                 --_size;
             }
 
-            Decrement(ref _frontIndex);
-            _buffer[_frontIndex] = item;
+            Decrement(ref _head);
+            _buffer[_head] = item;
             ++_size;
         }
 
@@ -118,7 +118,7 @@ namespace PQ.Common.Containers
         {
             if (_size != 0)
             {
-                Decrement(ref _backIndex);
+                Decrement(ref _tail);
                 --_size;
             }
         }
@@ -128,7 +128,7 @@ namespace PQ.Common.Containers
         {
             if (_size != 0)
             {
-                Increment(ref _frontIndex);
+                Increment(ref _head);
                 --_size;
             }
         }
@@ -140,7 +140,8 @@ namespace PQ.Common.Containers
             {
                 throw new IndexOutOfRangeException($"Given index={index} outside of range [0, size={_size})");
             }
-            int actualIndex = _frontIndex + index;
+
+            int actualIndex = _head + 1 + index;
             if (actualIndex >= _buffer.Length)
             {
                 actualIndex -= _buffer.Length;
