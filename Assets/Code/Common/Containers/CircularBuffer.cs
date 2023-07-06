@@ -66,14 +66,13 @@ namespace PQ.Common.Containers
 
         public CircularBuffer(int capacity, T[] items) : this(capacity)
         {
-            if (capacity < items.Length)
+            int size = items.Length;
+            if (capacity < size)
             {
-                throw new ArgumentException($"Capacity must be >= items.Length - received capacity={capacity}, items.Length={items.Length}");
+                throw new ArgumentException($"Capacity must be >= size - received capacity={capacity}, size={size}");
             }
-            for (int i = 0; i < items.Length; i++)
-            {
-                PushBack(items[i]);
-            }
+            Array.Copy(items, _buffer, size);
+            _size = size;
         }
 
         /* Reset buffer data without reallocations. */
@@ -107,8 +106,8 @@ namespace PQ.Common.Containers
             if (_size == _buffer.Length)
             {
                 Decrement(ref _frontIndex);
-                _buffer[_frontIndex] = item;
                 _backIndex = _frontIndex;
+                _buffer[_frontIndex] = item;
             }
             else
             {
