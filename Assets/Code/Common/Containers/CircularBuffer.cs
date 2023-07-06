@@ -73,6 +73,8 @@ namespace PQ.Common.Containers
             }
             Array.Copy(items, _buffer, size);
             _size = size;
+            _frontIndex = 0;
+            _backIndex = size-1;
         }
 
         /* Reset buffer data without reallocations. */
