@@ -94,8 +94,8 @@ namespace PQ.Common.Containers
                 --_size;
             }
 
-            _buffer[_frontIndex] = item;
             Increment(ref _backIndex);
+            _buffer[_backIndex] = item;
             ++_size;
         }
 
@@ -108,8 +108,8 @@ namespace PQ.Common.Containers
                 --_size;
             }
 
-            _buffer[_frontIndex] = item;
             Decrement(ref _frontIndex);
+            _buffer[_frontIndex] = item;
             ++_size;
         }
 
