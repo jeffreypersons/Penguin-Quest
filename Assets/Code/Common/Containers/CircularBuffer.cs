@@ -90,16 +90,13 @@ namespace PQ.Common.Containers
         {
             if (_size == _buffer.Length)
             {
-                Increment(ref _backIndex);
-                _frontIndex = _backIndex;
-                _buffer[_backIndex] = item;
+                Decrement(ref _backIndex);
+                --_size;
             }
-            else
-            {
-                Increment(ref _backIndex);
-                _buffer[_backIndex] = item;
-                ++_size;
-            }
+
+            _buffer[_frontIndex] = item;
+            Increment(ref _backIndex);
+            ++_size;
         }
 
         /* Add item to front (head) of buffer, removing item at back if full. */
@@ -107,16 +104,13 @@ namespace PQ.Common.Containers
         {
             if (_size == _buffer.Length)
             {
-                Decrement(ref _frontIndex);
-                _backIndex = _frontIndex;
-                _buffer[_frontIndex] = item;
+                Increment(ref _frontIndex);
+                --_size;
             }
-            else
-            {
-                Decrement(ref _frontIndex);
-                _buffer[_frontIndex] = item;
-                ++_size;
-            }
+
+            _buffer[_frontIndex] = item;
+            Decrement(ref _frontIndex);
+            ++_size;
         }
 
         /* Remove item from back (tail) of buffer. */
