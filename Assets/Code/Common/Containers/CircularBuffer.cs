@@ -84,47 +84,37 @@ namespace PQ.Common.Containers
             _backIndex  = 0;
         }
 
-        /* Add item to front (head) of buffer, removing item at back if full. */
-        public void PushFront(T item)
-        {
-            if (_size == _buffer.Length)
-            {
-                _buffer[_frontIndex] = item;
-                Decrement(ref _frontIndex);
-                Decrement(ref _backIndex);
-            }
-            else
-            {
-                _buffer[_frontIndex] = item;
-                Decrement(ref _frontIndex);
-                ++_size;
-            }
-        }
-
         /* Add item to back (tail) of buffer, removing item at front if full. */
         public void PushBack(T item)
         {
             if (_size == _buffer.Length)
             {
-                _buffer[_backIndex] = item;
-                Increment(ref _frontIndex);
                 Increment(ref _backIndex);
+                _frontIndex = _backIndex;
+                _buffer[_backIndex] = item;
             }
             else
             {
-                _buffer[_backIndex] = item;
                 Increment(ref _backIndex);
+                _buffer[_backIndex] = item;
                 ++_size;
             }
         }
 
-        /* Remove item from front (head) of buffer. */
-        public void PopFront()
+        /* Add item to front (head) of buffer, removing item at back if full. */
+        public void PushFront(T item)
         {
-            if (_size != 0)
+            if (_size == _buffer.Length)
             {
-                Increment(ref _frontIndex);
-                --_size;
+                Decrement(ref _frontIndex);
+                _buffer[_frontIndex] = item;
+                _backIndex = _frontIndex;
+            }
+            else
+            {
+                Decrement(ref _frontIndex);
+                _buffer[_frontIndex] = item;
+                ++_size;
             }
         }
 
@@ -134,6 +124,16 @@ namespace PQ.Common.Containers
             if (_size != 0)
             {
                 Decrement(ref _backIndex);
+                --_size;
+            }
+        }
+
+        /* Remove item from front (head) of buffer. */
+        public void PopFront()
+        {
+            if (_size != 0)
+            {
+                Increment(ref _frontIndex);
                 --_size;
             }
         }
