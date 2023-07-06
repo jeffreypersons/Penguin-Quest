@@ -80,9 +80,9 @@ namespace PQ.Common.Containers
         /* Reset buffer data without reallocations. */
         public void Clear()
         {
-            _size = -1;
-            _head = 0;
-            _tail = 1;
+            _size =  0;
+            _head = -1;
+            _tail =  1;
         }
 
         /* Add item to back (tail) of buffer, removing item at front if full. */
