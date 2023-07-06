@@ -45,7 +45,7 @@ namespace PQ.Common.Containers
 
         public IEnumerable<T> Items()
         {
-            if (_frontIndex == _backIndex)
+            if (_size == 0)
             {
                 yield break;
             }
