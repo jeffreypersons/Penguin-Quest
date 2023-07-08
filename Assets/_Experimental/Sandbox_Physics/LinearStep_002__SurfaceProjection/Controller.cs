@@ -45,7 +45,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
 
         void OnDrawGizmos()
         {
-            if (_positionHistory.Size < 2)
+            if (!Application.IsPlaying(this) || _positionHistory.Size < 2)
             {
                 return;
             }
