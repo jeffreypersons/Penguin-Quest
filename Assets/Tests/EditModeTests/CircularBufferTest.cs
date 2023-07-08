@@ -95,7 +95,7 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
-        public void Pop_Empty_FromFront()
+        public void Pop_Empty_FromFront_NothingChanged()
         {
             CircularBuffer<char> circularBuffer = new(capacity: 1);
             circularBuffer.PopFront();
