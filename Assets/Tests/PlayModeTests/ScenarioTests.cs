@@ -3,19 +3,19 @@ using NUnit.Framework;
 using UnityEngine.TestTools;
 
 
-namespace PQ.Tests.EditMode
+namespace PQ.Tests.PlayMode
 {
-    // stub for unit tests in editor (eg unit tests for non-unity specific code such as custom data structures, inventory system)
-    public class EditModeTestsStub
+    // stub for tests in Unity player (eg unit/integration-tests for unity specific code such as character controller, rendering)
+    public class ScenarioTests
     {
         [Test]
-        public void EditModeTestsStubSimplePasses()
+        public void PlayModeTestStubSimplePasses()
         {
             // simple assertions go here ie `Assert(shouldBeTrue, messageIfNotTrue);`
         }
 
         [UnityTest]
-        public IEnumerator EditModeTestsStubWithEnumeratorPasses()
+        public IEnumerator PlayModeTestStubWithEnumeratorPasses()
         {
             // like coroutines in play mode, `yield return null;` can be used to skip a frame in edit mode
             yield return null;

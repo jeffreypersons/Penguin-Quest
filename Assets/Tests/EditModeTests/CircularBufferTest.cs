@@ -1,114 +1,254 @@
-using System;
-using System.Linq;
 using NUnit.Framework;
 using PQ.Common.Containers;
+using System;
+using System.Linq;
 
 
 namespace PQ.Tests.EditMode
 {
     public class CircularBufferTest
     {
+        #region CircularBuffer Instantiation
         [Test]
-        public void Construct_LessThanOneCapacity_ShouldThrow()
+        public void Construct_CapacityLessThanOne_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => new CircularBuffer<int>(0));
+            Assert.Throws<ArgumentException>(() => new CircularBuffer<char>(0));
         }
 
         [Test]
-        public void Construct_InsufficientCapacity_ShouldThrow()
+        public void Construct_CapacityLessThanSize_ShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => new CircularBuffer<int>(capacity: 1, items: new int[] { 0, 1 }));
+            Assert.Throws<ArgumentException>(() => new CircularBuffer<char>(capacity: 1, items: new char[2]));
         }
 
         [Test]
         public void Construct_Empty_SizeShouldBeZero()
         {
-            CircularBuffer<int> circularBuffer = new(capacity: 1);
-            Assert.AreEqual(circularBuffer.Size, 0);
+            CircularBuffer<char> circularBuffer = new(capacity: 1);
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
+            Assert.AreEqual(0, circularBuffer.Size);
         }
 
         [Test]
-        public void Construct_SingleItem_ShouldBeAtFrontAndBack()
+        public void Construct_SingleItem_BackShouldEqualFront()
         {
-            CircularBuffer<int> circularBuffer = new(capacity: 1, items: new int[] { 0 });
-            Assert.AreEqual(circularBuffer.Size, 1);
+            CircularBuffer<char> circularBuffer = new(1, new char[1] { 'A' });
             Assert.AreEqual(circularBuffer.Front, circularBuffer.Back);
         }
-
         [Test]
-        public void Construct_ItemsShouldMatch()
+        public void Construct_NonEmpty_SizeShouldMatchParams()
         {
-            var items = new int[] { 0, 1 };
-            CircularBuffer<int> circularBuffer = new(capacity: items.Length, items);
-            Assert.AreEqual(circularBuffer.Items(), items.AsEnumerable());
-        }
-
-
-        [Test]
-        public void PushAndPop_SingleItem()
-        {
-            CircularBuffer<int> circularBuffer = new(1);
-            circularBuffer.PushFront(0);
-            Assert.AreEqual(circularBuffer.Items().ToArray(), new int[] { 0 });
-
-            circularBuffer.PopBack();
-            Assert.AreEqual(circularBuffer.Items().ToArray(), new int[] { });
+            CircularBuffer<char> circularBuffer = new(capacity: 2, items: new char[2]);
+            Assert.AreEqual(2, circularBuffer.Size);
         }
 
         [Test]
-        [TestCase("")]
-        [TestCase("A")]
-        [TestCase("A B")]
-        [TestCase("A B C")]
-        public void FillAndEmpty_FromFront(params string[] items)
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void Construct_NonEmpty_ItemsShouldMatchParams(params char[] items)
         {
-            CircularBuffer<string> circularBuffer = new(items.Length, items);
-            foreach (var item in items)
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+        }
+        #endregion
+
+
+        #region CircularBuffer Lookups
+        [Test]
+        public void Lookup_Empty_AccessingFirst_ShouldThrow()
+        {
+            CircularBuffer<char> circularBuffer = new(1);
+            Assert.Throws<IndexOutOfRangeException>(() => circularBuffer[0].ToString());
+        }
+
+        [Test]
+        public void Lookup_NonEmpty_AccessingBeyondLength_ShouldThrow()
+        {
+            CircularBuffer<char> circularBuffer = new(1, new char[1]);
+            Assert.Throws<IndexOutOfRangeException>(() => circularBuffer[1].ToString());
+        }
+
+        [Test]
+        public void Lookup_NonEmpty_MutateAllElements_ShouldChange()
+        {
+            var oldItems = new char[] { 'A', 'B', 'C' };
+            var newItems = new char[] { 'D', 'E', 'F' };
+            CircularBuffer<char> circularBuffer = new(oldItems.Length, oldItems);
+            for (int i = 0; i < circularBuffer.Size; i++)
             {
-                circularBuffer.PushFront(item);
+                circularBuffer[i] = newItems[i];
             }
-            foreach (var _ in items)
+            Assert.AreEqual(string.Join(' ', newItems), string.Join(' ', circularBuffer));
+        }
+        #endregion
+
+
+        #region CircularBuffer Deletions
+        [Test]
+        public void Pop_Empty_FromBack_NothingChanged()
+        {
+            CircularBuffer<char> circularBuffer = new(capacity: 1);
+            circularBuffer.PopBack();
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
+            Assert.AreEqual(0, circularBuffer.Size);
+        }
+
+        [Test]
+        public void Pop_Empty_FromFront_NothingChanged()
+        {
+            CircularBuffer<char> circularBuffer = new(capacity: 1);
+            circularBuffer.PopFront();
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
+            Assert.AreEqual(0, circularBuffer.Size);
+        }
+
+        [Test]
+        public void Clear_AllItems_NoItemsRemaining()
+        {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            circularBuffer.Clear();
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
+        }
+
+        [Test]
+        public void Pop_AllItems_FromBack_UntilEmpty()
+        {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            while (!circularBuffer.IsEmpty)
+            {
+                circularBuffer.PopBack();
+            }
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
+            Assert.AreEqual(0, circularBuffer.Size);
+        }
+
+        [Test]
+        public void Pop_AllItems_FromFront_UntilEmpty()
+        {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            while (!circularBuffer.IsEmpty)
             {
                 circularBuffer.PopFront();
             }
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
+            Assert.AreEqual(0, circularBuffer.Size);
         }
+        #endregion
 
+
+        #region CircularBuffer Insertions
         [Test]
-        [TestCase("")]
-        [TestCase("A")]
-        [TestCase("A B")]
-        [TestCase("A B C")]
-        public void FillAndEmpty_FromBack(params string[] items)
+        public void Push_AllItems_FromBack()
         {
-            CircularBuffer<string> circularBuffer = new(items.Length, items);
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
+            CircularBuffer<char> circularBuffer = new(items.Length);
             foreach (var item in items)
             {
                 circularBuffer.PushBack(item);
             }
-            foreach (var _ in items)
-            {
-                circularBuffer.PopBack();
-            }
+            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+            Assert.AreEqual(items.Length, circularBuffer.Size);
         }
 
         [Test]
-        [TestCase("")]
-        [TestCase("A")]
-        [TestCase("A B")]
-        [TestCase("A B C")]
-        public void CycleThroughFullBuffer(params string[] items)
+        public void Push_AllItems_FromFront()
         {
-            CircularBuffer<string> circularBuffer = new(items.Length, items);
-            for (int i = 0; i < items.Length; i++)
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
+            CircularBuffer<char> circularBuffer = new(items.Length);
+            foreach (var item in items)
             {
-                circularBuffer.PushBack(items[i]);
+                circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(items.ToArray(), circularBuffer.Items());
-            for (int i = items.Length-1; i >= 0; i--)
-            {
-                circularBuffer.PushBack(items[i]);
-            }
-            Assert.AreEqual(items.Reverse().ToArray(), circularBuffer.Items());
+            Assert.AreEqual(string.Join(' ', items.Reverse()), string.Join(' ', circularBuffer));
+            Assert.AreEqual(items.Length, circularBuffer.Size);
         }
+
+        [Test]
+        public void Push_AllItems_FromEachSide()
+        {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
+            CircularBuffer<char> circularBuffer = new(2 * items.Length);
+            foreach (var item in items)
+            {
+                circularBuffer.PushFront(item);
+            }
+            foreach (var item in items)
+            {
+                circularBuffer.PushBack(item);
+            }
+            Assert.AreEqual($"{string.Join(' ', items.Reverse())} {string.Join(' ', items)}", string.Join(' ', circularBuffer));
+            Assert.AreEqual(2 * items.Length, circularBuffer.Size);
+        }
+        #endregion
+
+
+        #region CircularBuffer Full State Pushes
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void FullState_ShiftOnce_FromFront(params char[] items)
+        {
+            var shiftedItems = items[..^1].Prepend(items[^1]);
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+
+            circularBuffer.PushFront(circularBuffer.Back);
+            Assert.AreEqual(string.Join(' ', shiftedItems), string.Join(' ', circularBuffer));
+        }
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void FullState_ShiftOnce_FromBack(params char[] items)
+        {
+            var shiftedItems = items[1..].Append(items[0]);
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+
+            circularBuffer.PushBack(circularBuffer.Front);
+            Assert.AreEqual(string.Join(' ', shiftedItems), string.Join(' ', circularBuffer));
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void FullState_ReplaceAll_FromFront(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            foreach (var item in items)
+            {
+                circularBuffer.PushFront(item);
+            }
+            Assert.AreEqual(string.Join(' ', items.Reverse()), string.Join(' ', circularBuffer));
+        }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void FullState_ReplaceAll_FromBack(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+            foreach (var item in items)
+            {
+                circularBuffer.PushBack(item);
+            }
+            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+        }
+        #endregion
     }
 }

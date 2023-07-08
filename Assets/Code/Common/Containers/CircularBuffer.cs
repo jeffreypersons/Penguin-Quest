@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 
 
@@ -24,18 +25,18 @@ namespace PQ.Common.Containers
     - No erasure of previous data, everything is handled internally with indices    
     - Empty size is permitted (avoids edge cases when popping)
     */
-    public sealed class CircularBuffer<T>
+    public sealed class CircularBuffer<T> : IEnumerable<T>
     {
-        private readonly T[] _buffer;
-
+        // note index range is inclusive,exclusive
+        private int _start;
+        private int _end;
         private int _size;
-        private int _frontIndex;
-        private int _backIndex;
+        private readonly T[] _buffer;
 
         public int Size     => _size;
         public int Capacity => _buffer.Length;
-        public T   Front    => _buffer[_frontIndex];
-        public T   Back     => _buffer[_backIndex];
+        public T   Front    => this[0];
+        public T   Back     => this[_size-1];
 
         public T this[int index]
         {
@@ -43,7 +44,10 @@ namespace PQ.Common.Containers
             set => _buffer[InternalIndex(index)] = value;
         }
 
-        public IEnumerable<T> Items()
+        public bool IsEmpty => _size == 0;
+        public bool IsFull  => _size == _buffer.Length;
+
+        public IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < _size; i++)
             {
@@ -51,7 +55,12 @@ namespace PQ.Common.Containers
             }
         }
 
-        public override string ToString() => "[" + string.Join(",", Items().Select((T item) => item.ToString())) + "]";
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (IEnumerator)GetEnumerator();
+        }
+
+        public override string ToString() => "[" + string.Join(",", this.Select((T item) => item.ToString())) + "]";
 
 
         public CircularBuffer(int capacity)
@@ -66,76 +75,94 @@ namespace PQ.Common.Containers
 
         public CircularBuffer(int capacity, T[] items) : this(capacity)
         {
-            if (capacity < items.Length)
+            int size = items.Length;
+            if (capacity < size)
             {
-                throw new ArgumentException($"Capacity must be >= items.Length - received capacity={capacity}, items.Length={items.Length}");
+                throw new ArgumentException($"Capacity must be >= size - received capacity={capacity}, size={size}");
             }
-            for (int i = 0; i < items.Length; i++)
-            {
-                PushBack(items[i]);
-            }
+            Array.Copy(items, _buffer, size);
+            _size  = size;
+            _start = 0;
+            _end   = capacity == size? 0 : _size;
         }
 
         /* Reset buffer data without reallocations. */
         public void Clear()
         {
-            _size       = 0;
-            _frontIndex = 0;
-            _backIndex  = 0;
-        }
-
-        /* Add item to front (head) of buffer, removing item at back if full. */
-        public void PushFront(T item)
-        {
-            if (_size == _buffer.Length)
-            {
-                _buffer[_frontIndex] = item;
-                Decrement(ref _frontIndex);
-                Decrement(ref _backIndex);
-            }
-            else
-            {
-                _buffer[_frontIndex] = item;
-                Decrement(ref _frontIndex);
-                ++_size;
-            }
+            _size  = 0;
+            _start = 0;
+            _end   = 0;
         }
 
         /* Add item to back (tail) of buffer, removing item at front if full. */
         public void PushBack(T item)
         {
+            // note that since our upper bound is exclusive we insert at the current end before updating the index
             if (_size == _buffer.Length)
             {
-                _buffer[_backIndex] = item;
-                Increment(ref _frontIndex);
-                Increment(ref _backIndex);
+                _buffer[_end] = item;
+                Increment(ref _start);
+                Increment(ref _end);
             }
             else
             {
-                _buffer[_backIndex] = item;
-                Increment(ref _backIndex);
+                _buffer[_end] = item;
+                Increment(ref _end);
                 ++_size;
             }
         }
 
-        /* Remove item from front (head) of buffer. */
-        public void PopFront()
+        /* Add item to front (head) of buffer, removing item at back if full. */
+        public void PushFront(T item)
         {
-            Increment(ref _frontIndex);
-            --_size;
+            // note that since our lower bound is inclusive we update the index before inserting at the new start
+            if (_size == _buffer.Length)
+            {
+                Decrement(ref _start);
+                Decrement(ref _end);
+                _buffer[_start] = item;
+            }
+            else
+            {
+                Decrement(ref _start);
+                _buffer[_start] = item;
+                ++_size;
+            }
         }
 
         /* Remove item from back (tail) of buffer. */
         public void PopBack()
         {
-            Decrement(ref _backIndex);
+            if (_size == 0)
+            {
+                return;
+            }
+
+            Decrement(ref _end);
+            --_size;
+        }
+
+        /* Remove item from front (head) of buffer. */
+        public void PopFront()
+        {
+            if (_size == 0)
+            {
+                return;
+            }
+
+            Increment(ref _start);
             --_size;
         }
 
 
         private int InternalIndex(int index)
         {
-            int actualIndex = _frontIndex + index;
+            if (_size == 0 || index < 0 || index >= _size)
+            {
+                throw new IndexOutOfRangeException($"Given index={index} outside of range [0, size={_size})");
+            }
+
+            int actualIndex = _start + index;
             if (actualIndex >= _buffer.Length)
             {
                 actualIndex -= _buffer.Length;

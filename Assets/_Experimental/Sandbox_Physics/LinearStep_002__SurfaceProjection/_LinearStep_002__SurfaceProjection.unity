@@ -279,7 +279,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _transform: {fileID: 65252863}
   _target: {fileID: 65252862}
-  _maxMinSeparationSolves: 10
 --- !u!61 &65252862 stripped
 BoxCollider2D:
   m_CorrespondingSourceObject: {fileID: 6068203031854652124, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
@@ -430,12 +429,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 373807055}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a2fc90e41a69f4cb024891a60b6cd4, type: 3}
+  m_Script: {fileID: 11500000, guid: 382d7046c3a7d8d4bb942116900b1d3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _transform: {fileID: 65252863}
   _target: {fileID: 373807058}
-  _maxMinSeparationSolves: 10
 --- !u!1001 &2007588694
 PrefabInstance:
   m_ObjectHideFlags: 0
