@@ -1,7 +1,7 @@
-using System;
-using System.Linq;
 using NUnit.Framework;
 using PQ.Common.Containers;
+using System;
+using System.Linq;
 
 
 namespace PQ.Tests.EditMode
@@ -122,10 +122,10 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C')]
         [TestCase('A', 'B', 'C', 'D')]
         [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Pop_AllItems_FromBack(params char[] items)
+        public void Pop_AllItems_FromBack_UntilEmpty(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
-            foreach (var _ in items)
+            while (!circularBuffer.IsEmpty)
             {
                 circularBuffer.PopBack();
             }
@@ -139,10 +139,10 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C')]
         [TestCase('A', 'B', 'C', 'D')]
         [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Pop_AllItems_FromFront(params char[] items)
+        public void Pop_AllItems_FromFront_UntilEmpty(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
-            foreach (var _ in items)
+            while (!circularBuffer.IsEmpty)
             {
                 circularBuffer.PopFront();
             }
