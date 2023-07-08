@@ -68,6 +68,19 @@ namespace PQ.Tests.EditMode
             CircularBuffer<char> circularBuffer = new(1, new char[1]);
             Assert.Throws<IndexOutOfRangeException>(() => circularBuffer[1].ToString());
         }
+
+        [Test]
+        public void Lookup_NonEmpty_MutateAllElements_ShouldChange()
+        {
+            var oldChars = new char[] { 'A', 'B', 'C' };
+            var newChars = new char[] { 'D', 'E', 'F' };
+            CircularBuffer<char> circularBuffer = new(oldChars.Length, oldChars);
+            for (int i = 0; i < circularBuffer.Size; i++)
+            {
+                circularBuffer[i] = newChars[i];
+            }
+            Assert.AreEqual(string.Join(' ', newChars), string.Join(' ', circularBuffer));
+        }
         #endregion
 
 
