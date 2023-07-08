@@ -186,7 +186,36 @@ namespace PQ.Tests.EditMode
         #endregion
 
 
-        #region CircularBuffer Replace All
+        #region CircularBuffer Full State Pushes
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void FullState_ShiftOnce_FromFront(params char[] items)
+        {
+            var shiftedItems = items.Prepend(items[^1]).SkipLast(0);
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+
+            circularBuffer.PushFront(circularBuffer.Back);
+            Assert.AreEqual(string.Join(' ', shiftedItems), string.Join(' ', circularBuffer));
+        }
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void FullState_ShiftOnce_FromBack(params char[] items)
+        {
+            var shiftedItems = items.Append(items[0]).Skip(0);
+            CircularBuffer<char> circularBuffer = new(items.Length, items);
+
+            circularBuffer.PushFront(circularBuffer.Back);
+            Assert.AreEqual(string.Join(' ', shiftedItems), string.Join(' ', circularBuffer));
+        }
+
         [Test]
         [TestCase('A')]
         [TestCase('A', 'B')]
