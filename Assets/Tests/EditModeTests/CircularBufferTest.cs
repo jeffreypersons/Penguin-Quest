@@ -173,6 +173,27 @@ namespace PQ.Tests.EditMode
             Assert.AreEqual(string.Join(' ', items.Reverse()), string.Join(' ', circularBuffer));
             Assert.AreEqual(items.Length, circularBuffer.Size);
         }
+
+        [Test]
+        [TestCase('A')]
+        [TestCase('A', 'B')]
+        [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
+        public void Push_AllItems_FromEachSide(params char[] items)
+        {
+            CircularBuffer<char> circularBuffer = new(2 * items.Length);
+            foreach (var item in items)
+            {
+                circularBuffer.PushFront(item);
+            }
+            foreach (var item in items)
+            {
+                circularBuffer.PushBack(item);
+            }
+            Assert.AreEqual($"{string.Join(' ', items.Reverse())} {string.Join(' ', items)}", string.Join(' ', circularBuffer));
+            Assert.AreEqual(2 * items.Length, circularBuffer.Size);
+        }
         #endregion
 
 
