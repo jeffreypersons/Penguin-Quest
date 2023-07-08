@@ -158,7 +158,7 @@ namespace PQ.Common.Containers
                 throw new IndexOutOfRangeException($"Given index={index} outside of range [0, size={_size})");
             }
 
-            int actualIndex = _start + 1 + index;
+            int actualIndex = _start + index;
             if (actualIndex >= _buffer.Length)
             {
                 actualIndex -= _buffer.Length;
