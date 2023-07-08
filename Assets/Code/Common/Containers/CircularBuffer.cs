@@ -95,30 +95,31 @@ namespace PQ.Common.Containers
         /* Add item to back (tail) of buffer, removing item at front if full. */
         public void PushBack(T item)
         {
+            // note that since our upper bound is exclusive we insert at the current end before updating the index
             if (_size == _buffer.Length)
             {
                 _buffer[_end] = item;
-                Increment(ref _end);
             }
             else
             {
                 _buffer[_end] = item;
-                Increment(ref _end);
                 ++_size;
             }
+            Increment(ref _end);
         }
 
         /* Add item to front (head) of buffer, removing item at back if full. */
         public void PushFront(T item)
         {
+            // note that since our lower bound is inclusive we update the index before inserting at the new start
+            Decrement(ref _start);
             if (_size == _buffer.Length)
             {
-                Decrement(ref _start);
+                _end = _start;
                 _buffer[_start] = item;
             }
             else
             {
-                Decrement(ref _start);
                 _buffer[_start] = item;
                 ++_size;
             }
