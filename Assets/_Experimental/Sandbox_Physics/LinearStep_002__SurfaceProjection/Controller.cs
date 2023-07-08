@@ -21,7 +21,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
             _nextButtonPressed = false;
             _kinematicBody     = new KinematicBody2D(_transform);
             _kinematicSolver   = new KinematicLinearSolver2D(_kinematicBody);
-            _positionHistory   = new CircularBuffer<Vector2>(capacity: 100);
+            _positionHistory   = new CircularBuffer<Vector2>(capacity: 50);
         }
 
         void Update()
