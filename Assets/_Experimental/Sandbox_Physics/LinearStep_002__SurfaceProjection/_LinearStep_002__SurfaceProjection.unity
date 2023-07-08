@@ -278,12 +278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _transform: {fileID: 65252863}
-  _target: {fileID: 65252862}
---- !u!61 &65252862 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 6068203031854652124, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
-  m_PrefabInstance: {fileID: 65252859}
-  m_PrefabAsset: {fileID: 0}
+  _target: {fileID: 373807058}
 --- !u!4 &65252863 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7577363344085367854, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
