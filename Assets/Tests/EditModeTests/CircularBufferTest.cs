@@ -72,14 +72,14 @@ namespace PQ.Tests.EditMode
         [Test]
         public void Lookup_NonEmpty_MutateAllElements_ShouldChange()
         {
-            var oldChars = new char[] { 'A', 'B', 'C' };
-            var newChars = new char[] { 'D', 'E', 'F' };
-            CircularBuffer<char> circularBuffer = new(oldChars.Length, oldChars);
+            var oldItems = new char[] { 'A', 'B', 'C' };
+            var newItems = new char[] { 'D', 'E', 'F' };
+            CircularBuffer<char> circularBuffer = new(oldItems.Length, oldItems);
             for (int i = 0; i < circularBuffer.Size; i++)
             {
-                circularBuffer[i] = newChars[i];
+                circularBuffer[i] = newItems[i];
             }
-            Assert.AreEqual(string.Join(' ', newChars), string.Join(' ', circularBuffer));
+            Assert.AreEqual(string.Join(' ', newItems), string.Join(' ', circularBuffer));
         }
         #endregion
 
@@ -104,26 +104,18 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        [TestCase('A', 'B', 'C', 'D')]
-        [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Clear_AllItems(params char[] items)
+        public void Clear_AllItems_NoItemsRemaining()
         {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.Clear();
             Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
         }
 
         [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        [TestCase('A', 'B', 'C', 'D')]
-        [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Pop_AllItems_FromBack_UntilEmpty(params char[] items)
+        public void Pop_AllItems_FromBack_UntilEmpty()
         {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             while (!circularBuffer.IsEmpty)
             {
@@ -134,13 +126,9 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        [TestCase('A', 'B', 'C', 'D')]
-        [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Pop_AllItems_FromFront_UntilEmpty(params char[] items)
+        public void Pop_AllItems_FromFront_UntilEmpty()
         {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             while (!circularBuffer.IsEmpty)
             {
@@ -154,13 +142,9 @@ namespace PQ.Tests.EditMode
 
         #region CircularBuffer Insertions
         [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        [TestCase('A', 'B', 'C', 'D')]
-        [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Push_AllItems_FromBack(params char[] items)
+        public void Push_AllItems_FromBack()
         {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
             CircularBuffer<char> circularBuffer = new(items.Length);
             foreach (var item in items)
             {
@@ -171,13 +155,9 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        [TestCase('A', 'B', 'C', 'D')]
-        [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Push_AllItems_FromFront(params char[] items)
+        public void Push_AllItems_FromFront()
         {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
             CircularBuffer<char> circularBuffer = new(items.Length);
             foreach (var item in items)
             {
@@ -188,13 +168,9 @@ namespace PQ.Tests.EditMode
         }
 
         [Test]
-        [TestCase('A')]
-        [TestCase('A', 'B')]
-        [TestCase('A', 'B', 'C')]
-        [TestCase('A', 'B', 'C', 'D')]
-        [TestCase('A', 'B', 'C', 'D', 'E')]
-        public void Push_AllItems_FromEachSide(params char[] items)
+        public void Push_AllItems_FromEachSide()
         {
+            var items = new char[] { 'A', 'B', 'C', 'D', 'E' };
             CircularBuffer<char> circularBuffer = new(2 * items.Length);
             foreach (var item in items)
             {
