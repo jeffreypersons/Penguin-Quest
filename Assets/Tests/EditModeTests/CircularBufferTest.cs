@@ -100,7 +100,7 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.Clear();
-            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PopBack();
             }
-            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
             Assert.AreEqual(0, circularBuffer.Size);
         }
 
@@ -133,7 +133,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PopFront();
             }
-            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+            Assert.AreEqual(string.Empty, string.Join(' ', circularBuffer));
             Assert.AreEqual(0, circularBuffer.Size);
         }
         #endregion
