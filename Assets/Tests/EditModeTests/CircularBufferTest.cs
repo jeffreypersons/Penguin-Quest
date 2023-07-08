@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NUnit.Framework;
 using PQ.Common.Containers;
 
@@ -169,7 +170,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+            Assert.AreEqual(string.Join(' ', items.Reverse()), string.Join(' ', circularBuffer));
             Assert.AreEqual(items.Length, circularBuffer.Size);
         }
         #endregion
@@ -189,7 +190,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
+            Assert.AreEqual(string.Join(' ', items.Reverse()), string.Join(' ', circularBuffer));
         }
 
         [Test]
