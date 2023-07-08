@@ -25,7 +25,7 @@ namespace PQ.Tests.EditMode
         public void Construct_Empty_SizeShouldBeZero()
         {
             CircularBuffer<char> circularBuffer = new(capacity: 1);
-            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
         }
 
@@ -49,7 +49,7 @@ namespace PQ.Tests.EditMode
         public void Construct_NonEmpty_ItemsShouldMatchParams(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
-            Assert.AreEqual(items, circularBuffer.Items().ToArray());
+            Assert.AreEqual(items, circularBuffer.ToArray());
         }
         #endregion
 
@@ -77,7 +77,7 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<char> circularBuffer = new(capacity: 1);
             circularBuffer.PopBack();
-            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
         }
 
@@ -86,7 +86,7 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<char> circularBuffer = new(capacity: 1);
             circularBuffer.PopFront();
-            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
         }
 
@@ -100,7 +100,7 @@ namespace PQ.Tests.EditMode
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             circularBuffer.Clear();
-            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.ToArray());
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PopBack();
             }
-            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
         }
 
@@ -133,7 +133,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PopFront();
             }
-            Assert.AreEqual(Array.Empty<char>(), circularBuffer.Items().ToArray());
+            Assert.AreEqual(Array.Empty<char>(), circularBuffer.ToArray());
             Assert.AreEqual(0, circularBuffer.Size);
         }
         #endregion
@@ -153,7 +153,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushBack(item);
             }
-            Assert.AreEqual(items, circularBuffer.Items().ToArray());
+            Assert.AreEqual(items, circularBuffer.ToArray());
             Assert.AreEqual(items.Length, circularBuffer.Size);
         }
 
@@ -170,7 +170,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(items, circularBuffer.Items().ToArray());
+            Assert.AreEqual(items, circularBuffer.ToArray());
             Assert.AreEqual(items.Length, circularBuffer.Size);
         }
         #endregion
@@ -190,7 +190,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(items, circularBuffer.Items().ToArray());
+            Assert.AreEqual(items, circularBuffer.ToArray());
         }
 
         [Test]
@@ -206,7 +206,7 @@ namespace PQ.Tests.EditMode
             {
                 circularBuffer.PushFront(item);
             }
-            Assert.AreEqual(items, circularBuffer.Items().ToArray());
+            Assert.AreEqual(items, circularBuffer.ToArray());
         }
         #endregion
     }

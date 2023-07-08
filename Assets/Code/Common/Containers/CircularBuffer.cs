@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 
 
@@ -24,7 +25,7 @@ namespace PQ.Common.Containers
     - No erasure of previous data, everything is handled internally with indices    
     - Empty size is permitted (avoids edge cases when popping)
     */
-    public sealed class CircularBuffer<T>
+    public sealed class CircularBuffer<T> : IEnumerable<T>
     {
         private readonly T[] _buffer;
 
@@ -43,7 +44,8 @@ namespace PQ.Common.Containers
             set => _buffer[InternalIndex(index)] = value;
         }
 
-        public IEnumerable<T> Items()
+        
+        public IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < _size; i++)
             {
@@ -51,7 +53,12 @@ namespace PQ.Common.Containers
             }
         }
 
-        public override string ToString() => "[" + string.Join(",", Items().Select((T item) => item.ToString())) + "]";
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (IEnumerator)GetEnumerator();
+        }
+
+        public override string ToString() => "[" + string.Join(",", this.Select((T item) => item.ToString())) + "]";
 
 
         public CircularBuffer(int capacity)
