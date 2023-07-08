@@ -204,7 +204,7 @@ namespace PQ.Tests.EditMode
             CircularBuffer<char> circularBuffer = new(items.Length, items);
             foreach (var item in items)
             {
-                circularBuffer.PushFront(item);
+                circularBuffer.PushBack(item);
             }
             Assert.AreEqual(string.Join(' ', items), string.Join(' ', circularBuffer));
         }
