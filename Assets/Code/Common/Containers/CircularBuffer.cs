@@ -27,11 +27,11 @@ namespace PQ.Common.Containers
     */
     public sealed class CircularBuffer<T> : IEnumerable<T>
     {
-        private readonly T[] _buffer;
-
+        // note index range is inclusive,exclusive
+        private int _start;
+        private int _end;
         private int _size;
-        private int _front;
-        private int _back;
+        private readonly T[] _buffer;
 
         public int Size     => _size;
         public int Capacity => _buffer.Length;
@@ -79,17 +79,17 @@ namespace PQ.Common.Containers
                 throw new ArgumentException($"Capacity must be >= size - received capacity={capacity}, size={size}");
             }
             Array.Copy(items, _buffer, size);
-            _size = size;
-            _front = -1;
-            _back = size;
+            _size  = size;
+            _start = 0;
+            _end   = capacity == size? 0 : _size;
         }
 
         /* Reset buffer data without reallocations. */
         public void Clear()
         {
-            _size  =  0;
-            _front = -1;
-            _back  =  1;
+            _size  = 0;
+            _start = 0;
+            _end   = 0;
         }
 
         /* Add item to back (tail) of buffer, removing item at front if full. */
@@ -97,20 +97,16 @@ namespace PQ.Common.Containers
         {
             if (_size == _buffer.Length)
             {
-                PopBack();
-            }
-
-            if (_back == _buffer.Length)
-            {
-                _back = -1;
-                _buffer[0] = item;
+                _buffer[_end] = item;
+                Increment(ref _end);
+                _start = _end;
             }
             else
             {
-                _buffer[_back] = item;
-                ++_back;
+                _buffer[_end] = item;
+                Increment(ref _end);
+                ++_size;
             }
-            ++_size;
         }
 
         /* Add item to front (head) of buffer, removing item at back if full. */
@@ -118,20 +114,16 @@ namespace PQ.Common.Containers
         {
             if (_size == _buffer.Length)
             {
-                PopFront();
-            }
-
-            if (_front == 0)
-            {
-                _front = _buffer.Length;
-                _buffer[_buffer.Length-1] = item;
+                Decrement(ref _start);
+                _end = _start;
+                _buffer[_start] = item;
             }
             else
             {
-                _buffer[_front] = item;
-                --_front;
+                Decrement(ref _start);
+                _buffer[_start] = item;
+                ++_size;
             }
-            ++_size;
         }
 
         /* Remove item from back (tail) of buffer. */
@@ -142,7 +134,7 @@ namespace PQ.Common.Containers
                 return;
             }
 
-            --_back;
+            --_end;
             --_size;
         }
 
@@ -154,7 +146,7 @@ namespace PQ.Common.Containers
                 return;
             }
 
-            ++_front;
+            ++_start;
             --_size;
         }
 
@@ -166,12 +158,29 @@ namespace PQ.Common.Containers
                 throw new IndexOutOfRangeException($"Given index={index} outside of range [0, size={_size})");
             }
 
-            int actualIndex = _front + 1 + index;
+            int actualIndex = _start + 1 + index;
             if (actualIndex >= _buffer.Length)
             {
                 actualIndex -= _buffer.Length;
             }
             return actualIndex;
+        }
+
+        private void Increment(ref int index)
+        {
+            if (++index == _buffer.Length)
+            {
+                index = 0;
+            }
+        }
+
+        private void Decrement(ref int index)
+        {
+            if (index == 0)
+            {
+                index = _buffer.Length;
+            }
+            --index;
         }
     }
 }
