@@ -99,6 +99,7 @@ namespace PQ.Common.Containers
             if (_size == _buffer.Length)
             {
                 _buffer[_end] = item;
+                Increment(ref _start);
                 Increment(ref _end);
             }
             else
@@ -116,6 +117,7 @@ namespace PQ.Common.Containers
             if (_size == _buffer.Length)
             {
                 Decrement(ref _start);
+                Decrement(ref _end);
                 _buffer[_start] = item;
             }
             else
