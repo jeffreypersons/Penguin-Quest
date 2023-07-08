@@ -97,7 +97,6 @@ namespace PQ._Experimental.Physics
         */
         public static void DrawArrow(Vector2 from, Vector2 to, Color? color=null, float arrowheadSizeRatio=0.10f)
         {
-            Debug.Log($"from={from} to={to}");
             Color previousColor = Gizmos.color;
             Gizmos.color = color.GetValueOrDefault(DefaultColor);
 
