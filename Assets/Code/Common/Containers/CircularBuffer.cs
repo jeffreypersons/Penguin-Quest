@@ -44,7 +44,9 @@ namespace PQ.Common.Containers
             set => _buffer[InternalIndex(index)] = value;
         }
 
-        
+        public bool IsEmpty => _size == 0;
+        public bool IsFull  => _size == _buffer.Length;
+
         public IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < _size; i++)

@@ -73,7 +73,7 @@ namespace PQ.Tests.EditMode
 
         #region CircularBuffer Deletions
         [Test]
-        public void Pop_Empty_FromBack()
+        public void Pop_Empty_FromBack_NothingChanged()
         {
             CircularBuffer<char> circularBuffer = new(capacity: 1);
             circularBuffer.PopBack();
