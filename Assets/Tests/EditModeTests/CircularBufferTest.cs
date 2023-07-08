@@ -195,7 +195,7 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C', 'D', 'E')]
         public void FullState_ShiftOnce_FromFront(params char[] items)
         {
-            var shiftedItems = items.Prepend(items[^1]).SkipLast(0);
+            var shiftedItems = items[..^1].Prepend(items[^1]);
             CircularBuffer<char> circularBuffer = new(items.Length, items);
 
             circularBuffer.PushFront(circularBuffer.Back);
@@ -209,10 +209,10 @@ namespace PQ.Tests.EditMode
         [TestCase('A', 'B', 'C', 'D', 'E')]
         public void FullState_ShiftOnce_FromBack(params char[] items)
         {
-            var shiftedItems = items.Append(items[0]).Skip(0);
+            var shiftedItems = items[1..].Append(items[0]);
             CircularBuffer<char> circularBuffer = new(items.Length, items);
 
-            circularBuffer.PushFront(circularBuffer.Back);
+            circularBuffer.PushBack(circularBuffer.Front);
             Assert.AreEqual(string.Join(' ', shiftedItems), string.Join(' ', circularBuffer));
         }
 
