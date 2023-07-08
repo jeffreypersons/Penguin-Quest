@@ -46,6 +46,8 @@ namespace PQ.Tests.EditMode
         [TestCase('A')]
         [TestCase('A', 'B')]
         [TestCase('A', 'B', 'C')]
+        [TestCase('A', 'B', 'C', 'D')]
+        [TestCase('A', 'B', 'C', 'D', 'E')]
         public void Construct_NonEmpty_ItemsShouldMatchParams(params char[] items)
         {
             CircularBuffer<char> circularBuffer = new(items.Length, items);
