@@ -28,7 +28,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
 
         public LayerMask LayerMask => _contactFilter.layerMask;
 
-        public Vector2 Position     => _rigidbody.position;
+        public Vector2 Position { get => _rigidbody.position; set => _rigidbody.position = value; }
         public Vector2 Center       => _boxCollider.bounds.center;
         public Vector2 Forward      => _rigidbody.transform.right.normalized;
         public Vector2 Up           => _rigidbody.transform.up.normalized;
@@ -82,6 +82,11 @@ namespace PQ._Experimental.Physics.LinearStep_002
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
+        public bool IsAttachedTo(Transform transform)
+        {
+            return ReferenceEquals(_transform, transform);
+        }
+
         public void Flip(bool horizontal, bool vertical)
         {
             _rigidbody.transform.localEulerAngles = new Vector3(
@@ -90,22 +95,13 @@ namespace PQ._Experimental.Physics.LinearStep_002
                 z: 0f);
         }
 
-        public bool IsAttachedTo(Transform transform) => ReferenceEquals(_transform, transform);
-        public void MoveTo(Vector2 position)     => _rigidbody.position = position;
-        public void MoveBy(Vector2 delta)        => _rigidbody.position += delta;
-
         /*
-        Move body to given frame's start position and perform MovePosition to maintain any interpolation.
+        Reset to position at start of frame and apply MovePosition. This preserves interpolation despite any changes to position.
         
-        This allows changes to rigidbody.position be applied without ignoring interpolation settings.
-        
-        Context:
-        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
-        - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
-        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
-          replace the original position _then_ apply MovePosition()
+        This works around the fact that modifying rigidbody.position prevents unity from applying smoothing based on previous
+        frame positions. By 'clearing' any manual changes to position and invoking movePosition, we can maintain interpolation.
         */
-        public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
+        public void MovePositionWithoutBreakingInterpolation(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
         {
             _rigidbody.position = startPositionThisFrame;
             _rigidbody.MovePosition(targetPositionThisFrame);

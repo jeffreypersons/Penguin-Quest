@@ -24,32 +24,41 @@ namespace PQ._Experimental.Physics.LinearStep_002
             moveDirection = Vector2.right;
         }
 
-        public void MoveUnobstructedAlongDelta(Vector2 delta)
+        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
+        public void Move(Vector2 delta)
         {
+            // todo: cache any direction dependent data (eg body-radius, projection)
             // todo: maintain the below distance when we implement momentum
             moveDistance = 0f;
 
             (float distanceRemaining, Vector2 direction) = DecomposeDelta(delta);
-            float startOffset = _body.SkinWidth;
             float distanceToEdge = _body.ComputeDistanceToEdge(direction);
-
-            _body.MoveBy(-startOffset * direction);
-
-            float stepDistance = distanceRemaining < distanceToEdge ? distanceRemaining : distanceToEdge;
-            if (_body.CastAABB(direction, stepDistance + startOffset, out RaycastHit2D obstruction))
-            {
-                stepDistance = obstruction.distance - startOffset;
-            }
+            MoveUnobstructed(distanceRemaining, direction, distanceToEdge, out float step, out RaycastHit2D obstruction);
 
             // todo: avoid extra project calls
-            Vector2 stepDelta = (stepDistance + startOffset) * direction;
             if (obstruction)
             {
-                stepDelta = ProjectDeltaOnToSurface(stepDelta, obstruction);
+                delta = ProjectDeltaOnToSurface(delta, obstruction);
+            }
+            (moveDistance, moveDirection) = DecomposeDelta(delta);
+        }
+
+
+        /* Project body along delta until (if any) obstruction. Distance swept is capped at body-radius to prevent tunneling. */
+        public void MoveUnobstructed(float distance, Vector2 direction, float maxStep, out float step, out RaycastHit2D obstruction)
+        {
+            // slightly bias the start position such that box casts still resolve
+            // even when AABB is touching a collider in that direction
+            float startOffset = _body.SkinWidth;
+            _body.Position += -startOffset * direction;
+
+            step = distance < maxStep ? distance : maxStep;
+            if (_body.CastAABB(direction, step + startOffset, out obstruction))
+            {
+                step = obstruction.distance - startOffset;
             }
 
-            (moveDistance, moveDirection) = DecomposeDelta(stepDelta);
-            _body.MoveBy(stepDelta);
+            _body.Position += (step + startOffset) * direction;
         }
 
 

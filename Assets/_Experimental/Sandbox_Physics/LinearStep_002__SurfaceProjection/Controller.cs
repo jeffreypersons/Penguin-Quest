@@ -10,7 +10,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
         [SerializeField] private Collider2D _target;
         
         private bool _nextButtonPressed;
-        private KinematicBody2D _kinematicBody;
+        private KinematicBody2D         _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;
 
@@ -39,7 +39,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
 
             if (_nextButtonPressed)
             {
-                _kinematicSolver.MoveUnobstructedAlongDelta((Vector2)_target.bounds.center - position);
+                _kinematicSolver.Move((Vector2)_target.bounds.center - position);
             }
         }
 
