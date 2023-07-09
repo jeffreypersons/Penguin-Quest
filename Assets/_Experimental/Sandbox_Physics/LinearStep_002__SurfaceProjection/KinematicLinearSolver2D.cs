@@ -89,7 +89,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
                 ? new Vector2(-normal.y,  normal.x)
                 : new Vector2( normal.y, -normal.x);
 
-            // vector projection of delta onto to surface tangent (2D equivelant of 3D method ProjectOnPlane())
+            // vector projection of delta onto to surface tangent (2D equivalent of 3D method ProjectOnPlane())
             // assumes non-zero normal (ie given hit is valid)
             float aDotB = Vector2.Dot(delta,          surfaceTangent);
             float bDotB = Vector2.Dot(surfaceTangent, surfaceTangent);
