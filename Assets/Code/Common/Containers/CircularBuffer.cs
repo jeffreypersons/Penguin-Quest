@@ -86,6 +86,16 @@ namespace PQ.Common.Containers
             _end   = capacity == size? 0 : _size;
         }
 
+        /* Write contents of circular buffer. Copied as a block from left to right. */
+        public void WriteContents(T[] outputBuffer)
+        {
+            if (outputBuffer.Length < _size)
+            {
+                throw new ArgumentException($"Size of output buffer must be >= size - received buffer.length={outputBuffer.Length}, size={_buffer.Length}");
+            }
+            Array.Copy(outputBuffer, _buffer, _size);
+        }
+
         /* Reset buffer data without reallocations. */
         public void Clear()
         {
