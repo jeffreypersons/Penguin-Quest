@@ -7,10 +7,11 @@ namespace PQ._Experimental.Physics.LinearStep_002
 {
     internal sealed class KinematicLinearSolver2D
     {
+        private Vector2 _surfaceNormal;
         private KinematicBody2D _body;
 
-        private float   moveDistance;
-        private Vector2 moveDirection;
+
+        // todo: cache any direction dependent data (eg body-radius, projection)
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
@@ -20,27 +21,29 @@ namespace PQ._Experimental.Physics.LinearStep_002
             }
             _body = kinematicBody2D;
 
-            moveDistance  = 0f;
-            moveDirection = Vector2.right;
+            _surfaceNormal = Vector2.up;
         }
 
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
         {
-            // todo: cache any direction dependent data (eg body-radius, projection)
-            // todo: maintain the below distance when we implement momentum
-            moveDistance = 0f;
-
-            (float distanceRemaining, Vector2 direction) = DecomposeDelta(delta);
-            float distanceToEdge = _body.ComputeDistanceToEdge(direction);
-            MoveUnobstructed(distanceRemaining, direction, distanceToEdge, out float step, out RaycastHit2D obstruction);
-
-            // todo: avoid extra project calls
-            if (obstruction)
+            if (delta == Vector2.zero)
             {
-                delta = ProjectDeltaOnToSurface(delta, obstruction);
+                return;
             }
-            (moveDistance, moveDirection) = DecomposeDelta(delta);
+
+            (float desiredDistance,   Vector2 desiredDirection  ) = DecomposeDelta(delta);
+            (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, _surfaceNormal);
+            Debug.DrawRay(_body.Position, _body.Position + (desiredDistance   * desiredDirection),   Color.gray,  1f);
+            Debug.DrawRay(_body.Position, _body.Position + (projectedDistance * projectedDirection), Color.green, 1f);
+            MoveUnobstructed(
+                projectedDistance,
+                projectedDirection,
+                _body.ComputeDistanceToEdge(projectedDirection),
+                out float _,
+                out RaycastHit2D obstruction);
+
+            _surfaceNormal = obstruction? obstruction.normal : Vector2.up;
         }
 
 
@@ -79,18 +82,18 @@ namespace PQ._Experimental.Physics.LinearStep_002
         }
 
         [Pure]
-        private Vector2 ProjectDeltaOnToSurface(Vector2 delta, RaycastHit2D hit)
+        private (float distance, Vector2 direction) ProjectDeltaOnToSurface(Vector2 delta, Vector2 normal)
         {
             // take perpendicular of surface normal in direction of body
             Vector2 surfaceTangent = _body.IsFlippedHorizontal
-                ? new Vector2(-hit.normal.y,  hit.normal.x)
-                : new Vector2( hit.normal.y, -hit.normal.x);
+                ? new Vector2(-normal.y,  normal.x)
+                : new Vector2( normal.y, -normal.x);
 
             // vector projection of delta onto to surface tangent (2D equivelant of 3D method ProjectOnPlane())
             // assumes non-zero normal (ie given hit is valid)
             float aDotB = Vector2.Dot(delta,          surfaceTangent);
             float bDotB = Vector2.Dot(surfaceTangent, surfaceTangent);
-            return (aDotB / bDotB) * surfaceTangent;
+            return (aDotB / bDotB, surfaceTangent);
         }
     }
 }
