@@ -27,6 +27,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
         {
+            //Debug.Log($"delta={delta}, normal={_surfaceNormal}");
             if (delta == Vector2.zero)
             {
                 return;
@@ -34,9 +35,10 @@ namespace PQ._Experimental.Physics.LinearStep_002
 
             (float desiredDistance,   Vector2 desiredDirection  ) = DecomposeDelta(delta);
             (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, _surfaceNormal);
+
             Debug.DrawRay(_body.Position, _body.Position + (desiredDistance   * desiredDirection),   Color.gray,  1f);
             Debug.DrawRay(_body.Position, _body.Position + (projectedDistance * projectedDirection), Color.green, 1f);
-            MoveUnobstructed(
+            MoveUnobstructed( 
                 projectedDistance,
                 projectedDirection,
                 _body.ComputeDistanceToEdge(projectedDirection),
@@ -59,6 +61,11 @@ namespace PQ._Experimental.Physics.LinearStep_002
             if (_body.CastAABB(direction, step + startOffset, out obstruction))
             {
                 step = obstruction.distance - startOffset;
+                Debug.Log($"has obstruction! name={(obstruction.collider.name == null? "<none>" : obstruction.collider.name)} step={step} maxStep={maxStep} startOffset={startOffset} direction={direction}");
+            }
+            else
+            {
+                Debug.Log($"no obstruction! name={(obstruction.collider.name == null ? "<none>" : obstruction.collider.name)} step={step} maxStep={maxStep} startOffset={startOffset} direction={direction}");
             }
 
             _body.Position += (step + startOffset) * direction;
