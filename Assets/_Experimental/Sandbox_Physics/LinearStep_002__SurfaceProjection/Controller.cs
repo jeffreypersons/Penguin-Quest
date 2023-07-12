@@ -31,15 +31,16 @@ namespace PQ._Experimental.Physics.LinearStep_002
 
         void FixedUpdate()
         {
-            Vector2 position = _kinematicBody.Position;
-            if (_positionHistory.IsEmpty || _positionHistory.Back != position)
+            Vector2 currentPosition = _kinematicBody.Position;
+            Vector2 targetPosition  = _target.bounds.center;
+            if (_positionHistory.IsEmpty || _positionHistory.Back != currentPosition)
             {
                 _positionHistory.PushBack(_kinematicBody.Position);
-            } 
+            }
 
             if (_nextButtonPressed)
             {
-                _kinematicSolver.Move((Vector2)_target.bounds.center - position);
+                _kinematicSolver.Move(targetPosition - currentPosition);
             }
         }
 
