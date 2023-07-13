@@ -36,7 +36,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
             if (_positionHistory.IsEmpty || _positionHistory.Back != currentPosition)
             {
                 _positionHistory.PushBack(_kinematicBody.Position);
-            } 
+            }
 
             if (_nextButtonPressed)
             {
