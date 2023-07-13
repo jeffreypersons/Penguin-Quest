@@ -11,7 +11,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
         private KinematicBody2D _body;
 
 
-        // todo: cache any direction dependent data (eg body-radius, projection)
+        // todo: cache any direction dependent data if possible (eg body-radius, projection)
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
@@ -27,7 +27,6 @@ namespace PQ._Experimental.Physics.LinearStep_002
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
         {
-            //Debug.Log($"delta={delta}, normal={_surfaceNormal}");
             if (delta == Vector2.zero)
             {
                 return;
