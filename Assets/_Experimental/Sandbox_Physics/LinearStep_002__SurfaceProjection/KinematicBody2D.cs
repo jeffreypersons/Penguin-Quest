@@ -148,6 +148,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
             int layer = collider.gameObject.layer;
             bool queriesStartInColliders = Physics2D.queriesStartInColliders;
             LayerMask includeLayers = _contactFilter.layerMask;
+
             collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
             Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
             _contactFilter.SetLayerMask(~collider.gameObject.layer);
@@ -166,7 +167,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
                     hit = _hitBuffer[i];
                     break;
                 }
-            }            
+            }
             #if UNITY_EDITOR
             if (DrawRayCastsInEditor)
             {
@@ -183,6 +184,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
         */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
+            Physics2D.queriesStartInColliders = false;
             if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
@@ -191,6 +193,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
             {
                 hit = default;
             }
+            Physics2D.queriesStartInColliders = false;
             return hit;
         }
 
