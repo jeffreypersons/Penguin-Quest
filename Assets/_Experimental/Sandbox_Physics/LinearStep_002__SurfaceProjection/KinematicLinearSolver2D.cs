@@ -7,7 +7,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
 {
     internal sealed class KinematicLinearSolver2D
     {
-        private Vector2 _surfaceNormal;
+        private Vector2 _obstructionNormal;
         private KinematicBody2D _body;
 
 
@@ -21,7 +21,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
             }
             _body = kinematicBody2D;
 
-            _surfaceNormal = Vector2.up;
+            _obstructionNormal = Vector2.up;
         }
 
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
@@ -34,40 +34,34 @@ namespace PQ._Experimental.Physics.LinearStep_002
             }
 
             (float desiredDistance,   Vector2 desiredDirection  ) = DecomposeDelta(delta);
-            (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, _surfaceNormal);
+            (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, _obstructionNormal);
 
             Debug.DrawRay(_body.Position, _body.Position + (desiredDistance   * desiredDirection),   Color.gray,  1f);
             Debug.DrawRay(_body.Position, _body.Position + (projectedDistance * projectedDirection), Color.green, 1f);
-            MoveUnobstructed( 
-                projectedDistance,
-                projectedDirection,
-                _body.ComputeDistanceToEdge(projectedDirection),
-                out float _,
+            MoveUnobstructed(
+                desiredDistance,
+                desiredDirection,
+                out float step,
                 out RaycastHit2D obstruction);
 
-            _surfaceNormal = obstruction? obstruction.normal : Vector2.up;
+            _obstructionNormal = obstruction ? obstruction.normal : Vector2.up;
         }
 
 
         /* Project body along delta until (if any) obstruction. Distance swept is capped at body-radius to prevent tunneling. */
-        public void MoveUnobstructed(float distance, Vector2 direction, float maxStep, out float step, out RaycastHit2D obstruction)
+        public void MoveUnobstructed(float distance, Vector2 direction, out float step, out RaycastHit2D obstruction)
         {
             // slightly bias the start position such that box casts still resolve
             // even when AABB is touching a collider in that direction
             float startOffset = _body.SkinWidth;
-            _body.Position += -startOffset * direction;
+            float bodyRadius = _body.ComputeDistanceToEdge(direction);
+            _body.Position -= startOffset * direction;
 
-            step = distance < maxStep ? distance : maxStep;
+            step = distance < bodyRadius ? distance : bodyRadius;
             if (_body.CastAABB(direction, step + startOffset, out obstruction))
             {
                 step = obstruction.distance - startOffset;
-                Debug.Log($"has obstruction! name={(obstruction.collider.name == null? "<none>" : obstruction.collider.name)} step={step} maxStep={maxStep} startOffset={startOffset} direction={direction}");
             }
-            else
-            {
-                Debug.Log($"no obstruction! name={(obstruction.collider.name == null ? "<none>" : obstruction.collider.name)} step={step} maxStep={maxStep} startOffset={startOffset} direction={direction}");
-            }
-
             _body.Position += (step + startOffset) * direction;
         }
 

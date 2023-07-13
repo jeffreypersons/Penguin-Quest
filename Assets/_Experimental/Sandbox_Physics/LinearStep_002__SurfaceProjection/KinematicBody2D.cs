@@ -184,6 +184,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
         */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
+            Physics2D.queriesStartInColliders = false;
             if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
@@ -192,6 +193,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
             {
                 hit = default;
             }
+            Physics2D.queriesStartInColliders = false;
             return hit;
         }
 
