@@ -37,8 +37,8 @@ namespace PQ._Experimental.Physics.Move_003
         public void Flip(bool horizontal, bool vertical)
         {
             Vector3 rotation = new Vector3(
-                x: horizontal ? 180f : 0f,
-                y: vertical   ? 180f : 0f,
+                x: vertical   ? 180f : 0f,
+                y: horizontal ? 180f : 0f,
                 z: 0f);
 
             if (_body.Rotation != rotation)
