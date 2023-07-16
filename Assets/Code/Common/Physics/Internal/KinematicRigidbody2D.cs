@@ -278,7 +278,7 @@ namespace PQ.Common.Physics.Internal
         */
         public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
         {
-            int colliderCount = _boxCollider.OverlapCollider(_contactFilter, _overlapBuffer);
+            int colliderCount = _boxCollider.Overlap(_contactFilter, _overlapBuffer);
             colliders = _overlapBuffer.AsSpan(0, colliderCount);
             return !colliders.IsEmpty;
         }

@@ -71,7 +71,7 @@ namespace PQ._Experimental.Physics.Overlap_002
         /* Check for overlapping colliders within our bounding box. */
         public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
         {
-            int colliderCount = _circleCollider.OverlapCollider(_contactFilter, _overlapBuffer);
+            int colliderCount = _circleCollider.Overlap(_contactFilter, _overlapBuffer);
             colliders = _overlapBuffer.AsSpan(0, colliderCount);
             return !colliders.IsEmpty;
         }
