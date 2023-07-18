@@ -17,9 +17,10 @@ namespace PQ._Experimental.Physics.Move_003
     }
     internal sealed class KinematicLinearSolver2D
     {
-        private Vector2 _obstructionNormal;
         private KinematicBody2D _body;
         private CollisionFlags2D _collisions;
+
+        private const int MaxIterations = 10;
 
         // todo: cache any direction dependent data if possible (eg body-radius, projection)
 
@@ -30,8 +31,6 @@ namespace PQ._Experimental.Physics.Move_003
                 throw new ArgumentNullException($"Expected non-null {nameof(KinematicLinearSolver2D)}");
             }
             _body = kinematicBody2D;
-
-            _obstructionNormal = Vector2.up;
         }
 
         public void Flip(bool horizontal, bool vertical)
@@ -60,21 +59,24 @@ namespace PQ._Experimental.Physics.Move_003
                 return;
             }
 
-            (float desiredDistance,   Vector2 desiredDirection  ) = DecomposeDelta(delta);
-            (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, _obstructionNormal);
-            Debug.DrawRay(_body.Position, _body.Position + (desiredDistance   * desiredDirection),   Color.gray,  1f);
-            Debug.DrawRay(_body.Position, _body.Position + (projectedDistance * projectedDirection), Color.green, 1f);
+            (float distanceLeft, Vector2 direction) = DecomposeDelta(delta);
+            int iteration = MaxIterations;
+            while (iteration-- > 0 && distanceLeft > 0f)
+            {
+                (float desiredDistance, Vector2 desiredDirection) = DecomposeDelta(delta);
+                (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, direction);
+                Debug.DrawRay(_body.Position, _body.Position + (desiredDistance * desiredDirection), Color.gray, 1f);
+                Debug.DrawRay(_body.Position, _body.Position + (projectedDistance * projectedDirection), Color.green, 1f);
 
-            Vector2 startPosition = _body.Position;
-            MoveUnobstructed(
-                projectedDistance,
-                projectedDirection,
-                out float step,
-                out RaycastHit2D obstruction);
-            Vector2 endPosition = _body.Position;
-            _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
-
-            _obstructionNormal = obstruction ? obstruction.normal : Vector2.up;
+                Vector2 startPosition = _body.Position;
+                MoveUnobstructed(
+                    projectedDistance,
+                    projectedDirection,
+                    out float step,
+                    out RaycastHit2D obstruction);
+                Vector2 endPosition = _body.Position;
+                _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
+            }
         }
 
 
