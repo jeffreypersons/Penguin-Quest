@@ -40,19 +40,13 @@ namespace PQ._Experimental.Physics.Move_003
             set => _transform.localEulerAngles = value;
         }
 
-        public Vector2 Center       => _boxCollider.bounds.center;
-        public Vector2 Forward      => _transform.right.normalized;
-        public Vector2 Up           => _transform.up.normalized;
-        public Vector2 Extents      => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
-        public float   Depth        => _transform.position.z;
-        public float   SkinWidth    => _boxCollider.edgeRadius;
-        public Vector2 BoundsOffset => _boxCollider.offset;
-
+        public Vector2 Center    => _boxCollider.bounds.center;
+        public Vector2 Forward   => _transform.right.normalized;
+        public Vector2 Up        => _transform.up.normalized;
+        public Vector2 Extents   => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
+        public float   Depth     => _transform.position.z;
+        public float   SkinWidth => _boxCollider.edgeRadius;
         
-        #if UNITY_EDITOR
-        public bool DrawShapeCastsInEditor { get; set; } = true;
-        public bool DrawRayCastsInEditor   { get; set; } = true;
-        #endif
 
         public KinematicBody2D(Transform transform)
         {
@@ -91,11 +85,6 @@ namespace PQ._Experimental.Physics.Move_003
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
-        public bool IsAttachedTo(Transform transform)
-        {
-            return ReferenceEquals(_transform, transform);
-        }
-
         /*
         Reset to position at start of frame and apply MovePosition. This preserves interpolation despite any changes to position.
         
@@ -106,76 +95,6 @@ namespace PQ._Experimental.Physics.Move_003
         {
             _rigidbody.position = startPositionThisFrame;
             _rigidbody.MovePosition(targetPositionThisFrame);
-        }
-
-
-        /*
-        Project point along given direction and local offset from AABB center, and outputs ALL hits (if any).
-
-        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
-        */
-        public bool CastRay(Vector2 centerOffset, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
-        {
-            Vector2 origin = (Vector2)_boxCollider.bounds.center + centerOffset;
-
-            bool previousQueriesStartInColliders = Physics2D.queriesStartInColliders;
-            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
-            _boxCollider.enabled = false;
-
-            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
-            hits = _hitBuffer.AsSpan(0, hitCount);
-
-            Physics2D.queriesStartInColliders = previousQueriesStartInColliders;
-            _boxCollider.enabled = true;
-
-            #if UNITY_EDITOR
-            if (DrawRayCastsInEditor)
-            {
-                float duration = Time.fixedDeltaTime;
-                DebugExtensions.DrawRayCast(origin, direction, distance, hits.IsEmpty? default : hits[0], duration);
-            }
-            #endif
-            return !hits.IsEmpty;
-        }
-
-        /*
-        Project a point along given direction until specific given collider is hit.
-
-        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
-        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
-        */
-        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
-        {
-            int layer = collider.gameObject.layer;
-            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
-            LayerMask includeLayers = _contactFilter.layerMask;
-
-            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-            Physics2D.queriesStartInColliders = includeAlreadyOverlappingColliders;
-            _contactFilter.SetLayerMask(~collider.gameObject.layer);
-
-            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
-
-            collider.gameObject.layer = layer;
-            _contactFilter.SetLayerMask(includeLayers);
-            Physics2D.queriesStartInColliders = queriesStartInColliders;
-
-            hit = default;
-            for (int i = 0; i < hitCount; i++)
-            {
-                if (_hitBuffer[i].collider == collider)
-                {
-                    hit = _hitBuffer[i];
-                    break;
-                }
-            }
-            #if UNITY_EDITOR
-            if (DrawRayCastsInEditor)
-            {
-                DebugExtensions.DrawRayCast(origin, direction, distance, hit, Time.fixedDeltaTime);
-            }
-            #endif
-            return hit;
         }
 
         /*

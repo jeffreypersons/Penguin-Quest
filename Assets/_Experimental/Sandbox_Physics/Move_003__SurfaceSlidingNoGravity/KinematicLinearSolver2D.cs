@@ -62,7 +62,7 @@ namespace PQ._Experimental.Physics.Move_003
 
             (float desiredDistance,   Vector2 desiredDirection  ) = DecomposeDelta(delta);
             (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, _obstructionNormal);
-            Debug.DrawRay(_body.Position, _body.Position + (desiredDistance     * desiredDirection), Color.gray,  1f);
+            Debug.DrawRay(_body.Position, _body.Position + (desiredDistance   * desiredDirection),   Color.gray,  1f);
             Debug.DrawRay(_body.Position, _body.Position + (projectedDistance * projectedDirection), Color.green, 1f);
 
             Vector2 startPosition = _body.Position;

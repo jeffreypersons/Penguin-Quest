@@ -11,8 +11,8 @@ namespace PQ._Experimental.Physics.Move_003
         [Range(0, 50)][SerializeField] private float _gravitySpeed    = 10f;
         [Range(0, 90)][SerializeField] private float _maxSlopeAngle   = 90f;
 
-        private bool _grounded;
         private Vector2 _inputAxis;
+
         private KinematicBody2D         _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;
@@ -50,13 +50,8 @@ namespace PQ._Experimental.Physics.Move_003
             }
 
             float time = Time.fixedDeltaTime;
-            Vector2 velocity = new(
-                x: _inputAxis.x * _horizontalSpeed,
-                y: _grounded ? 0 : -_gravitySpeed
-            );
-            _kinematicSolver.Move(time * velocity);
-
-            _grounded = _kinematicSolver.InContact(CollisionFlags2D.Below);
+            float distance = _inputAxis.x * _horizontalSpeed;
+            _kinematicSolver.Move(new Vector2(x: time * distance, y: 0));
         }
 
         void OnDrawGizmos()
