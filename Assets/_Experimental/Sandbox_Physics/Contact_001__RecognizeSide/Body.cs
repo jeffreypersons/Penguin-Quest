@@ -1,106 +1,109 @@
+using System;
 using UnityEngine;
 
 
 namespace PQ._Experimental.Physics.Contact_001
 {
-    public class Body : MonoBehaviour
+    [Flags]
+    public enum CollisionFlags2D
     {
-        private const int _preallocatedBufferSize = 16;
-
-        private Rigidbody2D     _rigidbody;
-        private BoxCollider2D   _boxCollider;
-        private RaycastHit2D[]  _hitBuffer;
-        private ContactFilter2D _contactFilter;
-
-        public override string ToString() =>
-            $"Mover{{" +
-                $"Position:{Position}," +
-                $"Depth:{Depth}," +
-                $"Forward:{Forward}," +
-                $"Up:{Up}," +
-                $"AABB: bounds(center:{Bounds.center}, extents:{Bounds.extents})," +
-            $"}}";
+        None   = 0,
+        Front  = 1 << 1,
+        Below  = 1 << 2,
+        Behind = 1 << 3,
+        Above  = 1 << 4,
+        All    = ~0,
+    }
+    internal sealed class Body
+    {
+        private Transform         _transform;
+        private Rigidbody2D       _rigidbody;
+        private CapsuleCollider2D _capsuleCollider;
+        private ContactFilter2D   _contactFilter;
+        private ContactPoint2D[]  _contactBuffer;
 
         public Vector2 Position => _rigidbody.position;
-        public float   Depth    => _rigidbody.transform.position.z;
-        public Bounds  Bounds   => _boxCollider.bounds;
-        public Vector2 Forward  => _rigidbody.transform.right.normalized;
-        public Vector2 Up       => _rigidbody.transform.up.normalized;
-        public Vector2 Extents  => _boxCollider.bounds.extents;
+        public Vector2 Extents  => _capsuleCollider.bounds.extents;
+        public Vector2 Forward  => _transform.right.normalized;
+        public Vector2 Up       => _transform.up.normalized;
 
+        
+        public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
+        public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
 
-        void Awake()
+        public Body(Transform transform)
         {
-            if (!transform.TryGetComponent<Rigidbody2D>(out var rigidbody))
+            if (transform == null)
             {
-                throw new MissingComponentException($"Expected attached rigidbody2D - not found on {transform}");
+                throw new ArgumentNullException(nameof(transform));
             }
-            if (!transform.TryGetComponent<BoxCollider2D>(out var boxCollider))
+            if (!transform.TryGetComponent(out Rigidbody2D rigidbody2D))
             {
-                throw new MissingComponentException($"Expected attached collider2D - not found on {transform}");
+                throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(transform)}");
+            }
+            if (!transform.TryGetComponent(out CapsuleCollider2D capsuleCollider2D))
+            {
+                throw new MissingComponentException($"Expected attached {nameof(BoxCollider2D)} - not found on {nameof(transform)}");
+            }
+            if (!ReferenceEquals(capsuleCollider2D.attachedRigidbody, rigidbody2D))
+            {
+                throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(capsuleCollider2D)}");
             }
 
-            _rigidbody   = rigidbody;
-            _boxCollider = boxCollider;
-
-            _contactFilter = new ContactFilter2D();
-            _hitBuffer     = new RaycastHit2D[_preallocatedBufferSize];
-
-            _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
-            _rigidbody.isKinematic = true;
-            _rigidbody.simulated   = true;
-            _rigidbody.useFullKinematicContacts = true;
-            _rigidbody.constraints = RigidbodyConstraints2D.None;
+            _transform       = rigidbody2D.transform;
+            _rigidbody       = rigidbody2D;
+            _capsuleCollider = capsuleCollider2D;
+            _contactFilter   = new ContactFilter2D();
+            _contactBuffer   = new ContactPoint2D[16];
 
             _contactFilter.useTriggers    = false;
             _contactFilter.useNormalAngle = false;
             _contactFilter.SetLayerMask(LayerMask.GetMask("Solids"));
-        }
 
-        /* Immediately move body to given point. */
-        public void MoveTo(Vector2 position)
-        {
-            _rigidbody.position = position;
-        }
-
-        /* Immediately move body by given amount. */
-        public void MoveBy(Vector2 delta)
-        {
-            _rigidbody.position += delta;
-        }
-
-        /* Interpolated move this amount. */
-        public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
-        {
-            _rigidbody.position = startPositionThisFrame;
-            _rigidbody.MovePosition(targetPositionThisFrame);
+            _rigidbody.simulated   = true;
+            _rigidbody.isKinematic = true;
+            _rigidbody.useFullKinematicContacts = true;
+            _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
 
-        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
+        public CollisionFlags2D CheckSides()
         {
-            hit = default;
-            if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
+            _contactFilter.useNormalAngle = true;
+            bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
+            bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
+
+            CollisionFlags2D flags = CollisionFlags2D.None;
+            if (HasContactsInNormalRange(315, 45))
             {
-                hit = _hitBuffer[0];
+                flags |= isFlippedHorizontal ? CollisionFlags2D.Behind : CollisionFlags2D.Front;
             }
-            return hit;
+            if (HasContactsInNormalRange(45, 135))
+            {
+                flags |= isFlippedVertical ? CollisionFlags2D.Above : CollisionFlags2D.Below;
+            }
+            if (HasContactsInNormalRange(135, 225))
+            {
+                flags |= isFlippedHorizontal ? CollisionFlags2D.Front : CollisionFlags2D.Behind;
+            }
+            if (HasContactsInNormalRange(225, 315))
+            {
+                flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
+            }
+            _contactFilter.useNormalAngle = false;
+            return flags;
         }
 
-        /*
-        Compute vector representing overlap amount between body and given collider, if any.
-
-        Note that uses separating axis theorem to determine overlap, so may require more invocations to resolve overlap
-        for complex collider shapes (eg convex polygons).
-        */
-        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
+        private bool HasContactsInNormalRange(float min, float max)
         {
-            if (collider == null)
-            {
-                return default;
-            }
-            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
-            return minimumSeparation.isValid ? minimumSeparation : default;
+            float previousMin = _contactFilter.minNormalAngle;
+            float previousMax = _contactFilter.maxNormalAngle;
+
+            _contactFilter.SetNormalAngle(min, max);
+            bool hasContactsInRange = _capsuleCollider.IsTouching(_contactFilter);
+
+            _contactFilter.SetNormalAngle(previousMin, previousMax);
+            return hasContactsInRange;
         }
     }
 }
