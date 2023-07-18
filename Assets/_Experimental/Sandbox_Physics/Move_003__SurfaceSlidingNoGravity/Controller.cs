@@ -6,10 +6,8 @@ namespace PQ._Experimental.Physics.Move_003
 {
     public class Controller : MonoBehaviour
     {
-        [Range(0, 10)][SerializeField] private float _timeScale       =  1f;
-        [Range(0, 10)][SerializeField] private float _horizontalSpeed =  5f;
-        [Range(0, 50)][SerializeField] private float _gravitySpeed    = 10f;
-        [Range(0, 90)][SerializeField] private float _maxSlopeAngle   = 90f;
+        [Range(0, 10)][SerializeField] private float _timeScale       = 1f;
+        [Range(0, 10)][SerializeField] private float _horizontalSpeed = 5f;
 
         private Vector2 _inputAxis;
 
