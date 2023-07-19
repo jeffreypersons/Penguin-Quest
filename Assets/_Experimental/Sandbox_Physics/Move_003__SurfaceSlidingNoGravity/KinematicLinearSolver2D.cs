@@ -50,7 +50,7 @@ namespace PQ._Experimental.Physics.Move_003
             {
                 Vector2 beforeStep = _body.Position;
                 Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} : remaining={distanceRemaining}, direction={direction}");
-                Debug.DrawRay(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
+                Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
 
                 MoveUnobstructed(
                     distanceRemaining,
@@ -60,7 +60,7 @@ namespace PQ._Experimental.Physics.Move_003
 
                 Vector2 afterStep = _body.Position;
 
-                Debug.DrawRay(beforeStep, afterStep, Color.green, 1f);
+                Debug.DrawLine(beforeStep, afterStep, Color.green, 1f);
 
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distanceRemaining -= step;
