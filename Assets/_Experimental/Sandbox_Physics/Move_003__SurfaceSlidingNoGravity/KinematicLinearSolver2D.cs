@@ -59,24 +59,34 @@ namespace PQ._Experimental.Physics.Move_003
                 return;
             }
 
-            (float distanceLeft, Vector2 direction) = DecomposeDelta(delta);
-            int iteration = MaxIterations;
-            while (iteration-- > 0 && distanceLeft > 0f)
-            {
-                (float desiredDistance, Vector2 desiredDirection) = DecomposeDelta(delta);
-                (float projectedDistance, Vector2 projectedDirection) = ProjectDeltaOnToSurface(delta, direction);
-                Debug.DrawRay(_body.Position, _body.Position + (desiredDistance * desiredDirection), Color.gray, 1f);
-                Debug.DrawRay(_body.Position, _body.Position + (projectedDistance * projectedDirection), Color.green, 1f);
+            Vector2 startPosition = _body.Position;
 
-                Vector2 startPosition = _body.Position;
+            int iteration = MaxIterations;
+            float distanceRemaining = delta.magnitude;
+            Vector2 direction = delta.normalized;
+            while (iteration-- > 0 && distanceRemaining > 0f)
+            {
+                Vector2 beforeStep = _body.Position;
+
+                Debug.DrawRay(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
+
                 MoveUnobstructed(
-                    projectedDistance,
-                    projectedDirection,
+                    distanceRemaining,
+                    direction,
                     out float step,
                     out RaycastHit2D obstruction);
-                Vector2 endPosition = _body.Position;
-                _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
+
+                Vector2 afterStep = _body.Position;
+
+                Debug.DrawRay(beforeStep, afterStep, Color.green, 1f);
+
+                direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
+                distanceRemaining -= step;
             }
+
+            Vector2 endPosition = _body.Position;
+
+            _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
         }
 
 
