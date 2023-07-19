@@ -49,7 +49,7 @@ namespace PQ._Experimental.Physics.Move_003
             while (iteration-- > 0 && distanceRemaining * direction != Vector2.zero)
             {
                 Vector2 beforeStep = _body.Position;
-                Debug.Log($"iteration={iteration}, distanceRemaining={distanceRemaining}, direction={direction}");
+                Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} : remaining={distanceRemaining}, direction={direction}");
                 Debug.DrawRay(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
 
                 MoveUnobstructed(
