@@ -1,25 +1,12 @@
 using System;
-using System.Diagnostics.Contracts;
 using UnityEngine;
 
 
 namespace PQ._Experimental.Physics.Move_003
 {
-    [Flags]
-    public enum CollisionFlags2D
-    {
-        None   = 0,
-        Front  = 1 << 1,
-        Below  = 1 << 2,
-        Behind = 1 << 3,
-        Above  = 1 << 4,
-        All    = ~0,
-    }
     internal sealed class KinematicLinearSolver2D
     {
         private KinematicBody2D _body;
-        private CollisionFlags2D _collisions;
-
         private const int MaxIterations = 10;
 
         // todo: cache any direction dependent data if possible (eg body-radius, projection)
@@ -44,11 +31,6 @@ namespace PQ._Experimental.Physics.Move_003
             {
                 _body.Rotation = rotation;
             }
-        }
-
-        public bool InContact(CollisionFlags2D flags)
-        {
-            return (_collisions & flags) == flags;
         }
 
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
@@ -105,38 +87,6 @@ namespace PQ._Experimental.Physics.Move_003
                 step = obstruction.distance - startOffset;
             }
             _body.Position += (step + startOffset) * direction;
-        }
-
-
-        [Pure]
-        private (float distance, Vector2 direction) DecomposeDelta(Vector2 delta)
-        {
-            // compute equivalent of (delta.magnitude, delta.normalized) with single sqrt call (benchmarked at ~46% faster)
-            // note that the epsilon used below is consistent with Vector2's Normalize()
-            float squaredMagnitude = delta.sqrMagnitude;
-            if (squaredMagnitude <= 1E-010f)
-            {
-                return (0f, Vector2.zero);
-            }
-
-            float magnitude = Mathf.Sqrt(squaredMagnitude);
-            delta /= magnitude;
-            return (magnitude, delta);
-        }
-
-        [Pure]
-        private (float distance, Vector2 direction) ProjectDeltaOnToSurface(Vector2 delta, Vector2 normal)
-        {
-            // take perpendicular of surface normal in direction of body
-            Vector2 surfaceTangent = _body.Rotation.y >= 90
-                ? new Vector2(-normal.y,  normal.x)
-                : new Vector2( normal.y, -normal.x);
-
-            // vector projection of delta onto to surface tangent (2D equivalent of 3D method ProjectOnPlane())
-            // assumes non-zero normal (ie given hit is valid)
-            float aDotB = Vector2.Dot(delta,          surfaceTangent);
-            float bDotB = Vector2.Dot(surfaceTangent, surfaceTangent);
-            return (aDotB / bDotB, surfaceTangent);
         }
     }
 }
