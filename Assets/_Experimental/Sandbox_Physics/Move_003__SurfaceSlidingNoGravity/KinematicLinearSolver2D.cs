@@ -33,6 +33,30 @@ namespace PQ._Experimental.Physics.Move_003
             }
         }
 
+        public bool RemoveOverlap(Collider2D collider)
+        {
+            if (_body.IsFilteringLayerMask(collider.gameObject))
+            {
+                return false;
+            }
+
+            ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
+
+            bool overlapped = minimumSeparation.isOverlapped;
+            Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
+
+            Debug.Log($"RemoveOverlap({collider.name}) : overlapped={overlapped} offset={offset}");
+            Debug.DrawLine(_body.Position, _body.Position + offset, overlapped? Color.green : Color.red, 1f);
+
+            if (!overlapped)
+            {
+                return false;
+            }
+
+            _body.Position += offset;
+            return true;
+        }
+
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
         {
@@ -49,7 +73,9 @@ namespace PQ._Experimental.Physics.Move_003
             while (iteration-- > 0 && distanceRemaining * direction != Vector2.zero)
             {
                 Vector2 beforeStep = _body.Position;
-                Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} : remaining={distanceRemaining}, direction={direction}");
+
+                Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} :" +
+                          $"remaining={distanceRemaining}, direction={direction}");
                 Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
 
                 MoveUnobstructed(

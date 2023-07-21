@@ -85,6 +85,28 @@ namespace PQ._Experimental.Physics.Move_003
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
+        public bool IsFilteringLayerMask(GameObject other)
+        {
+            return _contactFilter.IsFilteringLayerMask(other);
+        }
+
+        /* Use separating axis theorem to determine distance needed for no overlap. May require multiple calls for complex polygons. */
+        public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
+        {
+            if (collider == null)
+            {
+                throw new InvalidOperationException($"Invalid minimum separation distance between body={_boxCollider.name} and collider=null");
+            }
+
+            // ensure it's possible to get a valid minimum separation (ie both non-null and enabled)
+            ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
+            if (!minimumSeparation.isValid)
+            {
+                throw new InvalidOperationException($"Invalid minimum separation distance between body={_boxCollider.name} and collider={collider.name}");
+            }
+            return minimumSeparation;
+        }
+
         /*
         Reset to position at start of frame and apply MovePosition. This preserves interpolation despite any changes to position.
         

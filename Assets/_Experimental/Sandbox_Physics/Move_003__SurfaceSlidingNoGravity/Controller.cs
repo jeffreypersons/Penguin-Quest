@@ -52,6 +52,17 @@ namespace PQ._Experimental.Physics.Move_003
             _kinematicSolver.Move(new Vector2(x: time * distance, y: 0));
         }
 
+
+        void OnCollisionEnter2D(Collision2D collision)
+        {
+            _kinematicSolver.RemoveOverlap(collision.collider);
+        }
+
+        void OnCollisionStay2D(Collision2D collision)
+        {
+            _kinematicSolver.RemoveOverlap(collision.collider);
+        }
+
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || _positionHistory.Size < 2)
