@@ -90,7 +90,38 @@ namespace PQ._Experimental.Physics.Move_003
             return _contactFilter.IsFilteringLayerMask(other);
         }
 
-        /* Use separating axis theorem to determine distance needed for no overlap. May require multiple calls for complex polygons. */
+        /*
+        Determine whether given collider is fully encapsulating our body's AABB.
+
+        Takes only 2D geometry (no z-ordering or layers) into account.
+        We don't worry about strange cases like a donut collider.
+        */
+        public bool IsFullyInside(Collider2D collider)
+        {
+            Bounds bodyBounds = _boxCollider.bounds;
+            bodyBounds.Expand(_boxCollider.edgeRadius);
+
+            Bounds otherBounds = collider.bounds;
+
+            // quickly stop the check for the common case where not even the center is inside
+            if (!otherBounds.Contains(bodyBounds.center))
+            {
+                return false;
+            }
+
+            // our collider's AABB is at least partially outside
+            if (!collider.OverlapPoint(bodyBounds.min) || !collider.OverlapPoint(bodyBounds.max))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /*
+        Use separating axis theorem to determine distance needed for no overlap.
+        
+        May require multiple calls for complex polygons.
+        */
         public ColliderDistance2D ComputeMinimumSeparation(Collider2D collider)
         {
             if (collider == null)
