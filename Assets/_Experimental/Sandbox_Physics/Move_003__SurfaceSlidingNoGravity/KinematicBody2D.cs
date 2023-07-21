@@ -91,30 +91,21 @@ namespace PQ._Experimental.Physics.Move_003
         }
 
         /*
-        Determine whether given collider is fully encapsulating our body's AABB.
+        Determine whether our body's AABB is fully inside given collider.
 
-        Takes only 2D geometry (no z-ordering or layers) into account.
-        We don't worry about strange cases like a donut collider.
+        We don't worry about strange cases like a donut collider - center and corners encapsulated is 'good enough'.
         */
-        public bool IsFullyInside(Collider2D collider)
+        public bool IsFullyEncapsulatedBy(Collider2D collider)
         {
-            Bounds bodyBounds = _boxCollider.bounds;
-            bodyBounds.Expand(_boxCollider.edgeRadius);
-
-            Bounds otherBounds = collider.bounds;
-
-            // quickly stop the check for the common case where not even the center is inside
-            if (!otherBounds.Contains(bodyBounds.center))
-            {
-                return false;
-            }
-
-            // our collider's AABB is at least partially outside
-            if (!collider.OverlapPoint(bodyBounds.min) || !collider.OverlapPoint(bodyBounds.max))
-            {
-                return false;
-            }
-            return true;
+            float x = _boxCollider.bounds.center.x;
+            float y = _boxCollider.bounds.center.y;
+            float halfWidth  = _boxCollider.bounds.extents.x + _boxCollider.edgeRadius;
+            float halfHeight = _boxCollider.bounds.extents.y + _boxCollider.edgeRadius;
+            return collider.OverlapPoint(new Vector2(x, y)) &&
+                   collider.OverlapPoint(new Vector2(x + halfWidth, y + halfHeight)) &&
+                   collider.OverlapPoint(new Vector2(x + halfWidth, y - halfHeight)) &&
+                   collider.OverlapPoint(new Vector2(x - halfWidth, y - halfHeight)) &&
+                   collider.OverlapPoint(new Vector2(x - halfWidth, y + halfHeight));
         }
 
         /*
@@ -167,6 +158,41 @@ namespace PQ._Experimental.Physics.Move_003
                 hit = default;
             }
             Physics2D.queriesStartInColliders = false;
+            return hit;
+        }
+
+        
+        /*
+        Project a point along given direction until specific given collider is hit.
+
+        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
+        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
+        */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            int layer = collider.gameObject.layer;
+            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
+            LayerMask includeLayers = _contactFilter.layerMask;
+
+            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+            Physics2D.queriesStartInColliders = true;
+            _contactFilter.SetLayerMask(~collider.gameObject.layer);
+
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
+            collider.gameObject.layer = layer;
+            _contactFilter.SetLayerMask(includeLayers);
+            Physics2D.queriesStartInColliders = queriesStartInColliders;
+
+            hit = default;
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_hitBuffer[i].collider == collider)
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
+            }
             return hit;
         }
 
