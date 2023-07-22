@@ -35,6 +35,7 @@ namespace PQ._Experimental.Physics.Move_003
 
         public bool RemoveOverlap(Collider2D collider)
         {
+            var original = _body.Position;
             if (_body.IsFilteringLayerMask(collider.gameObject))
             {
                 return false;
@@ -55,6 +56,8 @@ namespace PQ._Experimental.Physics.Move_003
 
             _body.Position += offset;
 
+            if (_body.CastRayAt(collider, _body.Center, -minimumSeparation.normal, float.PositiveInfinity, out var hit))
+
             Debug.Log($"is={collider.OverlapPoint(_body.Position)}");
 
             // if our resolution resulted in the body being on the inner side of an edge collider then move it fully outside.
@@ -66,6 +69,7 @@ namespace PQ._Experimental.Physics.Move_003
                 ColliderDistance2D sep = _body.ComputeMinimumSeparation(collider);
                 _body.Position += sep.distance * sep.normal;
             }
+            _body.Position = original;
             return true;
         }
 
