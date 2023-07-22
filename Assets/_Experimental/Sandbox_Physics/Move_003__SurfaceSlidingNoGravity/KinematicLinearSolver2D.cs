@@ -33,6 +33,16 @@ namespace PQ._Experimental.Physics.Move_003
             }
         }
 
+        /*
+        Note that with edge colliders, the collider will end up on either side, as there is no 'internal area'.
+
+
+        This means that if our body starts in more overlapped position than separated from an edge collider, it will
+        resolve to the 'inside' of the edge.
+        
+        In practice, this is not an issue except when spawning, as any movement in the solver caps changes in position be no
+        greater than the body extents.
+        */
         public bool RemoveOverlap(Collider2D collider)
         {
             if (_body.IsFilteringLayerMask(collider.gameObject))
