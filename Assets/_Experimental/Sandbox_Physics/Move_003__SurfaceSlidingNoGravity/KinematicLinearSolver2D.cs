@@ -69,7 +69,7 @@ namespace PQ._Experimental.Physics.Move_003
                 return false;
             }
 
-            if (minimumSeparation.distance > Epsilon)
+            if (minimumSeparation.distance < Epsilon)
             {
                 _body.Position += offset;
             }
@@ -126,7 +126,7 @@ namespace PQ._Experimental.Physics.Move_003
             _body.Position -= Epsilon * direction;
 
             step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + Epsilon, out obstruction) && obstruction.distance > ContactOffset)
+            if (_body.CastAABB(direction, step + Epsilon, out obstruction))
             {
                 step = obstruction.distance - ContactOffset;
             }
