@@ -7,8 +7,15 @@ namespace PQ._Experimental.Physics.Move_003
     internal sealed class KinematicLinearSolver2D
     {
         private KinematicBody2D _body;
+
+        /* Number of iterations used to reach movement target before giving up. */
         private const int MaxIterations = 10;
+
+        /* Amount which we consider to be (close enough to) zero. */
         private const float Epsilon = 0.005f;
+
+        /* Amount used to ensure we don't get _too_ close to surfaces, to avoid getting stuck when moving tangential to a surface. */
+        private const float ContactOffset = 0.05f;
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
@@ -119,9 +126,9 @@ namespace PQ._Experimental.Physics.Move_003
             _body.Position -= Epsilon * direction;
 
             step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + Epsilon, out obstruction))
+            if (_body.CastAABB(direction, step + Epsilon, out obstruction) && obstruction.distance > ContactOffset)
             {
-                step = obstruction.distance - Epsilon;
+                step = obstruction.distance - ContactOffset;
             }
             _body.Position += (step + Epsilon) * direction;
         }
