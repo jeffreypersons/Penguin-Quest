@@ -84,7 +84,7 @@ namespace PQ._Experimental.Physics.Move_003
             {
                 Vector2 beforeStep = _body.Position;
 
-                Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} :" +
+                Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} : " +
                           $"remaining={distanceRemaining}, direction={direction}");
                 Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
 
