@@ -179,6 +179,60 @@ namespace PQ._Experimental.Physics.Move_002
             return !hits.IsEmpty;
         }
         
+        /*
+        Project a point along given direction until specific given collider is hit.
+
+        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
+        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
+        */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            int layer = collider.gameObject.layer;
+            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
+            LayerMask includeLayers = _castFilter.layerMask;
+
+            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+            Physics2D.queriesStartInColliders = true;
+            _castFilter.SetLayerMask(~collider.gameObject.layer);
+
+            int hitCount = Physics2D.Raycast(origin, direction, _castFilter, _hitBuffer, distance);
+
+            collider.gameObject.layer = layer;
+            _castFilter.SetLayerMask(includeLayers);
+            Physics2D.queriesStartInColliders = queriesStartInColliders;
+
+            hit = default;
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_hitBuffer[i].collider == collider)
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
+            }
+            return hit;
+        }
+        
+        /*
+        Determine whether our body's AABB is fully inside given collider.
+
+        We don't worry about strange cases like a donut collider - center and corners encapsulated is 'good enough'.
+        Note this doesn't work with edge colliders since there is no 'internal area' to test.
+        */
+        public bool IsFullyEncapsulatedBy(Collider2D collider)
+        {
+            float x = _boxCollider.bounds.center.x;
+            float y = _boxCollider.bounds.center.y;
+            float halfWidth  = _boxCollider.bounds.extents.x + _boxCollider.edgeRadius;
+            float halfHeight = _boxCollider.bounds.extents.y + _boxCollider.edgeRadius;
+            return collider.OverlapPoint(new Vector2(x, y)) &&
+                   collider.OverlapPoint(new Vector2(x + halfWidth, y + halfHeight)) &&
+                   collider.OverlapPoint(new Vector2(x + halfWidth, y - halfHeight)) &&
+                   collider.OverlapPoint(new Vector2(x - halfWidth, y - halfHeight)) &&
+                   collider.OverlapPoint(new Vector2(x - halfWidth, y + halfHeight));
+        }
+
+
         /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
         public CollisionFlags2D CheckForOverlappingContacts(float skinWidth)
         {

@@ -6,13 +6,11 @@ namespace PQ._Experimental.Physics.Move_003
 {
     public class Controller : MonoBehaviour
     {
-        [Range(0, 10)][SerializeField] private float _timeScale       =  1f;
-        [Range(0, 10)][SerializeField] private float _horizontalSpeed =  5f;
-        [Range(0, 50)][SerializeField] private float _gravitySpeed    = 10f;
-        [Range(0, 90)][SerializeField] private float _maxSlopeAngle   = 90f;
+        [Range(0, 10)][SerializeField] private float _timeScale = 1f;
+        [Range(0, 10)][SerializeField] private float _moveSpeed = 5f;
 
-        private bool _grounded;
         private Vector2 _inputAxis;
+
         private KinematicBody2D         _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;
@@ -29,7 +27,10 @@ namespace PQ._Experimental.Physics.Move_003
 
         void Update()
         {
-            Time.timeScale = _timeScale;
+            if (!Mathf.Approximately(Time.timeScale, _timeScale))
+            {
+                Time.timeScale = _timeScale;
+            }
             _inputAxis = new Vector2(
                 x: (Keyboard.current[Key.A].isPressed ? -1f : 0f) + (Keyboard.current[Key.D].isPressed ? 1f : 0f),
                 y: (Keyboard.current[Key.S].isPressed ? -1f : 0f) + (Keyboard.current[Key.W].isPressed ? 1f : 0f)
@@ -49,14 +50,19 @@ namespace PQ._Experimental.Physics.Move_003
                 _kinematicSolver.Flip(horizontal: _inputAxis.x < 0, vertical: false);
             }
 
-            float time = Time.fixedDeltaTime;
-            Vector2 velocity = new(
-                x: _inputAxis.x * _horizontalSpeed,
-                y: _grounded ? 0 : -_gravitySpeed
-            );
-            _kinematicSolver.Move(time * velocity);
+            Vector2 deltaPosition = Time.fixedDeltaTime * _moveSpeed * _inputAxis;
+            _kinematicSolver.Move(deltaPosition);
+        }
 
-            _grounded = _kinematicSolver.InContact(CollisionFlags2D.Below);
+
+        void OnCollisionEnter2D(Collision2D collision)
+        {
+            _kinematicSolver.RemoveOverlap(collision.collider);
+        }
+
+        void OnCollisionStay2D(Collision2D collision)
+        {
+            _kinematicSolver.RemoveOverlap(collision.collider);
         }
 
         void OnDrawGizmos()

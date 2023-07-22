@@ -34,20 +34,34 @@ namespace PQ._Experimental.Physics.Move_002
         }
 
         [Pure]
-        private (Vector2 direction, float distance) DecomposeDelta(Vector2 delta)
+        private (float distance, Vector2 direction) DecomposeDelta(Vector2 delta)
         {
-            // the below gets behavior exactly consistent with (delta.normalized, delta.magnitude),
-            // without extra square root call, and without the NaNs that arise if delta is zero and
-            // divided by it's magnitude without epsilon checks (that Unity does in delta.normalized)
+            // compute equivalent of (delta.magnitude, delta.normalized) with single sqrt call (benchmarked at ~46% faster)
+            // note that the epsilon used below is consistent with Vector2's Normalize()
             float squaredMagnitude = delta.sqrMagnitude;
             if (squaredMagnitude <= 1E-010f)
             {
-                return (Vector2.zero, 0f);
+                return (0f, Vector2.zero);
             }
 
             float magnitude = Mathf.Sqrt(squaredMagnitude);
             delta /= magnitude;
-            return (delta, magnitude);
+            return (magnitude, delta);
+        }
+
+        [Pure]
+        private (float distance, Vector2 direction) ProjectDeltaOnToSurface(Vector2 delta, Vector2 normal)
+        {
+            // take perpendicular of surface normal in direction of body
+            Vector2 surfaceTangent = _body.transform.localEulerAngles.y >= 90
+                ? new Vector2(-normal.y, normal.x)
+                : new Vector2(normal.y, -normal.x);
+
+            // vector projection of delta onto to surface tangent (2D equivalent of 3D method ProjectOnPlane())
+            // assumes non-zero normal (ie given hit is valid)
+            float aDotB = Vector2.Dot(delta, surfaceTangent);
+            float bDotB = Vector2.Dot(surfaceTangent, surfaceTangent);
+            return (aDotB / bDotB, surfaceTangent);
         }
 
         public Mover(Transform transform)
