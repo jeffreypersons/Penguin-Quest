@@ -6,8 +6,8 @@ namespace PQ._Experimental.Physics.Move_003
 {
     public class Controller : MonoBehaviour
     {
-        [Range(0, 10)][SerializeField] private float _timeScale       = 1f;
-        [Range(0, 10)][SerializeField] private float _horizontalSpeed = 5f;
+        [Range(0, 10)][SerializeField] private float _timeScale = 1f;
+        [Range(0, 10)][SerializeField] private float _moveSpeed = 5f;
 
         private Vector2 _inputAxis;
 
@@ -27,7 +27,10 @@ namespace PQ._Experimental.Physics.Move_003
 
         void Update()
         {
-            Time.timeScale = _timeScale;
+            if (!Mathf.Approximately(Time.timeScale, _timeScale))
+            {
+                Time.timeScale = _timeScale;
+            }
             _inputAxis = new Vector2(
                 x: (Keyboard.current[Key.A].isPressed ? -1f : 0f) + (Keyboard.current[Key.D].isPressed ? 1f : 0f),
                 y: (Keyboard.current[Key.S].isPressed ? -1f : 0f) + (Keyboard.current[Key.W].isPressed ? 1f : 0f)
@@ -47,9 +50,8 @@ namespace PQ._Experimental.Physics.Move_003
                 _kinematicSolver.Flip(horizontal: _inputAxis.x < 0, vertical: false);
             }
 
-            float time = Time.fixedDeltaTime;
-            float distance = _inputAxis.x * _horizontalSpeed;
-            _kinematicSolver.Move(new Vector2(x: time * distance, y: 0));
+            Vector2 deltaPosition = Time.fixedDeltaTime * _moveSpeed * _inputAxis;
+            _kinematicSolver.Move(deltaPosition);
         }
 
 
