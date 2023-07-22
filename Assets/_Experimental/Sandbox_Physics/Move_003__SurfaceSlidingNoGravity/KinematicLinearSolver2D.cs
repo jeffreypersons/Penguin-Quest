@@ -62,7 +62,10 @@ namespace PQ._Experimental.Physics.Move_003
                 return false;
             }
 
-            _body.Position += offset;
+            if (minimumSeparation.distance > Epsilon)
+            {
+                _body.Position += offset;
+            }
             return true;
         }
 
