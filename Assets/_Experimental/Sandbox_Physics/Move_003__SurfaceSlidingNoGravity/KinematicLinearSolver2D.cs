@@ -54,6 +54,18 @@ namespace PQ._Experimental.Physics.Move_003
             }
 
             _body.Position += offset;
+
+            Debug.Log($"is={collider.OverlapPoint(_body.Position)}");
+
+            // if our resolution resulted in the body being on the inner side of an edge collider then move it fully outside.
+            // this happens because edge colliders don't have an 'inner area', so it resolves to whichever side is closer
+            if (collider is EdgeCollider2D && collider.OverlapPoint(_body.Center))
+            {
+                _body.Position += 2f * _body.ComputeDistanceToEdge(minimumSeparation.normal) * -minimumSeparation.normal;
+
+                ColliderDistance2D sep = _body.ComputeMinimumSeparation(collider);
+                _body.Position += sep.distance * sep.normal;
+            }
             return true;
         }
 
