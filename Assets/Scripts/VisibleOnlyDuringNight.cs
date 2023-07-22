@@ -7,7 +7,7 @@ public class VisibleOnlyDuringNight : MonoBehaviour
 
     void Awake()
     {
-		m_LightController = FindObjectOfType<LightColorController>();
+		m_LightController = FindFirstObjectByType<LightColorController>();
 		m_Renderer = GetComponent<Renderer>();
     }
 
