@@ -8,8 +8,7 @@ namespace PQ._Experimental.Physics.Move_003
     {
         private KinematicBody2D _body;
         private const int MaxIterations = 10;
-
-        // todo: cache any direction dependent data if possible (eg body-radius, projection)
+        private const float Epsilon = 0.005f;
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
@@ -45,25 +44,6 @@ namespace PQ._Experimental.Physics.Move_003
         */
         public bool RemoveOverlap(Collider2D collider)
         {
-            if (_body.IsFilteringLayerMask(collider.gameObject))
-            {
-                return false;
-            }
-
-            ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
-
-            bool overlapped = minimumSeparation.isOverlapped;
-            Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
-
-            Debug.Log($"RemoveOverlap({collider.name}) : overlapped={overlapped} offset={offset}");
-            Debug.DrawLine(_body.Position, _body.Position + offset, overlapped? Color.green : Color.red, 1f);
-
-            if (!overlapped)
-            {
-                return false;
-            }
-
-            _body.Position += offset;
             return true;
         }
 
@@ -80,7 +60,7 @@ namespace PQ._Experimental.Physics.Move_003
             int iteration = MaxIterations;
             float distanceRemaining = delta.magnitude;
             Vector2 direction = delta.normalized;
-            while (iteration-- > 0 && distanceRemaining * direction != Vector2.zero)
+            while (iteration-- > 0 && distanceRemaining > Epsilon && direction.sqrMagnitude > Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
 
@@ -112,17 +92,16 @@ namespace PQ._Experimental.Physics.Move_003
         private void MoveUnobstructed(float distance, Vector2 direction, out float step, out RaycastHit2D obstruction)
         {
             // slightly bias the start position such that box casts still resolve
-            // even when AABB is touching a collider in that direction
-            float startOffset = _body.SkinWidth;
+            // even when AABB is touching a collider in that 
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
-            _body.Position -= startOffset * direction;
+            _body.Position -= Epsilon * direction;
 
             step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + startOffset, out obstruction))
+            if (_body.CastAABB(direction, step + Epsilon, out obstruction))
             {
-                step = obstruction.distance - startOffset;
+                step = obstruction.distance - Epsilon;
             }
-            _body.Position += (step + startOffset) * direction;
+            _body.Position += (step + Epsilon) * direction;
         }
     }
 }
