@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Profiling;
 
 
 namespace PQ._Experimental.Physics.Move_004
@@ -55,12 +56,16 @@ namespace PQ._Experimental.Physics.Move_004
 
             if (_useNewUnitySlideModule)
             {
+                Profiler.BeginSample("SlideCompare_NewUnitySlideModule");
                 _kinematicSolver.MoveUsingNewUnitySlideModule(Time.fixedDeltaTime, _moveSpeed * _inputAxis, _slideParams);
+                Profiler.EndSample();
             }
             else
             {
+                Profiler.BeginSample("SlideCompare_JeffAlgo");
                 Vector2 deltaPosition = Time.fixedDeltaTime * _moveSpeed * _inputAxis;
                 _kinematicSolver.MoveUsingJeffAlgo(deltaPosition);
+                Profiler.EndSample();
             }
         }
 
