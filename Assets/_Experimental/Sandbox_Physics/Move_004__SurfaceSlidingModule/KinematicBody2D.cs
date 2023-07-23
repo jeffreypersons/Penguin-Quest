@@ -46,7 +46,12 @@ namespace PQ._Experimental.Physics.Move_004
         public Vector2 Extents   => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth     => _transform.position.z;
         public float   SkinWidth => _boxCollider.edgeRadius;
-        
+
+
+        public Rigidbody2D.SlideResults Slide(float time, Vector2 velocity, Rigidbody2D.SlideMovement slideParams)
+        {
+            return _rigidbody.Slide(velocity, time, slideParams);
+        }
 
         public KinematicBody2D(Transform transform)
         {
@@ -88,24 +93,6 @@ namespace PQ._Experimental.Physics.Move_004
         public bool IsFilteringLayerMask(GameObject other)
         {
             return _contactFilter.IsFilteringLayerMask(other);
-        }
-
-        /*
-        Determine whether our body's AABB is fully inside given collider.
-
-        We don't worry about strange cases like a donut collider - center and corners encapsulated is 'good enough'.
-        */
-        public bool IsFullyEncapsulatedBy(Collider2D collider)
-        {
-            float x = _boxCollider.bounds.center.x;
-            float y = _boxCollider.bounds.center.y;
-            float halfWidth  = _boxCollider.bounds.extents.x + _boxCollider.edgeRadius;
-            float halfHeight = _boxCollider.bounds.extents.y + _boxCollider.edgeRadius;
-            return collider.OverlapPoint(new Vector2(x, y)) &&
-                   collider.OverlapPoint(new Vector2(x + halfWidth, y + halfHeight)) &&
-                   collider.OverlapPoint(new Vector2(x + halfWidth, y - halfHeight)) &&
-                   collider.OverlapPoint(new Vector2(x - halfWidth, y - halfHeight)) &&
-                   collider.OverlapPoint(new Vector2(x - halfWidth, y + halfHeight));
         }
 
         /*

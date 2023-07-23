@@ -76,14 +76,24 @@ namespace PQ._Experimental.Physics.Move_004
             return true;
         }
 
-        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
-        public void Move(Vector2 delta)
+        
+        /* Move using the new rigidbody slide helper provided in the Unity 2023 tech stream. */
+        public void MoveUsingNewUnitySlideModule(float time, Vector2 velocity, Rigidbody2D.SlideMovement slideParams)
         {
-            if (delta == Vector2.zero)
+            if (time <= 0f || velocity == Vector2.zero)
             {
                 return;
             }
 
+            Rigidbody2D.SlideResults results = _body.Slide(time, velocity, slideParams);
+
+            Debug.Log($"move : method=NewUnitySlideModule iterationsUsed={results.iterationsUsed}");
+        }
+
+
+        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
+        public void MoveUsingJeffAlgo(Vector2 delta)
+        {
             Vector2 startPosition = _body.Position;
 
             int iteration = MaxIterations;
@@ -91,21 +101,11 @@ namespace PQ._Experimental.Physics.Move_004
             Vector2 direction = delta.normalized;
             while (iteration-- > 0 && distanceRemaining > Epsilon && direction.sqrMagnitude > Epsilon)
             {
-                Vector2 beforeStep = _body.Position;
-
-                Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} : " +
-                          $"remaining={distanceRemaining}, direction={direction}");
-                Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
-
                 MoveUnobstructed(
                     distanceRemaining,
                     direction,
                     out float step,
                     out RaycastHit2D obstruction);
-
-                Vector2 afterStep = _body.Position;
-
-                Debug.DrawLine(beforeStep, afterStep, Color.green, 1f);
 
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distanceRemaining -= step;
@@ -114,8 +114,9 @@ namespace PQ._Experimental.Physics.Move_004
             Vector2 endPosition = _body.Position;
 
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
-        }
 
+            Debug.Log($"move : method=jeffAlgo iterationsUsed={MaxIterations - iteration}");
+        }
 
         /* Project body along delta until (if any) obstruction. Distance swept is capped at body-radius to prevent tunneling. */
         private void MoveUnobstructed(float distance, Vector2 direction, out float step, out RaycastHit2D obstruction)

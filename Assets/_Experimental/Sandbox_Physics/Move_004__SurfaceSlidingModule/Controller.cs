@@ -6,6 +6,9 @@ namespace PQ._Experimental.Physics.Move_004
 {
     public class Controller : MonoBehaviour
     {
+        [SerializeField] private bool _useNewUnitySlideModule = true;
+        [SerializeField] public Rigidbody2D.SlideMovement _slideParams;
+
         [Range(0, 10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 10)][SerializeField] private float _moveSpeed = 5f;
 
@@ -50,8 +53,15 @@ namespace PQ._Experimental.Physics.Move_004
                 _kinematicSolver.Flip(horizontal: _inputAxis.x < 0, vertical: false);
             }
 
-            Vector2 deltaPosition = Time.fixedDeltaTime * _moveSpeed * _inputAxis;
-            _kinematicSolver.Move(deltaPosition);
+            if (_useNewUnitySlideModule)
+            {
+                _kinematicSolver.MoveUsingNewUnitySlideModule(Time.fixedDeltaTime, _moveSpeed * _inputAxis, _slideParams);
+            }
+            else
+            {
+                Vector2 deltaPosition = Time.fixedDeltaTime * _moveSpeed * _inputAxis;
+                _kinematicSolver.MoveUsingJeffAlgo(deltaPosition);
+            }
         }
 
 

@@ -90,23 +90,6 @@ namespace PQ._Experimental.Physics.Move_003
             return _contactFilter.IsFilteringLayerMask(other);
         }
 
-        /*
-        Determine whether our body's AABB is fully inside given collider.
-
-        We don't worry about strange cases like a donut collider - center and corners encapsulated is 'good enough'.
-        */
-        public bool IsFullyEncapsulatedBy(Collider2D collider)
-        {
-            float x = _boxCollider.bounds.center.x;
-            float y = _boxCollider.bounds.center.y;
-            float halfWidth  = _boxCollider.bounds.extents.x + _boxCollider.edgeRadius;
-            float halfHeight = _boxCollider.bounds.extents.y + _boxCollider.edgeRadius;
-            return collider.OverlapPoint(new Vector2(x, y)) &&
-                   collider.OverlapPoint(new Vector2(x + halfWidth, y + halfHeight)) &&
-                   collider.OverlapPoint(new Vector2(x + halfWidth, y - halfHeight)) &&
-                   collider.OverlapPoint(new Vector2(x - halfWidth, y - halfHeight)) &&
-                   collider.OverlapPoint(new Vector2(x - halfWidth, y + halfHeight));
-        }
 
         /*
         Use separating axis theorem to determine distance needed for no overlap.

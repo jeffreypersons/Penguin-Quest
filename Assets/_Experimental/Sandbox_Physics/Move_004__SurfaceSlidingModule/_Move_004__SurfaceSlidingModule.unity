@@ -266,8 +266,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e7a297c75065084593032b534ac23b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _useNewUnitySlideModule: 1
+  _slideParams:
+    <maxIterations>k__BackingField: 10
+    <surfaceSlideAngle>k__BackingField: 90
+    <gravitySlipAngle>k__BackingField: 0
+    <surfaceUp>k__BackingField: {x: 0, y: 1}
+    <surfaceAnchor>k__BackingField: {x: 0, y: 0}
+    <gravity>k__BackingField: {x: 0, y: 0}
+    <startPosition>k__BackingField: {x: 0, y: 0}
+    <selectedCollider>k__BackingField: {fileID: 65252862}
+    <layerMask>k__BackingField:
+      serializedVersion: 2
+      m_Bits: 4096
+    <useLayerMask>k__BackingField: 1
+    <useStartPosition>k__BackingField: 0
+    <useNoMove>k__BackingField: 0
+    <useSimulationMove>k__BackingField: 1
+    <useAttachedTriggers>k__BackingField: 0
   _timeScale: 1
   _moveSpeed: 7.5
+--- !u!61 &65252862 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6068203031854652124, guid: be9aff82aa4f8834c8d78905c9b7065a, type: 3}
+  m_PrefabInstance: {fileID: 65252859}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1291089329
 PrefabInstance:
   m_ObjectHideFlags: 0
