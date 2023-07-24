@@ -46,7 +46,6 @@ namespace PQ._Experimental.Physics.Move_005
         /*
         Note that with edge colliders, the collider will end up on either side, as there is no 'internal area'.
 
-
         This means that if our body starts in more overlapped position than separated from an edge collider, it will
         resolve to the 'inside' of the edge.
         
