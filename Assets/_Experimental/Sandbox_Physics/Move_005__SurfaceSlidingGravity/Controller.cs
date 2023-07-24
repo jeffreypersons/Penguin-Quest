@@ -54,8 +54,12 @@ namespace PQ._Experimental.Physics.Move_005
             _kinematicSolver.Move(deltaPosition);
         }
 
-
         void OnCollisionEnter2D(Collision2D collision)
+        {
+            _kinematicSolver.RemoveOverlap(collision.collider);
+        }
+
+        void OnCollisionExit2D(Collision2D collision)
         {
             _kinematicSolver.RemoveOverlap(collision.collider);
         }
