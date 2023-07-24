@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace PQ._Experimental.Physics.Move_005
 {
+    /*
+    Collide and slide solver for movement.
+
+    Notes
+    - When moving along surfaces, we maintain a slight offset from the normal, such that contacts are
+      intentionally avoided. This way, we avoid getting caught on edges and corners as easily      
+    */
     internal sealed class KinematicLinearSolver2D
     {
         private KinematicBody2D _body;
