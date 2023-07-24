@@ -20,7 +20,6 @@ namespace PQ._Experimental.Physics.Move_005
         /* Amount used to ensure we don't get _too_ close to surfaces, to avoid getting stuck when moving tangential to a surface. */
         private const float ContactOffset = 0.05f;
 
-        public int IterationsUsed => _lastIterationsUsed;
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
@@ -29,7 +28,6 @@ namespace PQ._Experimental.Physics.Move_005
                 throw new ArgumentNullException($"Expected non-null {nameof(KinematicLinearSolver2D)}");
             }
             _body = kinematicBody2D;
-            _lastIterationsUsed = 0;
         }
 
         public void Flip(bool horizontal, bool vertical)
