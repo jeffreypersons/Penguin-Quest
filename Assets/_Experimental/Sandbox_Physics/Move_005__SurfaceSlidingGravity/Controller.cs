@@ -56,17 +56,17 @@ namespace PQ._Experimental.Physics.Move_005
 
         void OnCollisionEnter2D(Collision2D collision)
         {
-            //_kinematicSolver.RemoveOverlap(collision.collider);
+            _kinematicSolver.RemoveOverlap(collision.collider);
         }
 
         void OnCollisionExit2D(Collision2D collision)
         {
-            //_kinematicSolver.RemoveOverlap(collision.collider);
+            _kinematicSolver.RemoveOverlap(collision.collider);
         }
 
         void OnCollisionStay2D(Collision2D collision)
         {
-            //kinematicSolver.RemoveOverlap(collision.collider);
+            _kinematicSolver.RemoveOverlap(collision.collider);
         }
 
         void OnDrawGizmos()

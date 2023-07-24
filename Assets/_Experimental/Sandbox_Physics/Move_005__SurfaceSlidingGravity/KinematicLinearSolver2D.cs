@@ -56,20 +56,28 @@ namespace PQ._Experimental.Physics.Move_005
                 return false;
             }
 
-            ColliderDistance2D minimumSeparation = _body.ComputeMinimumSeparation(collider);
-
-            bool overlapped = minimumSeparation.isOverlapped;
-            Vector2 offset = minimumSeparation.distance * minimumSeparation.normal;
-
-            Debug.Log($"RemoveOverlap({collider.name}) : overlapped={overlapped} offset={offset}");
-            Debug.DrawLine(_body.Position, _body.Position + offset, overlapped ? Color.green : Color.red, 1f);
-
-            if (!overlapped)
+            ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
+            if (!initialSeparation.isOverlapped)
             {
                 return false;
             }
 
-            _body.Position += offset;
+            Vector2 startPosition = _body.Position;
+
+            int iteration = MaxIterations;
+            Vector2 offset = initialSeparation.distance * initialSeparation.normal;
+            while (iteration-- > 0 && offset != Vector2.zero)
+            {
+                offset = initialSeparation.distance * initialSeparation.normal;
+
+                _body.Position += offset;
+            }
+
+            Vector2 endPosition = _body.Position;
+
+            Debug.Log($"RemoveOverlap({collider.name}) : overlapAmount={-initialSeparation.distance}");
+            Debug.DrawLine(startPosition, endPosition, Color.blue, 1f);
+
             return true;
         }
 
@@ -92,9 +100,6 @@ namespace PQ._Experimental.Physics.Move_005
             while (iteration-- > 0 && distanceRemaining > Epsilon && direction.sqrMagnitude > Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
-
-                Debug.Log($"Move({delta}).substep#{MaxIterations-iteration} : " +
-                          $"remaining={distanceRemaining}, direction={direction}");
                 Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
 
                 MoveUnobstructed(
@@ -114,6 +119,7 @@ namespace PQ._Experimental.Physics.Move_005
             Vector2 endPosition = _body.Position;
 
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
+
         }
 
 
@@ -129,7 +135,6 @@ namespace PQ._Experimental.Physics.Move_005
                 step = distancePastOffset < Epsilon? 0f : distancePastOffset;
             }
 
-            Debug.Log($"step={step}");
             _body.Position += step * direction;
         }
     }
