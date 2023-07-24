@@ -10,7 +10,10 @@ namespace PQ._Experimental.Physics.Move_005
         private int _lastIterationsUsed;
 
         /* Number of iterations used to reach movement target before giving up. */
-        private const int MaxIterations = 10;
+        private const int MaxMoveIterations = 10;
+
+        /* Number of iterations used to reach no overlap before giving up. */
+        private const int MaxOverlapIterations = 5;
 
         /* Amount which we consider to be (close enough to) zero. */
         private const float Epsilon = 0.005f;
@@ -60,28 +63,29 @@ namespace PQ._Experimental.Physics.Move_005
                 return false;
             }
 
-            ColliderDistance2D initialSeparation = _body.ComputeMinimumSeparation(collider);
-            if (!initialSeparation.isOverlapped)
-            {
-                return false;
-            }
-
+            // note that we remove separation if ever so slightly above surface as well
             Vector2 startPosition = _body.Position;
 
-            int iteration = MaxIterations;
-            Vector2 offset = initialSeparation.distance * initialSeparation.normal;
-            while (iteration-- > 0 && offset != Vector2.zero)
+            int iteration = MaxOverlapIterations;
+            ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
+            while (iteration-- > 0 && separation.distance < -Epsilon)
             {
-                offset = initialSeparation.distance * initialSeparation.normal;
+                Vector2 beforeStep = _body.Position;
+                Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations-iteration} : " +
+                          $"remaining={separation.distance}, direction={separation.normal}");
+                _body.Position += separation.distance * separation.normal;
 
-                _body.Position += offset;
+                Vector2 afterStep = _body.Position;
+                Debug.DrawLine(beforeStep, afterStep, Color.yellow, 1f);
+
+                separation = _body.ComputeMinimumSeparation(collider);
             }
-
             Vector2 endPosition = _body.Position;
 
-            Debug.Log($"RemoveOverlap({collider.name}) : overlapAmount={-initialSeparation.distance}");
-            Debug.DrawLine(startPosition, endPosition, Color.blue, 1f);
+            // bias the resolved position ever so slightly along the normal to prevent contact
+            _body.Position += Epsilon * (endPosition - startPosition).normalized;
 
+            _lastIterationsUsed = MaxOverlapIterations - iteration;
             return true;
         }
 
@@ -97,15 +101,16 @@ namespace PQ._Experimental.Physics.Move_005
             }
 
             Vector2 startPosition = _body.Position;
-
-            int iteration = MaxIterations;
+            int iteration = MaxMoveIterations;
             float distanceRemaining = delta.magnitude;
             Vector2 direction = delta.normalized;
             while (iteration-- > 0 && distanceRemaining > Epsilon && direction.sqrMagnitude > Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
                 Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
-
+                
+                Debug.Log($"Move({delta}).substep#{MaxMoveIterations-iteration} : " +
+                          $"remaining={distanceRemaining}, direction={direction}");
                 MoveUnobstructed(
                     distanceRemaining,
                     direction,
@@ -118,10 +123,9 @@ namespace PQ._Experimental.Physics.Move_005
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distanceRemaining -= step;
             }
-
             Vector2 endPosition = _body.Position;
 
-            _lastIterationsUsed = MaxIterations - iteration;
+            _lastIterationsUsed = MaxMoveIterations - iteration;
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
         }
 
