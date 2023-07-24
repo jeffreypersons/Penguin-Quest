@@ -64,17 +64,15 @@ namespace PQ._Experimental.Physics.Move_005
             Debug.Log($"RemoveOverlap({collider.name}) : overlapped={overlapped} offset={offset}");
             Debug.DrawLine(_body.Position, _body.Position + offset, overlapped ? Color.green : Color.red, 1f);
 
-            if (!overlapped)
+            if (!minimumSeparation.isOverlapped)
             {
                 return false;
             }
 
-            if (minimumSeparation.distance < Epsilon)
-            {
-                _body.Position += offset;
-            }
+            _body.Position += offset;
             return true;
         }
+
 
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
@@ -123,14 +121,13 @@ namespace PQ._Experimental.Physics.Move_005
             // slightly bias the start position such that box casts still resolve
             // even when AABB is touching a collider in that 
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
-            _body.Position -= Epsilon * direction;
 
             step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + Epsilon, out obstruction))
+            if (_body.CastAABB(direction, step + ContactOffset, out obstruction))
             {
                 step = obstruction.distance - ContactOffset;
             }
-            _body.Position += (step + Epsilon) * direction;
+            _body.Position += (step) * direction;
         }
     }
 }
