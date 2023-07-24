@@ -59,23 +59,20 @@ namespace PQ._Experimental.Physics.Move_005
             {
                 return;
             }
-
+            
             // note that we remove separation if ever so slightly above surface as well
             Vector2 startPosition = _body.Position;
-
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
-            while (iteration-- > 0 && separation.distance < -Epsilon)
+            while (iteration-- > 0 && separation.distance < Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
-                Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations-iteration} : " +
+                Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations - iteration} : " +
                           $"remaining={separation.distance}, direction={separation.normal}");
                 _body.Position += separation.distance * separation.normal;
 
                 Vector2 afterStep = _body.Position;
                 Debug.DrawLine(beforeStep, afterStep, Color.yellow, 1f);
-
-                separation = _body.ComputeMinimumSeparation(collider);
             }
             Vector2 endPosition = _body.Position;
 
