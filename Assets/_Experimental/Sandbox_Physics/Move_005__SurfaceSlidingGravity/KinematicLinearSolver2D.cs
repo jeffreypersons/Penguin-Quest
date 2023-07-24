@@ -7,7 +7,6 @@ namespace PQ._Experimental.Physics.Move_005
     internal sealed class KinematicLinearSolver2D
     {
         private KinematicBody2D _body;
-        private int _lastIterationsUsed;
 
         /* Number of iterations used to reach movement target before giving up. */
         private const int MaxMoveIterations = 10;
@@ -56,11 +55,11 @@ namespace PQ._Experimental.Physics.Move_005
         In practice, this is not an issue except when spawning, as any movement in the solver caps changes in position be no
         greater than the body extents.
         */
-        public bool RemoveOverlap(Collider2D collider)
+        public void RemoveOverlap(Collider2D collider)
         {
             if (_body.IsFilteringLayerMask(collider.gameObject))
             {
-                return false;
+                return;
             }
 
             // note that we remove separation if ever so slightly above surface as well
@@ -84,9 +83,6 @@ namespace PQ._Experimental.Physics.Move_005
 
             // bias the resolved position ever so slightly along the normal to prevent contact
             _body.Position += Epsilon * (endPosition - startPosition).normalized;
-
-            _lastIterationsUsed = MaxOverlapIterations - iteration;
-            return true;
         }
 
 
@@ -124,8 +120,6 @@ namespace PQ._Experimental.Physics.Move_005
                 distanceRemaining -= step;
             }
             Vector2 endPosition = _body.Position;
-
-            _lastIterationsUsed = MaxMoveIterations - iteration;
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
         }
 
