@@ -64,7 +64,7 @@ namespace PQ._Experimental.Physics.Move_005
             Debug.Log($"RemoveOverlap({collider.name}) : overlapped={overlapped} offset={offset}");
             Debug.DrawLine(_body.Position, _body.Position + offset, overlapped ? Color.green : Color.red, 1f);
 
-            if (!minimumSeparation.isOverlapped)
+            if (!overlapped)
             {
                 return false;
             }
