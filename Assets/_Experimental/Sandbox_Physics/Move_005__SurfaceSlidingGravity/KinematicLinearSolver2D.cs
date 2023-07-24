@@ -124,10 +124,15 @@ namespace PQ._Experimental.Physics.Move_005
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
 
             step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + ContactOffset, out obstruction))
+            if (_body.CastAABB(direction, step + ContactOffset, out var hits))
             {
+                obstruction = hits[0];
                 float distancePastOffset = obstruction.distance - ContactOffset;
                 step = distancePastOffset < Epsilon? 0f : distancePastOffset;
+            }
+            else
+            {
+                obstruction = default;
             }
 
             _body.Position += step * direction;

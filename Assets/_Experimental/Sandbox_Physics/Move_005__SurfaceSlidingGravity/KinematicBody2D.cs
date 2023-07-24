@@ -129,19 +129,11 @@ namespace PQ._Experimental.Physics.Move_005
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
+        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
         {
-            Physics2D.queriesStartInColliders = false;
-            if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
-            {
-                hit = _hitBuffer[0];
-            }
-            else
-            {
-                hit = default;
-            }
-            Physics2D.queriesStartInColliders = false;
-            return hit;
+            int hitCount = _boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance);
+            hits = _hitBuffer.AsSpan(0, hitCount);
+            return hitCount > 0;
         }
 
         
