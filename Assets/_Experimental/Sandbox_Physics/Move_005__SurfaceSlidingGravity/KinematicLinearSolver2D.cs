@@ -77,6 +77,8 @@ namespace PQ._Experimental.Physics.Move_005
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
         {
+            // note that we compare extremely close to zero rather than our larger epsilon,
+            // as delta can be very small depending on the physics step duration used to compute it
             if (delta == Vector2.zero)
             {
                 return;
