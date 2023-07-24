@@ -7,6 +7,7 @@ namespace PQ._Experimental.Physics.Move_005
     internal sealed class KinematicLinearSolver2D
     {
         private KinematicBody2D _body;
+        private int _lastIterationsUsed;
 
         /* Number of iterations used to reach movement target before giving up. */
         private const int MaxIterations = 10;
@@ -17,6 +18,8 @@ namespace PQ._Experimental.Physics.Move_005
         /* Amount used to ensure we don't get _too_ close to surfaces, to avoid getting stuck when moving tangential to a surface. */
         private const float ContactOffset = 0.05f;
 
+        public int IterationsUsed => _lastIterationsUsed;
+
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
             if (kinematicBody2D == null)
@@ -24,6 +27,7 @@ namespace PQ._Experimental.Physics.Move_005
                 throw new ArgumentNullException($"Expected non-null {nameof(KinematicLinearSolver2D)}");
             }
             _body = kinematicBody2D;
+            _lastIterationsUsed = 0;
         }
 
         public void Flip(bool horizontal, bool vertical)
@@ -109,7 +113,6 @@ namespace PQ._Experimental.Physics.Move_005
                     out RaycastHit2D obstruction);
 
                 Vector2 afterStep = _body.Position;
-
                 Debug.DrawLine(beforeStep, afterStep, Color.green, 1f);
 
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
@@ -118,8 +121,8 @@ namespace PQ._Experimental.Physics.Move_005
 
             Vector2 endPosition = _body.Position;
 
+            _lastIterationsUsed = MaxIterations - iteration;
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
-
         }
 
 
