@@ -85,11 +85,11 @@ namespace PQ._Experimental.Physics.Move_005
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
+        /* Check if body is filtering out collisions with given object or not. */
         public bool IsFilteringLayerMask(GameObject other)
         {
             return _contactFilter.IsFilteringLayerMask(other);
         }
-
 
         /*
         Use separating axis theorem to determine distance needed for no overlap.
@@ -134,41 +134,6 @@ namespace PQ._Experimental.Physics.Move_005
             int hitCount = _boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance);
             hits = _hitBuffer.AsSpan(0, hitCount);
             return hitCount > 0;
-        }
-
-        
-        /*
-        Project a point along given direction until specific given collider is hit.
-
-        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
-        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
-        */
-        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
-        {
-            int layer = collider.gameObject.layer;
-            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
-            LayerMask includeLayers = _contactFilter.layerMask;
-
-            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-            Physics2D.queriesStartInColliders = true;
-            _contactFilter.SetLayerMask(~collider.gameObject.layer);
-
-            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
-
-            collider.gameObject.layer = layer;
-            _contactFilter.SetLayerMask(includeLayers);
-            Physics2D.queriesStartInColliders = queriesStartInColliders;
-
-            hit = default;
-            for (int i = 0; i < hitCount; i++)
-            {
-                if (_hitBuffer[i].collider == collider)
-                {
-                    hit = _hitBuffer[i];
-                    break;
-                }
-            }
-            return hit;
         }
 
         /*
