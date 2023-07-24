@@ -118,16 +118,17 @@ namespace PQ._Experimental.Physics.Move_005
         /* Project body along delta until (if any) obstruction. Distance swept is capped at body-radius to prevent tunneling. */
         private void MoveUnobstructed(float distance, Vector2 direction, out float step, out RaycastHit2D obstruction)
         {
-            // slightly bias the start position such that box casts still resolve
-            // even when AABB is touching a collider in that 
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
 
             step = distance < bodyRadius ? distance : bodyRadius;
             if (_body.CastAABB(direction, step + ContactOffset, out obstruction))
             {
-                step = obstruction.distance - ContactOffset;
+                float distancePastOffset = obstruction.distance - ContactOffset;
+                step = distancePastOffset < Epsilon? 0f : distancePastOffset;
             }
-            _body.Position += (step) * direction;
+
+            Debug.Log($"step={step}");
+            _body.Position += step * direction;
         }
     }
 }
