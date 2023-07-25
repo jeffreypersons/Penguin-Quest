@@ -137,6 +137,24 @@ namespace PQ._Experimental.Physics.Move_005
         }
 
         /*
+        Project point along given delta from given origin, and outputs ALL hits (if any).
+
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        */
+        public bool CastRay(Vector2 origin, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
+        {
+            int layer = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
+            _transform.gameObject.layer = layer;
+
+            hits = _hitBuffer.AsSpan(0, hitCount);
+            return hitCount > 0;
+        }
+
+        /*
         Compute distance from center to edge of our bounding box in given direction.
         */
         public float ComputeDistanceToEdge(Vector2 direction)
