@@ -177,7 +177,7 @@ namespace PQ._Experimental.Physics.Move_005
             RaycastHit2D leftHit   = leftHits[0];
             RaycastHit2D middleHit = middleHits[0];
             RaycastHit2D rightHit  = rightHits[0];
-            return middleHit.distance < leftHit.distance && middleHit.distance < rightHit.distance;
+            return middleHit.distance > leftHit.distance && middleHit.distance > rightHit.distance;
         }
     }
 }
