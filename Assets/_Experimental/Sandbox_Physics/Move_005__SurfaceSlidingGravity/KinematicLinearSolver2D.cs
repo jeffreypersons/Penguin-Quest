@@ -136,11 +136,15 @@ namespace PQ._Experimental.Physics.Move_005
                 obstruction = hits[0];
                 float distancePastOffset = obstruction.distance - ContactOffset;
                 step = distancePastOffset < Epsilon? 0f : distancePastOffset;
+                
+                Debug.Log($"point={obstruction.point}");
             }
             else
             {
                 obstruction = default;
             }
+
+            Debug.Log($"hitCount={hits.Length}");
 
             _body.Position += step * direction;
         }
