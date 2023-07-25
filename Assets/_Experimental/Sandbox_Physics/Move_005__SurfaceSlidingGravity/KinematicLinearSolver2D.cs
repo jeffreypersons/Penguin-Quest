@@ -133,20 +133,16 @@ namespace PQ._Experimental.Physics.Move_005
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
 
             step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + ContactOffset, out var hits))
+            if (_body.CastAABB(direction, step + ContactOffset, out var hit))
             {
-                obstruction = hits[0];
-                float distancePastOffset = obstruction.distance - ContactOffset;
+                float distancePastOffset = hit.distance - ContactOffset;
                 step = distancePastOffset < Epsilon? 0f : distancePastOffset;
-                
-                Debug.Log($"point={obstruction.point}");
+                obstruction = hit;
             }
             else
             {
                 obstruction = default;
             }
-
-            Debug.Log($"hitCount={hits.Length}");
 
             _body.Position += step * direction;
         }
@@ -157,26 +153,24 @@ namespace PQ._Experimental.Physics.Move_005
             Vector2 extents = _body.Extents;
 
             Vector2 bottomCenter = new Vector2(center.x, center.y - extents.y);
-            if (!_body.CastRay(bottomCenter, Vector2.down, Mathf.Infinity, out var middleHits))
+            if (!_body.CastRay(bottomCenter, Vector2.down, Mathf.Infinity, out var middleHit))
             {
                 return false;
             }
 
             Vector2 bottomLeft = new Vector2(center.x - extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomLeft, Vector2.down, Mathf.Infinity, out var leftHits))
+            if (!_body.CastRay(bottomLeft, Vector2.down, Mathf.Infinity, out var leftHit))
             {
                 return false;
             }
 
             Vector2 bottomRight = new Vector2(center.x + extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomRight, Vector2.down, Mathf.Infinity, out var rightHits))
+            if (!_body.CastRay(bottomRight, Vector2.down, Mathf.Infinity, out var rightHit))
             {
                 return false;
             }
 
-            RaycastHit2D leftHit   = leftHits[0];
-            RaycastHit2D middleHit = middleHits[0];
-            RaycastHit2D rightHit  = rightHits[0];
+            Debug.Log($"leftDist={leftHit.distance} middleDist={middleHit.distance} rightDist={rightHit.distance}");
             return middleHit.distance > leftHit.distance && middleHit.distance > rightHit.distance;
         }
     }

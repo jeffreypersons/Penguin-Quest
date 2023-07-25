@@ -129,11 +129,17 @@ namespace PQ._Experimental.Physics.Move_005
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            int hitCount = _boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance);
-            hits = _hitBuffer.AsSpan(0, hitCount);
-            return hitCount > 0;
+            if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
+            {
+                hit = _hitBuffer[0];
+            }
+            else
+            {
+                hit = default;
+            }
+            return hit;
         }
 
         /*
@@ -141,23 +147,24 @@ namespace PQ._Experimental.Physics.Move_005
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
-        public bool CastRay(Vector2 origin, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits)
+        public bool CastRay(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
         {
             int layer = _transform.gameObject.layer;
             _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
 
-            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
+            {
+                hit = _hitBuffer[0];
+                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+            }
+            else
+            {
+                hit = default;
+            }
 
             _transform.gameObject.layer = layer;
-
-            hits = _hitBuffer.AsSpan(0, hitCount);
-
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hitCount > 0)
-            {
-                Debug.DrawLine(origin, hits[0].point, Color.green, 1f);
-            }
-            return hitCount > 0;
+            return hit;
         }
 
         /*
