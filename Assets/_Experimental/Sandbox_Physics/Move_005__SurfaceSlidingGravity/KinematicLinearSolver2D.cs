@@ -111,8 +111,8 @@ namespace PQ._Experimental.Physics.Move_005
                 Debug.Log($"Move({delta}).substep#{MaxMoveIterations-iteration} : " +
                           $"remaining={distanceRemaining}, direction={direction}");
                 MoveUnobstructed(
-                    distanceRemaining,
                     direction,
+                    distanceRemaining,
                     out float step,
                     out RaycastHit2D obstruction);
 
@@ -128,7 +128,7 @@ namespace PQ._Experimental.Physics.Move_005
 
 
         /* Project body along delta until (if any) obstruction. Distance swept is capped at body-radius to prevent tunneling. */
-        private void MoveUnobstructed(float distance, Vector2 direction, out float step, out RaycastHit2D obstruction)
+        private void MoveUnobstructed(Vector2 direction, float distance, out float step, out RaycastHit2D obstruction)
         {
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
 
