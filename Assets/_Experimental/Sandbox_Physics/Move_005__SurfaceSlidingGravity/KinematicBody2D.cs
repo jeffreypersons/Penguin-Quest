@@ -151,6 +151,12 @@ namespace PQ._Experimental.Physics.Move_005
             _transform.gameObject.layer = layer;
 
             hits = _hitBuffer.AsSpan(0, hitCount);
+
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (hitCount > 0)
+            {
+                Debug.DrawLine(origin, hits[0].point, Color.green, 1f);
+            }
             return hitCount > 0;
         }
 

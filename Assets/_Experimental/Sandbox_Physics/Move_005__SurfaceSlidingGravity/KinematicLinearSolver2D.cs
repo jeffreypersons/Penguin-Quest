@@ -90,6 +90,8 @@ namespace PQ._Experimental.Physics.Move_005
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
         {
+            Debug.Log($"{(CheckForConcaveFaceBelow()?"yes":"no")}");
+
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
             if (delta == Vector2.zero)
@@ -147,6 +149,35 @@ namespace PQ._Experimental.Physics.Move_005
             Debug.Log($"hitCount={hits.Length}");
 
             _body.Position += step * direction;
+        }
+
+        private bool CheckForConcaveFaceBelow()
+        {
+            Vector2 center  = _body.Center;
+            Vector2 extents = _body.Extents;
+
+            Vector2 bottomCenter = new Vector2(center.x, center.y - extents.y);
+            if (!_body.CastRay(bottomCenter, Vector2.down, Mathf.Infinity, out var middleHits))
+            {
+                return false;
+            }
+
+            Vector2 bottomLeft = new Vector2(center.x - extents.x, center.y - extents.y);
+            if (!_body.CastRay(bottomLeft, Vector2.down, Mathf.Infinity, out var leftHits))
+            {
+                return false;
+            }
+
+            Vector2 bottomRight = new Vector2(center.x + extents.x, center.y - extents.y);
+            if (!_body.CastRay(bottomRight, Vector2.down, Mathf.Infinity, out var rightHits))
+            {
+                return false;
+            }
+
+            RaycastHit2D leftHit   = leftHits[0];
+            RaycastHit2D middleHit = middleHits[0];
+            RaycastHit2D rightHit  = rightHits[0];
+            return middleHit.distance < leftHit.distance && middleHit.distance < rightHit.distance;
         }
     }
 }
