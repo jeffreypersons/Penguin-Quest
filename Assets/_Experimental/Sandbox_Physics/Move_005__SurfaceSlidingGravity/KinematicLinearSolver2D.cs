@@ -173,5 +173,32 @@ namespace PQ._Experimental.Physics.Move_005
             Debug.Log($"leftDist={leftHit.distance} middleDist={middleHit.distance} rightDist={rightHit.distance}");
             return middleHit.distance > leftHit.distance && middleHit.distance > rightHit.distance;
         }
+        
+        private bool CheckForConcaveFaceAlongPath(Vector2 direction, float distance)
+        {
+            Vector2 center  = _body.Center;
+            Vector2 extents = _body.Extents;
+
+            Vector2 bottomCenter = new Vector2(center.x, center.y - extents.y);
+            if (!_body.CastRay(bottomCenter, direction, distance, out var middleHit))
+            {
+                return false;
+            }
+
+            Vector2 bottomLeft = new Vector2(center.x - extents.x, center.y - extents.y);
+            if (!_body.CastRay(bottomLeft, direction, middleHit.distance, out var leftHit))
+            {
+                return false;
+            }
+
+            Vector2 bottomRight = new Vector2(center.x + extents.x, center.y - extents.y);
+            if (!_body.CastRay(bottomRight, direction, middleHit.distance, out var rightHit))
+            {
+                return false;
+            }
+
+            Debug.Log($"leftDist={leftHit.distance} middleDist={middleHit.distance} rightDist={rightHit.distance}");
+            return middleHit.distance > leftHit.distance && middleHit.distance > rightHit.distance;
+        }
     }
 }
