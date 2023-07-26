@@ -149,11 +149,13 @@ namespace PQ._Experimental.Physics.Move_006
 
         private bool CheckForConcaveFaceBelow()
         {
+            float bodyRadius = _body.ComputeDistanceToEdge(Vector2.down);
+
             Vector2 center  = _body.Center;
             Vector2 extents = _body.Extents;
 
             Vector2 bottomCenter = new Vector2(center.x, center.y - extents.y);
-            if (!_body.CastRay(bottomCenter, Vector2.down, Mathf.Infinity, out var middleHit))
+            if (!_body.CastRay(bottomCenter, Vector2.down, bodyRadius, out var middleHit))
             {
                 return false;
             }
