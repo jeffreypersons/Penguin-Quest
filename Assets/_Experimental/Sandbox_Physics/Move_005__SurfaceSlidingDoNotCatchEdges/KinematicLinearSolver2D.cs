@@ -149,7 +149,7 @@ namespace PQ._Experimental.Physics.Move_005
 
         private bool CheckForConcaveFaceBelow()
         {
-            Vector2 center = _body.Center;
+            Vector2 center  = _body.Center;
             Vector2 extents = _body.Extents;
 
             Vector2 bottomCenter = new Vector2(center.x, center.y - extents.y);
