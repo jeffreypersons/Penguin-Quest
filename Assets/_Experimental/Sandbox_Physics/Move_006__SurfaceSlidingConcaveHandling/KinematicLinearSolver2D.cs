@@ -159,13 +159,13 @@ namespace PQ._Experimental.Physics.Move_006
             }
 
             Vector2 bottomLeft = new Vector2(center.x - extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomLeft, Vector2.down, Mathf.Infinity, out var leftHit))
+            if (!_body.CastRay(bottomLeft, Vector2.down, middleHit.distance, out var leftHit))
             {
                 return false;
             }
 
             Vector2 bottomRight = new Vector2(center.x + extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomRight, Vector2.down, Mathf.Infinity, out var rightHit))
+            if (!_body.CastRay(bottomRight, Vector2.down, middleHit.distance, out var rightHit))
             {
                 return false;
             }
