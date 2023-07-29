@@ -90,8 +90,6 @@ namespace PQ._Experimental.Physics.Move_006
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
         {
-            Debug.Log($"{(CheckForConcaveFaceBelow()?"yes":"no")}");
-
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
             if (delta == Vector2.zero)
@@ -103,7 +101,10 @@ namespace PQ._Experimental.Physics.Move_006
             int iteration = MaxMoveIterations;
             float distanceRemaining = delta.magnitude;
             Vector2 direction = delta.normalized;
-            while (iteration-- > 0 && distanceRemaining > Epsilon && direction.sqrMagnitude > Epsilon)
+            while (iteration-- > 0 &&
+                   distanceRemaining > Epsilon &&
+                   direction.sqrMagnitude > Epsilon &&
+                   !(direction == Vector2.down && CheckForConcaveFaceBelow()))
             {
                 Vector2 beforeStep = _body.Position;
                 Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
