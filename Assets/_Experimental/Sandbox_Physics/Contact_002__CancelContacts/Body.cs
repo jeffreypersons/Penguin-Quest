@@ -16,14 +16,14 @@ namespace PQ._Experimental.Physics.Contact_002
     }
     internal sealed class Body
     {
-        private Transform         _transform;
-        private Rigidbody2D       _rigidbody;
-        private CapsuleCollider2D _capsuleCollider;
-        private ContactFilter2D   _contactFilter;
-        private ContactPoint2D[]  _contactBuffer;
+        private Transform        _transform;
+        private Rigidbody2D      _rigidbody;
+        private BoxCollider2D    _boxCollider;
+        private ContactFilter2D  _contactFilter;
+        private ContactPoint2D[] _contactBuffer;
 
         public Vector2 Position => _rigidbody.position;
-        public Vector2 Extents  => _capsuleCollider.bounds.extents;
+        public Vector2 Extents  => _boxCollider.bounds.extents;
         public Vector2 Forward  => _transform.right.normalized;
         public Vector2 Up       => _transform.up.normalized;
 
@@ -41,20 +41,20 @@ namespace PQ._Experimental.Physics.Contact_002
             {
                 throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(transform)}");
             }
-            if (!transform.TryGetComponent(out CapsuleCollider2D capsuleCollider2D))
+            if (!transform.TryGetComponent(out BoxCollider2D boxCollider))
             {
                 throw new MissingComponentException($"Expected attached {nameof(BoxCollider2D)} - not found on {nameof(transform)}");
             }
-            if (!ReferenceEquals(capsuleCollider2D.attachedRigidbody, rigidbody2D))
+            if (!ReferenceEquals(boxCollider.attachedRigidbody, rigidbody2D))
             {
-                throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(capsuleCollider2D)}");
+                throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(boxCollider)}");
             }
 
-            _transform       = rigidbody2D.transform;
-            _rigidbody       = rigidbody2D;
-            _capsuleCollider = capsuleCollider2D;
-            _contactFilter   = new ContactFilter2D();
-            _contactBuffer   = new ContactPoint2D[16];
+            _transform     = rigidbody2D.transform;
+            _rigidbody     = rigidbody2D;
+            _boxCollider   = boxCollider;
+            _contactFilter = new ContactFilter2D();
+            _contactBuffer = new ContactPoint2D[16];
 
             _contactFilter.useTriggers    = false;
             _contactFilter.useNormalAngle = false;
@@ -100,7 +100,7 @@ namespace PQ._Experimental.Physics.Contact_002
             float previousMax = _contactFilter.maxNormalAngle;
 
             _contactFilter.SetNormalAngle(min, max);
-            bool hasContactsInRange = _capsuleCollider.IsTouching(_contactFilter);
+            bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
 
             _contactFilter.SetNormalAngle(previousMin, previousMax);
             return hasContactsInRange;
