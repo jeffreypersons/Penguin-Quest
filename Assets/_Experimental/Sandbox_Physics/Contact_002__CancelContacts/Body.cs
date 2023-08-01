@@ -5,15 +5,20 @@ using UnityEngine;
 namespace PQ._Experimental.Physics.Contact_002
 {
     [Flags]
-    public enum CollisionFlags2D
+    public enum ContactFlags2D
     {
-        None   = 0,
-        Front  = 1 << 1,
-        Below  = 1 << 2,
-        Behind = 1 << 3,
-        Above  = 1 << 4,
-        All    = ~0,
+        None              = 0,
+        RightSide         = 1 << 1,
+        TopRightCorner    = 1 << 2,
+        TopSide           = 1 << 3,
+        TopLeftCorner     = 1 << 4,
+        LeftSide          = 1 << 5,
+        BottomLeftCorner  = 1 << 6,
+        BottomSide        = 1 << 7,
+        BottomRightCorner = 1 << 8,
+        All               = ~0,
     }
+
     internal sealed class Body
     {
         private Transform        _transform;
@@ -66,44 +71,36 @@ namespace PQ._Experimental.Physics.Contact_002
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
-
-        public CollisionFlags2D CheckSides()
+        public ContactFlags2D CheckSides()
         {
             _contactFilter.useNormalAngle = true;
-            bool isFlippedHorizontal = _rigidbody.transform.localEulerAngles.y >= 90f;
-            bool isFlippedVertical   = _rigidbody.transform.localEulerAngles.x >= 90f;
 
-            CollisionFlags2D flags = CollisionFlags2D.None;
-            if (HasContactsInNormalRange(315, 45))
+            const float epsilon = 0.005f;
+            bool isDiagonal = false;
+            int degrees = 0;
+            ContactFlags2D flags = ContactFlags2D.None;
+            for (int i = 0; i < 7; i++)
             {
-                flags |= isFlippedHorizontal ? CollisionFlags2D.Behind : CollisionFlags2D.Front;
+                if (isDiagonal)
+                {
+                    _contactFilter.SetNormalAngle(degrees - 45 + epsilon, degrees + 45 - epsilon);
+                }
+                else
+                {
+                    _contactFilter.SetNormalAngle(degrees - epsilon, degrees + epsilon);
+                }
+                
+                if (_boxCollider.IsTouching(_contactFilter))
+                {
+                    flags |= (ContactFlags2D)(1+1 << i);
+                }
+
+                degrees += 45;
+                isDiagonal = !isDiagonal;
             }
-            if (HasContactsInNormalRange(45, 135))
-            {
-                flags |= isFlippedVertical ? CollisionFlags2D.Above : CollisionFlags2D.Below;
-            }
-            if (HasContactsInNormalRange(135, 225))
-            {
-                flags |= isFlippedHorizontal ? CollisionFlags2D.Front : CollisionFlags2D.Behind;
-            }
-            if (HasContactsInNormalRange(225, 315))
-            {
-                flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
-            }
+
             _contactFilter.useNormalAngle = false;
             return flags;
-        }
-
-        private bool HasContactsInNormalRange(float min, float max)
-        {
-            float previousMin = _contactFilter.minNormalAngle;
-            float previousMax = _contactFilter.maxNormalAngle;
-
-            _contactFilter.SetNormalAngle(min, max);
-            bool hasContactsInRange = _boxCollider.IsTouching(_contactFilter);
-
-            _contactFilter.SetNormalAngle(previousMin, previousMax);
-            return hasContactsInRange;
         }
     }
 }

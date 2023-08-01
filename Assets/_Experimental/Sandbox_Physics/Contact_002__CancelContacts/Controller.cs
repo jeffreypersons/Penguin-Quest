@@ -7,13 +7,13 @@ namespace PQ._Experimental.Physics.Contact_002
     {
         [SerializeField] private Body _body;
 
-        private CollisionFlags2D _flags;
+        private ContactFlags2D _flags;
 
         void Awake()
         {
             Application.targetFrameRate = 60;
             _body = new Body(transform);
-            _flags = CollisionFlags2D.None;
+            _flags = ContactFlags2D.None;
         }
 
         void FixedUpdate()
