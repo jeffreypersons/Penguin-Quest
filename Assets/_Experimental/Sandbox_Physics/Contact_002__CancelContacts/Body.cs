@@ -8,14 +8,14 @@ namespace PQ._Experimental.Physics.Contact_002
     public enum ContactFlags2D
     {
         None              = 0,
-        RightSide         = 1 << 1,
-        TopRightCorner    = 1 << 2,
-        TopSide           = 1 << 3,
-        TopLeftCorner     = 1 << 4,
-        LeftSide          = 1 << 5,
-        BottomLeftCorner  = 1 << 6,
-        BottomSide        = 1 << 7,
-        BottomRightCorner = 1 << 8,
+        LeftSide          = 1 << 1,
+        BottomLeftCorner  = 1 << 2,
+        BottomSide        = 1 << 3,
+        BottomRightCorner = 1 << 4,
+        RightSide         = 1 << 5,
+        TopRightCorner    = 1 << 6,
+        TopSide           = 1 << 7,
+        TopLeftCorner     = 1 << 8,
         All               = ~0,
     }
 
