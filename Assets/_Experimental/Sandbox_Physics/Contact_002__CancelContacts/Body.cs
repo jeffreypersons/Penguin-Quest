@@ -92,7 +92,7 @@ namespace PQ._Experimental.Physics.Contact_002
                 
                 if (_boxCollider.IsTouching(_contactFilter))
                 {
-                    flags |= (ContactFlags2D)((i + 1) << i);
+                    flags |= (ContactFlags2D)(1 << i);
                 }
 
                 degrees += 45;
