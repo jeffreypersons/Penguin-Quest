@@ -34,6 +34,7 @@ namespace PQ._Experimental.Physics.Contact_003
         public Vector2 Forward  => _transform.right.normalized;
         public Vector2 Up       => _transform.up.normalized;
 
+        private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
 
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
@@ -80,7 +81,6 @@ namespace PQ._Experimental.Physics.Contact_003
         {
             _contactFilter.useNormalAngle = true;
 
-            const float epsilon = 0.005f;
             bool isDiagonal = false;
             int degrees = 0;
             ContactFlags2D flags = ContactFlags2D.None;
@@ -88,11 +88,11 @@ namespace PQ._Experimental.Physics.Contact_003
             {
                 if (isDiagonal)
                 {
-                    _contactFilter.SetNormalAngle(degrees - 45 + epsilon, degrees + 45 - epsilon);
+                    _contactFilter.SetNormalAngle(degrees - 45 + DefaultEpsilon, degrees + 45 - DefaultEpsilon);
                 }
                 else
                 {
-                    _contactFilter.SetNormalAngle(degrees - epsilon, degrees + epsilon);
+                    _contactFilter.SetNormalAngle(degrees - DefaultEpsilon, degrees + DefaultEpsilon);
                 }
                 
                 if (_boxCollider.IsTouching(_contactFilter))
@@ -103,53 +103,59 @@ namespace PQ._Experimental.Physics.Contact_003
                 degrees += 45;
                 isDiagonal = !isDiagonal;
             }
+            _contactFilter.useNormalAngle = false;
+            return flags;
+        }
+
+        public bool IsFullyInsideEdgeCollider()
+        {
+            var firstHit = Physics2D.LinecastAll(_rigidbody.position, Vector2.up, _contactFilter, _hitBuffer, Mathf.Infinity);
+
+            var firstHit = CastRay(Vector2.up);
+            if (!firstHit || firstHit.collider is not EdgeCollider2D)
+            {
+                return false;
+            }
 
 
-            var a = Physics2D.Raycast(Position, Vector2.up);
             if (a)
             {
-                var b = Physics2D.Raycast(a.point + 0.0005f * Vector2.up, Vector2.up);
+                var b = Physics2D.Raycast(a.point + DefaultEpsilon * Vector2.up, Vector2.up);
                 if (b && a.collider.name == b.collider.name)
                 {
                     Debug.Log($"{a.collider.name} {a.distance}");
                 }
             }
-            _contactFilter.useNormalAngle = false;
-            return flags;
         }
-
+        
         /*
-        Project a point along given direction until specific given collider is hit.
-
-        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
-        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
+        Project point along given direction and local offset from AABB center, and return first hit (if any).
         */
-        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+        public RaycastHit2D CastRay(Vector2 direction, float distance=Mathf.Infinity, Vector2? centerOffset=null)
         {
-            int layer = collider.gameObject.layer;
-            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
-            LayerMask includeLayers = _contactFilter.layerMask;
+            int layer = _boxCollider.gameObject.layer;
+            _boxCollider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
 
-            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-            Physics2D.queriesStartInColliders = true;
-            _contactFilter.SetLayerMask(~collider.gameObject.layer);
-
+            Vector2 origin = (Vector2)_boxCollider.bounds.center + centerOffset.GetValueOrDefault(Vector2.zero);
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
 
-            collider.gameObject.layer = layer;
-            _contactFilter.SetLayerMask(includeLayers);
-            Physics2D.queriesStartInColliders = queriesStartInColliders;
+            _boxCollider.gameObject.layer = layer;
+            return hitCount > 1 ? _hitBuffer[0] : default;
+        }
+        
+        /*
+        Project point along given direction and local offset from AABB center, and return first hit (if any).
+        */
+        public RaycastHit2D CastRayAt(Collider2D collider, Vector2 direction, float distance=Mathf.Infinity, Vector2? centerOffset=null)
+        {
+            int layer = _boxCollider.gameObject.layer;
+            _boxCollider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
 
-            hit = default;
-            for (int i = 0; i < hitCount; i++)
-            {
-                if (_hitBuffer[i].collider == collider)
-                {
-                    hit = _hitBuffer[i];
-                    break;
-                }
-            }
-            return hit;
+            Vector2 origin = (Vector2)_boxCollider.bounds.center + centerOffset.GetValueOrDefault(Vector2.zero);
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
+            _boxCollider.gameObject.layer = layer;
+            return hitCount > 1 ? _hitBuffer[0] : default;
         }
 
         /* Check for overlapping colliders within our bounding box. */
