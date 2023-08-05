@@ -56,12 +56,18 @@ namespace PQ._Experimental.Physics.Move_006
 
         void OnCollisionEnter2D(Collision2D collision)
         {
-            _kinematicSolver.RemoveOverlap(collision.collider);
+            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            {
+                _kinematicSolver.RemoveOverlap(collision.collider);
+            }
         }
 
         void OnCollisionStay2D(Collision2D collision)
         {
-            _kinematicSolver.RemoveOverlap(collision.collider);
+            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            {
+                _kinematicSolver.RemoveOverlap(collision.collider);
+            }
         }
 
         void OnDrawGizmos()

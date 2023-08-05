@@ -61,11 +61,6 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public void RemoveOverlap(Collider2D collider)
         {
-            if (_body.IsFilteringLayerMask(collider.gameObject))
-            {
-                return;
-            }
-            
             // note that we remove separation if ever so slightly above surface as well
             Vector2 startPosition = _body.Position;
             int iteration = MaxOverlapIterations;
