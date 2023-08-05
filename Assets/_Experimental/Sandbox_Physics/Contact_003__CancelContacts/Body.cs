@@ -25,6 +25,8 @@ namespace PQ._Experimental.Physics.Contact_003
         private Rigidbody2D      _rigidbody;
         private BoxCollider2D    _boxCollider;
         private ContactFilter2D  _contactFilter;
+        private RaycastHit2D[]   _hitBuffer;
+        private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
 
         public Vector2 Position => _rigidbody.position;
@@ -32,7 +34,8 @@ namespace PQ._Experimental.Physics.Contact_003
         public Vector2 Forward  => _transform.right.normalized;
         public Vector2 Up       => _transform.up.normalized;
 
-        
+        private const int DefaultBufferSize = 16;
+
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
         public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
 
@@ -59,7 +62,9 @@ namespace PQ._Experimental.Physics.Contact_003
             _rigidbody     = rigidbody2D;
             _boxCollider   = boxCollider;
             _contactFilter = new ContactFilter2D();
-            _contactBuffer = new ContactPoint2D[16];
+            _hitBuffer     = new RaycastHit2D[DefaultBufferSize];
+            _overlapBuffer = new Collider2D[DefaultBufferSize];
+            _contactBuffer = new ContactPoint2D[DefaultBufferSize];
 
             _contactFilter.useTriggers    = false;
             _contactFilter.useNormalAngle = false;
@@ -99,8 +104,55 @@ namespace PQ._Experimental.Physics.Contact_003
                 isDiagonal = !isDiagonal;
             }
 
+            var a = Physics2D.Raycast(Position, Vector2.up);
+            if (a)
+            {
+                Debug.Log($"{a.collider.name} {a.distance}");
+            }
             _contactFilter.useNormalAngle = false;
             return flags;
+        }
+
+        /*
+        Project a point along given direction until specific given collider is hit.
+
+        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
+        specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
+        */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            int layer = collider.gameObject.layer;
+            bool queriesStartInColliders = Physics2D.queriesStartInColliders;
+            LayerMask includeLayers = _contactFilter.layerMask;
+
+            collider.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+            Physics2D.queriesStartInColliders = true;
+            _contactFilter.SetLayerMask(~collider.gameObject.layer);
+
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+
+            collider.gameObject.layer = layer;
+            _contactFilter.SetLayerMask(includeLayers);
+            Physics2D.queriesStartInColliders = queriesStartInColliders;
+
+            hit = default;
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_hitBuffer[i].collider == collider)
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
+            }
+            return hit;
+        }
+
+        /* Check for overlapping colliders within our bounding box. */
+        public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
+        {
+            int colliderCount = _boxCollider.Overlap(_contactFilter, _overlapBuffer);
+            colliders = _overlapBuffer.AsSpan(0, colliderCount);
+            return !colliders.IsEmpty;
         }
     }
 }
