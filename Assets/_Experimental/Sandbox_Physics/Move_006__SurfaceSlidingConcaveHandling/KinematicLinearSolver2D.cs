@@ -46,9 +46,10 @@ namespace PQ._Experimental.Physics.Move_006
         In practice, this is not an issue except when spawning, as any movement in the solver caps changes in position be no
         greater than the body extents.
         */
-        public void RemoveOverlap(Collider2D collider)
+        public void RemoveOverlap(Collision2D collision)
         {
-            SnapToClosestDistance(collider);
+
+            SnapToClosestDistance(collision.collider);
         }
 
         /*

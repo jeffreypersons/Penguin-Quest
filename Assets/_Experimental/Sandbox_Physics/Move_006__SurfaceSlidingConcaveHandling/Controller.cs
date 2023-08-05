@@ -56,17 +56,19 @@ namespace PQ._Experimental.Physics.Move_006
 
         void OnCollisionEnter2D(Collision2D collision)
         {
+            Debug.Log("enter");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
-                _kinematicSolver.RemoveOverlap(collision.collider);
+                _kinematicSolver.RemoveOverlap(collision);
             }
         }
 
         void OnCollisionStay2D(Collision2D collision)
         {
+            Debug.Log("stay");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
-                _kinematicSolver.RemoveOverlap(collision.collider);
+                _kinematicSolver.RemoveOverlap(collision);
             }
         }
 
