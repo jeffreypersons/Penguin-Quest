@@ -104,10 +104,15 @@ namespace PQ._Experimental.Physics.Contact_003
                 isDiagonal = !isDiagonal;
             }
 
+
             var a = Physics2D.Raycast(Position, Vector2.up);
             if (a)
             {
-                Debug.Log($"{a.collider.name} {a.distance}");
+                var b = Physics2D.Raycast(a.point + 0.0005f * Vector2.up, Vector2.up);
+                if (b && a.collider.name == b.collider.name)
+                {
+                    Debug.Log($"{a.collider.name} {a.distance}");
+                }
             }
             _contactFilter.useNormalAngle = false;
             return flags;
