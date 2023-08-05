@@ -37,19 +37,6 @@ namespace PQ._Experimental.Physics.Move_006
             _body = kinematicBody2D;
         }
 
-        public void Flip(bool horizontal, bool vertical)
-        {
-            Vector3 rotation = new Vector3(
-                x: vertical   ? 180f : 0f,
-                y: horizontal ? 180f : 0f,
-                z: 0f);
-
-            if (_body.Rotation != rotation)
-            {
-                _body.Rotation = rotation;
-            }
-        }
-
         /*
         Note that with edge colliders, the collider will end up on either side, as there is no 'internal area'.
 
@@ -61,12 +48,26 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public void RemoveOverlap(Collider2D collider)
         {
+            SnapToClosestDistance(collider);
+        }
+
+        /*
+        Note that with edge colliders, the collider will end up on either side, as there is no 'internal area'.
+
+        This means that if our body starts in more overlapped position than separated from an edge collider, it will
+        resolve to the 'inside' of the edge.
+        
+        In practice, this is not an issue except when spawning, as any movement in the solver caps changes in position be no
+        greater than the body extents.
+        */
+        public void SnapToClosestDistance(Collider2D collider)
+        {
             // note that we remove separation if ever so slightly above surface as well
             Vector2 startPosition = _body.Position;
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
 
-            while (iteration-- > 0 && (separation.distance is < ContactOffset || separation.distance is < Epsilon))
+            while (iteration-- > 0 && separation.distance < Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
                 separation = _body.ComputeMinimumSeparation(collider);
@@ -84,6 +85,18 @@ namespace PQ._Experimental.Physics.Move_006
             _body.Position += Epsilon * (endPosition - startPosition).normalized;
         }
 
+        public void Flip(bool horizontal, bool vertical)
+        {
+            Vector3 rotation = new Vector3(
+                x: vertical ? 180f : 0f,
+                y: horizontal ? 180f : 0f,
+                z: 0f);
+
+            if (_body.Rotation != rotation)
+            {
+                _body.Rotation = rotation;
+            }
+        }
 
         /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
         public void Move(Vector2 delta)
