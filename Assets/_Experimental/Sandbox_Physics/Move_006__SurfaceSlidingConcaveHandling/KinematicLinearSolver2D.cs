@@ -16,16 +16,16 @@ namespace PQ._Experimental.Physics.Move_006
         private KinematicBody2D _body;
 
         /* Number of iterations used to reach movement target before giving up. */
-        private const int MaxMoveIterations = 10;
+        public const int MaxMoveIterations = 10;
 
         /* Number of iterations used to reach no overlap before giving up. */
-        private const int MaxOverlapIterations = 5;
+        public const int MaxOverlapIterations = 5;
 
         /* Amount which we consider to be (close enough to) zero. */
-        private const float Epsilon = 0.005f;
+        public const float Epsilon = 0.005f;
 
         /* Amount used to ensure we don't get _too_ close to surfaces, to avoid getting stuck when moving tangential to a surface. */
-        private const float ContactOffset = 0.05f;
+        public const float ContactOffset = 0.05f;
 
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
@@ -70,9 +70,11 @@ namespace PQ._Experimental.Physics.Move_006
             Vector2 startPosition = _body.Position;
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
-            while (iteration-- > 0 && separation.distance < Epsilon)
+
+            while (iteration-- > 0 && (separation.distance is < ContactOffset || separation.distance is < Epsilon))
             {
                 Vector2 beforeStep = _body.Position;
+                separation = _body.ComputeMinimumSeparation(collider);
                 Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations - iteration} : " +
                           $"remaining={separation.distance}, direction={separation.normal}");
                 _body.Position += separation.distance * separation.normal;
@@ -83,6 +85,7 @@ namespace PQ._Experimental.Physics.Move_006
             Vector2 endPosition = _body.Position;
 
             // bias the resolved position ever so slightly along the normal to prevent contact
+
             _body.Position += Epsilon * (endPosition - startPosition).normalized;
         }
 
