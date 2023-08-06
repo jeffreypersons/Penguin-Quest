@@ -170,7 +170,7 @@ namespace PQ._Experimental.Physics.LinearStep_001
                     hit = _hitBuffer[i];
                     break;
                 }
-            }            
+            }
             #if UNITY_EDITOR
             if (DrawRayCastsInEditor)
             {
