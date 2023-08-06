@@ -50,25 +50,22 @@ namespace PQ._Experimental.Physics.Move_006
                 _kinematicSolver.Flip(horizontal: _inputAxis.x < 0, vertical: false);
             }
 
-            Vector2 deltaPosition = Time.fixedDeltaTime * _moveSpeed * _inputAxis;
-            _kinematicSolver.Move(deltaPosition);
+            _kinematicSolver.Move(distance: Time.fixedDeltaTime * _moveSpeed, direction: _inputAxis);
         }
 
         void OnCollisionEnter2D(Collision2D collision)
         {
-            Debug.Log("enter");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
-                _kinematicSolver.RemoveOverlap(collision);
+                _kinematicSolver.ResolveSeparation(collision.collider);
             }
         }
 
         void OnCollisionStay2D(Collision2D collision)
         {
-            Debug.Log("stay");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
-                _kinematicSolver.RemoveOverlap(collision);
+                _kinematicSolver.ResolveSeparation(collision.collider);
             }
         }
 

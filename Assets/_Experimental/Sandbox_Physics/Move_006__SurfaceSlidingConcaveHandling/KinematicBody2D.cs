@@ -123,6 +123,38 @@ namespace PQ._Experimental.Physics.Move_006
             _rigidbody.position = startPositionThisFrame;
             _rigidbody.MovePosition(targetPositionThisFrame);
         }
+        
+        
+        /*
+        Check if body center is fully surrounded by the same edge collider.
+        
+        Considered to be 'inside' if there is an edge collider above center of our AABB, and the same edge collider below.
+        Assumes there aren't any edge collider inside another.
+        */
+        public bool IsCenterBoundedByAnEdgeCollider(out EdgeCollider2D collider)
+        {
+            Vector2 origin = _boxCollider.bounds.center;
+
+            if (!CastRay(origin, Vector2.up, Mathf.Infinity, out var aboveHit) ||
+                !aboveHit.collider.transform.TryGetComponent<EdgeCollider2D>(out var edge))
+            {
+                collider = default;
+                return false;
+            }
+
+            float maxHorizontal = 2f * edge.bounds.extents.x;
+            float maxVertical   = 2f * edge.bounds.extents.y;
+            if (!CastRayAt(edge, origin, Vector2.down,  maxVertical,   out var _) ||
+                !CastRayAt(edge, origin, Vector2.left,  maxHorizontal, out var _) ||
+                !CastRayAt(edge, origin, Vector2.right, maxHorizontal, out var _))
+            {
+                collider = default;
+                return false;
+            }
+
+            collider = edge;
+            return true;
+        }
 
         /*
         Project AABB along given delta from AABB center, and outputs ALL hits (if any).
@@ -142,6 +174,7 @@ namespace PQ._Experimental.Physics.Move_006
             return hit;
         }
 
+
         /*
         Project point along given delta from given origin, and outputs ALL hits (if any).
 
@@ -152,11 +185,9 @@ namespace PQ._Experimental.Physics.Move_006
             int layer = _transform.gameObject.layer;
             _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
 
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
             if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
             }
             else
             {
@@ -164,6 +195,41 @@ namespace PQ._Experimental.Physics.Move_006
             }
 
             _transform.gameObject.layer = layer;
+
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (hit)
+            {
+                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+            }
+            return hit;
+        }
+
+        /*
+        Project center point along given direction, outputting first hit to given collider (if any).
+        */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            int layer = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+
+            hit = default;
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_hitBuffer[i].collider == collider)
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
+            }
+
+            _transform.gameObject.layer = layer;
+
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (hit)
+            {
+                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+            }
             return hit;
         }
 

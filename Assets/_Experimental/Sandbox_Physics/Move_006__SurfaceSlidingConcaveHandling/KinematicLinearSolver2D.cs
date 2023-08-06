@@ -8,8 +8,10 @@ namespace PQ._Experimental.Physics.Move_006
     Collide and slide solver for movement.
 
     Notes
+    - Prevents tunneling by clamping an movement sub-step to body extents (allowing backtracking if overlap)
+    - Flipping is done only by local rotation along x and y axes - no changes in scale
     - When moving along surfaces, we maintain a slight offset from the normal, such that contacts are
-      intentionally avoided. This way, we avoid getting caught on edges and corners as easily      
+      intentionally avoided. This way, we avoid getting caught on edges and corners 
     */
     internal sealed class KinematicLinearSolver2D
     {
@@ -37,38 +39,29 @@ namespace PQ._Experimental.Physics.Move_006
             _body = kinematicBody2D;
         }
 
-        /*
-        Note that with edge colliders, the collider will end up on either side, as there is no 'internal area'.
-
-        This means that if our body starts in more overlapped position than separated from an edge collider, it will
-        resolve to the 'inside' of the edge.
-        
-        In practice, this is not an issue except when spawning, as any movement in the solver caps changes in position be no
-        greater than the body extents.
-        */
-        public void RemoveOverlap(Collision2D collision)
-        {
-
-            SnapToClosestDistance(collision.collider);
-        }
 
         /*
-        Note that with edge colliders, the collider will end up on either side, as there is no 'internal area'.
+        Resolve any separation between given body and collider.
 
-        This means that if our body starts in more overlapped position than separated from an edge collider, it will
-        resolve to the 'inside' of the edge.
-        
-        In practice, this is not an issue except when spawning, as any movement in the solver caps changes in position be no
-        greater than the body extents.
+        Reposition body to touch collider with no gap or overlap (or until max iterations reached)
+        - Safeguards against passing through collider when resolving separation
+        - Since separation is solved iteratively in linear steps, complex geometry (ie many concave faces) require more iterations
         */
-        public void SnapToClosestDistance(Collider2D collider)
+        public void ResolveSeparation(Collider2D collider)
         {
-            // note that we remove separation if ever so slightly above surface as well
             Vector2 startPosition = _body.Position;
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
 
-            while (iteration-- > 0 && separation.distance < Epsilon)
+            // if collider is entered when resolving resolution, then start further out
+            // specifically this prevents bodies from snapping to the other side of an edge collider
+            if (_body.CastRayAt(collider, startPosition, separation.normal, separation.distance, out var _))
+            {
+                _body.Position += -2f * _body.ComputeDistanceToEdge(separation.normal) * separation.normal;
+            }
+
+            // note that we remove separation if ever so slightly above surface as well
+            while (iteration-- > 0 && separation.distance is < -Epsilon or > Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
                 separation = _body.ComputeMinimumSeparation(collider);
@@ -82,14 +75,19 @@ namespace PQ._Experimental.Physics.Move_006
             Vector2 endPosition = _body.Position;
 
             // bias the resolved position ever so slightly along the normal to prevent contact
-
             _body.Position += Epsilon * (endPosition - startPosition).normalized;
         }
 
+
+        /*
+        Set direction of body via local xy axes. Note does not change scale.
+
+        Defaults to right and up, and left and down respectively, if inverted.
+        */
         public void Flip(bool horizontal, bool vertical)
         {
             Vector3 rotation = new Vector3(
-                x: vertical ? 180f : 0f,
+                x: vertical   ? 180f : 0f,
                 y: horizontal ? 180f : 0f,
                 z: 0f);
 
@@ -99,33 +97,39 @@ namespace PQ._Experimental.Physics.Move_006
             }
         }
 
-        /* Project AABB along delta until (if any) obstruction. Max distance caps at body-radius to prevent tunneling. */
-        public void Move(Vector2 delta)
+
+        /*
+        Move body by given change in position, taking surface contacts into account.
+
+        Body is moved along surfaces until either distance, obstruction in opposing direction (ie wall), or max iterations are reached
+        - Tunneling is avoided by clamping distance moved per iteration to body extents (allowing backtracking if overlap)
+        - Sticking to corners is avoided by maintaining a slight offset from all surface contact normals
+        - Steps are done linearly, allowing for an arbitrary surface to be moved along
+        */
+        public void Move(float distance, Vector2 direction)
         {
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
-            if (delta == Vector2.zero)
+            if (distance * direction == Vector2.zero)
             {
                 return;
             }
 
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
-            float distanceRemaining = delta.magnitude;
-            Vector2 direction = delta.normalized;
             while (iteration-- > 0 &&
-                   distanceRemaining > Epsilon &&
+                   distance > Epsilon &&
                    direction.sqrMagnitude > Epsilon &&
                    !(direction == Vector2.down && CheckForConcaveFaceBelow()))
             {
                 Vector2 beforeStep = _body.Position;
-                Debug.DrawLine(beforeStep, beforeStep + (distanceRemaining * direction), Color.gray, 1f);
+                Debug.DrawLine(beforeStep, beforeStep + (distance * direction), Color.gray, 1f);
                 
-                Debug.Log($"Move({delta}).substep#{MaxMoveIterations-iteration} : " +
-                          $"remaining={distanceRemaining}, direction={direction}");
+                Debug.Log($"Move({distance*direction}).substep#{MaxMoveIterations-iteration} : " +
+                          $"remaining={distance}, direction={direction}");
                 MoveUnobstructed(
                     direction,
-                    distanceRemaining,
+                    distance,
                     out float step,
                     out RaycastHit2D obstruction);
 
@@ -133,7 +137,7 @@ namespace PQ._Experimental.Physics.Move_006
                 Debug.DrawLine(beforeStep, afterStep, Color.green, 1f);
 
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
-                distanceRemaining -= step;
+                distance -= step;
             }
             Vector2 endPosition = _body.Position;
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
