@@ -19,7 +19,7 @@ namespace PQ._Experimental.Physics.Contact_003
         void FixedUpdate()
         {
             _flags = _body.CheckSides();
-            if (_body.IsInsideAnEdgeCollider(out var collider))
+            if (_body.IsCenterBoundedByAnEdgeCollider(out var collider))
             {
                 Debug.Log($"isInside={collider.name}");
             }
