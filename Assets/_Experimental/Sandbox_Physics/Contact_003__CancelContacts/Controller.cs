@@ -21,7 +21,11 @@ namespace PQ._Experimental.Physics.Contact_003
             _flags = _body.CheckSides();
             if (_body.IsCenterBoundedByAnEdgeCollider(out var collider))
             {
-                Debug.Log($"isInside={collider.name}");
+                Debug.Log($"isBoundedByEdge={collider.name}");
+            }
+            else
+            {
+                Debug.Log($"isBoundedByEdge=<none>");
             }
         }
 

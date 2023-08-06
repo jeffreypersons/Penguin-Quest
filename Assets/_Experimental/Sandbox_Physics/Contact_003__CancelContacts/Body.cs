@@ -120,7 +120,6 @@ namespace PQ._Experimental.Physics.Contact_003
             if (!CastRay(Vector2.up, Mathf.Infinity, out var aboveHit) ||
                 !aboveHit.collider.transform.TryGetComponent<EdgeCollider2D>(out var edge))
             {
-                Debug.Log($"{(aboveHit ? aboveHit.collider.name : "<none>")}");
                 return false;
             }
 
