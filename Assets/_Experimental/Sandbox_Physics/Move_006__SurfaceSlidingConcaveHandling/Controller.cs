@@ -59,7 +59,7 @@ namespace PQ._Experimental.Physics.Move_006
             Debug.Log("enter");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
-                _kinematicSolver.RemoveOverlap(collision);
+                _kinematicSolver.ResolveOverlap(collision);
             }
         }
 
@@ -68,7 +68,7 @@ namespace PQ._Experimental.Physics.Move_006
             Debug.Log("stay");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
-                _kinematicSolver.RemoveOverlap(collision);
+                _kinematicSolver.ResolveOverlap(collision);
             }
         }
 
