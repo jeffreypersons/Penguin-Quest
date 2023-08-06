@@ -107,25 +107,29 @@ namespace PQ._Experimental.Physics.Contact_003
             return flags;
         }
 
-        public bool IsFullyInsideEdgeCollider()
+        /*
+        Check if body is contained within an edge.
+        
+        Considered to be 'inside' if there is an edge collider above center of our AABB, and the same edge collider below.
+        Assumes there aren't any edge collider inside another.
+        */
+        public bool IsInsideAnEdgeCollider(out EdgeCollider2D collider)
         {
-            var firstHit = Physics2D.LinecastAll(_rigidbody.position, Vector2.up, _contactFilter, _hitBuffer, Mathf.Infinity);
+            var aboveHit = CastRay(Vector2.up);
+            if (!aboveHit || aboveHit.collider is not EdgeCollider2D)
+            {
+                collider = default;
+                return false;
+            }
 
-            var firstHit = CastRay(Vector2.up);
-            if (!firstHit || firstHit.collider is not EdgeCollider2D)
+            collider = aboveHit.collider as EdgeCollider2D;
+            var belowHit = CastRayAt(collider, Vector2.down, distance: 2f * collider.bounds.extents.y);
+            if (!belowHit || belowHit.collider != collider)
             {
                 return false;
             }
 
-
-            if (a)
-            {
-                var b = Physics2D.Raycast(a.point + DefaultEpsilon * Vector2.up, Vector2.up);
-                if (b && a.collider.name == b.collider.name)
-                {
-                    Debug.Log($"{a.collider.name} {a.distance}");
-                }
-            }
+            return true;
         }
         
         /*
@@ -156,14 +160,6 @@ namespace PQ._Experimental.Physics.Contact_003
 
             _boxCollider.gameObject.layer = layer;
             return hitCount > 1 ? _hitBuffer[0] : default;
-        }
-
-        /* Check for overlapping colliders within our bounding box. */
-        public bool CheckForOverlappingColliders(out ReadOnlySpan<Collider2D> colliders)
-        {
-            int colliderCount = _boxCollider.Overlap(_contactFilter, _overlapBuffer);
-            colliders = _overlapBuffer.AsSpan(0, colliderCount);
-            return !colliders.IsEmpty;
         }
     }
 }
