@@ -97,7 +97,6 @@ namespace PQ._Experimental.Physics.Move_006
             }
         }
 
-
         /*
         Move body by given change in position, taking surface contacts into account.
 
@@ -115,12 +114,21 @@ namespace PQ._Experimental.Physics.Move_006
                 return;
             }
 
+            _body.Position -= new Vector2(0, 0.2f);
+            ContactFlags2D flags = _body.CheckSides();
+            if (flags.HasFlag(ContactFlags2D.BottomLeftCorner))
+            {
+                _body.Position += new Vector2(0, 0.2f);
+                return;
+            }
+            _body.Position += new Vector2(0, 0.2f);
+
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
             while (iteration-- > 0 &&
                    distance > Epsilon &&
-                   direction.sqrMagnitude > Epsilon &&
-                   !(direction == Vector2.down && CheckForConcaveFaceBelow()))
+                   direction.sqrMagnitude > Epsilon
+                   /*&&!(direction == Vector2.down && CheckForConcaveFaceBelow())*/)
             {
                 Vector2 beforeStep = _body.Position;
                 Debug.DrawLine(beforeStep, beforeStep + (distance * direction), Color.gray, 1f);
