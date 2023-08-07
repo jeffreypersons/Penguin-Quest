@@ -18,6 +18,7 @@ namespace PQ._Experimental.Physics.Move_006
 
         void Awake()
         {
+            QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 60;
 
             _kinematicBody   = new KinematicBody2D(transform);
