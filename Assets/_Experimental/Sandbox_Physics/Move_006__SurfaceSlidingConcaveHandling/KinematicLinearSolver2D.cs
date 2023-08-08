@@ -49,18 +49,18 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public void ResolveSeparation(Collider2D collider)
         {
-            Vector2 startPosition = _body.Position;
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
 
             // if collider is entered when resolving resolution, then start further out
             // specifically this prevents bodies from snapping to the other side of an edge collider
-            if (_body.CastRayAt(collider, startPosition, separation.normal, separation.distance, out var _))
+            if (_body.CastRayAt(collider, _body.Position, separation.normal, separation.distance, out var _))
             {
                 _body.Position += -_body.ComputeDistanceToEdge(separation.normal) * separation.normal;
             }
 
             // note that we remove separation if ever so slightly above surface as well
+            Vector2 startPosition = _body.Position;
             while (iteration-- > 0 && separation.distance is < -Epsilon or > Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
