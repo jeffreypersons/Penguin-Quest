@@ -56,7 +56,8 @@ namespace PQ._Experimental.Physics.Move_006
             // specifically this prevents bodies from snapping to the other side of an edge collider
             if (_body.CastRayAt(collider, _body.Position, separation.normal, separation.distance, out var _))
             {
-                _body.Position += -_body.ComputeDistanceToEdge(separation.normal) * separation.normal;
+                Debug.Log($"RemoveOverlap({collider.name}) : initial resolution caused collider to pass through an edge - pushing back to compensate");
+                _body.Position += -2f * _body.ComputeDistanceToEdge(separation.normal) * separation.normal;
             }
 
             // note that we remove separation if ever so slightly above surface as well
