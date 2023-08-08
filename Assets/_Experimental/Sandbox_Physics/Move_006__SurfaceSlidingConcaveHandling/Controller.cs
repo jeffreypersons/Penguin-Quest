@@ -48,7 +48,7 @@ namespace PQ._Experimental.Physics.Move_006
                 _kinematicSolver.Flip(horizontal: _inputAxis.x < 0, vertical: false);
             }
 
-            _kinematicSolver.Move(distance: Time.fixedDeltaTime * _moveSpeed, direction: _inputAxis);
+            _kinematicSolver.Move(direction: _inputAxis, distance: Time.fixedDeltaTime * _moveSpeed);
         }
 
         void OnCollisionEnter2D(Collision2D collision)

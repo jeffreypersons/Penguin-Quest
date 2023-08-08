@@ -117,7 +117,7 @@ namespace PQ._Experimental.Physics.Move_006
         - Sticking to corners is avoided by maintaining a slight offset from all surface contact normals
         - Steps are done linearly, allowing for an arbitrary surface to be moved along
         */
-        public void Move(float distance, Vector2 direction)
+        public void Move(Vector2 direction, float distance)
         {
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
