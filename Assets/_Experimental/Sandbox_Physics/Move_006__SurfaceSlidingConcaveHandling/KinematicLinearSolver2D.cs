@@ -57,7 +57,7 @@ namespace PQ._Experimental.Physics.Move_006
             // specifically this prevents bodies from snapping to the other side of an edge collider
             if (_body.CastRayAt(collider, startPosition, separation.normal, separation.distance, out var _))
             {
-                _body.Position += -2f * _body.ComputeDistanceToEdge(separation.normal) * separation.normal;
+                _body.Position += -_body.ComputeDistanceToEdge(separation.normal) * separation.normal;
             }
 
             // note that we remove separation if ever so slightly above surface as well
@@ -113,15 +113,6 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 return;
             }
-
-            _body.Position -= new Vector2(0, 0.2f);
-            ContactFlags2D flags = _body.CheckSides();
-            if (flags.HasFlag(ContactFlags2D.BottomLeftCorner))
-            {
-                _body.Position += new Vector2(0, 0.2f);
-                return;
-            }
-            _body.Position += new Vector2(0, 0.2f);
 
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
