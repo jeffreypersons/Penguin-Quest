@@ -49,24 +49,35 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public void ResolveSeparation(Collider2D collider)
         {
-            Vector2 startPosition = _body.Position;
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
 
             // if collider is entered when resolving resolution, then start further out
             // specifically this prevents bodies from snapping to the other side of an edge collider
-            if (_body.CastRayAt(collider, startPosition, separation.normal, separation.distance, out var _))
+            if (_body.CastRayAt(collider, _body.Position, separation.normal, separation.distance, out var _))
             {
+                Debug.Log($"RemoveOverlap({collider.name}) : Initial resolution caused collider to pass through an edge - pushing back to compensate");
                 _body.Position += -2f * _body.ComputeDistanceToEdge(separation.normal) * separation.normal;
             }
 
             // note that we remove separation if ever so slightly above surface as well
+            Vector2 startPosition = _body.Position;
             while (iteration-- > 0 && separation.distance is < -Epsilon or > Epsilon)
             {
+                ColliderDistance2D previousSeparation = separation;
                 Vector2 beforeStep = _body.Position;
                 separation = _body.ComputeMinimumSeparation(collider);
+
                 Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations - iteration} : " +
                           $"remaining={separation.distance}, direction={separation.normal}");
+
+                if (separation.distance >= previousSeparation.distance)
+                {
+                    // typically this only occurs on sharp protruding angles where the body can catapult away from surface normal
+                    // so any time we are trying to converge the separation to zero, stop as a safeguard
+                    Debug.Log($"RemoveOverlap({collider.name}) : Separation amount increased - halting resolution");
+                    break;
+                }
                 _body.Position += separation.distance * separation.normal;
 
                 Vector2 afterStep = _body.Position;
@@ -75,6 +86,7 @@ namespace PQ._Experimental.Physics.Move_006
             Vector2 endPosition = _body.Position;
 
             // bias the resolved position ever so slightly along the normal to prevent contact
+            // note this also prevents infinite flip flopping if body is placed exactly at the center of an overlapping collider
             _body.Position += Epsilon * (endPosition - startPosition).normalized;
         }
 
@@ -97,7 +109,6 @@ namespace PQ._Experimental.Physics.Move_006
             }
         }
 
-
         /*
         Move body by given change in position, taking surface contacts into account.
 
@@ -119,8 +130,8 @@ namespace PQ._Experimental.Physics.Move_006
             int iteration = MaxMoveIterations;
             while (iteration-- > 0 &&
                    distance > Epsilon &&
-                   direction.sqrMagnitude > Epsilon &&
-                   !(direction == Vector2.down && CheckForConcaveFaceBelow()))
+                   direction.sqrMagnitude > Epsilon
+                   /*&&!(direction == Vector2.down && CheckForConcaveFaceBelow())*/)
             {
                 Vector2 beforeStep = _body.Position;
                 Debug.DrawLine(beforeStep, beforeStep + (distance * direction), Color.gray, 1f);

@@ -18,8 +18,6 @@ namespace PQ._Experimental.Physics.Move_006
 
         void Awake()
         {
-            Application.targetFrameRate = 60;
-
             _kinematicBody   = new KinematicBody2D(transform);
             _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
             _positionHistory = new CircularBuffer<Vector2>(capacity: 50);

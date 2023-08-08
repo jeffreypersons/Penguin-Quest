@@ -4,6 +4,20 @@ using UnityEngine;
 
 namespace PQ._Experimental.Physics.Move_006
 {
+    [Flags]
+    public enum ContactFlags2D
+    {
+        None              = 0,
+        LeftSide          = 1 << 1,
+        BottomLeftCorner  = 1 << 2,
+        BottomSide        = 1 << 3,
+        BottomRightCorner = 1 << 4,
+        RightSide         = 1 << 5,
+        TopRightCorner    = 1 << 6,
+        TopSide           = 1 << 7,
+        TopLeftCorner     = 1 << 8,
+        All               = ~0,
+    }
     internal sealed class KinematicBody2D
     {
         private Transform        _transform;
@@ -14,6 +28,7 @@ namespace PQ._Experimental.Physics.Move_006
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
 
+        private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
 
         public override string ToString() =>
@@ -154,6 +169,36 @@ namespace PQ._Experimental.Physics.Move_006
 
             collider = edge;
             return true;
+        }
+
+        public ContactFlags2D CheckSides()
+        {
+            _contactFilter.useNormalAngle = true;
+
+            bool isDiagonal = false;
+            int degrees = 0;
+            ContactFlags2D flags = ContactFlags2D.None;
+            for (int i = 0; i < 7; i++)
+            {
+                if (isDiagonal)
+                {
+                    _contactFilter.SetNormalAngle(degrees - 45 + DefaultEpsilon, degrees + 45 - DefaultEpsilon);
+                }
+                else
+                {
+                    _contactFilter.SetNormalAngle(degrees - DefaultEpsilon, degrees + DefaultEpsilon);
+                }
+                
+                if (_boxCollider.IsTouching(_contactFilter))
+                {
+                    flags |= (ContactFlags2D)(1 << (i+1));
+                }
+
+                degrees += 45;
+                isDiagonal = !isDiagonal;
+            }
+            _contactFilter.useNormalAngle = false;
+            return flags;
         }
 
         /*
