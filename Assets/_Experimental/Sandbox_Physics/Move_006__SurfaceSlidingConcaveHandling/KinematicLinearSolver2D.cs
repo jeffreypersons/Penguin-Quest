@@ -52,10 +52,10 @@ namespace PQ._Experimental.Physics.Move_006
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
 
-            // if collider is entered when resolving resolution, then start further out
-            // specifically this prevents bodies from snapping to the other side of an edge collider
             if (_body.CastRayAt(collider, _body.Position, separation.normal, separation.distance, out var _))
             {
+                // any time surface is passed through (tunneling), moving back along normal prevents this
+                // can occur when body is heavily overlapped with an edge collider, causing it to 'snap' to the other side
                 Debug.Log($"RemoveOverlap({collider.name}) : Initial resolution caused collider to pass through an edge - pushing back to compensate");
                 _body.Position += -2f * _body.ComputeDistanceToEdge(separation.normal) * separation.normal;
             }
@@ -73,8 +73,8 @@ namespace PQ._Experimental.Physics.Move_006
 
                 if (separation.distance >= previousSeparation.distance)
                 {
-                    // typically this only occurs on sharp protruding angles where the body can catapult away from surface normal
-                    // so any time we are trying to converge the separation to zero, stop as a safeguard
+                    // any time separation is not decreasing, then stop as a safeguard
+                    // can occur when body moves into a protruding corner causing over-correction
                     Debug.Log($"RemoveOverlap({collider.name}) : Separation amount increased - halting resolution");
                     break;
                 }
@@ -85,8 +85,8 @@ namespace PQ._Experimental.Physics.Move_006
             }
             Vector2 endPosition = _body.Position;
 
-            // bias the resolved position ever so slightly along the normal to prevent contact
-            // note this also prevents infinite flip flopping if body is placed exactly at the center of an overlapping collider
+            // slightly bias the resolved position along normal to prevent contact
+            // also prevents flip-flopping that can occur on subsequent calls when placed at center of an overlapped region
             _body.Position += Epsilon * (endPosition - startPosition).normalized;
         }
 
