@@ -130,8 +130,7 @@ namespace PQ._Experimental.Physics.Move_006
             int iteration = MaxMoveIterations;
             while (iteration-- > 0 &&
                    distance > Epsilon &&
-                   direction.sqrMagnitude > Epsilon
-                   /*&&!(direction == Vector2.down && CheckForConcaveFaceBelow())*/)
+                   direction.sqrMagnitude > Epsilon)
             {
                 Vector2 beforeStep = _body.Position;
                 Debug.DrawLine(beforeStep, beforeStep + (distance * direction), Color.gray, 1f);
@@ -171,64 +170,44 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 obstruction = default;
             }
-
+            if (obstruction && CheckForObstructingConcaveSurface(direction, step, out RaycastHit2D normalizedHit))
+            {
+                float distancePastOffset = normalizedHit.distance - ContactOffset;
+                step = distancePastOffset < Epsilon ? 0f : distancePastOffset;
+                obstruction = normalizedHit;
+            }
             _body.Position += step * direction;
         }
 
-        private bool CheckForConcaveFaceBelow()
+
+        private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out RaycastHit2D normalizedHit)
         {
-            float bodyRadius = _body.ComputeDistanceToEdge(Vector2.down);
+            normalizedHit = default;
 
-            Vector2 center  = _body.Center;
-            Vector2 extents = _body.Extents;
+            _body.CastRaysFromSide(direction, distance, rayCount: 3, out var hitCount, out var results);
+            Debug.Log($"concaveCheck - left={results[0].distance} mid={results[1].distance} right={results[2].distance}");
 
-            Vector2 bottomCenter = new Vector2(center.x, center.y - extents.y);
-            if (!_body.CastRay(bottomCenter, Vector2.down, bodyRadius, out var middleHit))
+            // technically it is possible that the collider between left/right/middle along a
+            // body's edge is different, but we're not going to worry about that case
+            RaycastHit2D leftHit   = results[0];
+            RaycastHit2D middleHit = results[1];
+            RaycastHit2D rightHit  = results[2];
+
+            if (hitCount < 2 || !leftHit || !rightHit)
+            {
+                return false;
+            }
+            if (middleHit && (middleHit.distance <= leftHit.distance || middleHit.distance <= rightHit.distance))
             {
                 return false;
             }
 
-            Vector2 bottomLeft = new Vector2(center.x - extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomLeft, Vector2.down, middleHit.distance, out var leftHit))
-            {
-                return false;
-            }
-
-            Vector2 bottomRight = new Vector2(center.x + extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomRight, Vector2.down, middleHit.distance, out var rightHit))
-            {
-                return false;
-            }
-
-            Debug.Log($"leftDist={leftHit.distance} middleDist={middleHit.distance} rightDist={rightHit.distance}");
-            return middleHit.distance > leftHit.distance && middleHit.distance > rightHit.distance;
-        }
-        
-        private bool CheckForConcaveFaceAlongPath(Vector2 direction, float distance)
-        {
-            Vector2 center  = _body.Center;
-            Vector2 extents = _body.Extents;
-
-            Vector2 bottomCenter = new Vector2(center.x, center.y - extents.y);
-            if (!_body.CastRay(bottomCenter, direction, distance, out var middleHit))
-            {
-                return false;
-            }
-
-            Vector2 bottomLeft = new Vector2(center.x - extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomLeft, direction, middleHit.distance, out var leftHit))
-            {
-                return false;
-            }
-
-            Vector2 bottomRight = new Vector2(center.x + extents.x, center.y - extents.y);
-            if (!_body.CastRay(bottomRight, direction, middleHit.distance, out var rightHit))
-            {
-                return false;
-            }
-
-            Debug.Log($"leftDist={leftHit.distance} middleDist={middleHit.distance} rightDist={rightHit.distance}");
-            return middleHit.distance > leftHit.distance && middleHit.distance > rightHit.distance;
+            // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
+            normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
+            normalizedHit.centroid = middleHit.centroid;
+            normalizedHit.point    = middleHit.centroid + normalizedHit.distance * direction;
+            normalizedHit.normal   = -direction;
+            return true;
         }
     }
 }

@@ -25,6 +25,7 @@ namespace PQ._Experimental.Physics.Move_006
         private BoxCollider2D    _boxCollider;
         private ContactFilter2D  _contactFilter;
         private RaycastHit2D[]   _hitBuffer;
+        private RaycastHit2D[]   _hitBufferSecondary;
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
 
@@ -82,13 +83,14 @@ namespace PQ._Experimental.Physics.Move_006
                 throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(boxCollider2D)}");
             }
 
-            _transform     = rigidbody2D.transform;
-            _rigidbody     = rigidbody2D;
-            _boxCollider   = boxCollider2D;
-            _contactFilter = new ContactFilter2D();
-            _hitBuffer     = new RaycastHit2D[DefaultBufferSize];
-            _overlapBuffer = new Collider2D[DefaultBufferSize];
-            _contactBuffer = new ContactPoint2D[DefaultBufferSize];
+            _transform          = rigidbody2D.transform;
+            _rigidbody          = rigidbody2D;
+            _boxCollider        = boxCollider2D;
+            _contactFilter      = new ContactFilter2D();
+            _hitBuffer          = new RaycastHit2D  [DefaultBufferSize];
+            _hitBufferSecondary = new RaycastHit2D  [DefaultBufferSize];
+            _overlapBuffer      = new Collider2D    [DefaultBufferSize];
+            _contactBuffer      = new ContactPoint2D[DefaultBufferSize];
 
             _contactFilter.useTriggers    = false;
             _contactFilter.useNormalAngle = false;
@@ -241,11 +243,13 @@ namespace PQ._Experimental.Physics.Move_006
 
             _transform.gameObject.layer = layer;
 
+            #if UNITY_EDITOR
             Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
             if (hit)
             {
                 Debug.DrawLine(origin, hit.point, Color.green, 1f);
             }
+            #endif
             return hit;
         }
 
@@ -270,12 +274,66 @@ namespace PQ._Experimental.Physics.Move_006
 
             _transform.gameObject.layer = layer;
 
+            #if UNITY_EDITOR
             Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
             if (hit)
             {
                 Debug.DrawLine(origin, hit.point, Color.green, 1f);
             }
+            #endif
             return hit;
+        }
+
+        /*
+        Through the side in given direction, project n points outwards, outputting each hit(s).
+
+        Angles of (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
+        
+        Note does not account for edge radius curving at the corners - casts origins are along edge of AABB instead.
+        Note that results length is always equal to count.
+        */
+        public bool CastRaysFromSide(Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
+        {
+            #if UNITY_EDITOR
+            if (rayCount is < 3 or > DefaultBufferSize)
+            {
+                throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
+            }
+            #endif
+
+            int layer = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+
+            int totalHits = 0;
+            (Vector2 normal, Vector2 start, Vector2 end) = FindIntersectingSide(direction);
+            Vector2 delta = (end - start) / rayCount;
+            for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
+            {
+                Vector2 origin = start + (rayIndex * delta);
+                if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
+                {
+                    totalHits++;
+                    _hitBufferSecondary[rayIndex] = _hitBuffer[0];
+                }
+                else
+                {
+                    _hitBufferSecondary[rayIndex] = default;
+                }
+
+                #if UNITY_EDITOR
+                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+                if (_hitBufferSecondary[rayIndex])
+                {
+                    Debug.DrawLine(origin, _hitBufferSecondary[0].point, Color.green, 1f);
+                }
+                #endif
+            }
+            results = _hitBufferSecondary.AsSpan(0, rayCount);
+            hitCount = totalHits;
+
+            _transform.gameObject.layer = layer;
+
+            return hitCount > 0;
         }
 
         /*
@@ -288,6 +346,32 @@ namespace PQ._Experimental.Physics.Move_006
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
+        }
+
+
+        /*
+        Map given direction to a side, returning it's normal and start end points.
+        Relative to right world-axis, angles map as (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
+        */
+        private (Vector2 normal, Vector2 start, Vector2 end) FindIntersectingSide(Vector2 direction)
+        {
+            // map angle to side's normal and corner coordinates, checking from lower right corner of the box
+            float degrees = Vector2.Angle(new Vector2(-1, -1), direction);
+            if (direction.y < 0)
+            {
+                degrees = 360f - degrees;
+            }
+            (Vector2 normal, Vector2 cornerStart, Vector2 cornerEnd) = degrees switch
+            {
+                <= 90f  => (Vector2.left,  new Vector2(-1, -1), new Vector2(-1,  1)),
+                <= 180f => (Vector2.right, new Vector2( 1, -1), new Vector2( 1,  1)),
+                <= 270f => (Vector2.up,    new Vector2(-1,  1), new Vector2( 1,  1)),
+                _       => (Vector2.down,  new Vector2(-1, -1), new Vector2( 1, -1)),
+            };
+            
+            Vector2 center = _boxCollider.bounds.center;
+            Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
+            return (normal, center + extents * cornerStart, center + extents * cornerEnd);
         }
     }
 }
