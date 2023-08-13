@@ -159,23 +159,29 @@ namespace PQ._Experimental.Physics.Move_006
         {
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
 
-            step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + ContactOffset, out var hit))
+            float maxStep = distance < bodyRadius ? distance : bodyRadius;
+            if (!_body.CastAABB(direction, maxStep + ContactOffset, out var closestHit))
             {
-                float distancePastOffset = hit.distance - ContactOffset;
-                step = distancePastOffset < Epsilon? 0f : distancePastOffset;
-                obstruction = hit;
+                obstruction = default;
+                step = maxStep;
+                _body.Position += step * direction;
+                return;
+            }
+
+            // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
+            // movement due to 'flip-flopping' surface normals
+            // so we if we detect one, treat it as a wall
+            if (CheckForObstructingConcaveSurface(direction, maxStep, out RaycastHit2D normalizedHit))
+            {
+                obstruction = normalizedHit;
             }
             else
             {
-                obstruction = default;
+                obstruction = closestHit;
             }
-            if (obstruction && CheckForObstructingConcaveSurface(direction, step, out RaycastHit2D normalizedHit))
-            {
-                float distancePastOffset = normalizedHit.distance - ContactOffset;
-                step = distancePastOffset < Epsilon ? 0f : distancePastOffset;
-                obstruction = normalizedHit;
-            }
+
+            float distancePastOffset = closestHit.distance - ContactOffset;
+            step = distancePastOffset < Epsilon ? 0f : distancePastOffset;
             _body.Position += step * direction;
         }
 
