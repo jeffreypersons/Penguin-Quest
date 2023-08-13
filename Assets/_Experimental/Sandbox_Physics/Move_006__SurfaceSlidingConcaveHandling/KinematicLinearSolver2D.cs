@@ -173,6 +173,7 @@ namespace PQ._Experimental.Physics.Move_006
             // so we if we detect one, treat it as a wall
             if (CheckForObstructingConcaveSurface(direction, maxStep, out RaycastHit2D normalizedHit))
             {
+                Debug.Log("DADA");
                 obstruction = normalizedHit;
             }
             else

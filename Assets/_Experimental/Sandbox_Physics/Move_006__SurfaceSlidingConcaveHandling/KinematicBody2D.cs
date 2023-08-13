@@ -356,16 +356,16 @@ namespace PQ._Experimental.Physics.Move_006
         private (Vector2 normal, Vector2 start, Vector2 end) FindIntersectingSide(Vector2 direction)
         {
             // map angle to side's normal and corner coordinates, checking from lower right corner of the box
-            float degrees = Vector2.Angle(new Vector2(-1, -1), direction);
-            if (direction.y < 0)
+            float degrees = Vector2.SignedAngle(new Vector2(-1, -1), direction);
+            if (degrees < 0)
             {
                 degrees = 360f - degrees;
             }
             (Vector2 normal, Vector2 cornerStart, Vector2 cornerEnd) = degrees switch
             {
-                <= 90f  => (Vector2.left,  new Vector2(-1, -1), new Vector2(-1,  1)),
-                <= 180f => (Vector2.right, new Vector2( 1, -1), new Vector2( 1,  1)),
-                <= 270f => (Vector2.up,    new Vector2(-1,  1), new Vector2( 1,  1)),
+                <= 90f  => (Vector2.right, new Vector2(-1, -1), new Vector2(-1,  1)),
+                <= 180f => (Vector2.up,    new Vector2( 1, -1), new Vector2( 1,  1)),
+                <= 270f => (Vector2.left,  new Vector2(-1,  1), new Vector2( 1,  1)),
                 _       => (Vector2.down,  new Vector2(-1, -1), new Vector2( 1, -1)),
             };
             
