@@ -126,6 +126,19 @@ namespace PQ._Experimental.Physics.Move_006
                 return;
             }
 
+            // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
+            // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
+            if (Vector2.Dot(direction, Vector2.right) is -1 or 0 or 1 &&
+                CheckForObstructingConcaveSurface(direction, _body.ComputeDistanceToEdge(direction), out float delta, out RaycastHit2D normalizedHit) &&
+                delta < Epsilon)
+            {
+                // todo: determine if epsilon is sufficient by trying different concave shapes
+                // todo: fix the normalized point drawn here
+                Debug.Log("Move - trying to move into center of concave section - aborting");
+                Debug.DrawLine(_body.Position, normalizedHit.point, Color.blue, 1f);
+                return;
+            }
+
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
             while (iteration-- > 0 &&
@@ -159,29 +172,27 @@ namespace PQ._Experimental.Physics.Move_006
         {
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
 
-            step = distance < bodyRadius ? distance : bodyRadius;
-            if (_body.CastAABB(direction, step + ContactOffset, out var hit))
+            float maxStep = distance < bodyRadius ? distance : bodyRadius;
+            if (_body.CastAABB(direction, maxStep + ContactOffset, out var closestHit))
             {
-                float distancePastOffset = hit.distance - ContactOffset;
-                step = distancePastOffset < Epsilon? 0f : distancePastOffset;
-                obstruction = hit;
+                obstruction = closestHit;
+                step = closestHit.distance;
             }
             else
             {
                 obstruction = default;
+                step = maxStep;
             }
-            if (obstruction && CheckForObstructingConcaveSurface(direction, step, out RaycastHit2D normalizedHit))
-            {
-                float distancePastOffset = normalizedHit.distance - ContactOffset;
-                step = distancePastOffset < Epsilon ? 0f : distancePastOffset;
-                obstruction = normalizedHit;
-            }
+
+            float distancePastOffset = step - ContactOffset;
+            step = distancePastOffset < Epsilon ? 0f : distancePastOffset;
             _body.Position += step * direction;
         }
 
 
-        private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out RaycastHit2D normalizedHit)
+        private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
         {
+            delta = 0f;
             normalizedHit = default;
 
             _body.CastRaysFromSide(direction, distance, rayCount: 3, out var hitCount, out var results);
@@ -203,6 +214,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
 
             // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
+            delta = Mathf.Abs(leftHit.distance - rightHit.distance);
             normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
             normalizedHit.centroid = middleHit.centroid;
             normalizedHit.point    = middleHit.centroid + normalizedHit.distance * direction;

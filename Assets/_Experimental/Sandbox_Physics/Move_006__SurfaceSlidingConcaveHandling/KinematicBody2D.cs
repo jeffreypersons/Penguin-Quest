@@ -306,11 +306,11 @@ namespace PQ._Experimental.Physics.Move_006
 
             int totalHits = 0;
             (Vector2 normal, Vector2 start, Vector2 end) = FindIntersectingSide(direction);
-            Vector2 delta = (end - start) / rayCount;
+            Vector2 delta = (end - start) / (rayCount-1);
             for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
             {
                 Vector2 origin = start + (rayIndex * delta);
-                if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
+                if (Physics2D.Raycast(origin, normal, _contactFilter, _hitBuffer, distance) > 0)
                 {
                     totalHits++;
                     _hitBufferSecondary[rayIndex] = _hitBuffer[0];
@@ -321,10 +321,10 @@ namespace PQ._Experimental.Physics.Move_006
                 }
 
                 #if UNITY_EDITOR
-                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+                Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
                 if (_hitBufferSecondary[rayIndex])
                 {
-                    Debug.DrawLine(origin, _hitBufferSecondary[0].point, Color.green, 1f);
+                    Debug.DrawLine(origin, origin + _hitBufferSecondary[rayIndex].distance * normal, Color.green, 1f);
                 }
                 #endif
             }
@@ -352,20 +352,21 @@ namespace PQ._Experimental.Physics.Move_006
         /*
         Map given direction to a side, returning it's normal and start end points.
         Relative to right world-axis, angles map as (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
+        Note that start is from bottom and left respectively.
         */
         private (Vector2 normal, Vector2 start, Vector2 end) FindIntersectingSide(Vector2 direction)
         {
             // map angle to side's normal and corner coordinates, checking from lower right corner of the box
-            float degrees = Vector2.Angle(new Vector2(-1, -1), direction);
-            if (direction.y < 0)
+            float degrees = Vector2.SignedAngle(new Vector2(1, -1), direction);
+            if (degrees <= 0)
             {
-                degrees = 360f - degrees;
+                degrees = 360f + degrees;
             }
             (Vector2 normal, Vector2 cornerStart, Vector2 cornerEnd) = degrees switch
             {
-                <= 90f  => (Vector2.left,  new Vector2(-1, -1), new Vector2(-1,  1)),
-                <= 180f => (Vector2.right, new Vector2( 1, -1), new Vector2( 1,  1)),
-                <= 270f => (Vector2.up,    new Vector2(-1,  1), new Vector2( 1,  1)),
+                <= 90f  => (Vector2.right, new Vector2( 1, -1), new Vector2( 1,  1)),
+                <= 180f => (Vector2.up,    new Vector2(-1,  1), new Vector2( 1,  1)),
+                <= 270f => (Vector2.left,  new Vector2(-1, -1), new Vector2(-1,  1)),
                 _       => (Vector2.down,  new Vector2(-1, -1), new Vector2( 1, -1)),
             };
             
