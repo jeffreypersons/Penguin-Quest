@@ -306,11 +306,11 @@ namespace PQ._Experimental.Physics.Move_006
 
             int totalHits = 0;
             (Vector2 normal, Vector2 start, Vector2 end) = FindIntersectingSide(direction);
-            Vector2 delta = (end - start) / rayCount;
+            Vector2 delta = (end - start) / (rayCount-1);
             for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
             {
                 Vector2 origin = start + (rayIndex * delta);
-                if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
+                if (Physics2D.Raycast(origin, normal, _contactFilter, _hitBuffer, distance) > 0)
                 {
                     totalHits++;
                     _hitBufferSecondary[rayIndex] = _hitBuffer[0];
@@ -321,7 +321,7 @@ namespace PQ._Experimental.Physics.Move_006
                 }
 
                 #if UNITY_EDITOR
-                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+                Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
                 if (_hitBufferSecondary[rayIndex])
                 {
                     Debug.DrawLine(origin, _hitBufferSecondary[0].point, Color.green, 1f);
