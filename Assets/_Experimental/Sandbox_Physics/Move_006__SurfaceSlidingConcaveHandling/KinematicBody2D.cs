@@ -324,7 +324,7 @@ namespace PQ._Experimental.Physics.Move_006
                 Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
                 if (_hitBufferSecondary[rayIndex])
                 {
-                    Debug.DrawLine(origin, _hitBufferSecondary[0].point, Color.green, 1f);
+                    Debug.DrawLine(origin, origin + _hitBufferSecondary[rayIndex].distance * normal, Color.green, 1f);
                 }
                 #endif
             }
