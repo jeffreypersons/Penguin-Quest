@@ -130,7 +130,7 @@ namespace PQ._Experimental.Physics.Move_007
 
             // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
-            if (Vector2.Dot(direction, Vector2.right) is -1 or 0 or 1 &&
+            if (IsPerpendicularDirection(direction) &&
                 CheckForObstructingConcaveSurface(direction, maxStep, out float delta, out RaycastHit2D normalizedHit) &&
                 delta < Epsilon)
             {
@@ -229,6 +229,13 @@ namespace PQ._Experimental.Physics.Move_007
 
             float maxStep = distance < bodyRadius ? distance : bodyRadius;
             return maxStep;
+        }
+
+        private bool IsPerpendicularDirection(Vector2 direction)
+        {
+            bool isXZero = Mathf.Approximately(direction.x, 0);
+            bool isYZero = Mathf.Approximately(direction.y, 0);
+            return (isXZero && !isYZero) || (!isXZero && isYZero);
         }
     }
 }
