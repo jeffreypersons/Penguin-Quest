@@ -135,7 +135,7 @@ namespace PQ._Experimental.Physics.Move_006
                 // todo: determine if epsilon is sufficient by trying different concave shapes
                 // todo: fix the normalized point drawn here
                 Debug.Log("Move - trying to move into center of concave section - aborting");
-                Debug.DrawLine(_body.Position, normalizedHit.point, Color.blue, 1f);
+                Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
                 return;
             }
 
