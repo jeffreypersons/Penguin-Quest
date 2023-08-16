@@ -18,8 +18,6 @@ namespace PQ._Experimental.Physics.Move_007
 
         void Awake()
         {
-            Application.targetFrameRate = 60;
-
             _kinematicBody   = new KinematicBody2D(transform);
             _kinematicSolver = new KinematicLinearSolver2D(_kinematicBody);
             _positionHistory = new CircularBuffer<Vector2>(capacity: 50);
@@ -50,23 +48,23 @@ namespace PQ._Experimental.Physics.Move_007
                 _kinematicSolver.Flip(horizontal: _inputAxis.x < 0, vertical: false);
             }
 
-            Vector2 deltaPosition = Time.fixedDeltaTime * _moveSpeed * _inputAxis;
-            _kinematicSolver.Move(deltaPosition);
+            _kinematicSolver.Move(direction: _inputAxis, distance: Time.fixedDeltaTime * _moveSpeed);
         }
 
         void OnCollisionEnter2D(Collision2D collision)
         {
-            _kinematicSolver.RemoveOverlap(collision.collider);
-        }
-
-        void OnCollisionExit2D(Collision2D collision)
-        {
-            _kinematicSolver.RemoveOverlap(collision.collider);
+            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            {
+                _kinematicSolver.ResolveSeparation(collision.collider);
+            }
         }
 
         void OnCollisionStay2D(Collision2D collision)
         {
-            _kinematicSolver.RemoveOverlap(collision.collider);
+            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            {
+                _kinematicSolver.ResolveSeparation(collision.collider);
+            }
         }
 
         void OnDrawGizmos()
