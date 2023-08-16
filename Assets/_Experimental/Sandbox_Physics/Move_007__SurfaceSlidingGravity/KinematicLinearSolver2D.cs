@@ -71,11 +71,11 @@ namespace PQ._Experimental.Physics.Move_007
                 Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations - iteration} : " +
                           $"remaining={separation.distance}, direction={separation.normal}");
 
-                if (separation.distance >= previousSeparation.distance)
+                if (Mathf.Abs(separation.distance) > Mathf.Abs(previousSeparation.distance))
                 {
                     // any time separation is not decreasing, then stop as a safeguard
                     // can occur when body moves into a protruding corner causing over-correction
-                    Debug.Log($"RemoveOverlap({collider.name}) : Separation amount increased - halting resolution");
+                    Debug.Log($"RemoveOverlap({collider.name}) : Separation amount increased from {previousSeparation.distance} to {separation.distance} - halting resolution");
                     break;
                 }
                 _body.Position += separation.distance * separation.normal;
