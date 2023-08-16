@@ -126,10 +126,12 @@ namespace PQ._Experimental.Physics.Move_006
                 return;
             }
 
+            float maxStep = ComputeMaxStep(direction, distance);
+
             // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
             if (Vector2.Dot(direction, Vector2.right) is -1 or 0 or 1 &&
-                CheckForObstructingConcaveSurface(direction, _body.ComputeDistanceToEdge(direction), out float delta, out RaycastHit2D normalizedHit) &&
+                CheckForObstructingConcaveSurface(direction, maxStep, out float delta, out RaycastHit2D normalizedHit) &&
                 delta < Epsilon)
             {
                 // todo: determine if epsilon is sufficient by trying different concave shapes
@@ -152,7 +154,7 @@ namespace PQ._Experimental.Physics.Move_006
                           $"remaining={distance}, direction={direction}");
                 MoveUnobstructed(
                     direction,
-                    distance,
+                    maxStep,
                     out float step,
                     out RaycastHit2D obstruction);
 
@@ -161,18 +163,15 @@ namespace PQ._Experimental.Physics.Move_006
 
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distance -= step;
+                maxStep = ComputeMaxStep(direction, distance);
             }
             Vector2 endPosition = _body.Position;
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
         }
 
 
-        /* Project body along delta until (if any) obstruction. Distance swept is capped at body-radius to prevent tunneling. */
-        private void MoveUnobstructed(Vector2 direction, float distance, out float step, out RaycastHit2D obstruction)
+        private void MoveUnobstructed(Vector2 direction, float maxStep, out float step, out RaycastHit2D obstruction)
         {
-            float bodyRadius = _body.ComputeDistanceToEdge(direction);
-
-            float maxStep = distance < bodyRadius ? distance : bodyRadius;
             if (_body.CastAABB(direction, maxStep + ContactOffset, out var closestHit))
             {
                 obstruction = closestHit;
@@ -222,6 +221,14 @@ namespace PQ._Experimental.Physics.Move_006
             normalizedHit.point    = midPoint + normalizedHit.distance * direction;
             normalizedHit.normal   = -direction;
             return true;
+        }
+
+        private float ComputeMaxStep(Vector2 direction, float distance)
+        {
+            float bodyRadius = _body.ComputeDistanceToEdge(direction);
+
+            float maxStep = distance < bodyRadius ? distance : bodyRadius;
+            return maxStep;
         }
     }
 }
