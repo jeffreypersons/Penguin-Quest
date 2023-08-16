@@ -213,11 +213,13 @@ namespace PQ._Experimental.Physics.Move_006
                 return false;
             }
 
+            Vector2 midPoint = Vector2.LerpUnclamped(leftHit.centroid, rightHit.centroid, 0.50f);
+
             // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
             delta = Mathf.Abs(leftHit.distance - rightHit.distance);
             normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
-            normalizedHit.centroid = middleHit.centroid;
-            normalizedHit.point    = middleHit.centroid + normalizedHit.distance * direction;
+            normalizedHit.centroid = midPoint;
+            normalizedHit.point    = midPoint + normalizedHit.distance * direction;
             normalizedHit.normal   = -direction;
             return true;
         }
