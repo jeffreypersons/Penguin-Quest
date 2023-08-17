@@ -174,20 +174,16 @@ namespace PQ._Experimental.Physics.Move_007
         {
             if (_body.CastAABB(direction, maxStep + ContactOffset, out var closestHit))
             {
+                step = Mathf.Max(closestHit.distance - ContactOffset, 0f);
                 obstruction = closestHit;
-                step = closestHit.distance;
             }
             else
             {
-                obstruction = default;
                 step = maxStep;
+                obstruction = default;
             }
-
-            float distancePastOffset = step - ContactOffset;
-            step = distancePastOffset < Epsilon ? 0f : distancePastOffset;
             _body.Position += step * direction;
         }
-
 
         private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
         {
