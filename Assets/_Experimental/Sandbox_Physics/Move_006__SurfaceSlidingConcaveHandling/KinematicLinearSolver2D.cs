@@ -87,7 +87,7 @@ namespace PQ._Experimental.Physics.Move_006
 
             // slightly bias the resolved position along normal to prevent contact
             // also prevents flip-flopping that can occur on subsequent calls when placed at center of an overlapped region
-            _body.Position += Epsilon * (endPosition - startPosition).normalized;
+            _body.Position += ContactOffset * (endPosition - startPosition).normalized;
         }
 
 
