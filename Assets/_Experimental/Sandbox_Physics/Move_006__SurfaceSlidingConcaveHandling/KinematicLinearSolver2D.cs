@@ -135,7 +135,7 @@ namespace PQ._Experimental.Physics.Move_006
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
             if (IsPerpendicularDirection(direction) &&
                 CheckForObstructingConcaveSurface(direction, maxStep, out float delta, out RaycastHit2D normalizedHit) &&
-                delta < Epsilon)
+                delta < ContactOffset)
             {
                 // todo: determine if epsilon is sufficient by trying different concave shapes
                 // todo: fix the normalized point drawn here
