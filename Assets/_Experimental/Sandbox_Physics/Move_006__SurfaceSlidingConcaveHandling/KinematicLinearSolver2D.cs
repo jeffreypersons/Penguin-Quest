@@ -85,6 +85,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
             Vector2 endPosition = _body.Position;
 
+            // todo: investigate whether we should bias this even if the resolution didn't succeed
             // slightly bias the resolved position along normal to prevent contact
             // also prevents flip-flopping that can occur on subsequent calls when placed at center of an overlapped region
             _body.Position += ContactOffset * (endPosition - startPosition).normalized;
