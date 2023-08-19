@@ -186,6 +186,8 @@ namespace PQ._Experimental.Physics.Move_006
                 obstruction = default;
             }
 
+            Debug.Log($"move obstruction={(bool)obstruction} close={(closestHit.distance is > 0 and < ContactOffset)}");
+
             _body.Position += step * direction;
         }
 
