@@ -342,6 +342,7 @@ namespace PQ._Experimental.Physics.Move_006
         public float ComputeDistanceToEdge(Vector2 direction)
         {
             Bounds bounds = _boxCollider.bounds;
+            bounds.Expand(_boxCollider.edgeRadius);
             bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
