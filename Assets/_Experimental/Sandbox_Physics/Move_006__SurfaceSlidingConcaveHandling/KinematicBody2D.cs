@@ -341,6 +341,9 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public float ComputeDistanceToEdge(Vector2 direction)
         {
+            // todo: consider calculating distance mathematically in a way that accounts for rounded corners due to edge radius
+            //       alternatively, this could be done by subtracting radial distance in proportion to where the ray hits the
+            //       crosses over in the corner region. this could be done by checking if it intersects the small bounded corner region
             Bounds bounds = _boxCollider.bounds;
             bounds.Expand(_boxCollider.edgeRadius);
             bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
