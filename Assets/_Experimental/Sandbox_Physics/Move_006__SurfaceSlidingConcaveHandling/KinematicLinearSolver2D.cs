@@ -119,6 +119,8 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public void Move(Vector2 direction, float distance)
         {
+            direction.Normalize();
+
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
             if (distance * direction == Vector2.zero)
@@ -182,6 +184,7 @@ namespace PQ._Experimental.Physics.Move_006
                 step = maxStep;
                 obstruction = default;
             }
+
             _body.Position += step * direction;
         }
 
