@@ -273,6 +273,14 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = default;
             }
             EnableCollisionsWithAABB();
+
+            #if UNITY_EDITOR
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (hit)
+            {
+                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+            }
+            #endif
             return hit;
         }
 
@@ -290,6 +298,14 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = _hitBuffer[0];
             }
             EnableCollisionsWithAABB();
+            
+            #if UNITY_EDITOR
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (hit)
+            {
+                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+            }
+            #endif
             return hit;
         }
 

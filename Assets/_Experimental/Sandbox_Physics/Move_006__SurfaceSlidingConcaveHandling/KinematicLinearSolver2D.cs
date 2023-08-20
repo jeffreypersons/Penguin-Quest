@@ -144,13 +144,6 @@ namespace PQ._Experimental.Physics.Move_006
                 return;
             }
 
-            Vector2 edgePoint = _body.Position + (_body.ComputeDistanceToEdge(direction)) * direction;
-            if (_body.CastRay(edgePoint, direction, ContactOffset + Epsilon, out RaycastHit2D rayHit) &&
-                rayHit.distance < ContactOffset)
-            {
-                return;
-            }
-
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
             while (iteration-- > 0 &&
@@ -196,10 +189,11 @@ namespace PQ._Experimental.Physics.Move_006
             }
 
             Vector2 edgePoint = _body.Position + (_body.ComputeDistanceToEdge(direction)) * direction;
-            if (_body.CastRay(edgePoint, direction, ContactOffset + Epsilon, out RaycastHit2D rayHit) &&
-                rayHit.distance < ContactOffset)
+            if (_body.CastCircle(edgePoint, ContactOffset, direction, ContactOffset + Epsilon, out RaycastHit2D circleHit) &&
+                circleHit.distance < ContactOffset)
             {
-                float contactOffsetCorrection = ContactOffset - rayHit.distance;
+                obstruction = circleHit;
+                float contactOffsetCorrection = ContactOffset - circleHit.distance;
                 step += contactOffsetCorrection;
                 _body.Position -= contactOffsetCorrection * direction;
             }

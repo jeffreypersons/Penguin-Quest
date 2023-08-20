@@ -128,6 +128,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 553913253703583256, guid: 1d1c18a065f687044a2368cd3e517c65, type: 3}
+      propertyPath: m_EdgeRadius
+      value: 0.015
+      objectReference: {fileID: 0}
     - target: {fileID: 2830441547269114762, guid: 1d1c18a065f687044a2368cd3e517c65, type: 3}
       propertyPath: m_Name
       value: Preset_Platform_Enclosed
