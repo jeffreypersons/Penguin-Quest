@@ -108,6 +108,11 @@ namespace PQ._Experimental.Physics.Move_006
             return _contactFilter.IsFilteringLayerMask(other);
         }
 
+        public bool IsTouching()
+        {
+            return _boxCollider.IsTouching(_contactFilter);
+        }
+
         /*
         Use separating axis theorem to determine distance needed for no overlap.
         
@@ -201,6 +206,21 @@ namespace PQ._Experimental.Physics.Move_006
             }
             _contactFilter.useNormalAngle = false;
             return flags;
+        }
+
+        /*
+        Check for overlapping colliders within our bounding box.
+        */
+        public bool CheckForOverlappingColliders(Vector2 extents, out ReadOnlySpan<Collider2D> colliders)
+        {
+            int layer = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+
+            int colliderCount = Physics2D.OverlapBox(_boxCollider.bounds.center, 2f * extents, 0f, _contactFilter, _overlapBuffer);
+            colliders = _overlapBuffer.AsSpan(0, colliderCount);
+
+            _transform.gameObject.layer = layer;
+            return !colliders.IsEmpty;
         }
 
         /*

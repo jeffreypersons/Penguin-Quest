@@ -175,20 +175,24 @@ namespace PQ._Experimental.Physics.Move_006
 
         private void MoveUnobstructed(Vector2 direction, float maxStep, out float step, out RaycastHit2D obstruction)
         {
-            if (_body.CastAABB(direction, maxStep + ContactOffset, out var closestHit))
+            if (_body.CastAABB(direction, maxStep, out var closestHit))
             {
                 step = Mathf.Max(closestHit.distance - ContactOffset, 0f);
                 obstruction = closestHit;
+                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.cyan, 1f);
             }
             else
             {
-                step = maxStep;
+                step = Mathf.Max(maxStep - ContactOffset, 0f);
                 obstruction = default;
+                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
-
-            Debug.Log($"move obstruction={(bool)obstruction} close={(closestHit.distance is > 0 and < ContactOffset)}");
-
             _body.Position += step * direction;
+            Debug.Log($"move " +
+                $"obs={(bool)obstruction} " +
+                $"close={(closestHit.distance is > 0 and < ContactOffset)} " +
+                $"step={step} " +
+                $"dist={(closestHit.distance is > 0? closestHit.distance.ToString() : "-")}");
         }
 
         private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
