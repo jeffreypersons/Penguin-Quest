@@ -144,6 +144,13 @@ namespace PQ._Experimental.Physics.Move_006
                 return;
             }
 
+            Vector2 edgePoint = _body.Position + (_body.ComputeDistanceToEdge(direction)) * direction;
+            if (_body.CastRay(edgePoint, direction, ContactOffset + Epsilon, out RaycastHit2D rayHit) &&
+                rayHit.distance < ContactOffset)
+            {
+                return;
+            }
+
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
             while (iteration-- > 0 &&
@@ -187,12 +194,16 @@ namespace PQ._Experimental.Physics.Move_006
                 obstruction = default;
                 Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
+
+            Vector2 edgePoint = _body.Position + (_body.ComputeDistanceToEdge(direction)) * direction;
+            if (_body.CastRay(edgePoint, direction, ContactOffset + Epsilon, out RaycastHit2D rayHit) &&
+                rayHit.distance < ContactOffset)
+            {
+                float contactOffsetCorrection = ContactOffset - rayHit.distance;
+                step += contactOffsetCorrection;
+                _body.Position -= contactOffsetCorrection * direction;
+            }
             _body.Position += step * direction;
-            Debug.Log($"move " +
-                $"obs={(bool)obstruction} " +
-                $"close={(closestHit.distance is > 0 and < ContactOffset)} " +
-                $"step={step} " +
-                $"dist={(closestHit.distance is > 0? closestHit.distance.ToString() : "-")}");
         }
 
         private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
