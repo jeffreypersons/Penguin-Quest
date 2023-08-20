@@ -24,10 +24,13 @@ namespace PQ._Experimental.Physics.Move_006
         private Rigidbody2D      _rigidbody;
         private BoxCollider2D    _boxCollider;
         private ContactFilter2D  _contactFilter;
+
         private RaycastHit2D[]   _hitBuffer;
         private RaycastHit2D[]   _hitBufferSecondary;
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
+
+        private LayerMask _previousLayerMask;
 
         private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
@@ -100,6 +103,17 @@ namespace PQ._Experimental.Physics.Move_006
             _rigidbody.isKinematic = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
+        }
+
+        private void EnableCollisionsWithAABB()
+        {
+            _previousLayerMask = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+        }
+
+        private void DisableCollisionsWithAABB()
+        {
+            _transform.gameObject.layer = _previousLayerMask;
         }
 
         /* Check if body is filtering out collisions with given object or not. */
@@ -230,6 +244,7 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
+            // note that there is no need to disable colliders as that is accounted for by collider instance
             if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
@@ -241,6 +256,42 @@ namespace PQ._Experimental.Physics.Move_006
             return hit;
         }
 
+        /*
+        Project a box along given delta.
+        
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        */
+        public bool CastBox(Vector2 origin, float angle, Vector2 extents, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            if (Physics2D.BoxCast(origin, 2f * extents, angle, direction, _contactFilter, _hitBuffer, distance) > 0)
+            {
+                hit = _hitBuffer[0];
+            }
+            else
+            {
+                hit = default;
+            }
+            EnableCollisionsWithAABB();
+            return hit;
+        }
+
+        /*
+        Project a circle along given delta.
+        
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        */
+        public bool CastCircle(Vector2 origin, float radius, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            hit = default;
+            if (Physics2D.CircleCast(origin, radius, direction, _contactFilter, _hitBuffer, distance) > 0)
+            {
+                hit = _hitBuffer[0];
+            }
+            EnableCollisionsWithAABB();
+            return hit;
+        }
 
         /*
         Project point along given delta from given origin, and outputs ALL hits (if any).
@@ -249,9 +300,7 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public bool CastRay(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            DisableCollisionsWithAABB();
             if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
@@ -260,8 +309,7 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 hit = default;
             }
-
-            _transform.gameObject.layer = layer;
+            EnableCollisionsWithAABB();
 
             #if UNITY_EDITOR
             Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
@@ -278,9 +326,7 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            DisableCollisionsWithAABB();
             hit = default;
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
             for (int i = 0; i < hitCount; i++)
@@ -290,9 +336,8 @@ namespace PQ._Experimental.Physics.Move_006
                     hit = _hitBuffer[i];
                     break;
                 }
-            }
-
-            _transform.gameObject.layer = layer;
+            }            
+            EnableCollisionsWithAABB();
 
             #if UNITY_EDITOR
             Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
@@ -320,10 +365,8 @@ namespace PQ._Experimental.Physics.Move_006
                 throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
             }
             #endif
-
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            
+            DisableCollisionsWithAABB();
             int totalHits = 0;
             (Vector2 normal, Vector2 start, Vector2 end) = FindIntersectingSide(direction);
             Vector2 delta = (end - start) / (rayCount-1);
@@ -350,9 +393,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
-
-            _transform.gameObject.layer = layer;
-
+            EnableCollisionsWithAABB();
             return hitCount > 0;
         }
 
