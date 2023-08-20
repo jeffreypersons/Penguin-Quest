@@ -188,12 +188,12 @@ namespace PQ._Experimental.Physics.Move_006
                 Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
 
-            Vector2 edgePoint = _body.Position + (_body.ComputeDistanceToEdge(direction)) * direction;
-            if (_body.CastCircle(edgePoint, ContactOffset, direction, ContactOffset + Epsilon, out RaycastHit2D circleHit) &&
-                circleHit.distance < ContactOffset)
+            float bodyRadius = _body.ComputeDistanceToEdge(direction);
+            if (_body.CastCircle(_body.Position, ContactOffset, direction, bodyRadius + 2f * ContactOffset, out RaycastHit2D circleHit) &&
+                (circleHit.distance - bodyRadius) < ContactOffset)
             {
                 obstruction = circleHit;
-                float contactOffsetCorrection = ContactOffset - circleHit.distance;
+                float contactOffsetCorrection = circleHit.distance - bodyRadius;
                 step += contactOffsetCorrection;
                 _body.Position -= contactOffsetCorrection * direction;
             }
