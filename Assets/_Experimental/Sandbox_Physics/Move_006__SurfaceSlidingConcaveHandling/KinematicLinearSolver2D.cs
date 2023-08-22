@@ -284,7 +284,7 @@ namespace PQ._Experimental.Physics.Move_006
 
         private bool IsDiagonalDirection(Vector2 direction)
         {
-            bool areComponentsEqual = Mathf.Approximately(direction.x, direction.y);
+            bool areComponentsEqual = Mathf.Approximately(Mathf.Abs(direction.x), Mathf.Abs(direction.y));
             return areComponentsEqual;
         }
 
