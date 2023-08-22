@@ -85,6 +85,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
             Vector2 endPosition = _body.Position;
 
+            // todo: investigate whether we should bias this even if the resolution didn't succeed
             // slightly bias the resolved position along normal to prevent contact
             // also prevents flip-flopping that can occur on subsequent calls when placed at center of an overlapped region
             _body.Position += ContactOffset * (endPosition - startPosition).normalized;
@@ -119,6 +120,8 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public void Move(Vector2 direction, float distance)
         {
+            direction.Normalize();
+
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
             if (distance * direction == Vector2.zero)
@@ -131,13 +134,19 @@ namespace PQ._Experimental.Physics.Move_006
             // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
             if (IsPerpendicularDirection(direction) &&
-                CheckForObstructingConcaveSurface(direction, maxStep, out float delta, out RaycastHit2D normalizedHit) &&
-                delta < Epsilon)
+                CheckForObstructingConcaveSurface(direction, maxStep, out float concaveDelta, out RaycastHit2D normalizedConcaveHit) &&
+                concaveDelta < ContactOffset)
             {
-                // todo: determine if epsilon is sufficient by trying different concave shapes
-                // todo: fix the normalized point drawn here
                 Debug.Log("Move - trying to move into center of concave section - aborting");
-                Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
+                Debug.DrawLine(normalizedConcaveHit.centroid, normalizedConcaveHit.point, Color.blue, 1f);
+                return;
+            }
+            if (IsDiagonalDirection(direction) &&
+                CheckForProblematicCorner(direction, distance, out float cornerDelta, out RaycastHit2D normalizedCornerHit) &&
+                cornerDelta < ContactOffset)
+            {
+                Debug.Log("Move - trying to move into center of concave section - aborting");
+                Debug.DrawLine(normalizedCornerHit.centroid, normalizedCornerHit.point, Color.yellow, 1f);
                 return;
             }
 
@@ -172,17 +181,63 @@ namespace PQ._Experimental.Physics.Move_006
 
         private void MoveUnobstructed(Vector2 direction, float maxStep, out float step, out RaycastHit2D obstruction)
         {
-            if (_body.CastAABB(direction, maxStep + ContactOffset, out var closestHit))
+            if (_body.CastAABB(direction, maxStep, out var closestHit))
             {
                 step = Mathf.Max(closestHit.distance - ContactOffset, 0f);
                 obstruction = closestHit;
+                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.cyan, 1f);
             }
             else
             {
-                step = maxStep;
+                step = Mathf.Max(maxStep - ContactOffset, 0f);
                 obstruction = default;
+                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
+            }
+
+            float bodyRadius = _body.ComputeDistanceToEdge(direction);
+            if (_body.CastRay(_body.Position, direction, bodyRadius + ContactOffset, out RaycastHit2D circleHit) &&
+                (circleHit.distance - bodyRadius) < ContactOffset)
+            {
+                obstruction = circleHit;
+                float contactOffsetCorrection = circleHit.distance - bodyRadius;
+                step += contactOffsetCorrection;
+                _body.Position -= contactOffsetCorrection * direction;
             }
             _body.Position += step * direction;
+        }
+
+        private bool CheckForProblematicCorner(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
+        {
+            delta = 0f;
+            normalizedHit = default;
+
+            _body.CastRaysFromCorner(_body.SkinWidth, direction, distance, rayCount: 3, out var hitCount, out var results);
+            Debug.Log($"cornerCheck - left={results[0].distance} mid={results[1].distance} right={results[2].distance}");
+
+            // technically it is possible that the collider between left/right/middle along a
+            // body's edge is different, but we're not going to worry about that case
+            RaycastHit2D leftHit = results[0];
+            RaycastHit2D middleHit = results[1];
+            RaycastHit2D rightHit = results[2];
+
+            if (hitCount < 2 || !leftHit || !rightHit)
+            {
+                return false;
+            }
+            if (middleHit && (middleHit.distance <= leftHit.distance || middleHit.distance <= rightHit.distance))
+            {
+                return false;
+            }
+
+            Vector2 midPoint = Vector2.LerpUnclamped(leftHit.centroid, rightHit.centroid, 0.50f);
+
+            // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
+            delta = Mathf.Abs(leftHit.distance - rightHit.distance);
+            normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
+            normalizedHit.centroid = midPoint;
+            normalizedHit.point    = midPoint + normalizedHit.distance * direction;
+            normalizedHit.normal   = -direction;
+            return true;
         }
 
         private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
@@ -225,6 +280,12 @@ namespace PQ._Experimental.Physics.Move_006
 
             float maxStep = distance < bodyRadius ? distance : bodyRadius;
             return maxStep;
+        }
+
+        private bool IsDiagonalDirection(Vector2 direction)
+        {
+            bool areComponentsEqual = Mathf.Approximately(Mathf.Abs(direction.x), Mathf.Abs(direction.y));
+            return areComponentsEqual;
         }
 
         private bool IsPerpendicularDirection(Vector2 direction)

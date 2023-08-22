@@ -67,6 +67,17 @@ namespace PQ._Experimental.Physics.Move_006
             }
         }
 
+        void OnCollisionExit2D(Collision2D collision)
+        {
+            /*
+            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            {
+                var sep = _kinematicBody.ComputeMinimumSeparation(collision.collider);
+                _kinematicBody.Position += -KinematicLinearSolver2D.Epsilon * sep.normal;
+            }
+            */
+        }
+
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || _positionHistory.Size < 2)

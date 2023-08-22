@@ -24,10 +24,13 @@ namespace PQ._Experimental.Physics.Move_006
         private Rigidbody2D      _rigidbody;
         private BoxCollider2D    _boxCollider;
         private ContactFilter2D  _contactFilter;
+
         private RaycastHit2D[]   _hitBuffer;
         private RaycastHit2D[]   _hitBufferSecondary;
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
+
+        private LayerMask _previousLayerMask;
 
         private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
@@ -102,10 +105,26 @@ namespace PQ._Experimental.Physics.Move_006
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
+        private void EnableCollisionsWithAABB()
+        {
+            _previousLayerMask = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+        }
+
+        private void DisableCollisionsWithAABB()
+        {
+            _transform.gameObject.layer = _previousLayerMask;
+        }
+
         /* Check if body is filtering out collisions with given object or not. */
         public bool IsFilteringLayerMask(GameObject other)
         {
             return _contactFilter.IsFilteringLayerMask(other);
+        }
+
+        public bool IsTouching()
+        {
+            return _boxCollider.IsTouching(_contactFilter);
         }
 
         /*
@@ -204,12 +223,28 @@ namespace PQ._Experimental.Physics.Move_006
         }
 
         /*
+        Check for overlapping colliders within our bounding box.
+        */
+        public bool CheckForOverlappingColliders(Vector2 extents, out ReadOnlySpan<Collider2D> colliders)
+        {
+            int layer = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+
+            int colliderCount = Physics2D.OverlapBox(_boxCollider.bounds.center, 2f * extents, 0f, _contactFilter, _overlapBuffer);
+            colliders = _overlapBuffer.AsSpan(0, colliderCount);
+
+            _transform.gameObject.layer = layer;
+            return !colliders.IsEmpty;
+        }
+
+        /*
         Project AABB along given delta from AABB center, and outputs ALL hits (if any).
 
         Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
+            // note that there is no need to disable colliders as that is accounted for by collider instance
             if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
@@ -221,6 +256,58 @@ namespace PQ._Experimental.Physics.Move_006
             return hit;
         }
 
+        /*
+        Project a box along given delta.
+        
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        */
+        public bool CastBox(Vector2 origin, float angle, Vector2 extents, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            if (Physics2D.BoxCast(origin, 2f * extents, angle, direction, _contactFilter, _hitBuffer, distance) > 0)
+            {
+                hit = _hitBuffer[0];
+            }
+            else
+            {
+                hit = default;
+            }
+            EnableCollisionsWithAABB();
+
+            #if UNITY_EDITOR
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (hit)
+            {
+                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+            }
+            #endif
+            return hit;
+        }
+
+        /*
+        Project a circle along given delta.
+        
+        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        */
+        public bool CastCircle(Vector2 origin, float radius, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            hit = default;
+            if (Physics2D.CircleCast(origin, radius, direction, _contactFilter, _hitBuffer, distance) > 0)
+            {
+                hit = _hitBuffer[0];
+            }
+            EnableCollisionsWithAABB();
+            
+            #if UNITY_EDITOR
+            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+            if (hit)
+            {
+                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+            }
+            #endif
+            return hit;
+        }
 
         /*
         Project point along given delta from given origin, and outputs ALL hits (if any).
@@ -229,9 +316,7 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public bool CastRay(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            DisableCollisionsWithAABB();
             if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
@@ -240,8 +325,7 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 hit = default;
             }
-
-            _transform.gameObject.layer = layer;
+            EnableCollisionsWithAABB();
 
             #if UNITY_EDITOR
             Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
@@ -258,9 +342,7 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            DisableCollisionsWithAABB();
             hit = default;
             int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
             for (int i = 0; i < hitCount; i++)
@@ -270,9 +352,8 @@ namespace PQ._Experimental.Physics.Move_006
                     hit = _hitBuffer[i];
                     break;
                 }
-            }
-
-            _transform.gameObject.layer = layer;
+            }            
+            EnableCollisionsWithAABB();
 
             #if UNITY_EDITOR
             Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
@@ -282,6 +363,60 @@ namespace PQ._Experimental.Physics.Move_006
             }
             #endif
             return hit;
+        }
+
+        /*
+        Through the side in given direction, project n points outwards, outputting each hit(s).
+
+        spreadExtent is defined as the half length of the segment spanning tangent to the closest corner.
+        Angles of (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
+        
+        Note does not account for edge radius curving at the corners - casts origins are along edge of AABB instead.
+        Note that results length is always equal to count.
+        */
+        public bool CastRaysFromCorner(float spreadExtent, Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
+        {
+            #if UNITY_EDITOR
+            if (rayCount is < 3 or > DefaultBufferSize)
+            {
+                throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
+            }
+            #endif
+            
+            DisableCollisionsWithAABB();
+            int totalHits = 0;
+            (Vector2 normal, Vector2 position) = FindClosestCorner(direction);
+            Vector2 tangent = Vector2.Perpendicular(normal);
+            Vector2 start = position + spreadExtent * tangent;
+            Vector2 end = position - spreadExtent * tangent;
+            Debug.DrawLine(start, end, Color.blue, 1f);
+
+            Vector2 delta = (end - start) / (rayCount-1);
+            for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
+            {
+                Vector2 origin = start + (rayIndex * delta);
+                if (Physics2D.Raycast(origin, normal, _contactFilter, _hitBuffer, distance) > 0)
+                {
+                    totalHits++;
+                    _hitBufferSecondary[rayIndex] = _hitBuffer[0];
+                }
+                else
+                {
+                    _hitBufferSecondary[rayIndex] = default;
+                }
+
+                #if UNITY_EDITOR
+                Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
+                if (_hitBufferSecondary[rayIndex])
+                {
+                    Debug.DrawLine(origin, origin + _hitBufferSecondary[rayIndex].distance * normal, Color.green, 1f);
+                }
+                #endif
+            }
+            results = _hitBufferSecondary.AsSpan(0, rayCount);
+            hitCount = totalHits;
+            EnableCollisionsWithAABB();
+            return hitCount > 0;
         }
 
         /*
@@ -300,10 +435,8 @@ namespace PQ._Experimental.Physics.Move_006
                 throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
             }
             #endif
-
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            
+            DisableCollisionsWithAABB();
             int totalHits = 0;
             (Vector2 normal, Vector2 start, Vector2 end) = FindIntersectingSide(direction);
             Vector2 delta = (end - start) / (rayCount-1);
@@ -330,9 +463,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
-
-            _transform.gameObject.layer = layer;
-
+            EnableCollisionsWithAABB();
             return hitCount > 0;
         }
 
@@ -341,13 +472,42 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public float ComputeDistanceToEdge(Vector2 direction)
         {
+            // todo: consider calculating distance mathematically in a way that accounts for rounded corners due to edge radius
+            //       alternatively, this could be done by subtracting radial distance in proportion to where the ray hits the
+            //       crosses over in the corner region. this could be done by checking if it intersects the small bounded corner region
             Bounds bounds = _boxCollider.bounds;
+            bounds.Expand(_boxCollider.edgeRadius);
             bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             return Mathf.Abs(distanceFromCenterToEdge);
         }
 
+        /*
+        Map given direction to a corner, returning it's position.
+        Relative to right bottom-left-corner, angles map as [270,0)=>right [0,90)=>top [90,180)=>left [180,270]=>bottom
+        Note that start is from bottom and left respectively.roundedCornerStart
+        */
+        private (Vector2 normal, Vector2 position) FindClosestCorner(Vector2 direction)
+        {
+            // map angle to side's normal and corner coordinates, checking from lower right corner of the box
+            float degrees = Vector2.SignedAngle(new Vector2(0, -1), direction);
+            if (degrees <= 0)
+            {
+                degrees = 360f + degrees;
+            }
+            Vector2 offset = degrees switch
+            {
+                <= 90f  => new Vector2( 1, -1),
+                <= 180f => new Vector2( 1,  1),
+                <= 270f => new Vector2(-1,  1),
+                _       => new Vector2(-1, -1),
+            };
+            
+            Vector2 center = _boxCollider.bounds.center;
+            Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
+            return (offset.normalized, center + extents * offset);
+        }
 
         /*
         Map given direction to a side, returning it's normal and start end points.
