@@ -389,6 +389,7 @@ namespace PQ._Experimental.Physics.Move_006
             Vector2 tangent = Vector2.Perpendicular(normal);
             Vector2 start = position + spreadExtent * tangent;
             Vector2 end = position - spreadExtent * tangent;
+            Debug.DrawLine(start, end, Color.blue, 1f);
 
             Vector2 delta = (end - start) / (rayCount-1);
             for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
@@ -495,17 +496,17 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 degrees = 360f + degrees;
             }
-            Vector2 normal = (degrees switch
+            Vector2 offset = degrees switch
             {
-                <= 90f  => (new Vector2( 1, -1)),
-                <= 180f => (new Vector2( 1,  1)),
-                <= 270f => (new Vector2(-1,  1)),
-                _       => (new Vector2(-1, -1)),
-            }).normalized;
+                <= 90f  => new Vector2( 1, -1),
+                <= 180f => new Vector2( 1,  1),
+                <= 270f => new Vector2(-1,  1),
+                _       => new Vector2(-1, -1),
+            };
             
             Vector2 center = _boxCollider.bounds.center;
             Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
-            return (normal, center + extents * normal);
+            return (offset.normalized, center + extents * offset);
         }
 
         /*

@@ -147,6 +147,7 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 Debug.Log("Move - trying to move into center of concave section - aborting");
                 Debug.DrawLine(normalizedCornerHit.centroid, normalizedCornerHit.point, Color.yellow, 1f);
+                return;
             }
 
             Vector2 startPosition = _body.Position;
