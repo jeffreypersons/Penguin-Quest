@@ -141,7 +141,8 @@ namespace PQ._Experimental.Physics.Move_006
                 Debug.DrawLine(normalizedConcaveHit.centroid, normalizedConcaveHit.point, Color.blue, 1f);
                 return;
             }
-            if (IsDiagonalDirection(direction) && CheckForProblematicCorner(direction, distance, out float cornerDelta, out RaycastHit2D normalizedCornerHit) &&
+            if (IsDiagonalDirection(direction) &&
+                CheckForProblematicCorner(direction, distance, out float cornerDelta, out RaycastHit2D normalizedCornerHit) &&
                 cornerDelta < ContactOffset)
             {
                 Debug.Log("Move - trying to move into center of concave section - aborting");
@@ -209,8 +210,8 @@ namespace PQ._Experimental.Physics.Move_006
             delta = 0f;
             normalizedHit = default;
 
-            _body.CastRaysFromCorner(ContactOffset, direction, distance, rayCount: 3, out var hitCount, out var results);
-            Debug.Log($"concaveCheck - left={results[0].distance} mid={results[1].distance} right={results[2].distance}");
+            _body.CastRaysFromCorner(_body.SkinWidth, direction, distance, rayCount: 3, out var hitCount, out var results);
+            Debug.Log($"cornerCheck - left={results[0].distance} mid={results[1].distance} right={results[2].distance}");
 
             // technically it is possible that the collider between left/right/middle along a
             // body's edge is different, but we're not going to worry about that case
@@ -231,10 +232,10 @@ namespace PQ._Experimental.Physics.Move_006
 
             // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
             delta = Mathf.Abs(leftHit.distance - rightHit.distance);
-            normalizedHit = leftHit.distance < rightHit.distance ? leftHit : rightHit;
+            normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
             normalizedHit.centroid = midPoint;
-            normalizedHit.point = midPoint + normalizedHit.distance * direction;
-            normalizedHit.normal = -direction;
+            normalizedHit.point    = midPoint + normalizedHit.distance * direction;
+            normalizedHit.normal   = -direction;
             return true;
         }
 

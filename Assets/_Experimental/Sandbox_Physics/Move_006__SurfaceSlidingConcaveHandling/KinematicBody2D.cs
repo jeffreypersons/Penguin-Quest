@@ -495,13 +495,13 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 degrees = 360f + degrees;
             }
-            Vector2 normal = degrees switch
+            Vector2 normal = (degrees switch
             {
                 <= 90f  => (new Vector2( 1, -1)),
                 <= 180f => (new Vector2( 1,  1)),
                 <= 270f => (new Vector2(-1,  1)),
                 _       => (new Vector2(-1, -1)),
-            };
+            }).normalized;
             
             Vector2 center = _boxCollider.bounds.center;
             Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
