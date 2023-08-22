@@ -132,6 +132,14 @@ PrefabInstance:
       propertyPath: m_EdgeRadius
       value: 0.0125
       objectReference: {fileID: 0}
+    - target: {fileID: 553913253703583256, guid: 1d1c18a065f687044a2368cd3e517c65, type: 3}
+      propertyPath: m_Points.Array.data[70].x
+      value: 0.79534525
+      objectReference: {fileID: 0}
+    - target: {fileID: 553913253703583256, guid: 1d1c18a065f687044a2368cd3e517c65, type: 3}
+      propertyPath: m_Points.Array.data[70].y
+      value: 10.241718
+      objectReference: {fileID: 0}
     - target: {fileID: 2830441547269114762, guid: 1d1c18a065f687044a2368cd3e517c65, type: 3}
       propertyPath: m_Name
       value: Preset_Platform_Enclosed
