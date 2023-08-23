@@ -137,7 +137,7 @@ namespace PQ._Experimental.Physics.Move_006
                 CheckForObstructingConcaveSurface(direction, maxStep, out float concaveDelta, out RaycastHit2D normalizedConcaveHit) &&
                 concaveDelta < ContactOffset)
             {
-                Debug.Log("Move - trying to move into center of concave section - aborting");
+                Debug.Log("Move - trying to move into center of concave section while already in contact - aborting");
                 Debug.DrawLine(normalizedConcaveHit.centroid, normalizedConcaveHit.point, Color.blue, 1f);
                 return;
             }
@@ -145,7 +145,7 @@ namespace PQ._Experimental.Physics.Move_006
                 CheckForProblematicCorner(direction, distance, out float cornerDelta, out RaycastHit2D normalizedCornerHit) &&
                 cornerDelta < ContactOffset)
             {
-                Debug.Log("Move - trying to move into center of concave section - aborting");
+                Debug.Log("Move - trying to move diagonally into a corner while already in contact - aborting");
                 Debug.DrawLine(normalizedCornerHit.centroid, normalizedCornerHit.point, Color.yellow, 1f);
                 return;
             }
