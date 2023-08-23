@@ -191,6 +191,7 @@ namespace PQ._Experimental.Physics.Move_006
                 step = Mathf.Max(closestHit.distance - ContactOffset, 0f);
                 obstruction = closestHit;
                 Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.cyan, 1f);
+                DebugExtensions.DrawPlus(closestHit.point, new Vector2(ContactOffset, ContactOffset), 45f, Color.yellow, 1f);
             }
             else
             {
@@ -200,11 +201,11 @@ namespace PQ._Experimental.Physics.Move_006
             }
 
             float bodyRadius = _body.ComputeDistanceToEdge(direction);
-            if (_body.CastRay(_body.Position, direction, bodyRadius + ContactOffset, out RaycastHit2D circleHit) &&
-                (circleHit.distance - bodyRadius) < ContactOffset)
+            if (_body.CastRay(_body.Position, direction, bodyRadius + ContactOffset, out RaycastHit2D rayHit) &&
+                (rayHit.distance - bodyRadius) < ContactOffset)
             {
-                obstruction = circleHit;
-                float contactOffsetCorrection = circleHit.distance - bodyRadius;
+                obstruction = rayHit;
+                float contactOffsetCorrection = rayHit.distance - bodyRadius;
                 Debug.Log($"contactOffsetCorrection={contactOffsetCorrection}");
                 step += contactOffsetCorrection;
                 _body.Position -= contactOffsetCorrection * direction;
