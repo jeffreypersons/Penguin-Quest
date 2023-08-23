@@ -150,6 +150,8 @@ namespace PQ._Experimental.Physics.Move_006
                 return;
             }
 
+            Vector2 previousDirection = direction;
+            float previousDistance = distance;
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
             while (iteration-- > 0 &&
@@ -173,6 +175,9 @@ namespace PQ._Experimental.Physics.Move_006
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distance -= step;
                 maxStep = ComputeMaxStep(direction, distance);
+
+                previousDirection = direction;
+                previousDistance = distance;
             }
             Vector2 endPosition = _body.Position;
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
@@ -189,20 +194,11 @@ namespace PQ._Experimental.Physics.Move_006
             }
             else
             {
-                step = Mathf.Max(maxStep - ContactOffset, 0f);
+                step = maxStep;
                 obstruction = default;
                 Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
 
-            float bodyRadius = _body.ComputeDistanceToEdge(direction);
-            if (_body.CastRay(_body.Position, direction, bodyRadius + ContactOffset, out RaycastHit2D circleHit) &&
-                (circleHit.distance - bodyRadius) < ContactOffset)
-            {
-                obstruction = circleHit;
-                float contactOffsetCorrection = circleHit.distance - bodyRadius;
-                step += contactOffsetCorrection;
-                _body.Position -= contactOffsetCorrection * direction;
-            }
             _body.Position += step * direction;
         }
 
