@@ -199,6 +199,16 @@ namespace PQ._Experimental.Physics.Move_006
                 Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
 
+            float bodyRadius = _body.ComputeDistanceToEdge(direction);
+            if (_body.CastRay(_body.Position, direction, bodyRadius + ContactOffset, out RaycastHit2D circleHit) &&
+                (circleHit.distance - bodyRadius) < ContactOffset)
+            {
+                obstruction = circleHit;
+                float contactOffsetCorrection = circleHit.distance - bodyRadius;
+                Debug.Log($"contactOffsetCorrection={contactOffsetCorrection}");
+                step += contactOffsetCorrection;
+                _body.Position -= contactOffsetCorrection * direction;
+            }
             _body.Position += step * direction;
         }
 
