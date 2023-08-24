@@ -467,20 +467,42 @@ namespace PQ._Experimental.Physics.Move_006
             return hitCount > 0;
         }
 
+
         /*
-        Compute distance from center to edge of our bounding box in given direction.
+        Check if AABB contains point.
         */
-        public float ComputeDistanceToEdge(Vector2 direction)
+        public bool ContainsPointInBounds(Vector2 point)
         {
-            // todo: consider calculating distance mathematically in a way that accounts for rounded corners due to edge radius
-            //       alternatively, this could be done by subtracting radial distance in proportion to where the ray hits the
-            //       crosses over in the corner region. this could be done by checking if it intersects the small bounded corner region
             Bounds bounds = _boxCollider.bounds;
             bounds.Expand(_boxCollider.edgeRadius);
-            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
+            return bounds.Contains(point);
+        }
+        
+        /*
+        Project point _against_ body finding distance to intersection (if any).
+        
+        Works whether starting in or outside bounds.
+        Unlike traditional ray methods, no need for maxDistance.
+        Note not does not account for any rounded corners due to edge radius, for consistency with Unity Physics2D.
+        */
+        public bool IntersectAABB(Vector2 origin, Vector2 direction, out float distanceToEdge)
+        {
+            Bounds bounds = _boxCollider.bounds;
+            bounds.Expand(_boxCollider.edgeRadius);
+
+            bool foundIntersection = bounds.IntersectRay(new Ray(origin, direction), out distanceToEdge);
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
-            return Mathf.Abs(distanceFromCenterToEdge);
+            distanceToEdge = Mathf.Abs(distanceToEdge);
+
+            #if UNITY_EDITOR
+            Debug.DrawRay(origin, direction, Color.cyan, 1f);
+            if (foundIntersection)
+            {
+                Debug.DrawLine(origin, origin + distanceToEdge * direction, Color.cyan, 1f);
+            }
+            #endif
+            return foundIntersection;
         }
 
         /*

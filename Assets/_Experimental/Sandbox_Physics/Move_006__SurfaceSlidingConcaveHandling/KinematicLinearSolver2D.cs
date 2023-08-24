@@ -57,7 +57,8 @@ namespace PQ._Experimental.Physics.Move_006
                 // any time surface is passed through (tunneling), moving back along normal prevents this
                 // can occur when body is heavily overlapped with an edge collider, causing it to 'snap' to the other side
                 Debug.Log($"RemoveOverlap({collider.name}) : Initial resolution caused collider to pass through an edge - pushing back to compensate");
-                _body.Position += -2f * _body.ComputeDistanceToEdge(separation.normal) * separation.normal;
+                _body.IntersectAABB(_body.Position, separation.normal, out float distanceToAABBEdge);
+                _body.Position += -2f * distanceToAABBEdge * separation.normal;
             }
 
             // note that we remove separation if ever so slightly above surface as well
@@ -200,16 +201,14 @@ namespace PQ._Experimental.Physics.Move_006
                 Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
 
-            Vector2 directionToHit = (closestHit.point - _body.Position).normalized;
-            float bodyRadius = _body.ComputeDistanceToEdge(directionToHit);
-            if (_body.CastRay(_body.Position, directionToHit, bodyRadius + ContactOffset, out RaycastHit2D rayHit) &&
-                (rayHit.distance - bodyRadius) < ContactOffset)
+            if (closestHit && _body.IntersectAABB(closestHit.point, closestHit.normal, out float distanceFromSurfaceToAABB) &&
+                distanceFromSurfaceToAABB < ContactOffset)
             {
-                obstruction = rayHit;
-                float contactOffsetCorrection = rayHit.distance - bodyRadius;
+                float contactOffsetCorrection = ContactOffset - distanceFromSurfaceToAABB;
                 Debug.Log($"contactOffsetCorrection={contactOffsetCorrection}");
 
-                DebugExtensions.DrawArrow(rayHit.point, rayHit.point + ContactOffset * rayHit.normal, Color.magenta, 1f);
+                DebugExtensions.DrawArrow(closestHit.point, closestHit.point + ContactOffset * closestHit.normal, Color.magenta, 1f);
+                DebugExtensions.DrawArrow(closestHit.point, closestHit.point + contactOffsetCorrection * closestHit.normal, Color.blue, 1f);
             }
             _body.Position += step * direction;
         }
@@ -284,10 +283,8 @@ namespace PQ._Experimental.Physics.Move_006
 
         private float ComputeMaxStep(Vector2 direction, float distance)
         {
-            float bodyRadius = _body.ComputeDistanceToEdge(direction);
-
-            float maxStep = distance < bodyRadius ? distance : bodyRadius;
-            return maxStep;
+            _body.IntersectAABB(_body.Position, direction, out float bodyRadius);
+            return Mathf.Min(distance, bodyRadius);
         }
 
         private bool IsDiagonalDirection(Vector2 direction)
