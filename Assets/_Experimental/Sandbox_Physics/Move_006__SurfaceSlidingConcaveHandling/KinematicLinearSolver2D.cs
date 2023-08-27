@@ -217,7 +217,7 @@ namespace PQ._Experimental.Physics.Move_006
             normalizedHit.normal   = -direction;
             normalizedHit.centroid = Vector2.LerpUnclamped(hitA.centroid, hitC.centroid, 0.50f);
 
-            Debug.DrawLine(hitA.point, hitB.point, Color.black, 1f);
+            Debug.DrawLine(hitA.point, hitC.point, Color.black, 1f);
             Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
             return true;
         }
