@@ -406,9 +406,8 @@ namespace PQ._Experimental.Physics.Move_006
             int totalHits = 0;
             (Vector2 normal, Vector2 position) = FindClosestCorner(direction);
             Vector2 tangent = Vector2.Perpendicular(normal);
-            Vector2 start = position + spreadExtent * tangent;
-            Vector2 end = position - spreadExtent * tangent;
-            Debug.DrawLine(start, end, Color.blue, 1f);
+            Vector2 start   = position + spreadExtent * tangent;
+            Vector2 end     = position - spreadExtent * tangent;
 
             Vector2 delta = (end - start) / (rayCount-1);
             for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)

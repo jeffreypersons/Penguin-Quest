@@ -136,7 +136,6 @@ namespace PQ._Experimental.Physics.Move_006
                 concaveDelta < ContactOffset)
             {
                 Debug.Log($"Move({distance * direction}) : Obstructed by moving into a concave surface - halting movement");
-                Debug.DrawLine(normalizedCenterHit.centroid, normalizedCenterHit.point, Color.blue, 1f);
                 MoveToAvoidContact(normalizedCenterHit);
                 return;
             }
@@ -176,9 +175,9 @@ namespace PQ._Experimental.Physics.Move_006
             MoveToAvoidContact(obstruction);
         }
 
-        private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
+        private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float distanceDifferential, out RaycastHit2D normalizedHit)
         {
-            delta = 0f;
+            distanceDifferential = 0f;
             normalizedHit = default;
 
             int hitCount;
@@ -196,29 +195,27 @@ namespace PQ._Experimental.Physics.Move_006
                 return false;
             }
 
-            // technically it is possible that the collider between left/right/middle along a
-            // body's edge is different, but we're not going to worry about that case
-            RaycastHit2D leftHit   = results[0];
-            RaycastHit2D middleHit = results[1];
-            RaycastHit2D rightHit  = results[2];
-
-            if (!leftHit || !rightHit)
+            RaycastHit2D hitA = results[0];
+            RaycastHit2D hitB = results[1];
+            RaycastHit2D hitC = results[2];
+            if (hitCount < 2 || !hitA || !hitC)
             {
                 return false;
             }
-            if (middleHit && (middleHit.distance <= leftHit.distance || middleHit.distance <= rightHit.distance))
+            if (hitB && (hitB.distance <= hitA.distance || hitB.distance <= hitC.distance))
             {
                 return false;
             }
 
-            Vector2 midPoint = Vector2.LerpUnclamped(leftHit.centroid, rightHit.centroid, 0.50f);
-
-            // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
-            delta = Mathf.Abs(leftHit.distance - rightHit.distance);
-            normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
-            normalizedHit.centroid = midPoint;
-            normalizedHit.point    = midPoint + normalizedHit.distance * direction;
+            // construct a hit equivalent to moving towards a flat wall spanning between the first and last hits
+            distanceDifferential = Mathf.Abs(hitA.distance - hitC.distance);
+            normalizedHit          = hitA.distance < hitC.distance ? hitA : hitC;
+            normalizedHit.centroid = Vector2.LerpUnclamped(hitA.centroid, hitC.centroid, 0.50f);
+            normalizedHit.point    = normalizedHit.centroid + normalizedHit.distance * direction;
             normalizedHit.normal   = -direction;
+
+            Debug.DrawLine(hitA.point, hitB.point, Color.black, 1f);
+            Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
             return true;
         }
 
