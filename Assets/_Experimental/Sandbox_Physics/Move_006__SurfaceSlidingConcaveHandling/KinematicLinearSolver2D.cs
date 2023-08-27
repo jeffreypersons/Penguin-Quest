@@ -159,18 +159,18 @@ namespace PQ._Experimental.Physics.Move_006
 
         private void MoveUnobstructed(Vector2 direction, float maxStep, out float step, out RaycastHit2D obstruction)
         {
+            Debug.DrawLine(_body.Position, _body.Position + maxStep * direction, Color.red, 1f);
             if (_body.CastAABB(direction, maxStep, out var closestHit))
             {
                 step = Mathf.Max(closestHit.distance - ContactOffset, 0f);
                 obstruction = closestHit;
-                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.cyan, 1f);
-                DebugExtensions.DrawPlus(closestHit.point, new Vector2(ContactOffset, ContactOffset), 45f, Color.yellow, 1f);
+                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.green, 1f);
+                DebugExtensions.DrawArrow(closestHit.point, closestHit.point + ContactOffset * closestHit.normal, Color.grey, 1f);
             }
             else
             {
                 step = maxStep;
                 obstruction = default;
-                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
             _body.Position += step * direction;
             MoveToAvoidContact(obstruction);
