@@ -122,13 +122,14 @@ namespace PQ._Experimental.Physics.Move_006
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
-        private void EnableCollisionsWithAABB()
+
+        private void DisableCollisionsWithAABB()
         {
             _previousLayerMask = _transform.gameObject.layer;
             _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
         }
 
-        private void DisableCollisionsWithAABB()
+        private void ReEnableCollisionsWithAABB()
         {
             _transform.gameObject.layer = _previousLayerMask;
         }
@@ -282,7 +283,7 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 hit = default;
             }
-            EnableCollisionsWithAABB();
+            ReEnableCollisionsWithAABB();
             #if UNITY_EDITOR
             DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
@@ -302,7 +303,7 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 hit = _hitBuffer[0];
             }
-            EnableCollisionsWithAABB();
+            ReEnableCollisionsWithAABB();
             #if UNITY_EDITOR
             DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
@@ -325,7 +326,7 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 hit = default;
             }
-            EnableCollisionsWithAABB();
+            ReEnableCollisionsWithAABB();
             #if UNITY_EDITOR
             DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
@@ -348,7 +349,7 @@ namespace PQ._Experimental.Physics.Move_006
                     break;
                 }
             }
-            EnableCollisionsWithAABB();
+            ReEnableCollisionsWithAABB();
             #if UNITY_EDITOR
             DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
@@ -399,7 +400,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
-            EnableCollisionsWithAABB();
+            ReEnableCollisionsWithAABB();
             return hitCount > 0;
         }
 
@@ -442,7 +443,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
-            EnableCollisionsWithAABB();
+            ReEnableCollisionsWithAABB();
             return hitCount > 0;
         }
 
