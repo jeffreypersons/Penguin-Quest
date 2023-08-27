@@ -35,6 +35,7 @@ namespace PQ._Experimental.Physics.Move_006
 
         private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
+        private readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
 
         public override string ToString() =>
             $"{GetType()}{{" +
@@ -137,10 +138,10 @@ namespace PQ._Experimental.Physics.Move_006
             #endif
         }
         
-        private void DrawIntersectionTestIfEnabled(Vector2 origin, Vector2 direction, float? distanceToIntersection)
+        private void DrawIntersectionTestIfEnabled(Vector2 origin, Vector2 direction, float? distanceToIntersection, bool force=false)
         {
             #if UNITY_EDITOR
-            if (_drawRayCasts)
+            if (_drawRayCasts || force)
             {
                 Debug.DrawRay(origin, direction, Color.cyan, 1f);
                 if (distanceToIntersection.HasValue)
@@ -497,17 +498,18 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 degrees = 360f + degrees;
             }
-            Vector2 offset = degrees switch
+            Vector2 sign = degrees switch
             {
                 <= 90f  => new Vector2( 1, -1),
                 <= 180f => new Vector2( 1,  1),
                 <= 270f => new Vector2(-1,  1),
                 _       => new Vector2(-1, -1),
             };
-            
-            Vector2 center = _boxCollider.bounds.center;
-            Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
-            return (offset.normalized, center + extents * offset);
+
+            Vector2 center       = _boxCollider.bounds.center;
+            Vector2 extents      = _boxCollider.bounds.extents;
+            Vector2 radialOffset = _boxCollider.edgeRadius * NormalizedDiagonal;
+            return (sign * NormalizedDiagonal, center + sign * (extents + radialOffset));
         }
 
         /*
@@ -531,7 +533,7 @@ namespace PQ._Experimental.Physics.Move_006
                 _       => (Vector2.down,  new Vector2(-1, -1), new Vector2( 1, -1)),
             };
             
-            Vector2 center = _boxCollider.bounds.center;
+            Vector2 center  = _boxCollider.bounds.center;
             Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
             return (normal, center + extents * cornerStart, center + extents * cornerEnd);
         }
