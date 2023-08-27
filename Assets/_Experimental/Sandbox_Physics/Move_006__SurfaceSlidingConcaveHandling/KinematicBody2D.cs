@@ -34,6 +34,7 @@ namespace PQ._Experimental.Physics.Move_006
 
         private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
+        private readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
 
         public override string ToString() =>
             $"{GetType()}{{" +
@@ -46,6 +47,7 @@ namespace PQ._Experimental.Physics.Move_006
             $"}}";
 
         public LayerMask LayerMask => _contactFilter.layerMask;
+
 
         public Vector2 Position
         {
@@ -65,7 +67,22 @@ namespace PQ._Experimental.Physics.Move_006
         public Vector2 Extents   => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth     => _transform.position.z;
         public float   SkinWidth => _boxCollider.edgeRadius;
-        
+
+        #if UNITY_EDITOR
+        public bool DrawCastsInEditor { get; set; }
+
+        private void DrawCastInEditorIfEnabled(Vector2 origin, Vector2 direction, float distance, float? hitDistance, bool force=false)
+        {
+            if (DrawCastsInEditor || force)
+            {
+                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+                if (hitDistance.HasValue)
+                {
+                    Debug.DrawLine(origin, origin + hitDistance.Value * direction, Color.green, 1f);
+                }
+            }
+        }
+        #endif
 
         public KinematicBody2D(Transform transform)
         {
@@ -244,16 +261,9 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            // note that there is no need to disable colliders as that is accounted for by collider instance
-            if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
-            {
-                hit = _hitBuffer[0];
-            }
-            else
-            {
-                hit = default;
-            }
-            return hit;
+            Bounds bounds = _boxCollider.bounds;
+            bounds.Expand(_boxCollider.edgeRadius);
+            return CastBox(_rigidbody.position, 0f, bounds.extents, direction, distance, out hit);
         }
 
         /*
@@ -273,13 +283,8 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = default;
             }
             EnableCollisionsWithAABB();
-
             #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
-            }
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
             return hit;
         }
@@ -298,13 +303,8 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = _hitBuffer[0];
             }
             EnableCollisionsWithAABB();
-            
             #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
-            }
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
             return hit;
         }
@@ -326,13 +326,8 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = default;
             }
             EnableCollisionsWithAABB();
-
             #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
-            }
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
             return hit;
         }
@@ -352,15 +347,10 @@ namespace PQ._Experimental.Physics.Move_006
                     hit = _hitBuffer[i];
                     break;
                 }
-            }            
-            EnableCollisionsWithAABB();
-
-            #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
             }
+            EnableCollisionsWithAABB();
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
             #endif
             return hit;
         }
@@ -387,9 +377,8 @@ namespace PQ._Experimental.Physics.Move_006
             int totalHits = 0;
             (Vector2 normal, Vector2 position) = FindClosestCorner(direction);
             Vector2 tangent = Vector2.Perpendicular(normal);
-            Vector2 start = position + spreadExtent * tangent;
-            Vector2 end = position - spreadExtent * tangent;
-            Debug.DrawLine(start, end, Color.blue, 1f);
+            Vector2 start   = position + spreadExtent * tangent;
+            Vector2 end     = position - spreadExtent * tangent;
 
             Vector2 delta = (end - start) / (rayCount-1);
             for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
@@ -404,13 +393,8 @@ namespace PQ._Experimental.Physics.Move_006
                 {
                     _hitBufferSecondary[rayIndex] = default;
                 }
-
                 #if UNITY_EDITOR
-                Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
-                if (_hitBufferSecondary[rayIndex])
-                {
-                    Debug.DrawLine(origin, origin + _hitBufferSecondary[rayIndex].distance * normal, Color.green, 1f);
-                }
+                DrawCastInEditorIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex] ? _hitBufferSecondary[rayIndex].distance : null);
                 #endif
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
@@ -452,13 +436,8 @@ namespace PQ._Experimental.Physics.Move_006
                 {
                     _hitBufferSecondary[rayIndex] = default;
                 }
-
                 #if UNITY_EDITOR
-                Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
-                if (_hitBufferSecondary[rayIndex])
-                {
-                    Debug.DrawLine(origin, origin + _hitBufferSecondary[rayIndex].distance * normal, Color.green, 1f);
-                }
+                DrawCastInEditorIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex]? _hitBufferSecondary[rayIndex].distance : null);
                 #endif
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
@@ -467,20 +446,37 @@ namespace PQ._Experimental.Physics.Move_006
             return hitCount > 0;
         }
 
+
         /*
-        Compute distance from center to edge of our bounding box in given direction.
+        Check if AABB contains point.
         */
-        public float ComputeDistanceToEdge(Vector2 direction)
+        public bool ContainsPointInBounds(Vector2 point)
         {
-            // todo: consider calculating distance mathematically in a way that accounts for rounded corners due to edge radius
-            //       alternatively, this could be done by subtracting radial distance in proportion to where the ray hits the
-            //       crosses over in the corner region. this could be done by checking if it intersects the small bounded corner region
             Bounds bounds = _boxCollider.bounds;
             bounds.Expand(_boxCollider.edgeRadius);
-            bounds.IntersectRay(new Ray(bounds.center, direction), out float distanceFromCenterToEdge);
+            return bounds.Contains(point);
+        }
+        
+        /*
+        Project point _against_ body finding distance to intersection (if any).
+        
+        Works whether starting in or outside bounds.
+        Unlike traditional ray methods, no need for maxDistance.
+        Note not does not account for any rounded corners due to edge radius, for consistency with Unity Physics2D.
+        */
+        public bool IntersectAABB(Vector2 origin, Vector2 direction, out float distanceToEdge)
+        {
+            Bounds bounds = _boxCollider.bounds;
+            bounds.Expand(_boxCollider.edgeRadius);
+
+            bool foundIntersection = bounds.IntersectRay(new Ray(origin, direction), out distanceToEdge);
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
-            return Mathf.Abs(distanceFromCenterToEdge);
+            distanceToEdge = Mathf.Abs(distanceToEdge);
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, Mathf.Infinity, foundIntersection ? distanceToEdge : null);
+            #endif
+            return foundIntersection;
         }
 
         /*
@@ -496,17 +492,18 @@ namespace PQ._Experimental.Physics.Move_006
             {
                 degrees = 360f + degrees;
             }
-            Vector2 offset = degrees switch
+            Vector2 sign = degrees switch
             {
                 <= 90f  => new Vector2( 1, -1),
                 <= 180f => new Vector2( 1,  1),
                 <= 270f => new Vector2(-1,  1),
                 _       => new Vector2(-1, -1),
             };
-            
-            Vector2 center = _boxCollider.bounds.center;
-            Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
-            return (offset.normalized, center + extents * offset);
+
+            Vector2 center       = _boxCollider.bounds.center;
+            Vector2 extents      = _boxCollider.bounds.extents;
+            Vector2 radialOffset = _boxCollider.edgeRadius * NormalizedDiagonal;
+            return (sign * NormalizedDiagonal, center + sign * (extents + radialOffset));
         }
 
         /*
@@ -530,7 +527,7 @@ namespace PQ._Experimental.Physics.Move_006
                 _       => (Vector2.down,  new Vector2(-1, -1), new Vector2( 1, -1)),
             };
             
-            Vector2 center = _boxCollider.bounds.center;
+            Vector2 center  = _boxCollider.bounds.center;
             Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
             return (normal, center + extents * cornerStart, center + extents * cornerEnd);
         }
