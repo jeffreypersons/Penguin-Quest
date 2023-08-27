@@ -9,7 +9,7 @@ namespace PQ._Experimental.Physics.Move_006
         [Range(0,  10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
         
-        #if UNITY_EDITOR        
+        #if UNITY_EDITOR
         [SerializeField] private bool _drawAllCastsFromBody = false;
         private void OnValidate()
         {
