@@ -215,10 +215,11 @@ namespace PQ._Experimental.Physics.Move_006
             normalizedHit          = hitA.distance < hitC.distance ? hitA : hitC;
             normalizedHit.point    = Vector2.LerpUnclamped(hitA.point, hitC.point, 0.50f);
             normalizedHit.normal   = -direction;
-            normalizedHit.centroid = Vector2.LerpUnclamped(hitA.centroid, hitC.centroid, 0.50f);
+            normalizedHit.centroid = normalizedHit.point - normalizedHit.distance * normalizedHit.normal;
 
             Debug.DrawLine(hitA.point, hitC.point, Color.black, 1f);
             Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
+            Debug.Log($"centroid={normalizedHit.centroid} point={normalizedHit.point}");
             return true;
         }
 

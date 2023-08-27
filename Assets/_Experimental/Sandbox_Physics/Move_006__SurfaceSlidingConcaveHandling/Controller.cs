@@ -6,16 +6,26 @@ namespace PQ._Experimental.Physics.Move_006
 {
     public class Controller : MonoBehaviour
     {
-        [SerializeField] private bool _drawAllCastsFromBody = false;
         [Range(0,  10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
+        
+        #if UNITY_EDITOR        
+        [SerializeField] private bool _drawAllCastsFromBody = false;
+        private void OnValidate()
+        {
+            if (Application.IsPlaying(this) && _kinematicBody != null)
+            {
+                _kinematicBody.DrawCastsInEditor = _drawAllCastsFromBody;
+            }
+        }
+        #endif
+
 
         private Vector2 _inputAxis;
 
         private KinematicBody2D         _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;
-
 
         void Awake()
         {
@@ -34,7 +44,6 @@ namespace PQ._Experimental.Physics.Move_006
                 x: (Keyboard.current[Key.A].isPressed ? -1f : 0f) + (Keyboard.current[Key.D].isPressed ? 1f : 0f),
                 y: (Keyboard.current[Key.S].isPressed ? -1f : 0f) + (Keyboard.current[Key.W].isPressed ? 1f : 0f)
             );
-            _kinematicBody.DrawCastsInEditor = _drawAllCastsFromBody;
         }
 
         void FixedUpdate()

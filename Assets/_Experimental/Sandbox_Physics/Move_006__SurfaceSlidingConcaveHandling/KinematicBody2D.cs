@@ -30,7 +30,6 @@ namespace PQ._Experimental.Physics.Move_006
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
 
-        private bool _drawRayCasts;
         private LayerMask _previousLayerMask;
 
         private const float DefaultEpsilon = 0.005f;
@@ -49,11 +48,6 @@ namespace PQ._Experimental.Physics.Move_006
 
         public LayerMask LayerMask => _contactFilter.layerMask;
 
-        public bool DrawCastsInEditor
-        {
-            get => _drawRayCasts;
-            set => _drawRayCasts = value;
-        }
 
         public Vector2 Position
         {
@@ -74,6 +68,21 @@ namespace PQ._Experimental.Physics.Move_006
         public float   Depth     => _transform.position.z;
         public float   SkinWidth => _boxCollider.edgeRadius;
 
+        #if UNITY_EDITOR
+        public bool DrawCastsInEditor { get; set; }
+
+        private void DrawCastInEditorIfEnabled(Vector2 origin, Vector2 direction, float distance, float? hitDistance, bool force=false)
+        {
+            if (DrawCastsInEditor || force)
+            {
+                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+                if (hitDistance.HasValue)
+                {
+                    Debug.DrawLine(origin, origin + hitDistance.Value * direction, Color.green, 1f);
+                }
+            }
+        }
+        #endif
 
         public KinematicBody2D(Transform transform)
         {
@@ -123,35 +132,6 @@ namespace PQ._Experimental.Physics.Move_006
         {
             _transform.gameObject.layer = _previousLayerMask;
         }
-        
-        private void DrawCastIfEnabled(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit, bool force=false)
-        {
-            #if UNITY_EDITOR
-            if (_drawRayCasts || force)
-            {
-                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-                if (hit)
-                {
-                    Debug.DrawLine(origin, hit.point, Color.green, 1f);
-                }
-            }
-            #endif
-        }
-        
-        private void DrawIntersectionTestIfEnabled(Vector2 origin, Vector2 direction, float? distanceToIntersection, bool force=false)
-        {
-            #if UNITY_EDITOR
-            if (_drawRayCasts || force)
-            {
-                Debug.DrawRay(origin, direction, Color.cyan, 1f);
-                if (distanceToIntersection.HasValue)
-                {
-                    Debug.DrawLine(origin, origin + distanceToIntersection.Value * direction, Color.blue, 1f);
-                }
-            }
-            #endif
-        }
-
 
         /* Check if body is filtering out collisions with given object or not. */
         public bool IsFilteringLayerMask(GameObject other)
@@ -303,7 +283,9 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = default;
             }
             EnableCollisionsWithAABB();
-            DrawCastIfEnabled(origin, direction, distance, hit);
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
             return hit;
         }
 
@@ -321,7 +303,9 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = _hitBuffer[0];
             }
             EnableCollisionsWithAABB();
-            DrawCastIfEnabled(origin, direction, distance, hit);
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
             return hit;
         }
 
@@ -342,7 +326,9 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = default;
             }
             EnableCollisionsWithAABB();
-            DrawCastIfEnabled(origin, direction, distance, hit);
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
             return hit;
         }
 
@@ -363,7 +349,9 @@ namespace PQ._Experimental.Physics.Move_006
                 }
             }            
             EnableCollisionsWithAABB();
-            DrawCastIfEnabled(origin, direction, distance, hit);
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
             return hit;
         }
 
@@ -405,7 +393,9 @@ namespace PQ._Experimental.Physics.Move_006
                 {
                     _hitBufferSecondary[rayIndex] = default;
                 }
-                DrawCastIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex], force:true);
+                #if UNITY_EDITOR
+                DrawCastInEditorIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex] ? _hitBufferSecondary[rayIndex].distance : null);
+                #endif
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
@@ -446,7 +436,9 @@ namespace PQ._Experimental.Physics.Move_006
                 {
                     _hitBufferSecondary[rayIndex] = default;
                 }
-                DrawCastIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex]);
+                #if UNITY_EDITOR
+                DrawCastInEditorIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex]? _hitBufferSecondary[rayIndex].distance : null);
+                #endif
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
@@ -481,7 +473,9 @@ namespace PQ._Experimental.Physics.Move_006
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             distanceToEdge = Mathf.Abs(distanceToEdge);
-            DrawIntersectionTestIfEnabled(origin, direction, foundIntersection ? distanceToEdge : null);
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, Mathf.Infinity, foundIntersection ? distanceToEdge : null);
+            #endif
             return foundIntersection;
         }
 
