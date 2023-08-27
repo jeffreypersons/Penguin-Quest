@@ -347,7 +347,7 @@ namespace PQ._Experimental.Physics.Move_006
                     hit = _hitBuffer[i];
                     break;
                 }
-            }            
+            }
             EnableCollisionsWithAABB();
             #if UNITY_EDITOR
             DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);

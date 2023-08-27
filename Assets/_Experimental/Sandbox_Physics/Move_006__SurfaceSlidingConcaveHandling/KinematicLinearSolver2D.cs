@@ -199,7 +199,6 @@ namespace PQ._Experimental.Physics.Move_006
             RaycastHit2D hitA = results[0];
             RaycastHit2D hitB = results[1];
             RaycastHit2D hitC = results[2];
-            Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA?hitA.distance:'-')},B={(hitB?hitB.distance:'-')},C={(hitC?hitC.distance:'-')}]");
             if (hitCount < 2 || !hitA || !hitC)
             {
                 return false;
@@ -209,6 +208,7 @@ namespace PQ._Experimental.Physics.Move_006
                 return false;
             }
 
+            Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA ? hitA.distance : '-')},B={(hitB ? hitB.distance : '-')},C={(hitC ? hitC.distance : '-')}]");
             // construct a hit equivalent to moving towards a flat wall spanning between the first and last hits
             // note that since the collider info cannot be reassigned, the below assumes A and B are same collider
             distanceDifferential = Mathf.Abs(hitA.distance - hitC.distance);
@@ -219,7 +219,6 @@ namespace PQ._Experimental.Physics.Move_006
 
             Debug.DrawLine(hitA.point, hitC.point, Color.black, 1f);
             Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
-            Debug.Log($"centroid={normalizedHit.centroid} point={normalizedHit.point}");
             return true;
         }
 
