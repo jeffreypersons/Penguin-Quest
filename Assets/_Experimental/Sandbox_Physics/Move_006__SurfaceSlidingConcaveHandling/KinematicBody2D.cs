@@ -123,10 +123,10 @@ namespace PQ._Experimental.Physics.Move_006
             _transform.gameObject.layer = _previousLayerMask;
         }
         
-        private void DrawCastIfEnabled(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit)
+        private void DrawCastIfEnabled(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit, bool force=false)
         {
             #if UNITY_EDITOR
-            if (_drawRayCasts)
+            if (_drawRayCasts || force)
             {
                 Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
                 if (hit)
@@ -302,17 +302,7 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = default;
             }
             EnableCollisionsWithAABB();
-
-            #if UNITY_EDITOR
-            if (_drawRayCasts)
-            {
-                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-                if (hit)
-                {
-                    Debug.DrawLine(origin, hit.point, Color.green, 1f);
-                }
-            }
-            #endif
+            DrawCastIfEnabled(origin, direction, distance, hit);
             return hit;
         }
 
@@ -331,14 +321,6 @@ namespace PQ._Experimental.Physics.Move_006
             }
             EnableCollisionsWithAABB();
             DrawCastIfEnabled(origin, direction, distance, hit);
-
-            #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
-            }
-            #endif
             return hit;
         }
 
@@ -422,7 +404,7 @@ namespace PQ._Experimental.Physics.Move_006
                 {
                     _hitBufferSecondary[rayIndex] = default;
                 }
-                DrawCastIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex]);
+                DrawCastIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex], force:true);
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;

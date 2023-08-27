@@ -133,7 +133,7 @@ namespace PQ._Experimental.Physics.Move_006
             // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
             if (CheckForObstructingConcaveSurface(direction, maxStep, out float concaveSampleDistanceDifferential, out RaycastHit2D normalizedCenterHit) &&
-                concaveSampleDistanceDifferential < ContactOffset)
+                (concaveSampleDistanceDifferential < ContactOffset || normalizedCenterHit.distance < ContactOffset))
             {
                 Debug.Log($"Move({distance * direction}) : Obstructed by moving into a concave surface - halting movement");
                 return;
@@ -171,7 +171,6 @@ namespace PQ._Experimental.Physics.Move_006
                 obstruction = default;
             }
             _body.Position += step * direction;
-            MoveToAvoidContact(obstruction);
         }
 
         private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float distanceDifferential, out RaycastHit2D normalizedHit)
@@ -190,7 +189,7 @@ namespace PQ._Experimental.Physics.Move_006
             else if (IsDiagonalDirection(direction))
             {
                 isDiagonal = true;
-                _body.CastRaysFromCorner(spreadExtent: _body.SkinWidth, direction, distance, rayCount: 3, out hitCount, out results);
+                _body.CastRaysFromCorner(spreadExtent: 0.50f * _body.SkinWidth, direction, distance, rayCount: 3, out hitCount, out results);
             }
             else
             {
@@ -200,7 +199,7 @@ namespace PQ._Experimental.Physics.Move_006
             RaycastHit2D hitA = results[0];
             RaycastHit2D hitB = results[1];
             RaycastHit2D hitC = results[2];
-            Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA?hitA.distance:'-')},B={(hitB?hitB.distance:'-')},C={(hitC?hitC.distance:'-')}");
+            Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA?hitA.distance:'-')},B={(hitB?hitB.distance:'-')},C={(hitC?hitC.distance:'-')}]");
             if (hitCount < 2 || !hitA || !hitC)
             {
                 return false;
