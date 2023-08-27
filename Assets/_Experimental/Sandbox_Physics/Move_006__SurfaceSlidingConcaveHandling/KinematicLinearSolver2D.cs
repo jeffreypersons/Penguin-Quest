@@ -132,11 +132,10 @@ namespace PQ._Experimental.Physics.Move_006
 
             // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
-            if (CheckForObstructingConcaveSurface(direction, maxStep, out float concaveDelta, out RaycastHit2D normalizedCenterHit) &&
-                concaveDelta < ContactOffset)
+            if (CheckForObstructingConcaveSurface(direction, maxStep, out float concaveSampleDistanceDifferential, out RaycastHit2D normalizedCenterHit) &&
+                concaveSampleDistanceDifferential < ContactOffset)
             {
                 Debug.Log($"Move({distance * direction}) : Obstructed by moving into a concave surface - halting movement");
-                MoveToAvoidContact(normalizedCenterHit);
                 return;
             }
 
@@ -180,15 +179,18 @@ namespace PQ._Experimental.Physics.Move_006
             distanceDifferential = 0f;
             normalizedHit = default;
 
+            bool isDiagonal;
             int hitCount;
             ReadOnlySpan<RaycastHit2D> results;
             if (IsPerpendicularDirection(direction))
             {
+                isDiagonal = false;
                 _body.CastRaysFromSide(direction, distance, rayCount: 3, out hitCount, out results);
             }
             else if (IsDiagonalDirection(direction))
             {
-                _body.CastRaysFromCorner(spreadExtent: Epsilon, direction, distance, rayCount: 3, out hitCount, out results);
+                isDiagonal = true;
+                _body.CastRaysFromCorner(spreadExtent: _body.SkinWidth, direction, distance, rayCount: 3, out hitCount, out results);
             }
             else
             {
@@ -198,6 +200,7 @@ namespace PQ._Experimental.Physics.Move_006
             RaycastHit2D hitA = results[0];
             RaycastHit2D hitB = results[1];
             RaycastHit2D hitC = results[2];
+            Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA?hitA.distance:'-')},B={(hitB?hitB.distance:'-')},C={(hitC?hitC.distance:'-')}");
             if (hitCount < 2 || !hitA || !hitC)
             {
                 return false;
@@ -208,11 +211,12 @@ namespace PQ._Experimental.Physics.Move_006
             }
 
             // construct a hit equivalent to moving towards a flat wall spanning between the first and last hits
+            // note that since the collider info cannot be reassigned, the below assumes A and B are same collider
             distanceDifferential = Mathf.Abs(hitA.distance - hitC.distance);
             normalizedHit          = hitA.distance < hitC.distance ? hitA : hitC;
-            normalizedHit.centroid = Vector2.LerpUnclamped(hitA.centroid, hitC.centroid, 0.50f);
-            normalizedHit.point    = normalizedHit.centroid + normalizedHit.distance * direction;
+            normalizedHit.point    = Vector2.LerpUnclamped(hitA.point, hitC.point, 0.50f);
             normalizedHit.normal   = -direction;
+            normalizedHit.centroid = Vector2.LerpUnclamped(hitA.centroid, hitC.centroid, 0.50f);
 
             Debug.DrawLine(hitA.point, hitB.point, Color.black, 1f);
             Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
