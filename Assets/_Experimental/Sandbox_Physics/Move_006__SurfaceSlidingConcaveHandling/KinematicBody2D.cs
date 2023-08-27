@@ -30,6 +30,7 @@ namespace PQ._Experimental.Physics.Move_006
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
 
+        private bool _drawRayCasts;
         private LayerMask _previousLayerMask;
 
         private const float DefaultEpsilon = 0.005f;
@@ -46,6 +47,12 @@ namespace PQ._Experimental.Physics.Move_006
             $"}}";
 
         public LayerMask LayerMask => _contactFilter.layerMask;
+
+        public bool DrawCastsInEditor
+        {
+            get => _drawRayCasts;
+            set => _drawRayCasts = value;
+        }
 
         public Vector2 Position
         {
@@ -65,7 +72,7 @@ namespace PQ._Experimental.Physics.Move_006
         public Vector2 Extents   => _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
         public float   Depth     => _transform.position.z;
         public float   SkinWidth => _boxCollider.edgeRadius;
-        
+
 
         public KinematicBody2D(Transform transform)
         {
@@ -115,6 +122,35 @@ namespace PQ._Experimental.Physics.Move_006
         {
             _transform.gameObject.layer = _previousLayerMask;
         }
+        
+        private void DrawCastIfEnabled(Vector2 origin, Vector2 direction, float distance, RaycastHit2D hit)
+        {
+            #if UNITY_EDITOR
+            if (_drawRayCasts)
+            {
+                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+                if (hit)
+                {
+                    Debug.DrawLine(origin, hit.point, Color.green, 1f);
+                }
+            }
+            #endif
+        }
+        
+        private void DrawIntersectionTestIfEnabled(Vector2 origin, Vector2 direction, float? distanceToIntersection)
+        {
+            #if UNITY_EDITOR
+            if (_drawRayCasts)
+            {
+                Debug.DrawRay(origin, direction, Color.cyan, 1f);
+                if (distanceToIntersection.HasValue)
+                {
+                    Debug.DrawLine(origin, origin + distanceToIntersection.Value * direction, Color.blue, 1f);
+                }
+            }
+            #endif
+        }
+
 
         /* Check if body is filtering out collisions with given object or not. */
         public bool IsFilteringLayerMask(GameObject other)
@@ -244,16 +280,9 @@ namespace PQ._Experimental.Physics.Move_006
         */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            // note that there is no need to disable colliders as that is accounted for by collider instance
-            if (_boxCollider.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
-            {
-                hit = _hitBuffer[0];
-            }
-            else
-            {
-                hit = default;
-            }
-            return hit;
+            Bounds bounds = _boxCollider.bounds;
+            bounds.Expand(_boxCollider.edgeRadius);
+            return CastBox(_rigidbody.position, 0f, bounds.extents, direction, distance, out hit);
         }
 
         /*
@@ -275,10 +304,13 @@ namespace PQ._Experimental.Physics.Move_006
             EnableCollisionsWithAABB();
 
             #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
+            if (_drawRayCasts)
             {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
+                Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
+                if (hit)
+                {
+                    Debug.DrawLine(origin, hit.point, Color.green, 1f);
+                }
             }
             #endif
             return hit;
@@ -298,7 +330,8 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = _hitBuffer[0];
             }
             EnableCollisionsWithAABB();
-            
+            DrawCastIfEnabled(origin, direction, distance, hit);
+
             #if UNITY_EDITOR
             Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
             if (hit)
@@ -326,14 +359,7 @@ namespace PQ._Experimental.Physics.Move_006
                 hit = default;
             }
             EnableCollisionsWithAABB();
-
-            #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
-            }
-            #endif
+            DrawCastIfEnabled(origin, direction, distance, hit);
             return hit;
         }
 
@@ -354,14 +380,7 @@ namespace PQ._Experimental.Physics.Move_006
                 }
             }            
             EnableCollisionsWithAABB();
-
-            #if UNITY_EDITOR
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
-            }
-            #endif
+            DrawCastIfEnabled(origin, direction, distance, hit);
             return hit;
         }
 
@@ -404,14 +423,7 @@ namespace PQ._Experimental.Physics.Move_006
                 {
                     _hitBufferSecondary[rayIndex] = default;
                 }
-
-                #if UNITY_EDITOR
-                Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
-                if (_hitBufferSecondary[rayIndex])
-                {
-                    Debug.DrawLine(origin, origin + _hitBufferSecondary[rayIndex].distance * normal, Color.green, 1f);
-                }
-                #endif
+                DrawCastIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex]);
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
@@ -452,14 +464,7 @@ namespace PQ._Experimental.Physics.Move_006
                 {
                     _hitBufferSecondary[rayIndex] = default;
                 }
-
-                #if UNITY_EDITOR
-                Debug.DrawLine(origin, origin + distance * normal, Color.red, 1f);
-                if (_hitBufferSecondary[rayIndex])
-                {
-                    Debug.DrawLine(origin, origin + _hitBufferSecondary[rayIndex].distance * normal, Color.green, 1f);
-                }
-                #endif
+                DrawCastIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex]);
             }
             results = _hitBufferSecondary.AsSpan(0, rayCount);
             hitCount = totalHits;
@@ -494,14 +499,7 @@ namespace PQ._Experimental.Physics.Move_006
 
             // discard sign since distance is negative if starts within bounds (contrary to other ray methods)
             distanceToEdge = Mathf.Abs(distanceToEdge);
-
-            #if UNITY_EDITOR
-            Debug.DrawRay(origin, direction, Color.cyan, 1f);
-            if (foundIntersection)
-            {
-                Debug.DrawLine(origin, origin + distanceToEdge * direction, Color.cyan, 1f);
-            }
-            #endif
+            DrawIntersectionTestIfEnabled(origin, direction, foundIntersection ? distanceToEdge : null);
             return foundIntersection;
         }
 

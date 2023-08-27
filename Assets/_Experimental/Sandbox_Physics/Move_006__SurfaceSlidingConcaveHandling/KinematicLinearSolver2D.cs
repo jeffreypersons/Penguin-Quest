@@ -134,51 +134,25 @@ namespace PQ._Experimental.Physics.Move_006
 
             // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
-            if (IsPerpendicularDirection(direction) &&
-                CheckForObstructingConcaveSurface(direction, maxStep, out float concaveDelta, out RaycastHit2D normalizedConcaveHit) &&
+            if (CheckForObstructingConcaveSurface(direction, maxStep, out float concaveDelta, out RaycastHit2D normalizedCenterHit) &&
                 concaveDelta < ContactOffset)
             {
-                Debug.Log("Move - trying to move into center of concave section while already in contact - aborting");
-                Debug.DrawLine(normalizedConcaveHit.centroid, normalizedConcaveHit.point, Color.blue, 1f);
-                return;
-            }
-            if (IsDiagonalDirection(direction) &&
-                CheckForProblematicCorner(direction, distance, out float cornerDelta, out RaycastHit2D normalizedCornerHit) &&
-                cornerDelta < ContactOffset)
-            {
-                Debug.Log("Move - trying to move diagonally into a corner while already in contact - aborting");
-                Debug.DrawLine(normalizedCornerHit.centroid, normalizedCornerHit.point, Color.yellow, 1f);
+                Debug.Log($"Move({distance * direction}).substep#0 : remaining={distance}, direction={direction} - obstructed by concave surface");
+                Debug.DrawLine(normalizedCenterHit.centroid, normalizedCenterHit.point, Color.blue, 1f);
+                MoveToAvoidContact(normalizedCenterHit);
                 return;
             }
 
-            Vector2 previousDirection = direction;
-            float previousDistance = distance;
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
-            while (iteration-- > 0 &&
-                   distance > Epsilon &&
-                   direction.sqrMagnitude > Epsilon)
+            while (iteration-- > 0 && distance > Epsilon && direction.sqrMagnitude > Epsilon)
             {
-                Vector2 beforeStep = _body.Position;
-                Debug.DrawLine(beforeStep, beforeStep + (distance * direction), Color.gray, 1f);
-                
-                Debug.Log($"Move({distance*direction}).substep#{MaxMoveIterations-iteration} : " +
-                          $"remaining={distance}, direction={direction}");
-                MoveUnobstructed(
-                    direction,
-                    maxStep,
-                    out float step,
-                    out RaycastHit2D obstruction);
-
-                Vector2 afterStep = _body.Position;
-                Debug.DrawLine(beforeStep, afterStep, Color.green, 1f);
+                Debug.Log($"Move({distance*direction}).substep#{MaxMoveIterations-iteration} : remaining={distance}, direction={direction}");
+                MoveUnobstructed(direction, maxStep, out float step,out RaycastHit2D obstruction);
 
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distance -= step;
                 maxStep = ComputeMaxStep(direction, distance);
-
-                previousDirection = direction;
-                previousDistance = distance;
             }
             Vector2 endPosition = _body.Position;
             _body.MovePositionWithoutBreakingInterpolation(startPosition, endPosition);
@@ -200,51 +174,8 @@ namespace PQ._Experimental.Physics.Move_006
                 obstruction = default;
                 Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.magenta, 1f);
             }
-
-            if (closestHit && _body.IntersectAABB(closestHit.point, closestHit.normal, out float distanceFromSurfaceToAABB) &&
-                distanceFromSurfaceToAABB < ContactOffset)
-            {
-                float contactOffsetCorrection = ContactOffset - distanceFromSurfaceToAABB;
-                Debug.Log($"contactOffsetCorrection={contactOffsetCorrection}");
-
-                DebugExtensions.DrawArrow(closestHit.point, closestHit.point + ContactOffset * closestHit.normal, Color.magenta, 1f);
-                DebugExtensions.DrawArrow(closestHit.point, closestHit.point + contactOffsetCorrection * closestHit.normal, Color.blue, 1f);
-            }
             _body.Position += step * direction;
-        }
-
-        private bool CheckForProblematicCorner(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
-        {
-            delta = 0f;
-            normalizedHit = default;
-
-            _body.CastRaysFromCorner(_body.SkinWidth, direction, distance, rayCount: 3, out var hitCount, out var results);
-            Debug.Log($"cornerCheck - left={results[0].distance} mid={results[1].distance} right={results[2].distance}");
-
-            // technically it is possible that the collider between left/right/middle along a
-            // body's edge is different, but we're not going to worry about that case
-            RaycastHit2D leftHit = results[0];
-            RaycastHit2D middleHit = results[1];
-            RaycastHit2D rightHit = results[2];
-
-            if (hitCount < 2 || !leftHit || !rightHit)
-            {
-                return false;
-            }
-            if (middleHit && (middleHit.distance <= leftHit.distance || middleHit.distance <= rightHit.distance))
-            {
-                return false;
-            }
-
-            Vector2 midPoint = Vector2.LerpUnclamped(leftHit.centroid, rightHit.centroid, 0.50f);
-
-            // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
-            delta = Mathf.Abs(leftHit.distance - rightHit.distance);
-            normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
-            normalizedHit.centroid = midPoint;
-            normalizedHit.point    = midPoint + normalizedHit.distance * direction;
-            normalizedHit.normal   = -direction;
-            return true;
+            MoveToAvoidContact(obstruction);
         }
 
         private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
@@ -252,8 +183,20 @@ namespace PQ._Experimental.Physics.Move_006
             delta = 0f;
             normalizedHit = default;
 
-            _body.CastRaysFromSide(direction, distance, rayCount: 3, out var hitCount, out var results);
-            Debug.Log($"concaveCheck - left={results[0].distance} mid={results[1].distance} right={results[2].distance}");
+            int hitCount;
+            ReadOnlySpan<RaycastHit2D> results;
+            if (IsPerpendicularDirection(direction))
+            {
+                _body.CastRaysFromSide(direction, distance, rayCount: 3, out hitCount, out results);
+            }
+            else if (IsDiagonalDirection(direction))
+            {
+                _body.CastRaysFromCorner(spreadExtent: Epsilon, direction, distance, rayCount: 3, out hitCount, out results);
+            }
+            else
+            {
+                return false;
+            }
 
             // technically it is possible that the collider between left/right/middle along a
             // body's edge is different, but we're not going to worry about that case
@@ -261,7 +204,7 @@ namespace PQ._Experimental.Physics.Move_006
             RaycastHit2D middleHit = results[1];
             RaycastHit2D rightHit  = results[2];
 
-            if (hitCount < 2 || !leftHit || !rightHit)
+            if (!leftHit || !rightHit)
             {
                 return false;
             }
@@ -280,6 +223,7 @@ namespace PQ._Experimental.Physics.Move_006
             normalizedHit.normal   = -direction;
             return true;
         }
+
 
         private float ComputeMaxStep(Vector2 direction, float distance)
         {
@@ -298,6 +242,15 @@ namespace PQ._Experimental.Physics.Move_006
             bool isXZero = Mathf.Approximately(direction.x, 0);
             bool isYZero = Mathf.Approximately(direction.y, 0);
             return (isXZero && !isYZero) || (!isXZero && isYZero);
+        }
+
+        private void MoveToAvoidContact(RaycastHit2D hit)
+        {
+            float adjustmentAmount = Mathf.Max(0f, ContactOffset - hit.distance);
+            if (adjustmentAmount > 0f)
+            {
+                _body.Position += adjustmentAmount * hit.normal;
+            }
         }
     }
 }

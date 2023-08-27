@@ -6,6 +6,7 @@ namespace PQ._Experimental.Physics.Move_006
 {
     public class Controller : MonoBehaviour
     {
+        [SerializeField] private bool _drawAllCastsFromBody = false;
         [Range(0,  10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
 
@@ -33,6 +34,7 @@ namespace PQ._Experimental.Physics.Move_006
                 x: (Keyboard.current[Key.A].isPressed ? -1f : 0f) + (Keyboard.current[Key.D].isPressed ? 1f : 0f),
                 y: (Keyboard.current[Key.S].isPressed ? -1f : 0f) + (Keyboard.current[Key.W].isPressed ? 1f : 0f)
             );
+            _kinematicBody.DrawCastsInEditor = _drawAllCastsFromBody;
         }
 
         void FixedUpdate()
