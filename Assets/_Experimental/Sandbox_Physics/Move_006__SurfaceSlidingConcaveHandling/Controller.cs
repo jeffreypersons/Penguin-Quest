@@ -64,6 +64,7 @@ namespace PQ._Experimental.Physics.Move_006
 
         void OnCollisionEnter2D(Collision2D collision)
         {
+            Debug.Log("OnCollisionEnter2D");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 _kinematicSolver.ResolveSeparation(collision.collider);
@@ -72,6 +73,7 @@ namespace PQ._Experimental.Physics.Move_006
 
         void OnCollisionStay2D(Collision2D collision)
         {
+            Debug.Log("OnCollisionStay2D");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 _kinematicSolver.ResolveSeparation(collision.collider);
@@ -80,6 +82,7 @@ namespace PQ._Experimental.Physics.Move_006
 
         void OnCollisionExit2D(Collision2D collision)
         {
+            Debug.Log("OnCollisionExit2D");
             /*
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
