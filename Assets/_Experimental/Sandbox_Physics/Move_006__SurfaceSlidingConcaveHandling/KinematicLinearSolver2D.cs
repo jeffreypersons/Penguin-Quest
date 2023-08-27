@@ -54,9 +54,9 @@ namespace PQ._Experimental.Physics.Move_006
 
             if (_body.CastRayAt(collider, _body.Position, separation.normal, separation.distance, out var _))
             {
-                // any time surface is passed through (tunneling), moving back along normal prevents this
-                // can occur when body is heavily overlapped with an edge collider, causing it to 'snap' to the other side
-                Debug.Log($"RemoveOverlap({collider.name}) : Initial resolution caused collider to pass through an edge - pushing back to compensate");
+                // any surface passed through (tunneling) for the initial separation can be prevented by moving back along normal
+                // May occur when body is heavily overlapped with an edge collider causing it 'snap' to other side
+                Debug.Log($"RemoveOverlap({collider.name}).substep#precheck : Initial resolution caused collider to pass through an edge - pushing back to compensate");
                 _body.IntersectAABB(_body.Position, separation.normal, out float distanceToAABBEdge);
                 _body.Position += -2f * distanceToAABBEdge * separation.normal;
             }
@@ -69,13 +69,11 @@ namespace PQ._Experimental.Physics.Move_006
                 Vector2 beforeStep = _body.Position;
                 separation = _body.ComputeMinimumSeparation(collider);
 
-                Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations - iteration} : " +
-                          $"remaining={separation.distance}, direction={separation.normal}");
+                Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations - iteration} : remaining={separation.distance}, direction={separation.normal}");
 
                 if (Mathf.Abs(separation.distance) > Mathf.Abs(previousSeparation.distance))
                 {
-                    // any time separation is not decreasing, then stop as a safeguard
-                    // can occur when body moves into a protruding corner causing over-correction
+                    // Any time separation not decreasing then bail out. May occur when moving into a protruding corner causing over-correction.
                     Debug.Log($"RemoveOverlap({collider.name}) : Separation amount increased from {previousSeparation.distance} to {separation.distance} - halting resolution");
                     break;
                 }
@@ -137,7 +135,7 @@ namespace PQ._Experimental.Physics.Move_006
             if (CheckForObstructingConcaveSurface(direction, maxStep, out float concaveDelta, out RaycastHit2D normalizedCenterHit) &&
                 concaveDelta < ContactOffset)
             {
-                Debug.Log($"Move({distance * direction}).substep#0 : remaining={distance}, direction={direction} - obstructed by concave surface");
+                Debug.Log($"Move({distance * direction}) : Obstructed by moving into a concave surface - halting movement");
                 Debug.DrawLine(normalizedCenterHit.centroid, normalizedCenterHit.point, Color.blue, 1f);
                 MoveToAvoidContact(normalizedCenterHit);
                 return;
