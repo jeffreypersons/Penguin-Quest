@@ -25,8 +25,8 @@ namespace PQ._Experimental.Physics.Move_006
         private BoxCollider2D    _boxCollider;
         private ContactFilter2D  _contactFilter;
 
+        private RaycastHit2D[]   _singleHit;
         private RaycastHit2D[]   _hitBuffer;
-        private RaycastHit2D[]   _hitBufferSecondary;
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
 
@@ -103,14 +103,14 @@ namespace PQ._Experimental.Physics.Move_006
                 throw new MissingComponentException($"Expected attached {nameof(Rigidbody2D)} - not found on {nameof(boxCollider2D)}");
             }
 
-            _transform          = rigidbody2D.transform;
-            _rigidbody          = rigidbody2D;
-            _boxCollider        = boxCollider2D;
-            _contactFilter      = new ContactFilter2D();
-            _hitBuffer          = new RaycastHit2D  [DefaultBufferSize];
-            _hitBufferSecondary = new RaycastHit2D  [DefaultBufferSize];
-            _overlapBuffer      = new Collider2D    [DefaultBufferSize];
-            _contactBuffer      = new ContactPoint2D[DefaultBufferSize];
+            _transform     = rigidbody2D.transform;
+            _rigidbody     = rigidbody2D;
+            _boxCollider   = boxCollider2D;
+            _contactFilter = new ContactFilter2D();
+            _singleHit     = new RaycastHit2D  [1];
+            _hitBuffer     = new RaycastHit2D  [DefaultBufferSize];
+            _overlapBuffer = new Collider2D    [DefaultBufferSize];
+            _contactBuffer = new ContactPoint2D[DefaultBufferSize];
 
             _contactFilter.useTriggers    = false;
             _contactFilter.useNormalAngle = false;
@@ -122,13 +122,14 @@ namespace PQ._Experimental.Physics.Move_006
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }
 
-
+        /* Set attached transform layer to ignore (typically prior to performing static ray casts). */
         private void DisableCollisionsWithAABB()
         {
             _previousLayerMask = _transform.gameObject.layer;
             _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
         }
 
+        /* After object layer has been ignored (typically after performing static ray casts) - reassign it back to it's original layer. */
         private void ReEnableCollisionsWithAABB()
         {
             _transform.gameObject.layer = _previousLayerMask;
@@ -140,6 +141,7 @@ namespace PQ._Experimental.Physics.Move_006
             return _contactFilter.IsFilteringLayerMask(other);
         }
 
+        /* Check if in contact with any colliders. */
         public bool IsTouching()
         {
             return _boxCollider.IsTouching(_contactFilter);
@@ -209,7 +211,76 @@ namespace PQ._Experimental.Physics.Move_006
             collider = edge;
             return true;
         }
+        
+        /* Check if given world point lies on or within our AABB. */
+        public bool IsPointInBounds(Vector2 point)
+        {
+            Bounds bounds = _boxCollider.bounds;
+            bounds.Expand(_boxCollider.edgeRadius);
+            return bounds.Contains(point);
+        }
 
+
+        /* Expand out bounds from body center, ignoring attached AABB, outputting all overlapping colliders. Note order is not significant. */
+        public bool CheckForOverlappingColliders(Vector2 extents, out ReadOnlySpan<Collider2D> colliders)
+        {
+            int layer = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+
+            int colliderCount = Physics2D.OverlapBox(_boxCollider.bounds.center, 2f * extents, 0f, _contactFilter, _overlapBuffer);
+            colliders = _overlapBuffer.AsSpan(0, colliderCount);
+
+            _transform.gameObject.layer = layer;
+            return !colliders.IsEmpty;
+        }
+
+        /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
+        public ContactFlags2D CheckForOverlappingContacts(float skinWidth)
+        {
+            Transform transform = _rigidbody.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
+
+            ContactFlags2D flags = ContactFlags2D.None;
+            if (CastAABB(right, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.RightSide;
+            }
+            if (CastAABB(up, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.TopSide;
+            }
+            if (CastAABB(left, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.LeftSide;
+            }
+            if (CastAABB(down, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.BottomSide;
+            }
+            
+            #if UNITY_EDITOR
+            if (DrawCastsInEditor)
+            {
+                Bounds bounds = _boxCollider.bounds;
+                Vector2 center    = new Vector2(bounds.center.x, bounds.center.y);
+                Vector2 skinRatio = new Vector2(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
+                Vector2 xAxis     = bounds.extents.x * right;
+                Vector2 yAxis     = bounds.extents.y * up;
+
+                float duration = Time.fixedDeltaTime;
+                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            }
+            #endif
+            return flags;
+        }
+        
+        /* Check if contacts are touching. */
         public ContactFlags2D CheckSides()
         {
             _contactFilter.useNormalAngle = true;
@@ -240,223 +311,6 @@ namespace PQ._Experimental.Physics.Move_006
             return flags;
         }
 
-        /*
-        Check for overlapping colliders within our bounding box.
-        */
-        public bool CheckForOverlappingColliders(Vector2 extents, out ReadOnlySpan<Collider2D> colliders)
-        {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
-            int colliderCount = Physics2D.OverlapBox(_boxCollider.bounds.center, 2f * extents, 0f, _contactFilter, _overlapBuffer);
-            colliders = _overlapBuffer.AsSpan(0, colliderCount);
-
-            _transform.gameObject.layer = layer;
-            return !colliders.IsEmpty;
-        }
-
-        /*
-        Project AABB along given delta from AABB center, and outputs ALL hits (if any).
-
-        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
-        */
-        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
-        {
-            Bounds bounds = _boxCollider.bounds;
-            bounds.Expand(_boxCollider.edgeRadius);
-            return CastBox(_rigidbody.position, 0f, bounds.extents, direction, distance, out hit);
-        }
-
-        /*
-        Project a box along given delta.
-        
-        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
-        */
-        public bool CastBox(Vector2 origin, float angle, Vector2 extents, Vector2 direction, float distance, out RaycastHit2D hit)
-        {
-            DisableCollisionsWithAABB();
-            if (Physics2D.BoxCast(origin, 2f * extents, angle, direction, _contactFilter, _hitBuffer, distance) > 0)
-            {
-                hit = _hitBuffer[0];
-            }
-            else
-            {
-                hit = default;
-            }
-            ReEnableCollisionsWithAABB();
-            #if UNITY_EDITOR
-            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
-            #endif
-            return hit;
-        }
-
-        /*
-        Project a circle along given delta.
-        
-        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
-        */
-        public bool CastCircle(Vector2 origin, float radius, Vector2 direction, float distance, out RaycastHit2D hit)
-        {
-            DisableCollisionsWithAABB();
-            hit = default;
-            if (Physics2D.CircleCast(origin, radius, direction, _contactFilter, _hitBuffer, distance) > 0)
-            {
-                hit = _hitBuffer[0];
-            }
-            ReEnableCollisionsWithAABB();
-            #if UNITY_EDITOR
-            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
-            #endif
-            return hit;
-        }
-
-        /*
-        Project point along given delta from given origin, and outputs ALL hits (if any).
-
-        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
-        */
-        public bool CastRay(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
-        {
-            DisableCollisionsWithAABB();
-            if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
-            {
-                hit = _hitBuffer[0];
-            }
-            else
-            {
-                hit = default;
-            }
-            ReEnableCollisionsWithAABB();
-            #if UNITY_EDITOR
-            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
-            #endif
-            return hit;
-        }
-
-        /*
-        Project center point along given direction, outputting first hit to given collider (if any).
-        */
-        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
-        {
-            DisableCollisionsWithAABB();
-            hit = default;
-            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
-            for (int i = 0; i < hitCount; i++)
-            {
-                if (_hitBuffer[i].collider == collider)
-                {
-                    hit = _hitBuffer[i];
-                    break;
-                }
-            }
-            ReEnableCollisionsWithAABB();
-            #if UNITY_EDITOR
-            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
-            #endif
-            return hit;
-        }
-
-        /*
-        Through the side in given direction, project n points outwards, outputting each hit(s).
-
-        spreadExtent is defined as the half length of the segment spanning tangent to the closest corner.
-        Angles of (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
-        
-        Note does not account for edge radius curving at the corners - casts origins are along edge of AABB instead.
-        Note that results length is always equal to count.
-        */
-        public bool CastRaysFromCorner(float spreadExtent, Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
-        {
-            #if UNITY_EDITOR
-            if (rayCount is < 3 or > DefaultBufferSize)
-            {
-                throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
-            }
-            #endif
-            
-            DisableCollisionsWithAABB();
-            int totalHits = 0;
-            (Vector2 normal, Vector2 position) = FindClosestCorner(direction);
-            Vector2 tangent = Vector2.Perpendicular(normal);
-            Vector2 start   = position + spreadExtent * tangent;
-            Vector2 end     = position - spreadExtent * tangent;
-
-            Vector2 delta = (end - start) / (rayCount-1);
-            for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
-            {
-                Vector2 origin = start + (rayIndex * delta);
-                if (Physics2D.Raycast(origin, normal, _contactFilter, _hitBuffer, distance) > 0)
-                {
-                    totalHits++;
-                    _hitBufferSecondary[rayIndex] = _hitBuffer[0];
-                }
-                else
-                {
-                    _hitBufferSecondary[rayIndex] = default;
-                }
-                #if UNITY_EDITOR
-                DrawCastInEditorIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex] ? _hitBufferSecondary[rayIndex].distance : null);
-                #endif
-            }
-            results = _hitBufferSecondary.AsSpan(0, rayCount);
-            hitCount = totalHits;
-            ReEnableCollisionsWithAABB();
-            return hitCount > 0;
-        }
-
-        /*
-        Through the side in given direction, project n points outwards, outputting each hit(s).
-
-        Angles of (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
-        
-        Note does not account for edge radius curving at the corners - casts origins are along edge of AABB instead.
-        Note that results length is always equal to count.
-        */
-        public bool CastRaysFromSide(Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
-        {
-            #if UNITY_EDITOR
-            if (rayCount is < 3 or > DefaultBufferSize)
-            {
-                throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
-            }
-            #endif
-            
-            DisableCollisionsWithAABB();
-            int totalHits = 0;
-            (Vector2 normal, Vector2 start, Vector2 end) = FindIntersectingSide(direction);
-            Vector2 delta = (end - start) / (rayCount-1);
-            for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
-            {
-                Vector2 origin = start + (rayIndex * delta);
-                if (Physics2D.Raycast(origin, normal, _contactFilter, _hitBuffer, distance) > 0)
-                {
-                    totalHits++;
-                    _hitBufferSecondary[rayIndex] = _hitBuffer[0];
-                }
-                else
-                {
-                    _hitBufferSecondary[rayIndex] = default;
-                }
-                #if UNITY_EDITOR
-                DrawCastInEditorIfEnabled(origin, direction, distance, _hitBufferSecondary[rayIndex]? _hitBufferSecondary[rayIndex].distance : null);
-                #endif
-            }
-            results = _hitBufferSecondary.AsSpan(0, rayCount);
-            hitCount = totalHits;
-            ReEnableCollisionsWithAABB();
-            return hitCount > 0;
-        }
-
-
-        /*
-        Check if AABB contains point.
-        */
-        public bool ContainsPointInBounds(Vector2 point)
-        {
-            Bounds bounds = _boxCollider.bounds;
-            bounds.Expand(_boxCollider.edgeRadius);
-            return bounds.Contains(point);
-        }
         
         /*
         Project point _against_ body finding distance to intersection (if any).
@@ -480,10 +334,165 @@ namespace PQ._Experimental.Physics.Move_006
             return foundIntersection;
         }
 
+
+        /* Project a rectangle along delta, ignoring ALL attached colliders, and stopping at first hit (if any). */
+        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            // note that there is no need to disable colliders as that is accounted for by collider instance
+            if (_boxCollider.Cast(direction, _contactFilter, _singleHit, distance) > 0)
+            {
+                hit = _singleHit[0];
+            }
+            else
+            {
+                hit = default;
+            }
+            return hit;
+        }
+
+        /* Project a rectangle along delta, ignoring attached AABB, and stopping at first hit (if any). */
+        public bool CastBox(Vector2 origin, float angle, Vector2 extents, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            if (Physics2D.BoxCast(origin, 2f * extents, angle, direction, _contactFilter, _singleHit, distance) > 0)
+            {
+                hit = _singleHit[0];
+            }
+            else
+            {
+                hit = default;
+            }
+            ReEnableCollisionsWithAABB();
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
+            return hit;
+        }
+
+        /* Project a circle along delta, ignoring attached AABB, and stopping at first hit (if any). */
+        public bool CastCircle(Vector2 origin, float radius, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            hit = default;
+            if (Physics2D.CircleCast(origin, radius, direction, _contactFilter, _singleHit, distance) > 0)
+            {
+                hit = _singleHit[0];
+            }
+            ReEnableCollisionsWithAABB();
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
+            return hit;
+        }
+
+        /* Project a point along delta, ignoring attached AABB, and stopping at first hit (if any). */
+        public bool CastRay(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            if (Physics2D.Raycast(origin, direction, _contactFilter, _singleHit, distance) > 0)
+            {
+                hit = _singleHit[0];
+            }
+            else
+            {
+                hit = default;
+            }
+            ReEnableCollisionsWithAABB();
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
+            return hit;
+        }
+
+        /* Project a point along delta, ignoring attached AABB, and stopping at first hit (if any) to _given_ collider. */
+        public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            DisableCollisionsWithAABB();
+            hit = default;
+            int hitCount = Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance);
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_hitBuffer[i].collider == collider)
+                {
+                    hit = _hitBuffer[i];
+                    break;
+                }
+            }
+            ReEnableCollisionsWithAABB();
+            #if UNITY_EDITOR
+            DrawCastInEditorIfEnabled(origin, direction, distance, hit? hit.distance : null);
+            #endif
+            return hit;
+        }
+
+        /* Project N points along given direction, evenly spaced between between start end points, ignoring attached AABB, and stopping at first hit (if any) for each. */
+        public bool CastRaysAlongSegment(Vector2 start, Vector2 end, Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
+        {
+            #if UNITY_EDITOR
+            if (rayCount is < 3 or > DefaultBufferSize)
+            {
+                throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
+            }
+            #endif
+                        
+            DisableCollisionsWithAABB();
+            int totalHits = 0;
+            Vector2 delta = (end - start) / (rayCount-1);
+            for (int rayIndex = 0; rayIndex < rayCount; rayIndex++)
+            {
+                Vector2 origin = start + (rayIndex * delta);
+                if (Physics2D.Raycast(origin, direction, _contactFilter, _singleHit, distance) > 0)
+                {
+                    totalHits++;
+                    _hitBuffer[rayIndex] = _singleHit[0];
+                }
+                else
+                {
+                    _hitBuffer[rayIndex] = default;
+                }
+                #if UNITY_EDITOR
+                DrawCastInEditorIfEnabled(origin, direction, distance, _hitBuffer[rayIndex] ? _hitBuffer[rayIndex].distance : null);
+                #endif
+            }
+            results = _hitBuffer.AsSpan(0, rayCount);
+            hitCount = totalHits;
+            ReEnableCollisionsWithAABB();
+            return hitCount > 0;
+        }
+
+        /*
+        Through the corner closest to given direction, project n points outwards, outputting each hit(s).
+
+        SpreadExtent is defined as the half length of the segment spanning tangent to the closest corner.
+        Angles of (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
+        Note that results length is always equal to count.
+        */
+        public bool CastRaysFromCorner(float spreadExtent, Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
+        {
+            (Vector2 normal, Vector2 position) = FindClosestCorner(direction);
+            Vector2 tangent = Vector2.Perpendicular(normal);
+            Vector2 start   = position + spreadExtent * tangent;
+            Vector2 end     = position - spreadExtent * tangent;
+            return CastRaysAlongSegment(start, end, normal, distance, rayCount, out hitCount, out results);
+        }
+
+        /*
+        Through the side in given direction, project n points outwards, outputting each hit(s).
+
+        Angles of (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
+        Note that results length is always equal to count.
+        */
+        public bool CastRaysFromSide(Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
+        {
+            (Vector2 normal, Vector2 start, Vector2 end) = FindClosestSide(direction);
+            return CastRaysAlongSegment(start, end, normal, distance, rayCount, out hitCount, out results);
+        }
+
+
         /*
         Map given direction to a corner, returning it's position.
         Relative to right bottom-left-corner, angles map as [270,0)=>right [0,90)=>top [90,180)=>left [180,270]=>bottom
-        Note that start is from bottom and left respectively.roundedCornerStart
+        Note that start is from bottom and left respectively.
         */
         private (Vector2 normal, Vector2 position) FindClosestCorner(Vector2 direction)
         {
@@ -512,7 +521,7 @@ namespace PQ._Experimental.Physics.Move_006
         Relative to right world-axis, angles map as (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
         Note that start is from bottom and left respectively.
         */
-        private (Vector2 normal, Vector2 start, Vector2 end) FindIntersectingSide(Vector2 direction)
+        private (Vector2 normal, Vector2 start, Vector2 end) FindClosestSide(Vector2 direction)
         {
             // map angle to side's normal and corner coordinates, checking from lower right corner of the box
             float degrees = Vector2.SignedAngle(new Vector2(1, -1), direction);

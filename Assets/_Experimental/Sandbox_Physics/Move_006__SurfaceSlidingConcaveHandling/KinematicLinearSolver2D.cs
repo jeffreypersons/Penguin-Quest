@@ -136,6 +136,7 @@ namespace PQ._Experimental.Physics.Move_006
                 (concaveSampleDistanceDifferential < ContactOffset || normalizedCenterHit.distance < ContactOffset))
             {
                 Debug.Log($"Move({distance * direction}) : Obstructed by moving into a concave surface - halting movement");
+                MoveToAvoidContact(normalizedCenterHit);
                 return;
             }
 
@@ -171,6 +172,7 @@ namespace PQ._Experimental.Physics.Move_006
                 obstruction = default;
             }
             _body.Position += step * direction;
+            MoveToAvoidContact(obstruction);
         }
 
         private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float distanceDifferential, out RaycastHit2D normalizedHit)
