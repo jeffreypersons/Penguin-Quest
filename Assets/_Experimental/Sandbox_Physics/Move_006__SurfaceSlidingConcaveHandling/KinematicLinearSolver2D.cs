@@ -87,7 +87,7 @@ namespace PQ._Experimental.Physics.Move_006
             // todo: investigate whether we should bias this even if the resolution didn't succeed
             // slightly bias the resolved position along normal to prevent contact
             // also prevents flip-flopping that can occur on subsequent calls when placed at center of an overlapped region
-            _body.Position += ContactOffset * (endPosition - startPosition).normalized;
+            _body.Position += Epsilon * (endPosition - startPosition).normalized;
         }
 
 
@@ -213,7 +213,7 @@ namespace PQ._Experimental.Physics.Move_006
             Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA ? hitA.distance : '-')},B={(hitB ? hitB.distance : '-')},C={(hitC ? hitC.distance : '-')}]");
             // construct a hit equivalent to moving towards a flat wall spanning between the first and last hits
             // note that since the collider info cannot be reassigned, the below assumes A and B are same collider
-            distanceDifferential = Mathf.Abs(hitA.distance - hitC.distance);
+            distanceDifferential   = Mathf.Abs(hitA.distance - hitC.distance);
             normalizedHit          = hitA.distance < hitC.distance ? hitA : hitC;
             normalizedHit.point    = Vector2.LerpUnclamped(hitA.point, hitC.point, 0.50f);
             normalizedHit.normal   = -direction;
