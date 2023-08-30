@@ -2,19 +2,30 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-namespace PQ._Experimental.Physics.Move_007
+namespace PQ._Experimental.Physics.Move_008
 {
     public class Controller : MonoBehaviour
     {
         [Range(0,  10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
+        
+        #if UNITY_EDITOR
+        [SerializeField] private bool _drawAllCastsFromBody = false;
+        private void OnValidate()
+        {
+            if (Application.IsPlaying(this) && _kinematicBody != null)
+            {
+                _kinematicBody.DrawCastsInEditor = _drawAllCastsFromBody;
+            }
+        }
+        #endif
+
 
         private Vector2 _inputAxis;
 
         private KinematicBody2D         _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;
-
 
         void Awake()
         {
@@ -53,6 +64,7 @@ namespace PQ._Experimental.Physics.Move_007
 
         void OnCollisionEnter2D(Collision2D collision)
         {
+            Debug.Log("OnCollisionEnter2D");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 _kinematicSolver.ResolveSeparation(collision.collider);
@@ -61,10 +73,23 @@ namespace PQ._Experimental.Physics.Move_007
 
         void OnCollisionStay2D(Collision2D collision)
         {
+            Debug.Log("OnCollisionStay2D");
             if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 _kinematicSolver.ResolveSeparation(collision.collider);
             }
+        }
+
+        void OnCollisionExit2D(Collision2D collision)
+        {
+            Debug.Log("OnCollisionExit2D");
+            /*
+            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            {
+                var sep = _kinematicBody.ComputeMinimumSeparation(collision.collider);
+                _kinematicBody.Position += -KinematicLinearSolver2D.Epsilon * sep.normal;
+            }
+            */
         }
 
         void OnDrawGizmos()

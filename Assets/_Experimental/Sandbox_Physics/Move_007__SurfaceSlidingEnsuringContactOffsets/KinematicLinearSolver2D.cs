@@ -54,10 +54,11 @@ namespace PQ._Experimental.Physics.Move_007
 
             if (_body.CastRayAt(collider, _body.Position, separation.normal, separation.distance, out var _))
             {
-                // any time surface is passed through (tunneling), moving back along normal prevents this
-                // can occur when body is heavily overlapped with an edge collider, causing it to 'snap' to the other side
-                Debug.Log($"RemoveOverlap({collider.name}) : Initial resolution caused collider to pass through an edge - pushing back to compensate");
-                _body.Position += -2f * _body.ComputeDistanceToEdge(separation.normal) * separation.normal;
+                // any surface passed through (tunneling) for the initial separation can be prevented by moving back along normal
+                // May occur when body is heavily overlapped with an edge collider causing it 'snap' to other side
+                Debug.Log($"ResolveSeparation({collider.name}).substep#precheck : Initial resolution caused collider to pass through an edge - pushing back to compensate");
+                _body.IntersectAABB(_body.Position, separation.normal, out float distanceToAABBEdge);
+                _body.Position += -2f * distanceToAABBEdge * separation.normal;
             }
 
             // note that we remove separation if ever so slightly above surface as well
@@ -68,14 +69,12 @@ namespace PQ._Experimental.Physics.Move_007
                 Vector2 beforeStep = _body.Position;
                 separation = _body.ComputeMinimumSeparation(collider);
 
-                Debug.Log($"RemoveOverlap({collider.name}).substep#{MaxOverlapIterations - iteration} : " +
-                          $"remaining={separation.distance}, direction={separation.normal}");
+                Debug.Log($"ResolveSeparation({collider.name}).substep#{MaxOverlapIterations - iteration} : remaining={separation.distance}, direction={separation.normal}");
 
                 if (Mathf.Abs(separation.distance) > Mathf.Abs(previousSeparation.distance))
                 {
-                    // any time separation is not decreasing, then stop as a safeguard
-                    // can occur when body moves into a protruding corner causing over-correction
-                    Debug.Log($"RemoveOverlap({collider.name}) : Separation amount increased from {previousSeparation.distance} to {separation.distance} - halting resolution");
+                    // Any time separation not decreasing then bail out. May occur when moving into a protruding corner causing over-correction.
+                    Debug.Log($"ResolveSeparation({collider.name}) : Separation amount increased from {previousSeparation.distance} to {separation.distance} - halting resolution");
                     break;
                 }
                 _body.Position += separation.distance * separation.normal;
@@ -85,6 +84,7 @@ namespace PQ._Experimental.Physics.Move_007
             }
             Vector2 endPosition = _body.Position;
 
+            // todo: investigate whether we should bias this even if the resolution didn't succeed
             // slightly bias the resolved position along normal to prevent contact
             // also prevents flip-flopping that can occur on subsequent calls when placed at center of an overlapped region
             _body.Position += Epsilon * (endPosition - startPosition).normalized;
@@ -119,6 +119,8 @@ namespace PQ._Experimental.Physics.Move_007
         */
         public void Move(Vector2 direction, float distance)
         {
+            direction.Normalize();
+
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
             if (distance * direction == Vector2.zero)
@@ -130,36 +132,20 @@ namespace PQ._Experimental.Physics.Move_007
 
             // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
-            if (IsPerpendicularDirection(direction) &&
-                CheckForObstructingConcaveSurface(direction, maxStep, out float delta, out RaycastHit2D normalizedHit) &&
-                delta < Epsilon)
+            if (CheckForObstructingConcaveSurface(direction, maxStep, out float concaveSampleDistanceDifferential, out RaycastHit2D normalizedCenterHit) &&
+                (concaveSampleDistanceDifferential < ContactOffset || normalizedCenterHit.distance < ContactOffset))
             {
-                // todo: determine if epsilon is sufficient by trying different concave shapes
-                // todo: fix the normalized point drawn here
-                Debug.Log("Move - trying to move into center of concave section - aborting");
-                Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
+                Debug.Log($"Move({distance * direction}) : Obstructed by moving into a concave surface - halting movement");
+                MoveToAvoidContact(normalizedCenterHit);
                 return;
             }
 
             Vector2 startPosition = _body.Position;
             int iteration = MaxMoveIterations;
-            while (iteration-- > 0 &&
-                   distance > Epsilon &&
-                   direction.sqrMagnitude > Epsilon)
+            while (iteration-- > 0 && distance > Epsilon && direction.sqrMagnitude > Epsilon)
             {
-                Vector2 beforeStep = _body.Position;
-                Debug.DrawLine(beforeStep, beforeStep + (distance * direction), Color.gray, 1f);
-                
-                Debug.Log($"Move({distance*direction}).substep#{MaxMoveIterations-iteration} : " +
-                          $"remaining={distance}, direction={direction}");
-                MoveUnobstructed(
-                    direction,
-                    maxStep,
-                    out float step,
-                    out RaycastHit2D obstruction);
-
-                Vector2 afterStep = _body.Position;
-                Debug.DrawLine(beforeStep, afterStep, Color.green, 1f);
+                Debug.Log($"Move({distance*direction}).substep#{MaxMoveIterations-iteration} : remaining={distance}, direction={direction}");
+                MoveUnobstructed(direction, maxStep, out float step,out RaycastHit2D obstruction);
 
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distance -= step;
@@ -172,10 +158,13 @@ namespace PQ._Experimental.Physics.Move_007
 
         private void MoveUnobstructed(Vector2 direction, float maxStep, out float step, out RaycastHit2D obstruction)
         {
-            if (_body.CastAABB(direction, maxStep + ContactOffset, out var closestHit))
+            Debug.DrawLine(_body.Position, _body.Position + maxStep * direction, Color.red, 1f);
+            if (_body.CastAABB(direction, maxStep, out var closestHit))
             {
                 step = Mathf.Max(closestHit.distance - ContactOffset, 0f);
                 obstruction = closestHit;
+                Debug.DrawLine(_body.Position, _body.Position + step * direction, Color.green, 1f);
+                DebugExtensions.DrawArrow(closestHit.point, closestHit.point + ContactOffset * closestHit.normal, Color.grey, 1f);
             }
             else
             {
@@ -183,48 +172,69 @@ namespace PQ._Experimental.Physics.Move_007
                 obstruction = default;
             }
             _body.Position += step * direction;
+            MoveToAvoidContact(obstruction);
         }
 
-        private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float delta, out RaycastHit2D normalizedHit)
+        private bool CheckForObstructingConcaveSurface(Vector2 direction, float distance, out float distanceDifferential, out RaycastHit2D normalizedHit)
         {
-            delta = 0f;
+            distanceDifferential = 0f;
             normalizedHit = default;
 
-            _body.CastRaysFromSide(direction, distance, rayCount: 3, out var hitCount, out var results);
-            Debug.Log($"concaveCheck - left={results[0].distance} mid={results[1].distance} right={results[2].distance}");
-
-            // technically it is possible that the collider between left/right/middle along a
-            // body's edge is different, but we're not going to worry about that case
-            RaycastHit2D leftHit   = results[0];
-            RaycastHit2D middleHit = results[1];
-            RaycastHit2D rightHit  = results[2];
-
-            if (hitCount < 2 || !leftHit || !rightHit)
+            bool isDiagonal;
+            int hitCount;
+            ReadOnlySpan<RaycastHit2D> results;
+            if (IsPerpendicularDirection(direction))
+            {
+                isDiagonal = false;
+                _body.CastRaysFromSide(direction, distance, rayCount: 3, out hitCount, out results);
+            }
+            else if (IsDiagonalDirection(direction))
+            {
+                isDiagonal = true;
+                _body.CastRaysFromCorner(spreadExtent: 0.50f * _body.SkinWidth, direction, distance, rayCount: 3, out hitCount, out results);
+            }
+            else
             {
                 return false;
             }
-            if (middleHit && (middleHit.distance <= leftHit.distance || middleHit.distance <= rightHit.distance))
+
+            RaycastHit2D hitA = results[0];
+            RaycastHit2D hitB = results[1];
+            RaycastHit2D hitC = results[2];
+            if (hitCount < 2 || !hitA || !hitC)
+            {
+                return false;
+            }
+            if (hitB && (hitB.distance <= hitA.distance || hitB.distance <= hitC.distance))
             {
                 return false;
             }
 
-            Vector2 midPoint = Vector2.LerpUnclamped(leftHit.centroid, rightHit.centroid, 0.50f);
-
-            // construct a hit equivalent to moving towards a flat wall spanning between the left and right hits
-            delta = Mathf.Abs(leftHit.distance - rightHit.distance);
-            normalizedHit          = leftHit.distance < rightHit.distance ? leftHit : rightHit;
-            normalizedHit.centroid = midPoint;
-            normalizedHit.point    = midPoint + normalizedHit.distance * direction;
+            Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA ? hitA.distance : '-')},B={(hitB ? hitB.distance : '-')},C={(hitC ? hitC.distance : '-')}]");
+            // construct a hit equivalent to moving towards a flat wall spanning between the first and last hits
+            // note that since the collider info cannot be reassigned, the below assumes A and B are same collider
+            distanceDifferential   = Mathf.Abs(hitA.distance - hitC.distance);
+            normalizedHit          = hitA.distance < hitC.distance ? hitA : hitC;
+            normalizedHit.point    = Vector2.LerpUnclamped(hitA.point, hitC.point, 0.50f);
             normalizedHit.normal   = -direction;
+            normalizedHit.centroid = normalizedHit.point - normalizedHit.distance * normalizedHit.normal;
+
+            Debug.DrawLine(hitA.point, hitC.point, Color.black, 1f);
+            Debug.DrawLine(normalizedHit.centroid, normalizedHit.point, Color.blue, 1f);
             return true;
         }
 
+
         private float ComputeMaxStep(Vector2 direction, float distance)
         {
-            float bodyRadius = _body.ComputeDistanceToEdge(direction);
+            _body.IntersectAABB(_body.Position, direction, out float bodyRadius);
+            return Mathf.Min(distance, bodyRadius);
+        }
 
-            float maxStep = distance < bodyRadius ? distance : bodyRadius;
-            return maxStep;
+        private bool IsDiagonalDirection(Vector2 direction)
+        {
+            bool areComponentsEqual = Mathf.Approximately(Mathf.Abs(direction.x), Mathf.Abs(direction.y));
+            return areComponentsEqual;
         }
 
         private bool IsPerpendicularDirection(Vector2 direction)
@@ -232,6 +242,15 @@ namespace PQ._Experimental.Physics.Move_007
             bool isXZero = Mathf.Approximately(direction.x, 0);
             bool isYZero = Mathf.Approximately(direction.y, 0);
             return (isXZero && !isYZero) || (!isXZero && isYZero);
+        }
+
+        private void MoveToAvoidContact(RaycastHit2D hit)
+        {
+            float adjustmentAmount = Mathf.Max(0f, ContactOffset - hit.distance);
+            if (adjustmentAmount > 0f)
+            {
+                _body.Position += adjustmentAmount * hit.normal;
+            }
         }
     }
 }
