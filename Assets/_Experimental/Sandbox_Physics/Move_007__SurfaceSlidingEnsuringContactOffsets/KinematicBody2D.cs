@@ -233,7 +233,39 @@ namespace PQ._Experimental.Physics.Move_007
             _transform.gameObject.layer = layer;
             return !colliders.IsEmpty;
         }
+        
+        /* Check if contacts are touching. */
+        public ContactFlags2D CheckSides()
+        {
+            _contactFilter.useNormalAngle = true;
 
+            bool isDiagonal = false;
+            int degrees = 0;
+            ContactFlags2D flags = ContactFlags2D.None;
+            for (int i = 0; i < 7; i++)
+            {
+                if (isDiagonal)
+                {
+                    _contactFilter.SetNormalAngle(degrees - 45 + DefaultEpsilon, degrees + 45 - DefaultEpsilon);
+                }
+                else
+                {
+                    _contactFilter.SetNormalAngle(degrees - DefaultEpsilon, degrees + DefaultEpsilon);
+                }
+                
+                if (_boxCollider.IsTouching(_contactFilter))
+                {
+                    flags |= (ContactFlags2D)(1 << (i+1));
+                }
+
+                degrees += 45;
+                isDiagonal = !isDiagonal;
+            }
+            _contactFilter.useNormalAngle = false;
+            return flags;
+        }
+
+        
         /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
         public ContactFlags2D CheckForOverlappingContacts(float skinWidth)
         {
@@ -279,38 +311,6 @@ namespace PQ._Experimental.Physics.Move_007
             #endif
             return flags;
         }
-        
-        /* Check if contacts are touching. */
-        public ContactFlags2D CheckSides()
-        {
-            _contactFilter.useNormalAngle = true;
-
-            bool isDiagonal = false;
-            int degrees = 0;
-            ContactFlags2D flags = ContactFlags2D.None;
-            for (int i = 0; i < 7; i++)
-            {
-                if (isDiagonal)
-                {
-                    _contactFilter.SetNormalAngle(degrees - 45 + DefaultEpsilon, degrees + 45 - DefaultEpsilon);
-                }
-                else
-                {
-                    _contactFilter.SetNormalAngle(degrees - DefaultEpsilon, degrees + DefaultEpsilon);
-                }
-                
-                if (_boxCollider.IsTouching(_contactFilter))
-                {
-                    flags |= (ContactFlags2D)(1 << (i+1));
-                }
-
-                degrees += 45;
-                isDiagonal = !isDiagonal;
-            }
-            _contactFilter.useNormalAngle = false;
-            return flags;
-        }
-
         
         /*
         Project point _against_ body finding distance to intersection (if any).

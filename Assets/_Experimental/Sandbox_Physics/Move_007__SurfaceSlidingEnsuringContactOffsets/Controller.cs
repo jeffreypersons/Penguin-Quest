@@ -8,6 +8,9 @@ namespace PQ._Experimental.Physics.Move_007
     {
         [Range(0,  10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
+
+        [SerializeField] private bool _enableOverlapRecovery = true;
+
         
         #if UNITY_EDITOR
         [SerializeField] private bool _drawAllCastsFromBody = false;
@@ -64,8 +67,7 @@ namespace PQ._Experimental.Physics.Move_007
 
         void OnCollisionEnter2D(Collision2D collision)
         {
-            Debug.Log("OnCollisionEnter2D");
-            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            if (_enableOverlapRecovery && !_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 _kinematicSolver.ResolveSeparation(collision.collider);
             }
@@ -73,8 +75,7 @@ namespace PQ._Experimental.Physics.Move_007
 
         void OnCollisionStay2D(Collision2D collision)
         {
-            Debug.Log("OnCollisionStay2D");
-            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            if (_enableOverlapRecovery && !_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 _kinematicSolver.ResolveSeparation(collision.collider);
             }
@@ -82,9 +83,8 @@ namespace PQ._Experimental.Physics.Move_007
 
         void OnCollisionExit2D(Collision2D collision)
         {
-            Debug.Log("OnCollisionExit2D");
             /*
-            if (!_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
+            if (_enableOverlapRecovery && !_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 var sep = _kinematicBody.ComputeMinimumSeparation(collision.collider);
                 _kinematicBody.Position += -KinematicLinearSolver2D.Epsilon * sep.normal;
