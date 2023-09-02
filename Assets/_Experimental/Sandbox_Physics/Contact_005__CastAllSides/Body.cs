@@ -36,6 +36,7 @@ namespace PQ._Experimental.Physics.Contact_005
 
         private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
+        private readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
 
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
         public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
@@ -135,6 +136,23 @@ namespace PQ._Experimental.Physics.Contact_005
                 flags |= ContactFlags2D.BottomSide;
             }
 
+            if (CastAABB(new Vector2(1, -1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.BottomRightCorner;
+            }
+            if (CastAABB(new Vector2(1, 1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.TopRightCorner;
+            }
+            if (CastAABB(new Vector2(-1, 1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.TopLeftCorner;
+            }
+            if (CastAABB(new Vector2(-1, -1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.BottomLeftCorner;
+            }
+            
             #if UNITY_EDITOR
             Bounds bounds = _boxCollider.bounds;
             Vector2 center    = new Vector2(bounds.center.x, bounds.center.y);
