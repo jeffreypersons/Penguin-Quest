@@ -6,6 +6,7 @@ namespace PQ._Experimental.Physics.Contact_005
     public class Controller : MonoBehaviour
     {
         [SerializeField] private Body _body;
+        [SerializeField] [Range(0f, 1f)] private float _contactOffset = 0.05f;
 
         private ContactFlags2D _flags;
 
@@ -18,15 +19,7 @@ namespace PQ._Experimental.Physics.Contact_005
 
         void FixedUpdate()
         {
-            _flags = _body.CheckSides();
-            if (_body.IsCenterBoundedByAnEdgeCollider(out var collider))
-            {
-                Debug.Log($"isBoundedByEdge={collider.name}");
-            }
-            else
-            {
-                Debug.Log($"isBoundedByEdge=<none>");
-            }
+            _flags = _body.CheckForOverlappingContacts(skinWidth: _contactOffset);
         }
 
         void OnDrawGizmos()

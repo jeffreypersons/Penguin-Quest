@@ -36,6 +36,7 @@ namespace PQ._Experimental.Physics.Contact_005
 
         private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 16;
+        private readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
 
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
         public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
@@ -104,6 +105,67 @@ namespace PQ._Experimental.Physics.Contact_005
                 isDiagonal = !isDiagonal;
             }
             _contactFilter.useNormalAngle = false;
+            return flags;
+        }
+
+        
+        /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
+        public ContactFlags2D CheckForOverlappingContacts(float skinWidth)
+        {
+            Transform transform = _rigidbody.transform;
+            Vector2 right = transform.right.normalized;
+            Vector2 up    = transform.up.normalized;
+            Vector2 left  = -right;
+            Vector2 down  = -up;
+
+            ContactFlags2D flags = ContactFlags2D.None;
+            if (CastAABB(right, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.RightSide;
+            }
+            if (CastAABB(up, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.TopSide;
+            }
+            if (CastAABB(left, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.LeftSide;
+            }
+            if (CastAABB(down, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.BottomSide;
+            }
+
+            if (CastAABB(new Vector2(1, -1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.BottomRightCorner;
+            }
+            if (CastAABB(new Vector2(1, 1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.TopRightCorner;
+            }
+            if (CastAABB(new Vector2(-1, 1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.TopLeftCorner;
+            }
+            if (CastAABB(new Vector2(-1, -1) * NormalizedDiagonal, skinWidth, out _))
+            {
+                flags |= ContactFlags2D.BottomLeftCorner;
+            }
+            
+            #if UNITY_EDITOR
+            Bounds bounds = _boxCollider.bounds;
+            Vector2 center    = new Vector2(bounds.center.x, bounds.center.y);
+            Vector2 skinRatio = new Vector2(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
+            Vector2 xAxis     = bounds.extents.x * right;
+            Vector2 yAxis     = bounds.extents.y * up;
+
+            float duration = Time.fixedDeltaTime;
+            Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
+            Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
+            Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
+            Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            #endif
             return flags;
         }
 
@@ -193,6 +255,29 @@ namespace PQ._Experimental.Physics.Contact_005
             {
                 Debug.DrawLine(_rigidbody.position, hit.point, Color.green, 1f);
             }
+            return hit;
+        }
+
+        /* Project a rectangle along delta, ignoring ALL attached colliders, and stopping at first hit (if any). */
+        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
+        {
+            // note that there is no need to disable colliders as that is accounted for by collider instance
+            if (_rigidbody.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
+            {
+                hit = _hitBuffer[0];
+            }
+            else
+            {
+                hit = default;
+            }
+
+            #if UNITY_EDITOR
+            // note that this won't be a perfect representation as it doesn't account for the rounded edges,
+            // but close enough for our purposes to visualize the cast
+            Vector2 center  = _boxCollider.bounds.center;
+            Vector2 extents = _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
+            DebugExtensions.DrawBoxCast(center, extents, 0f, direction, distance, _hitBuffer.AsSpan(1), Time.fixedDeltaTime);
+            #endif
             return hit;
         }
     }
