@@ -55,7 +55,6 @@ namespace PQ.Common.Containers
         public override string ToString()
         {
             var fields = _names.Zip(_values, (k, v) => $"{k}={UnsafeUtility.As<TEnum, long>(ref v)}");
-
             return $"enum {_type} : {_underlyingType} {{ {string.Join(", ", fields)} }}";
         }
     }
