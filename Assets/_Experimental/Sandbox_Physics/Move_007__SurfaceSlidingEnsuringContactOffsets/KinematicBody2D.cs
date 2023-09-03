@@ -83,6 +83,19 @@ namespace PQ._Experimental.Physics.Move_007
             }
         }
         #endif
+        
+        /* Set attached transform layer to ignore (typically prior to performing static ray casts). */
+        private void DisableCollisionsWithAABB()
+        {
+            _previousLayerMask = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+        }
+
+        /* After object layer has been ignored (typically after performing static ray casts) - reassign it back to it's original layer. */
+        private void ReEnableCollisionsWithAABB()
+        {
+            _transform.gameObject.layer = _previousLayerMask;
+        }
 
         public KinematicBody2D(Transform transform)
         {
@@ -120,19 +133,6 @@ namespace PQ._Experimental.Physics.Move_007
             _rigidbody.isKinematic = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
-        }
-
-        /* Set attached transform layer to ignore (typically prior to performing static ray casts). */
-        private void DisableCollisionsWithAABB()
-        {
-            _previousLayerMask = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-        }
-
-        /* After object layer has been ignored (typically after performing static ray casts) - reassign it back to it's original layer. */
-        private void ReEnableCollisionsWithAABB()
-        {
-            _transform.gameObject.layer = _previousLayerMask;
         }
 
         /* Check if body is filtering out collisions with given object or not. */

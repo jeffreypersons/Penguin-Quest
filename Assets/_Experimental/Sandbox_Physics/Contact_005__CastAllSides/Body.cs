@@ -18,16 +18,18 @@ namespace PQ._Experimental.Physics.Contact_005
         TopLeftCorner     = 1 << 8,
         All               = ~0,
     }
-
     internal sealed class Body
     {
         private Transform        _transform;
         private Rigidbody2D      _rigidbody;
         private BoxCollider2D    _boxCollider;
         private ContactFilter2D  _contactFilter;
+
         private RaycastHit2D[]   _hitBuffer;
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
+
+        private LayerMask _previousLayerMask;
 
         public Vector2 Position => _rigidbody.position;
         public Vector2 Extents  => _boxCollider.bounds.extents;
@@ -40,6 +42,19 @@ namespace PQ._Experimental.Physics.Contact_005
 
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
         public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
+
+
+        private void DisableCollisionsWithAABB()
+        {
+            _previousLayerMask = _transform.gameObject.layer;
+            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
+        }
+
+        private void ReEnableCollisionsWithAABB()
+        {
+            _transform.gameObject.layer = _previousLayerMask;
+        }
+
 
         public Body(Transform transform)
         {
@@ -119,36 +134,36 @@ namespace PQ._Experimental.Physics.Contact_005
             Vector2 down  = -up;
 
             ContactFlags2D flags = ContactFlags2D.None;
-            if (CastAABB(right, skinWidth, out _))
+            if (CheckDirection(right, skinWidth, out _))
             {
                 flags |= ContactFlags2D.RightSide;
             }
-            if (CastAABB(up, skinWidth, out _))
+            if (CheckDirection(up, skinWidth, out _))
             {
                 flags |= ContactFlags2D.TopSide;
             }
-            if (CastAABB(left, skinWidth, out _))
+            if (CheckDirection(left, skinWidth, out _))
             {
                 flags |= ContactFlags2D.LeftSide;
             }
-            if (CastAABB(down, skinWidth, out _))
+            if (CheckDirection(down, skinWidth, out _))
             {
                 flags |= ContactFlags2D.BottomSide;
             }
 
-            if (CastAABB(new Vector2(1, -1) * NormalizedDiagonal, skinWidth, out _))
+            if (CheckDirection(new Vector2(1, -1) * NormalizedDiagonal, skinWidth, out _))
             {
                 flags |= ContactFlags2D.BottomRightCorner;
             }
-            if (CastAABB(new Vector2(1, 1) * NormalizedDiagonal, skinWidth, out _))
+            if (CheckDirection(new Vector2(1, 1) * NormalizedDiagonal, skinWidth, out _))
             {
                 flags |= ContactFlags2D.TopRightCorner;
             }
-            if (CastAABB(new Vector2(-1, 1) * NormalizedDiagonal, skinWidth, out _))
+            if (CheckDirection(new Vector2(-1, 1) * NormalizedDiagonal, skinWidth, out _))
             {
                 flags |= ContactFlags2D.TopLeftCorner;
             }
-            if (CastAABB(new Vector2(-1, -1) * NormalizedDiagonal, skinWidth, out _))
+            if (CheckDirection(new Vector2(-1, -1) * NormalizedDiagonal, skinWidth, out _))
             {
                 flags |= ContactFlags2D.BottomLeftCorner;
             }
@@ -169,12 +184,6 @@ namespace PQ._Experimental.Physics.Contact_005
             return flags;
         }
 
-        /*
-        Check if body center is fully surrounded by the same edge collider.
-        
-        Considered to be 'inside' if there is an edge collider above center of our AABB, and the same edge collider below.
-        Assumes there aren't any edge collider inside another.
-        */
         public bool IsCenterBoundedByAnEdgeCollider(out EdgeCollider2D collider)
         {
             collider = default;
@@ -198,45 +207,25 @@ namespace PQ._Experimental.Physics.Contact_005
             return true;
         }
         
-        /*
-        Project center point along given direction, outputting first hit (if any).
-        */
         public bool CastRay(Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
-            Vector2 origin = _rigidbody.position;
-
-            Debug.DrawLine(origin, origin + distance * direction, Color.red, 1f);
-            if (Physics2D.Raycast(origin, direction, _contactFilter, _hitBuffer, distance) > 0)
+            DisableCollisionsWithAABB();
+            if (Physics2D.Raycast(_rigidbody.position, direction, _contactFilter, _hitBuffer, distance) > 0)
             {
                 hit = _hitBuffer[0];
-                Debug.DrawLine(origin, hit.point, Color.green, 1f);
             }
             else
             {
                 hit = default;
             }
-
-            _transform.gameObject.layer = layer;
-
-            Debug.DrawLine(_rigidbody.position, _rigidbody.position + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(_rigidbody.position, hit.point, Color.green, 1f);
-            }
+            ReEnableCollisionsWithAABB();
+            DebugExtensions.DrawRayCast(_rigidbody.position, direction, distance, hit, Time.fixedDeltaTime);
             return hit;
         }
         
-        /*
-        Project center point along given direction, outputting first hit to given collider (if any).
-        */
         public bool CastRayAt(Collider2D collider, Vector2 direction, float distance, out RaycastHit2D hit)
         {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            DisableCollisionsWithAABB();
             hit = default;
             int hitCount = Physics2D.Raycast(_rigidbody.position, direction, _contactFilter, _hitBuffer, distance);
             for (int i = 0; i < hitCount; i++)
@@ -247,19 +236,12 @@ namespace PQ._Experimental.Physics.Contact_005
                     break;
                 }
             }
-
-            _transform.gameObject.layer = layer;
-
-            Debug.DrawLine(_rigidbody.position, _rigidbody.position + distance * direction, Color.red, 1f);
-            if (hit)
-            {
-                Debug.DrawLine(_rigidbody.position, hit.point, Color.green, 1f);
-            }
+            ReEnableCollisionsWithAABB();
+            DebugExtensions.DrawRayCast(_rigidbody.position, direction, distance, hit, Time.fixedDeltaTime);
             return hit;
         }
 
-        /* Project a rectangle along delta, ignoring ALL attached colliders, and stopping at first hit (if any). */
-        public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
+        public bool CheckDirection(Vector2 direction, float distance, out RaycastHit2D hit)
         {
             // note that there is no need to disable colliders as that is accounted for by collider instance
             if (_rigidbody.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
@@ -270,14 +252,7 @@ namespace PQ._Experimental.Physics.Contact_005
             {
                 hit = default;
             }
-
-            #if UNITY_EDITOR
-            // note that this won't be a perfect representation as it doesn't account for the rounded edges,
-            // but close enough for our purposes to visualize the cast
-            Vector2 center  = _boxCollider.bounds.center;
-            Vector2 extents = _boxCollider.bounds.extents + new Vector3(_boxCollider.edgeRadius, _boxCollider.edgeRadius, 0f);
-            DebugExtensions.DrawBoxCast(center, extents, 0f, direction, distance, _hitBuffer.AsSpan(1), Time.fixedDeltaTime);
-            #endif
+            DebugExtensions.DrawBoxCast(_boxCollider.bounds.center, _boxCollider.bounds.extents, 0f, direction, distance, _hitBuffer.AsSpan(1), Time.fixedDeltaTime);
             return hit;
         }
     }
