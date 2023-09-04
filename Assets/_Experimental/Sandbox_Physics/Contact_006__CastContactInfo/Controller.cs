@@ -29,7 +29,9 @@ namespace PQ._Experimental.Physics.Contact_006
         {
             if (Application.IsPlaying(this))
             {
-                GizmoExtensions.DrawText(_body.Position, $"***** Contact Info *****\n{string.Join("\n  ", _contactInfos)}");
+                GizmoExtensions.DrawText(
+                    _body.Position,
+                    $"***** Contact Info *****\n{string.Join("\n  ", _contactInfos)}");
             }
         }
     }

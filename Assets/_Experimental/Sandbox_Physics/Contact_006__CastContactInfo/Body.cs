@@ -142,9 +142,9 @@ namespace PQ._Experimental.Physics.Contact_006
                 ContactSlotId slotId = (ContactSlotId)index;
                 ContactSlotInfo info = _contactSlots[slotId];
 
-                info.Origin = (Vector2)_boxCollider.bounds.extents * info.Direction;
+                info.Origin = _rigidbody.position + (Vector2)_boxCollider.bounds.extents * info.Direction;
                 info.ScanDistance = contactOffset;
-                if (_rigidbody.Cast(info.Direction, _contactFilter, _hitBuffer, contactOffset) > 0)
+                if (_rigidbody.Cast(info.Direction, _contactFilter, _hitBuffer, info.ScanDistance) > 0)
                 {
                     info.ClosestHit = _hitBuffer[0];
                 }
@@ -155,34 +155,14 @@ namespace PQ._Experimental.Physics.Contact_006
 
                 _contactSlots[slotId] = info;
             }
-
+            
             #if UNITY_EDITOR
-            Bounds bounds = _boxCollider.bounds;
-            Vector2 center    = new Vector2(bounds.center.x, bounds.center.y);
-            Vector2 skinRatio = new Vector2(1f + (contactOffset / bounds.extents.x), 1f + (contactOffset / bounds.extents.y));
-            Vector2 xAxis     = bounds.extents.x * right;
-            Vector2 yAxis     = bounds.extents.y * up;
-
-            float duration = Time.fixedDeltaTime;
-            Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
-            Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
-            Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
-            Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            for (int index = 0; index < _contactSlots.Count; index++)
+            {
+                var info = _contactSlots[(ContactSlotId)index];
+                DebugExtensions.DrawRayCast(info.Origin, info.Direction, info.ScanDistance, info.ClosestHit, Time.fixedDeltaTime);
+            }
             #endif
-        }
-
-        public bool CheckDirection(Vector2 direction, float distance, out RaycastHit2D hit)
-        {
-            // note that there is no need to disable colliders as that is accounted for by collider instance
-            if (_rigidbody.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
-            {
-                hit = _hitBuffer[0];
-            }
-            else
-            {
-                hit = default;
-            }
-            return hit;
         }
     }
 }
