@@ -21,12 +21,12 @@ namespace PQ._Experimental.Physics.Contact_006
         
         public struct ContactSlotInfo
         {
-            public ContactSlotId Id           { get; set; }
-            public float         Angle        { get; set; }
-            public Vector2       Direction    { get; set; }
-            public Vector2       Origin       { get; set; }
-            public float         ScanDistance { get; set; }
-            public RaycastHit2D  ClosestHit   { get; set; }
+            public ContactSlotId Id           { get; init; }
+            public float         Angle        { get; init; }
+            public Vector2       Direction    { get; init; }
+            public Vector2       LocalOrigin       { get; set;  }
+            public float         ScanDistance { get; set;  }
+            public RaycastHit2D  ClosestHit   { get; set;  }
 
             public override string ToString() =>
                 $"{Id}: {(ClosestHit? ClosestHit.distance : "-")}";
@@ -40,12 +40,12 @@ namespace PQ._Experimental.Physics.Contact_006
                 float degrees = 45 * index;
                 float radians = Mathf.Deg2Rad * degrees;
                 ContactSlotId slotId = (ContactSlotId)index;
-                contactSlots.Add(slotId, new ContactSlotInfo
+                contactSlots.Add((ContactSlotId)index, new ContactSlotInfo
                 {
                     Id           = slotId,
                     Angle        = degrees,
                     Direction    = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)),
-                    Origin       = default,
+                    LocalOrigin  = FindClosestLocalEdgePoint(degrees),
                     ScanDistance = default,
                     ClosestHit   = default
                 });
@@ -131,18 +131,12 @@ namespace PQ._Experimental.Physics.Contact_006
 
         public void UpdateContactInfo(float contactOffset)
         {
-            Transform transform = _rigidbody.transform;
-            Vector2 right = transform.right.normalized;
-            Vector2 up    = transform.up.normalized;
-            Vector2 left  = -right;
-            Vector2 down  = -up;
-
             for (int index = 0; index < _contactSlots.Count; index++)
             {
                 ContactSlotId slotId = (ContactSlotId)index;
                 ContactSlotInfo info = _contactSlots[slotId];
 
-                info.Origin = _rigidbody.position + (Vector2)_boxCollider.bounds.extents * info.Direction;
+                info.LocalOrigin = _rigidbody.position + (Vector2)_boxCollider.bounds.extents * info.Direction;
                 info.ScanDistance = contactOffset;
                 if (_rigidbody.Cast(info.Direction, _contactFilter, _hitBuffer, info.ScanDistance) > 0)
                 {
@@ -160,9 +154,32 @@ namespace PQ._Experimental.Physics.Contact_006
             for (int index = 0; index < _contactSlots.Count; index++)
             {
                 var info = _contactSlots[(ContactSlotId)index];
-                DebugExtensions.DrawRayCast(info.Origin, info.Direction, info.ScanDistance, info.ClosestHit, Time.fixedDeltaTime);
+                DebugExtensions.DrawRayCast(info.LocalOrigin, info.Direction, info.ScanDistance, info.ClosestHit, Time.fixedDeltaTime);
             }
             #endif
+        }
+
+
+        private static Vector2 FindClosestLocalEdgePoint(float angle)
+        {
+            #if UNITY_EDITOR
+            if (angle is < 0 or > 360)
+            {
+                throw new ArgumentException($"Angle must be between 0 and 315, received index={angle}");
+            }
+            #endif
+            return angle switch
+            {
+                < 45f  => new Vector2( 1,  0),
+                < 90f  => new Vector2( 1,  1),
+                < 135f => new Vector2( 0,  1),
+                < 180f => new Vector2(-1,  1),
+                < 225f => new Vector2(-1,  0),
+                < 270f => new Vector2(-1, -1),
+                < 315f => new Vector2( 0, -1),
+                < 360f => new Vector2( 1, -1),
+                _ => Vector2.zero
+            };
         }
     }
 }
