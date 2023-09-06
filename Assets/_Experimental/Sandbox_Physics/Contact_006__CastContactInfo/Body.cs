@@ -1,31 +1,65 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
 namespace PQ._Experimental.Physics.Contact_006
 {
-    [Flags]
-    public enum ContactFlags2D
-    {
-        None              = 0,
-        LeftSide          = 1 << 1,
-        BottomLeftCorner  = 1 << 2,
-        BottomSide        = 1 << 3,
-        BottomRightCorner = 1 << 4,
-        RightSide         = 1 << 5,
-        TopRightCorner    = 1 << 6,
-        TopSide           = 1 << 7,
-        TopLeftCorner     = 1 << 8,
-        All               = ~0,
-    }
-
     internal sealed class Body
     {
+        public enum ContactSlotId
+        {
+            BottomRightCorner,
+            RightSide,
+            TopRightCorner,
+            TopSide,
+            TopLeftCorner,
+            LeftSide,
+            BottomLeftCorner,
+            BottomSide,
+        }
+        
+        public struct ContactSlotInfo
+        {
+            public ContactSlotId Id           { get; init; }
+            public float         Angle        { get; init; }
+            public Vector2       Direction    { get; init; }
+            public Vector2       LocalOrigin       { get; set;  }
+            public float         ScanDistance { get; set;  }
+            public RaycastHit2D  ClosestHit   { get; set;  }
+
+            public override string ToString() =>
+                $"{Id}: {(ClosestHit? ClosestHit.distance : "-")}";
+        }
+        
+        private static EnumMap<ContactSlotId, ContactSlotInfo> ConstructContactMap()
+        {
+            EnumMap<ContactSlotId, ContactSlotInfo> contactSlots = new();
+            for (int index = 0; index < 7; index++)
+            {
+                float degrees = 45 * index;
+                float radians = Mathf.Deg2Rad * degrees;
+                ContactSlotId slotId = (ContactSlotId)index;
+                contactSlots.Add((ContactSlotId)index, new ContactSlotInfo
+                {
+                    Id           = slotId,
+                    Angle        = degrees,
+                    Direction    = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)),
+                    LocalOrigin  = FindClosestLocalEdgePoint(degrees),
+                    ScanDistance = default,
+                    ClosestHit   = default
+                });
+            }
+            return contactSlots;
+        }
+
+
         private Transform       _transform;
         private Rigidbody2D     _rigidbody;
         private BoxCollider2D   _boxCollider;
         private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
+        private EnumMap<ContactSlotId, ContactSlotInfo> _contactSlots;
 
         private LayerMask _previousLayerMask;
 
@@ -36,7 +70,7 @@ namespace PQ._Experimental.Physics.Contact_006
 
         private const float DefaultEpsilon = 0.005f;
         private const int DefaultBufferSize = 1;
-        private readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
+        private static readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
 
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
         public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
@@ -86,79 +120,66 @@ namespace PQ._Experimental.Physics.Contact_006
             _rigidbody.isKinematic = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
+
+            _contactSlots = ConstructContactMap();
         }
 
-        public ContactFlags2D CheckForOverlappingContacts(float skinWidth)
+        public IReadOnlyList<ContactSlotInfo> GetContactInfo()
         {
-            Transform transform = _rigidbody.transform;
-            Vector2 right = transform.right.normalized;
-            Vector2 up    = transform.up.normalized;
-            Vector2 left  = -right;
-            Vector2 down  = -up;
+            return _contactSlots.Values;
+        }
 
-            ContactFlags2D flags = ContactFlags2D.None;
-            if (CheckDirection(right, skinWidth, out _))
+        public void UpdateContactInfo(float contactOffset)
+        {
+            for (int index = 0; index < _contactSlots.Count; index++)
             {
-                flags |= ContactFlags2D.RightSide;
-            }
-            if (CheckDirection(up, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.TopSide;
-            }
-            if (CheckDirection(left, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.LeftSide;
-            }
-            if (CheckDirection(down, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.BottomSide;
-            }
+                ContactSlotId slotId = (ContactSlotId)index;
+                ContactSlotInfo info = _contactSlots[slotId];
 
-            if (CheckDirection(new Vector2(1, -1) * NormalizedDiagonal, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.BottomRightCorner;
-            }
-            if (CheckDirection(new Vector2(1, 1) * NormalizedDiagonal, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.TopRightCorner;
-            }
-            if (CheckDirection(new Vector2(-1, 1) * NormalizedDiagonal, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.TopLeftCorner;
-            }
-            if (CheckDirection(new Vector2(-1, -1) * NormalizedDiagonal, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.BottomLeftCorner;
+                info.LocalOrigin = _rigidbody.position + (Vector2)_boxCollider.bounds.extents * info.Direction;
+                info.ScanDistance = contactOffset;
+                if (_rigidbody.Cast(info.Direction, _contactFilter, _hitBuffer, info.ScanDistance) > 0)
+                {
+                    info.ClosestHit = _hitBuffer[0];
+                }
+                else
+                {
+                    info.ClosestHit = default;
+                }
+
+                _contactSlots[slotId] = info;
             }
             
             #if UNITY_EDITOR
-            Bounds bounds = _boxCollider.bounds;
-            Vector2 center    = new Vector2(bounds.center.x, bounds.center.y);
-            Vector2 skinRatio = new Vector2(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
-            Vector2 xAxis     = bounds.extents.x * right;
-            Vector2 yAxis     = bounds.extents.y * up;
-
-            float duration = Time.fixedDeltaTime;
-            Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
-            Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
-            Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
-            Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
+            for (int index = 0; index < _contactSlots.Count; index++)
+            {
+                var info = _contactSlots[(ContactSlotId)index];
+                DebugExtensions.DrawRayCast(info.LocalOrigin, info.Direction, info.ScanDistance, info.ClosestHit, Time.fixedDeltaTime);
+            }
             #endif
-            return flags;
         }
 
-        public bool CheckDirection(Vector2 direction, float distance, out RaycastHit2D hit)
+
+        private static Vector2 FindClosestLocalEdgePoint(float angle)
         {
-            // note that there is no need to disable colliders as that is accounted for by collider instance
-            if (_rigidbody.Cast(direction, _contactFilter, _hitBuffer, distance) > 0)
+            #if UNITY_EDITOR
+            if (angle is < 0 or > 360)
             {
-                hit = _hitBuffer[0];
+                throw new ArgumentException($"Angle must be between 0 and 315, received index={angle}");
             }
-            else
+            #endif
+            return angle switch
             {
-                hit = default;
-            }
-            return hit;
+                < 45f  => new Vector2( 1,  0),
+                < 90f  => new Vector2( 1,  1),
+                < 135f => new Vector2( 0,  1),
+                < 180f => new Vector2(-1,  1),
+                < 225f => new Vector2(-1,  0),
+                < 270f => new Vector2(-1, -1),
+                < 315f => new Vector2( 0, -1),
+                < 360f => new Vector2( 1, -1),
+                _ => Vector2.zero
+            };
         }
     }
 }
