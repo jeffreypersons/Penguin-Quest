@@ -176,8 +176,7 @@ namespace PQ._Experimental.Physics.Contact_006
                 < 225f => new Vector2(-1,  0),
                 < 270f => new Vector2(-1, -1),
                 < 315f => new Vector2( 0, -1),
-                < 360f => new Vector2( 1, -1),
-                _ => Vector2.zero
+                _      => new Vector2( 1, -1),
             };
             Vector2 normal = point.x == point.y ? point * NormalizedDiagonal : point;
 
