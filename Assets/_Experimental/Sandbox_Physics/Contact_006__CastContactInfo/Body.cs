@@ -34,7 +34,7 @@ namespace PQ._Experimental.Physics.Contact_006
         private static EnumMap<ContactSlotId, ContactSlot> ConstructContactMap()
         {
             EnumMap<ContactSlotId, ContactSlot> contactSlots = new();
-            for (int index = 0; index < 7; index++)
+            for (int index = 0; index < 8; index++)
             {
                 float degrees = 45 * index;
                 (Vector2 point, Vector2 direction) = FindClosestLocalEdgePoint(degrees);
@@ -133,7 +133,7 @@ namespace PQ._Experimental.Physics.Contact_006
             for (int index = 0; index < _contactSlots.Count; index++)
             {
                 ContactSlotId slotId = (ContactSlotId)index;
-                ContactSlot slot = _contactSlots[slotId];
+                ContactSlot slot = _contactSlots[(ContactSlotId)index];
 
                 slot.ScanDistance = contactOffset;
                 if (_rigidbody.Cast(slot.Direction, _contactFilter, _hitBuffer, slot.ScanDistance) > 0)
@@ -145,7 +145,7 @@ namespace PQ._Experimental.Physics.Contact_006
                     slot.ClosestHit = default;
                 }
 
-                _contactSlots[slotId] = slot;
+                _contactSlots[(ContactSlotId)index] = slot;
             }
             
             #if UNITY_EDITOR
