@@ -153,6 +153,7 @@ namespace PQ._Experimental.Physics.Contact_006
             {
                 var slot = _contactSlots[(ContactSlotId)index];
                 Vector2 origin = _rigidbody.position + _boxCollider.bounds.extents * slot.LocalOrigin;
+                Debug.Log($"{(ContactSlotId)index} : from={origin} to={origin + slot.ScanDistance * slot.Direction}");
                 DebugExtensions.DrawRayCast(origin, slot.Direction, slot.ScanDistance, slot.ClosestHit, Time.fixedDeltaTime);
             }
             #endif
