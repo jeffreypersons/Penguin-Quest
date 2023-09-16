@@ -19,33 +19,32 @@ namespace PQ._Experimental.Physics.Contact_006
             BottomSide,
         }
         
-        public struct ContactSlotInfo
+        public struct ContactSlot
         {
             public ContactSlotId Id           { get; init; }
             public float         Angle        { get; init; }
             public Vector2       Direction    { get; init; }
-            public Vector2       LocalOrigin       { get; set;  }
+            public Vector2       LocalOrigin  { get; set;  }
             public float         ScanDistance { get; set;  }
             public RaycastHit2D  ClosestHit   { get; set;  }
 
-            public override string ToString() =>
-                $"{Id}: {(ClosestHit? ClosestHit.distance : "-")}";
+            public override string ToString() => $"{Id}: {(ClosestHit? ClosestHit.distance : "-")}";
         }
         
-        private static EnumMap<ContactSlotId, ContactSlotInfo> ConstructContactMap()
+        private static EnumMap<ContactSlotId, ContactSlot> ConstructContactMap()
         {
-            EnumMap<ContactSlotId, ContactSlotInfo> contactSlots = new();
+            EnumMap<ContactSlotId, ContactSlot> contactSlots = new();
             for (int index = 0; index < 7; index++)
             {
                 float degrees = 45 * index;
-                float radians = Mathf.Deg2Rad * degrees;
+                (Vector2 point, Vector2 direction) = FindClosestLocalEdgePoint(degrees);
                 ContactSlotId slotId = (ContactSlotId)index;
-                contactSlots.Add((ContactSlotId)index, new ContactSlotInfo
+                contactSlots.Add((ContactSlotId)index, new ContactSlot
                 {
                     Id           = slotId,
                     Angle        = degrees,
-                    Direction    = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)),
-                    LocalOrigin  = FindClosestLocalEdgePoint(degrees),
+                    Direction    = direction,
+                    LocalOrigin  = point,
                     ScanDistance = default,
                     ClosestHit   = default
                 });
@@ -59,7 +58,7 @@ namespace PQ._Experimental.Physics.Contact_006
         private BoxCollider2D   _boxCollider;
         private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
-        private EnumMap<ContactSlotId, ContactSlotInfo> _contactSlots;
+        private EnumMap<ContactSlotId, ContactSlot> _contactSlots;
 
         private LayerMask _previousLayerMask;
 
@@ -124,7 +123,7 @@ namespace PQ._Experimental.Physics.Contact_006
             _contactSlots = ConstructContactMap();
         }
 
-        public IReadOnlyList<ContactSlotInfo> GetContactInfo()
+        public IReadOnlyList<ContactSlot> GetContactInfo()
         {
             return _contactSlots.Values;
         }
@@ -134,41 +133,41 @@ namespace PQ._Experimental.Physics.Contact_006
             for (int index = 0; index < _contactSlots.Count; index++)
             {
                 ContactSlotId slotId = (ContactSlotId)index;
-                ContactSlotInfo info = _contactSlots[slotId];
+                ContactSlot slot = _contactSlots[slotId];
 
-                info.LocalOrigin = _rigidbody.position + (Vector2)_boxCollider.bounds.extents * info.Direction;
-                info.ScanDistance = contactOffset;
-                if (_rigidbody.Cast(info.Direction, _contactFilter, _hitBuffer, info.ScanDistance) > 0)
+                slot.ScanDistance = contactOffset;
+                if (_rigidbody.Cast(slot.Direction, _contactFilter, _hitBuffer, slot.ScanDistance) > 0)
                 {
-                    info.ClosestHit = _hitBuffer[0];
+                    slot.ClosestHit = _hitBuffer[0];
                 }
                 else
                 {
-                    info.ClosestHit = default;
+                    slot.ClosestHit = default;
                 }
 
-                _contactSlots[slotId] = info;
+                _contactSlots[slotId] = slot;
             }
             
             #if UNITY_EDITOR
             for (int index = 0; index < _contactSlots.Count; index++)
             {
-                var info = _contactSlots[(ContactSlotId)index];
-                DebugExtensions.DrawRayCast(info.LocalOrigin, info.Direction, info.ScanDistance, info.ClosestHit, Time.fixedDeltaTime);
+                var slot = _contactSlots[(ContactSlotId)index];
+                Vector2 origin = _rigidbody.position + _boxCollider.bounds.extents * slot.LocalOrigin;
+                DebugExtensions.DrawRayCast(origin, slot.Direction, slot.ScanDistance, slot.ClosestHit, Time.fixedDeltaTime);
             }
             #endif
         }
 
 
-        private static Vector2 FindClosestLocalEdgePoint(float angle)
+        private static (Vector2 point, Vector2 direction) FindClosestLocalEdgePoint(float angle)
         {
             #if UNITY_EDITOR
             if (angle is < 0 or > 360)
             {
-                throw new ArgumentException($"Angle must be between 0 and 315, received index={angle}");
+                throw new ArgumentException($"Angle must be between 0 and 360, received index={angle}");
             }
             #endif
-            return angle switch
+            Vector2 point = angle switch
             {
                 < 45f  => new Vector2( 1,  0),
                 < 90f  => new Vector2( 1,  1),
@@ -180,6 +179,9 @@ namespace PQ._Experimental.Physics.Contact_006
                 < 360f => new Vector2( 1, -1),
                 _ => Vector2.zero
             };
+            Vector2 normal = point.x == point.y ? point * NormalizedDiagonal : point;
+
+            return (point, normal);
         }
     }
 }

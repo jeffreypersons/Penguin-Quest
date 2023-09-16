@@ -10,7 +10,7 @@ namespace PQ._Experimental.Physics.Contact_006
         [SerializeField] private Body _body;
         [SerializeField] [Range(0f, 1f)] private float _contactOffset = 0.05f;
 
-        private IReadOnlyList<Body.ContactSlotInfo> _contactInfos;
+        private IReadOnlyList<Body.ContactSlot> _contactInfos;
 
         void Awake()
         {
