@@ -108,7 +108,7 @@ namespace PQ._Experimental.Physics.Contact_006
                 _slots[index] = new ContactSlot
                 {
                     Id           = (ContactSlotId)index,
-                    Normal       = isDiagonal ? SlotAnchors[index] : SlotAnchors[index] * NormalizedDiagonal,
+                    Normal       = isDiagonal ? SlotAnchors[index] * NormalizedDiagonal : SlotAnchors[index],
                     ScanOrigin   = default,
                     ScanDistance = default,
                     ScanHit      = default,
