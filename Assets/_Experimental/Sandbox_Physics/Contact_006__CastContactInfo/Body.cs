@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -7,9 +6,17 @@ namespace PQ._Experimental.Physics.Contact_006
 {
     internal sealed class Body
     {
+        private const float DefaultEpsilon = 0.005f;
+        private const int DefaultBufferSize = 1;
+        private static readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
+
+        private static readonly Vector2[] SlotAnchors = new Vector2[]
+        {
+            new(1,0), new(1,1), new(0,1), new(-1,1), new(-1,0), new(-1,-1), new(0,-1), new(1,-1),
+        };
+
         public enum ContactSlotId
         {
-            BottomRightCorner,
             RightSide,
             TopRightCorner,
             TopSide,
@@ -17,59 +24,33 @@ namespace PQ._Experimental.Physics.Contact_006
             LeftSide,
             BottomLeftCorner,
             BottomSide,
+            BottomRightCorner
         }
-        
+
         public struct ContactSlot
         {
             public ContactSlotId Id           { get; init; }
-            public float         Angle        { get; init; }
-            public Vector2       Direction    { get; init; }
-            public Vector2       LocalOrigin  { get; set;  }
+            public Vector2       Normal       { get; init; }
+            public Vector2       ScanOrigin   { get; set;  }
             public float         ScanDistance { get; set;  }
-            public RaycastHit2D  ClosestHit   { get; set;  }
+            public RaycastHit2D  ScanHit      { get; set;  }
 
-            public override string ToString() => $"{Id}: {(ClosestHit? ClosestHit.distance : "-")}";
+            public override string ToString() => $"{Id}: {(ScanHit ? ScanHit.distance : "-")}";
         }
-        
-        private static EnumMap<ContactSlotId, ContactSlot> ConstructContactMap()
-        {
-            EnumMap<ContactSlotId, ContactSlot> contactSlots = new();
-            for (int index = 0; index < 8; index++)
-            {
-                float degrees = 45 * index;
-                (Vector2 point, Vector2 direction) = FindClosestLocalEdgePoint(degrees);
-                ContactSlotId slotId = (ContactSlotId)index;
-                contactSlots.Add((ContactSlotId)index, new ContactSlot
-                {
-                    Id           = slotId,
-                    Angle        = degrees,
-                    Direction    = direction,
-                    LocalOrigin  = point,
-                    ScanDistance = default,
-                    ClosestHit   = default
-                });
-            }
-            return contactSlots;
-        }
-
 
         private Transform       _transform;
         private Rigidbody2D     _rigidbody;
         private BoxCollider2D   _boxCollider;
         private ContactFilter2D _contactFilter;
         private RaycastHit2D[]  _hitBuffer;
-        private EnumMap<ContactSlotId, ContactSlot> _contactSlots;
 
+        private ContactSlot[] _slots;
         private LayerMask _previousLayerMask;
 
         public Vector2 Position => _rigidbody.position;
         public Vector2 Extents  => _boxCollider.bounds.extents;
         public Vector2 Forward  => _transform.right.normalized;
         public Vector2 Up       => _transform.up.normalized;
-
-        private const float DefaultEpsilon = 0.005f;
-        private const int DefaultBufferSize = 1;
-        private static readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
 
         public bool IsFlippedHorizontal => _rigidbody.transform.localEulerAngles.y >= 90f;
         public bool IsFlippedVertical   => _rigidbody.transform.localEulerAngles.x >= 90f;
@@ -120,68 +101,56 @@ namespace PQ._Experimental.Physics.Contact_006
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
 
-            _contactSlots = ConstructContactMap();
-        }
-
-        public IReadOnlyList<ContactSlot> GetContactInfo()
-        {
-            return _contactSlots.Values;
-        }
-
-        public void UpdateContactInfo(float contactOffset)
-        {
-            for (int index = 0; index < _contactSlots.Count; index++)
+            bool isDiagonal = false;
+            _slots = new ContactSlot[SlotAnchors.Length];
+            for (int index = 0; index < SlotAnchors.Length; index++)
             {
-                ContactSlotId slotId = (ContactSlotId)index;
-                ContactSlot slot = _contactSlots[(ContactSlotId)index];
-
-                slot.ScanDistance = contactOffset;
-                if (_rigidbody.Cast(slot.Direction, _contactFilter, _hitBuffer, slot.ScanDistance) > 0)
+                _slots[index] = new ContactSlot
                 {
-                    slot.ClosestHit = _hitBuffer[0];
-                }
-                else
-                {
-                    slot.ClosestHit = default;
-                }
+                    Id           = (ContactSlotId)index,
+                    Normal       = isDiagonal ? SlotAnchors[index] : SlotAnchors[index] * NormalizedDiagonal,
+                    ScanOrigin   = default,
+                    ScanDistance = default,
+                    ScanHit      = default,
+                };
+                isDiagonal = !isDiagonal;
+            }
+        }
 
-                _contactSlots[(ContactSlotId)index] = slot;
-            }
-            
-            #if UNITY_EDITOR
-            for (int index = 0; index < _contactSlots.Count; index++)
+        /* Starting from right going counter-clockwise, sweeptest given distance out from AABB. */
+        public void FireAllContactSensors(float contactOffset, out ReadOnlySpan<ContactSlot> slots)
+        {
+            Vector2 center = _boxCollider.bounds.center;
+            Vector2 extents = (Vector2)_boxCollider.bounds.extents;
+            for (int index = 0; index < _slots.Length; index++)
             {
-                var slot = _contactSlots[(ContactSlotId)index];
-                Vector2 origin = _rigidbody.position + _boxCollider.bounds.extents * slot.LocalOrigin;
-                Debug.Log($"{(ContactSlotId)index} : from={origin} to={origin + slot.ScanDistance * slot.Direction}");
-                DebugExtensions.DrawRayCast(origin, slot.Direction, slot.ScanDistance, slot.ClosestHit, Time.fixedDeltaTime);
+                Scan(ref _slots[index], center, extents, contactOffset);
             }
-            #endif
+            slots = _slots.AsSpan();
         }
 
 
-        private static (Vector2 point, Vector2 direction) FindClosestLocalEdgePoint(float angle)
+        private void Scan(ref ContactSlot slot, Vector2 center, Vector2 extents, float distance)
         {
-            #if UNITY_EDITOR
-            if (angle is < 0 or > 360)
-            {
-                throw new ArgumentException($"Angle must be between 0 and 360, received index={angle}");
-            }
-            #endif
-            Vector2 point = angle switch
-            {
-                < 45f  => new Vector2( 1,  0),
-                < 90f  => new Vector2( 1,  1),
-                < 135f => new Vector2( 0,  1),
-                < 180f => new Vector2(-1,  1),
-                < 225f => new Vector2(-1,  0),
-                < 270f => new Vector2(-1, -1),
-                < 315f => new Vector2( 0, -1),
-                _      => new Vector2( 1, -1),
-            };
-            Vector2 normal = point.x == point.y ? point * NormalizedDiagonal : point;
+            // Scale anchor [point on edge of a unit square] by extents.
+            // For example, for xy extents (1 / 4, 1) the scale is (0.50, 2)
+            Vector2 offset = Vector2.Scale(SlotAnchors[(int)slot.Id], extents);
 
-            return (point, normal);
+            slot.ScanOrigin = center + offset;
+            slot.ScanDistance = (new Vector2(distance, distance) * slot.Normal).magnitude;
+            if (_rigidbody.Cast(slot.Normal, _contactFilter, _hitBuffer, slot.ScanDistance) > 0)
+            {
+                slot.ScanHit = _hitBuffer[0];
+            }
+            else
+            {
+                slot.ScanHit = default;
+            }
+
+            #if UNITY_EDITOR
+            Debug.Log($"{slot.Id} : from={slot.ScanOrigin} to={slot.ScanOrigin + slot.ScanDistance * slot.Normal}");
+            DebugExtensions.DrawRayCast(slot.ScanOrigin, slot.Normal, slot.ScanDistance, slot.ScanHit, Time.fixedDeltaTime);
+            #endif
         }
     }
 }
