@@ -108,7 +108,7 @@ namespace PQ._Experimental.Physics
             Debug.DrawLine(origin, origin + distance * direction, CastMissColor, duration);
             if (hit)
             {
-                Debug.DrawLine(origin, hit.point, CastHitColor, duration);
+                Debug.DrawLine(origin, origin + hit.distance * direction, CastHitColor, duration);
             }
         }
 
