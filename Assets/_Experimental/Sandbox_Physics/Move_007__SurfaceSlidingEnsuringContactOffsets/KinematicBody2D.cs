@@ -5,7 +5,7 @@ using UnityEngine;
 namespace PQ._Experimental.Physics.Move_007
 {
     [Flags]
-    public enum ContactFlags2D
+    public enum ContactSlotId
     {
         None              = 0,
         LeftSide          = 1 << 1,
@@ -18,6 +18,18 @@ namespace PQ._Experimental.Physics.Move_007
         TopLeftCorner     = 1 << 8,
         All               = ~0,
     }
+
+    public struct ContactSlot
+    {
+        public ContactSlotId Id           { get; init; }
+        public Vector2       Normal       { get; init; }
+        public Vector2       ScanOrigin   { get; set;  }
+        public float         ScanDistance { get; set;  }
+        public RaycastHit2D  ScanHit      { get; set;  }
+
+        public override string ToString() => $"{Id}: {(ScanHit ? ScanHit.distance : "-")}";
+    }
+
     internal sealed class KinematicBody2D
     {
         private Transform        _transform;
@@ -29,12 +41,18 @@ namespace PQ._Experimental.Physics.Move_007
         private RaycastHit2D[]   _hitBuffer;
         private Collider2D[]     _overlapBuffer;
         private ContactPoint2D[] _contactBuffer;
+        private ContactSlot[]    _slots;
 
         private LayerMask _previousLayerMask;
 
         private const float DefaultEpsilon = 0.005f;
-        private const int DefaultBufferSize = 16;
-        private readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
+        private const int DefaultBufferSize = 6;
+        private static readonly Vector2 NormalizedDiagonal = Vector2.one.normalized;
+
+        private static readonly Vector2[] SlotAnchors = new Vector2[]
+        {
+            new(1,0), new(1,1), new(0,1), new(-1,1), new(-1,0), new(-1,-1), new(0,-1), new(1,-1),
+        };
 
         public override string ToString() =>
             $"{GetType()}{{" +
@@ -133,18 +151,27 @@ namespace PQ._Experimental.Physics.Move_007
             _rigidbody.isKinematic = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
+
+            bool isDiagonal = false;
+            _slots = new ContactSlot[SlotAnchors.Length];
+            for (int index = 0; index < SlotAnchors.Length; index++)
+            {
+                _slots[index] = new ContactSlot
+                {
+                    Id           = (ContactSlotId)index,
+                    Normal       = isDiagonal ? SlotAnchors[index] * NormalizedDiagonal : SlotAnchors[index],
+                    ScanOrigin   = default,
+                    ScanDistance = default,
+                    ScanHit      = default,
+                };
+                isDiagonal = !isDiagonal;
+            }
         }
 
         /* Check if body is filtering out collisions with given object or not. */
         public bool IsFilteringLayerMask(GameObject other)
         {
             return _contactFilter.IsFilteringLayerMask(other);
-        }
-
-        /* Check if in contact with any colliders. */
-        public bool IsTouching()
-        {
-            return _boxCollider.IsTouching(_contactFilter);
         }
 
         /*
@@ -224,92 +251,11 @@ namespace PQ._Experimental.Physics.Move_007
         /* Expand out bounds from body center, ignoring attached AABB, outputting all overlapping colliders. Note order is not significant. */
         public bool CheckForOverlappingColliders(Vector2 extents, out ReadOnlySpan<Collider2D> colliders)
         {
-            int layer = _transform.gameObject.layer;
-            _transform.gameObject.layer = Physics2D.IgnoreRaycastLayer;
-
+            DisableCollisionsWithAABB();
             int colliderCount = Physics2D.OverlapBox(_boxCollider.bounds.center, 2f * extents, 0f, _contactFilter, _overlapBuffer);
             colliders = _overlapBuffer.AsSpan(0, colliderCount);
-
-            _transform.gameObject.layer = layer;
+            ReEnableCollisionsWithAABB();
             return !colliders.IsEmpty;
-        }
-        
-        /* Check if contacts are touching. */
-        public ContactFlags2D CheckSides()
-        {
-            _contactFilter.useNormalAngle = true;
-
-            bool isDiagonal = false;
-            int degrees = 0;
-            ContactFlags2D flags = ContactFlags2D.None;
-            for (int i = 0; i < 7; i++)
-            {
-                if (isDiagonal)
-                {
-                    _contactFilter.SetNormalAngle(degrees - 45 + DefaultEpsilon, degrees + 45 - DefaultEpsilon);
-                }
-                else
-                {
-                    _contactFilter.SetNormalAngle(degrees - DefaultEpsilon, degrees + DefaultEpsilon);
-                }
-                
-                if (_boxCollider.IsTouching(_contactFilter))
-                {
-                    flags |= (ContactFlags2D)(1 << (i+1));
-                }
-
-                degrees += 45;
-                isDiagonal = !isDiagonal;
-            }
-            _contactFilter.useNormalAngle = false;
-            return flags;
-        }
-
-        
-        /* Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width. */
-        public ContactFlags2D CheckForOverlappingContacts(float skinWidth)
-        {
-            Transform transform = _rigidbody.transform;
-            Vector2 right = transform.right.normalized;
-            Vector2 up    = transform.up.normalized;
-            Vector2 left  = -right;
-            Vector2 down  = -up;
-
-            ContactFlags2D flags = ContactFlags2D.None;
-            if (CastAABB(right, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.RightSide;
-            }
-            if (CastAABB(up, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.TopSide;
-            }
-            if (CastAABB(left, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.LeftSide;
-            }
-            if (CastAABB(down, skinWidth, out _))
-            {
-                flags |= ContactFlags2D.BottomSide;
-            }
-            
-            #if UNITY_EDITOR
-            if (DrawCastsInEditor)
-            {
-                Bounds bounds = _boxCollider.bounds;
-                Vector2 center    = new Vector2(bounds.center.x, bounds.center.y);
-                Vector2 skinRatio = new Vector2(1f + (skinWidth / bounds.extents.x), 1f + (skinWidth / bounds.extents.y));
-                Vector2 xAxis     = bounds.extents.x * right;
-                Vector2 yAxis     = bounds.extents.y * up;
-
-                float duration = Time.fixedDeltaTime;
-                Debug.DrawLine(center + xAxis, center + skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center - xAxis, center - skinRatio * xAxis, Color.magenta, duration);
-                Debug.DrawLine(center + yAxis, center + skinRatio * yAxis, Color.magenta, duration);
-                Debug.DrawLine(center - yAxis, center - skinRatio * yAxis, Color.magenta, duration);
-            }
-            #endif
-            return flags;
         }
         
         /*
@@ -334,6 +280,17 @@ namespace PQ._Experimental.Physics.Move_007
             return foundIntersection;
         }
 
+        /* Starting from right going counter-clockwise, sweeptest given distance out from AABB. */
+        public void FireAllContactSensors(float contactOffset, out ReadOnlySpan<ContactSlot> slots)
+        {
+            Vector2 center = _boxCollider.bounds.center;
+            Vector2 extents = (Vector2)_boxCollider.bounds.extents;
+            for (int index = 0; index < _slots.Length; index++)
+            {
+                Scan(ref _slots[index], center, extents, contactOffset);
+            }
+            slots = _slots.AsSpan();
+        }
 
         /* Project a rectangle along delta, ignoring ALL attached colliders, and stopping at first hit (if any). */
         public bool CastAABB(Vector2 direction, float distance, out RaycastHit2D hit)
@@ -429,12 +386,14 @@ namespace PQ._Experimental.Physics.Move_007
         public bool CastRaysAlongSegment(Vector2 start, Vector2 end, Vector2 direction, float distance, int rayCount, out int hitCount, out ReadOnlySpan<RaycastHit2D> results)
         {
             #if UNITY_EDITOR
-            if (rayCount is < 3 or > DefaultBufferSize)
+            int minRayCount = Mathf.Min(3, _hitBuffer.Length);
+            int maxRayCount = Mathf.Max(3, _hitBuffer.Length);
+            if (rayCount < minRayCount || rayCount > maxRayCount)
             {
-                throw new ArgumentException($"Ray count must be in range=[3,{DefaultBufferSize}], received={rayCount}");
+                throw new ArgumentException($"Ray count must be in range=[{minRayCount},{maxRayCount}], received={rayCount}");
             }
             #endif
-                        
+
             DisableCollisionsWithAABB();
             int totalHits = 0;
             Vector2 delta = (end - start) / (rayCount-1);
@@ -491,8 +450,8 @@ namespace PQ._Experimental.Physics.Move_007
 
         /*
         Map given direction to a corner, returning it's position.
-        Relative to right bottom-left-corner, angles map as [270,0)=>right [0,90)=>top [90,180)=>left [180,270]=>bottom
-        Note that start is from bottom and left respectively.
+        Note that start is from bottom and left respectively. Relative to bottom-right-corner, angles map as:
+        * [270,315)=>bottom-right [315,45)=>top-right-corner [45,135)=>top-left-corner [270,315)=>bottom-left-corner
         */
         private (Vector2 normal, Vector2 position) FindClosestCorner(Vector2 direction)
         {
@@ -500,8 +459,9 @@ namespace PQ._Experimental.Physics.Move_007
             float degrees = Vector2.SignedAngle(new Vector2(0, -1), direction);
             if (degrees <= 0)
             {
-                degrees = 360f + degrees;
+                degrees += 360f;
             }
+
             Vector2 sign = degrees switch
             {
                 <= 90f  => new Vector2( 1, -1),
@@ -518,8 +478,8 @@ namespace PQ._Experimental.Physics.Move_007
 
         /*
         Map given direction to a side, returning it's normal and start end points.
-        Relative to right world-axis, angles map as (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
-        Note that start is from bottom and left respectively.
+        Note that start is from bottom and left respectively. Relative to right world-axis, angles map as:
+        * (315,45]=>right (45,135]=>top (135,180]=>left (180,315]=>bottom
         */
         private (Vector2 normal, Vector2 start, Vector2 end) FindClosestSide(Vector2 direction)
         {
@@ -541,6 +501,28 @@ namespace PQ._Experimental.Physics.Move_007
             Vector2 extents = (Vector2)_boxCollider.bounds.extents + new Vector2(_boxCollider.edgeRadius, _boxCollider.edgeRadius);
             return (normal, center + extents * cornerStart, center + extents * cornerEnd);
         }
+
+        private void Scan(ref ContactSlot slot, Vector2 center, Vector2 extents, float distance)
+        {
+            // Scale anchor [point on edge of a unit square] by extents.
+            // For example, for xy extents (1 / 4, 1) the scale is (0.50, 2)
+            Vector2 offset = Vector2.Scale(SlotAnchors[(int)slot.Id], extents);
+
+            slot.ScanOrigin = center + offset;
+            slot.ScanDistance = (new Vector2(distance, distance) * slot.Normal).magnitude;
+            if (_rigidbody.Cast(slot.Normal, _contactFilter, _hitBuffer, slot.ScanDistance) > 0)
+            {
+                slot.ScanHit = _hitBuffer[0];
+            }
+            else
+            {
+                slot.ScanHit = default;
+            }
+
+            #if UNITY_EDITOR
+            Debug.Log($"{slot.Id} : from={slot.ScanOrigin} to={slot.ScanOrigin + slot.ScanDistance * slot.Normal}");
+            DebugExtensions.DrawRayCast(slot.ScanOrigin, slot.Normal, slot.ScanDistance, slot.ScanHit, Time.fixedDeltaTime);
+            #endif
+        }
     }
 }
-

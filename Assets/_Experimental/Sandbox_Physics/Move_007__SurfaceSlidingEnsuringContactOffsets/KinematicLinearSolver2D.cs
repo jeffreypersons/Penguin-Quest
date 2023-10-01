@@ -121,6 +121,8 @@ namespace PQ._Experimental.Physics.Move_007
         {
             direction.Normalize();
 
+            _body.FireAllContactSensors(ContactOffset, out var slots);
+
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
             if (distance * direction == Vector2.zero)

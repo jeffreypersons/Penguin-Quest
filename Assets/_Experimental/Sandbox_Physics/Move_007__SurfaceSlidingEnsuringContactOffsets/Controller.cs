@@ -8,6 +8,7 @@ namespace PQ._Experimental.Physics.Move_007
     {
         [Range(0,  10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
+        [Range(0f,  1)][SerializeField] private float _contactOffset = 0.05f;
 
         [SerializeField] private bool _enableOverlapRecovery = true;
 
