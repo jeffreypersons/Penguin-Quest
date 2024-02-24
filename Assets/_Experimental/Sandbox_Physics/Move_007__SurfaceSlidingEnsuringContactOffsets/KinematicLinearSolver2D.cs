@@ -24,7 +24,7 @@ namespace PQ._Experimental.Physics.Move_007
         public const int MaxOverlapIterations = 5;
 
         /* Amount which we consider to be (close enough to) zero. */
-        public const float Epsilon = 0.005f;
+        public const float Epsilon = 0.001f;
 
         /* Amount used to ensure we don't get _too_ close to surfaces, to avoid getting stuck when moving tangential to a surface. */
         public const float ContactOffset = 0.05f;
