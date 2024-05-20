@@ -112,3 +112,8 @@ The principles were born from painful months of rework:
 * Lack of sandbox meant new feature development and debugging was overly time-intensive
 * Useage of dynamic rigidbody physics was too difficult to tune, and required a lot of working around limitations as opposed to defining how movement should work
 * Polishing animation too early meant that they had to be redone often
+
+
+### Kinematic solver demo:
+
+https://github.com/jeffreypersons/Penguin-Quest/assets/8084757/3b04d505-08ce-41e1-9664-3e5704978fe1
