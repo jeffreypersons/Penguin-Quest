@@ -123,7 +123,7 @@ public class CharacterController2D : MonoBehaviour
         UpdateTailPose();
         UpdateGravityScale();
 
-        prevVelocity = controllerRigidbody.velocity;
+        prevVelocity = controllerRigidbody.linearVelocity;
     }
 
     private void UpdateGrounding()
@@ -142,7 +142,7 @@ public class CharacterController2D : MonoBehaviour
 
     private void UpdateVelocity()
     {
-        Vector2 velocity = controllerRigidbody.velocity;
+        Vector2 velocity = controllerRigidbody.linearVelocity;
 
         // Apply acceleration directly as we'll want to clamp
         // prior to assigning back to the body.
@@ -155,7 +155,7 @@ public class CharacterController2D : MonoBehaviour
         velocity.x = Mathf.Clamp(velocity.x, -maxSpeed, maxSpeed);
 
         // Assign back to the body.
-        controllerRigidbody.velocity = velocity;
+        controllerRigidbody.linearVelocity = velocity;
 
         // Update animator running speed
         var horizontalSpeedNormalized = Mathf.Abs(velocity.x) / maxSpeed;
@@ -168,7 +168,7 @@ public class CharacterController2D : MonoBehaviour
     private void UpdateJump()
     {
         // Set falling flag
-        if (isJumping && controllerRigidbody.velocity.y < 0)
+        if (isJumping && controllerRigidbody.linearVelocity.y < 0)
             isFalling = true;
 
         // Jump
@@ -196,8 +196,8 @@ public class CharacterController2D : MonoBehaviour
             // Since collision with ground stops rigidbody, reset velocity
             if (resetSpeedOnLand)
             {
-                prevVelocity.y = controllerRigidbody.velocity.y;
-                controllerRigidbody.velocity = prevVelocity;
+                prevVelocity.y = controllerRigidbody.linearVelocity.y;
+                controllerRigidbody.linearVelocity = prevVelocity;
             }
 
             // Reset jumping flags
@@ -212,12 +212,12 @@ public class CharacterController2D : MonoBehaviour
     private void UpdateDirection()
     {
         // Use scale to flip character depending on direction
-        if (controllerRigidbody.velocity.x > minFlipSpeed && isFlipped)
+        if (controllerRigidbody.linearVelocity.x > minFlipSpeed && isFlipped)
         {
             isFlipped = false;
             puppet.localScale = Vector3.one;
         }
-        else if (controllerRigidbody.velocity.x < -minFlipSpeed && !isFlipped)
+        else if (controllerRigidbody.linearVelocity.x < -minFlipSpeed && !isFlipped)
         {
             isFlipped = true;
             puppet.localScale = flippedScale;
@@ -228,7 +228,7 @@ public class CharacterController2D : MonoBehaviour
     {
         // Calculate the extrapolated target position of the tail anchor.
         Vector2 targetPosition = tailAnchor.position;
-        targetPosition += controllerRigidbody.velocity * Time.fixedDeltaTime;
+        targetPosition += controllerRigidbody.linearVelocity * Time.fixedDeltaTime;
 
         tailRigidbody.MovePosition(targetPosition);
         if (isFlipped)
@@ -245,7 +245,7 @@ public class CharacterController2D : MonoBehaviour
         if (groundType == GroundType.None)
         {
             // If not grounded then set the gravity scale according to upwards (jump) or downwards (falling) motion.
-            gravityScale = controllerRigidbody.velocity.y > 0.0f ? jumpGravityScale : fallGravityScale;           
+            gravityScale = controllerRigidbody.linearVelocity.y > 0.0f ? jumpGravityScale : fallGravityScale;           
         }
 
         controllerRigidbody.gravityScale = gravityScale;
