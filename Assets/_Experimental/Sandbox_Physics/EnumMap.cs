@@ -24,22 +24,18 @@ namespace PQ._Experimental.Physics
         {
             get
             {
-                #if DEBUG
                 if (!_keys.LookupIndex(key, out int index) || !_keys.Contains(key))
                 {
                     throw new ArgumentException($"Failed to lookup value - key {key} is not found in {_keys}");
                 }
-                #endif
                 return _values[index];
             }
             set
             {
-                #if DEBUG
                 if (!_keys.LookupIndex(key, out int index) || !_keys.Contains(key))
                 {
                     throw new ArgumentException($"Failed to lookup value - key {key} is not found in {_keys}");
                 }
-                #endif
                 _values[index] = value;
             }
         }
