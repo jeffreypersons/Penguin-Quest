@@ -51,7 +51,7 @@ namespace PQ._Experimental.Physics.Move_001
             _boxCollider.size = new Vector2(1f - _skinWidth, 1f - _skinWidth);
 
             _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
-            _rigidbody.isKinematic = true;
+            _rigidbody.bodyType = RigidbodyType2D.Kinematic;
             _rigidbody.simulated   = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;

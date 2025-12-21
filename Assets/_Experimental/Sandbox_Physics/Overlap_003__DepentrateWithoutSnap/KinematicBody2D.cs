@@ -53,8 +53,8 @@ namespace PQ._Experimental.Physics.Overlap_003
             _overlapBuffer = new Collider2D[DefaultBufferSize];
             _contactBuffer = new ContactPoint2D[DefaultBufferSize];
 
-            _rigidbody.isKinematic = true;
-            _rigidbody.simulated   = true;
+            _rigidbody.bodyType = RigidbodyType2D.Kinematic;
+            _rigidbody.simulated = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
 

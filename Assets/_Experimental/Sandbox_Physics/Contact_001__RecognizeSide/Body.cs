@@ -61,7 +61,7 @@ namespace PQ._Experimental.Physics.Contact_001
             _contactFilter.SetLayerMask(LayerMask.GetMask("Solids"));
 
             _rigidbody.simulated   = true;
-            _rigidbody.isKinematic = true;
+            _rigidbody.bodyType = RigidbodyType2D.Kinematic;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
         }

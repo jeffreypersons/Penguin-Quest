@@ -58,7 +58,7 @@ namespace PQ._Experimental.Physics.Move_002
             _boxCollider.edgeRadius = buffer;
             _boxCollider.size       = new Vector2(1f - buffer, 1f - buffer);
 
-            _rigidbody.isKinematic = true;
+            _rigidbody.bodyType = RigidbodyType2D.Kinematic;
             _rigidbody.simulated   = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;

@@ -47,7 +47,7 @@ namespace PQ._Experimental.Physics.Overlap_001
             _hitBuffer     = new RaycastHit2D[_preallocatedBufferSize];
 
             _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
-            _rigidbody.isKinematic = true;
+            _rigidbody.bodyType = RigidbodyType2D.Kinematic;
             _rigidbody.simulated   = true;
             _rigidbody.useFullKinematicContacts = true;
             _rigidbody.constraints = RigidbodyConstraints2D.None;
