@@ -10,17 +10,17 @@ namespace PQ.Common.Physics.Internal
     Internal container for unifying physics calls.
 
     Notes
-    * Assumes always upright bounding box, with kinematic rigidbody
+    * Assume always upright bounding box, with kinematic rigidbody
     * Corresponding game object is fixed in rotation to enforce alignment with global up
     * Caching is done only for cast results, position caching is intentionally left to any calling code
-    * Any result (from physics queries) are intended to be used right away, as any subsequent casts may change the result(s)
+    * Any result (from physics queries) is intended to be used right away, as any subsequent casts may change the result(s)
     * Assumes any given direction is normalized
     */
     internal sealed class KinematicRigidbody2D
     {
-        private Transform        _transform;
-        private Rigidbody2D      _rigidbody;
-        private BoxCollider2D    _boxCollider;
+        private readonly Transform     _transform;
+        private readonly Rigidbody2D   _rigidbody;
+        private readonly BoxCollider2D _boxCollider;
         private ContactFilter2D  _contactFilter;
         private RaycastHit2D[]   _hitBuffer;
         private Collider2D[]     _overlapBuffer;
@@ -136,10 +136,10 @@ namespace PQ.Common.Physics.Internal
         }
 
 
-        /* Given amount between 0 and 1, set rotation about y axis, and rotation about x axis. Note we never allow z rotation. */
+        /* Given amount between 0 and 1, set rotation about y-axis, and rotation about x-axis. Note we never allow z rotation. */
         public void SetFlippedAmount(float horizontalRatio, float verticalRatio)
         {
-            // todo: when we do lerped rotations we will need to likely utilize _rigidbody.transform.right.normalized, etc
+            // todo: when we do lerp-ed rotations we will need to likely utilize _rigidbody.transform.right.normalized, etc
             _rigidbody.transform.localEulerAngles = new Vector3(
                 x: verticalRatio   * 180f,
                 y: horizontalRatio * 180f,
@@ -164,9 +164,9 @@ namespace PQ.Common.Physics.Internal
         This allows changes to rigidbody.position be applied without ignoring interpolation settings.
         
         Context:
-        - Interpolation smooths movement based on past frame positions (eg useful for player input driven gameobjects)
+        - Interpolation smooths movement based on past frame positions (e.g., useful for player input driven game objects)
         - For kinematic rigidbodies, this only works if position is changed via rigidbody.MovePosition() in FixedUpdate()
-        - To interpolate movement despite modifying rigidbody.position (eg performing physics by hand),
+        - To interpolate movement despite modifying rigidbody.position (e.g., performing physics by hand),
           replace the original position _then_ apply MovePosition()
         */
         public void MovePosition(Vector2 startPositionThisFrame, Vector2 targetPositionThisFrame)
@@ -177,9 +177,9 @@ namespace PQ.Common.Physics.Internal
 
 
         /*
-        Project point along given direction and local offset from AABB center, and outputs ALL hits (if any).
+        Project point along the given direction and local offset from the AABB center, and outputs ALL hits (if any).
 
-        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        Note that casts ignore the body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
         public bool CastRay(Vector2 centerOffset, Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
         {
@@ -206,9 +206,9 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
-        Project a point along given direction until specific given collider is hit.
+        Project a point along the given direction until a specific given collider is hit.
 
-        Note that in 3D we have collider.RayCast for this, but in 2D we have no built in way of checking a
+        Note that in 3D we have collider.RayCast for this, but in 2D we have no built-in way of checking a
         specific collider (collider2D.RayCast confusingly casts _from_ it instead of _at_ it).
         */
         public bool CastRayAt(Collider2D collider, Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit, bool includeAlreadyOverlappingColliders)
@@ -245,9 +245,9 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
-        Project AABB along given delta from AABB center, and outputs ALL hits (if any).
+        Project AABB along given delta from the AABB center, and outputs ALL hits (if any).
 
-        Note that casts ignore body's bounds, and all Physics2D cast results are sorted by ascending distance.
+        Note that casts ignore the body's bounds, and all Physics2D cast results are sorted by ascending distance.
         */
         public bool CastAABB(Vector2 direction, float distance, out ReadOnlySpan<RaycastHit2D> hits, bool includeAlreadyOverlappingColliders)
         {
@@ -284,7 +284,7 @@ namespace PQ.Common.Physics.Internal
         }
 
         /*
-        Query existing contacts from last physics pass.
+        Query existing contacts from the last physics pass.
         */
         public bool CheckForContacts(out ReadOnlySpan<ContactPoint2D> contacts)
         {
@@ -296,7 +296,7 @@ namespace PQ.Common.Physics.Internal
         /*
         Check each side for _any_ colliders occupying the region between AABB and the outer perimeter defined by skin width.
 
-        If no layermask provided, uses the one assigned in editor.
+        If no layer-mask is provided, use the one assigned in the editor.
         */
         public CollisionFlags2D CheckSides()
         {
@@ -328,7 +328,7 @@ namespace PQ.Common.Physics.Internal
 
 
         /*
-        Compute distance from center to edge of our bounding box in given direction.
+        Compute the distance from center to the edge of our bounding box in the given direction.
         */
         public float ComputeDistanceToEdge(Vector2 direction)
         {
@@ -342,13 +342,13 @@ namespace PQ.Common.Physics.Internal
         /*
         Compute vector needed to resolve separation amount between AABB and collider along axis, if any.
 
-        If colliders are overlapping with no axis specified (ie zero), then depenetrates along minimum separation.
-        Note that exceptions are thrown if colliders are in invalid states (ie null/disabled, or not found along direction).
-        Note that since separating axis theorem is used, many invocations may be needed for complex polygons.
+        If colliders are overlapping with no axis specified (i.e., zero), then de-penetrates along minimum separation.
+        Note that exceptions are thrown if colliders are in invalid states (i.e., null/disabled, or not found along the direction).
+        Note that since the separating axis theorem is used, many invocations may be needed for complex polygons.
         */
         public bool ComputeSeparation(Collider2D collider, Vector2 axis, out float separation, out Vector2 direction, out bool overlapped)
         {
-            // ensure it's possible to get a valid minimum separation (ie both non-null and enabled)
+            // ensure it's possible to get a valid minimum separation (i.e., both non-null and enabled)
             ColliderDistance2D minimumSeparation = _boxCollider.Distance(collider);
             if (!minimumSeparation.isValid)
             {

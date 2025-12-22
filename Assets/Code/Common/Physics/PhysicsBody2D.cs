@@ -12,8 +12,8 @@ namespace PQ.Common.Physics
     This is intended to be our source of truth interface for dynamic rigidbody movement of kinematic entities.
 
     Notes
-    * Assumes always upright bounding box, with kinematic rigidbody
-    * Corresponding game object is fixed in rotation to enforce alignment with global up
+    * Assume always upright bounding box, with kinematic rigidbody
+    * The corresponding game object is fixed in rotation to enforce alignment with global up
     * Caching is done only for cast results, position caching is intentionally left to any calling code
     */
     [ExecuteAlways]
@@ -22,7 +22,7 @@ namespace PQ.Common.Physics
     {
         [Header("Components")]
         [Tooltip("Transform used for movement, expected to have attached rigidbody 2D and box collider 2D")]
-        [SerializeField] private Transform _transform = default;
+        [SerializeField] private Transform _transform = null;
 
 
         [Header("Thresholds")]
@@ -31,10 +31,10 @@ namespace PQ.Common.Physics
         [SerializeField] private LayerMask _layerMask = default;
         
         [Tooltip("Minimum for bounding box, with coordinates relative to rigidbody position")]
-        [SerializeField] public Vector2 _AABBCornerMin = -Vector2.one;
+        [SerializeField] public Vector2 _aabbCornerMin = -Vector2.one;
 
         [Tooltip("Maximum for bounding box, with coordinates relative to rigidbody position")]
-        [SerializeField] public Vector2 _AABBCornerMax =  Vector2.one;
+        [SerializeField] public Vector2 _aabbCornerMax =  Vector2.one;
 
         [Tooltip("Maximum permissible overlap with other colliders")]
         [SerializeField][Range(0, 1)] private float _skinWidth = 0.04f;
@@ -46,10 +46,10 @@ namespace PQ.Common.Physics
         [Header("Physical Properties")]
 
         [Tooltip("Scalar for reflection along the tangent (friction is from -1 ('boosts' velocity) to 0 (no resistance) to 1 (max resistance))")]
-        [SerializeField] [Range(-1, 1)] private float _collisionFriction = 0f;
+        [SerializeField] [Range(-1, 1)] private float _collisionFriction = 0.00f;
 
         [Tooltip("Scalar for reflection along the normal (bounciness is from 0 (no bounciness) to 1 (completely reflected))")]
-        [SerializeField][Range(0, 1)] private float _collisionBounciness = 0f;
+        [SerializeField][Range(0, 1)] private float _collisionBounciness = 0.00f;
 
         [Tooltip("Multiplier for 2D gravity")]
         [SerializeField] [Range(0, 10)] private float _gravityScale = 1.00f;
@@ -104,7 +104,7 @@ namespace PQ.Common.Physics
         
         #if UNITY_EDITOR
         [Flags]
-        public enum EditorVisuals
+        private enum EditorVisuals
         {
             None       = 0,
             Axes       = 1 << 1,
@@ -138,7 +138,7 @@ namespace PQ.Common.Physics
             _solverParams.MaxSlopeAngle        = _maxAscendableSlopeAngle;
 
             SetLayerMask(_layerMask);
-            SetAABBMinMax(_AABBCornerMin, _AABBCornerMax, _skinWidth);
+            SetAABBMinMax(_aabbCornerMin, _aabbCornerMax, _skinWidth);
             _kinematicBody.ResizeHitBuffer(_preallocatedResultBufferSize);
             _kinematicBody.SetPhysicalProperties(_collisionFriction, _collisionBounciness, _gravityScale);
 
@@ -189,7 +189,7 @@ namespace PQ.Common.Physics
         }
 
 
-        /* Set layermask used for detecting collisions. */
+        /* Set layer-mask used for detecting collisions. */
         public void SetLayerMask(LayerMask layerMask)
         {
             _kinematicBody.SetLayerMask(layerMask);
@@ -197,11 +197,11 @@ namespace PQ.Common.Physics
         }
 
         /*
-        Resize bounding box to span between given local corners, with tolerance defining our bounds 'thickness'.
+        Resize the bounding box to span between given local corners, with tolerance defining our bounds 'thickness'.
 
         Notes
-        * Positions are relative to rigidbody position (eg anchor point at bottom center of sprite)
-        * Size of box must be non zero and larger than twice our tolerance (ie amount of tolerance must be < 100%)
+        * Positions are relative to rigidbody position (e.g., anchor point at the bottom center of sprite)
+        * Size of box must be non-zero and larger than twice our tolerance (i.e., the amount of tolerance must be < 100%)
         */
         public void SetAABBMinMax(Vector2 localMin, Vector2 localMax, float skinWidth)
         {
@@ -219,8 +219,8 @@ namespace PQ.Common.Physics
 
             _kinematicBody.SetLocalBounds(localCenter, 2f * localExtents, skinWidth);
             _skinWidth     = skinWidth;
-            _AABBCornerMin = localMin;
-            _AABBCornerMax = localMax;
+            _aabbCornerMin = localMin;
+            _aabbCornerMax = localMax;
         }
         
 
