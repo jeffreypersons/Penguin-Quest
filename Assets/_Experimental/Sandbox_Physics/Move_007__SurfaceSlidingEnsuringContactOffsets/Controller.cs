@@ -82,17 +82,17 @@ namespace PQ._Experimental.Physics.Move_007
             }
         }
 
+        /*
         void OnCollisionExit2D(Collision2D collision)
         {
-            /*
             if (_enableOverlapRecovery && !_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 var sep = _kinematicBody.ComputeMinimumSeparation(collision.collider);
-                _kinematicBody.Position += -KinematicLinearSolver2D.Epsilon * sep.normal;
+                _kinematicBody.Position += KinematicLinearSolver2D.ContactOffset * sep.normal;
             }
-            */
         }
-
+        */
+        
         void OnDrawGizmos()
         {
             if (!Application.IsPlaying(this) || _positionHistory.Size < 2)

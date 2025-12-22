@@ -8,60 +8,57 @@ namespace PQ._Experimental.Physics.Move_007
     Collide and slide solver for movement.
 
     Notes
-    - Prevents tunneling by clamping an movement sub-step to body extents (allowing backtracking if overlap)
+    - Prevents tunneling by clamping a movement sub-step to body extents (allowing backtracking if overlap)
     - Flipping is done only by local rotation along x and y axes - no changes in scale
     - When moving along surfaces, we maintain a slight offset from the normal, such that contacts are
       intentionally avoided. This way, we avoid getting caught on edges and corners 
     */
     internal sealed class KinematicLinearSolver2D
     {
-        private KinematicBody2D _body;
+        private readonly KinematicBody2D _body;
 
-        /* Number of iterations used to reach movement target before giving up. */
-        public const int MaxMoveIterations = 10;
+        /* Number of iterations used to reach the movement target before giving up. */
+        private const int MaxMoveIterations = 10;
 
         /* Number of iterations used to reach no overlap before giving up. */
-        public const int MaxOverlapIterations = 5;
+        private const int MaxOverlapIterations = 5;
 
         /* Amount which we consider to be (close enough to) zero. */
-        public const float Epsilon = 0.005f;
+        private const float Epsilon = 0.001f;
 
         /* Amount used to ensure we don't get _too_ close to surfaces, to avoid getting stuck when moving tangential to a surface. */
-        public const float ContactOffset = 0.05f;
+        private const float ContactOffset = 0.05f;
 
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
         {
-            if (kinematicBody2D == null)
-            {
+            _body = kinematicBody2D ??
                 throw new ArgumentNullException($"Expected non-null {nameof(KinematicLinearSolver2D)}");
-            }
-            _body = kinematicBody2D;
         }
 
 
         /*
         Resolve any separation between given body and collider.
 
-        Reposition body to touch collider with no gap or overlap (or until max iterations reached)
+        Reposition body to touch collider with no gap or overlap (or until max iterations are reached)
         - Safeguards against passing through collider when resolving separation
-        - Since separation is solved iteratively in linear steps, complex geometry (ie many concave faces) require more iterations
+        - Since separation is solved iteratively in linear steps, complex geometry (ie many concave faces) requires more iterations
         */
         public void ResolveSeparation(Collider2D collider)
         {
             int iteration = MaxOverlapIterations;
             ColliderDistance2D separation = _body.ComputeMinimumSeparation(collider);
 
-            if (_body.CastRayAt(collider, _body.Position, separation.normal, separation.distance, out var _))
+            if (_body.CastRayAt(collider, _body.Position, separation.normal, Mathf.Abs(separation.distance), out _))
             {
                 // any surface passed through (tunneling) for the initial separation can be prevented by moving back along normal
-                // May occur when body is heavily overlapped with an edge collider causing it 'snap' to other side
+                // May occur when body is heavily overlapped with an edge collider causing it to 'snap' to the other side
                 Debug.Log($"ResolveSeparation({collider.name}).substep#precheck : Initial resolution caused collider to pass through an edge - pushing back to compensate");
                 _body.IntersectAABB(_body.Position, separation.normal, out float distanceToAABBEdge);
-                _body.Position += -2f * distanceToAABBEdge * separation.normal;
+                _body.Position -= distanceToAABBEdge * separation.normal;
             }
 
-            // note that we remove separation if ever so slightly above surface as well
+            // note that we remove separation if ever so slightly above the surface as well
             Vector2 startPosition = _body.Position;
             while (iteration-- > 0 && separation.distance is < -Epsilon or > Epsilon)
             {
@@ -82,12 +79,12 @@ namespace PQ._Experimental.Physics.Move_007
                 Vector2 afterStep = _body.Position;
                 Debug.DrawLine(beforeStep, afterStep, Color.yellow, 1f);
             }
-            Vector2 endPosition = _body.Position;
 
             // todo: investigate whether we should bias this even if the resolution didn't succeed
             // slightly bias the resolved position along normal to prevent contact
             // also prevents flip-flopping that can occur on subsequent calls when placed at center of an overlapped region
-            _body.Position += Epsilon * (endPosition - startPosition).normalized;
+            _body.Position += Epsilon * (_body.Position - startPosition).normalized;
+            
         }
 
 
@@ -121,7 +118,7 @@ namespace PQ._Experimental.Physics.Move_007
         {
             direction.Normalize();
 
-            _body.FireAllContactSensors(ContactOffset, out var slots);
+            _body.FireAllContactSensors(ContactOffset, out _);
 
             // note that we compare extremely close to zero rather than our larger epsilon,
             // as delta can be very small depending on the physics step duration used to compute it
@@ -132,7 +129,7 @@ namespace PQ._Experimental.Physics.Move_007
 
             float maxStep = ComputeMaxStep(direction, distance);
 
-            // closest hit is sufficient for all cases except concave surfaces that will cause back and forth
+            // the closest hit is sufficient for all cases except concave surfaces that will cause back-and-forth
             // movement due to 'flip-flopping' surface normals, so we if we detect one, treat it as a wall
             if (CheckForObstructingConcaveSurface(direction, maxStep, out float concaveSampleDistanceDifferential, out RaycastHit2D normalizedCenterHit) &&
                 (concaveSampleDistanceDifferential < ContactOffset || normalizedCenterHit.distance < ContactOffset))
@@ -147,10 +144,10 @@ namespace PQ._Experimental.Physics.Move_007
             while (iteration-- > 0 && distance > Epsilon && direction.sqrMagnitude > Epsilon)
             {
                 Debug.Log($"Move({distance*direction}).substep#{MaxMoveIterations-iteration} : remaining={distance}, direction={direction}");
-                MoveUnobstructed(direction, maxStep, out float step,out RaycastHit2D obstruction);
-
+                MoveUnobstructed(direction, maxStep, out float step, out RaycastHit2D obstruction);
                 direction -= obstruction.normal * Vector2.Dot(direction, obstruction.normal);
                 distance -= step;
+                
                 maxStep = ComputeMaxStep(direction, distance);
             }
             Vector2 endPosition = _body.Position;
@@ -214,7 +211,7 @@ namespace PQ._Experimental.Physics.Move_007
 
             Debug.Log($"ConcaveCheck - corner={isDiagonal} distances[A={(hitA ? hitA.distance : '-')},B={(hitB ? hitB.distance : '-')},C={(hitC ? hitC.distance : '-')}]");
             // construct a hit equivalent to moving towards a flat wall spanning between the first and last hits
-            // note that since the collider info cannot be reassigned, the below assumes A and B are same collider
+            // note that since the collider info cannot be reassigned, the below assumes A and B are the same collider
             distanceDifferential   = Mathf.Abs(hitA.distance - hitC.distance);
             normalizedHit          = hitA.distance < hitC.distance ? hitA : hitC;
             normalizedHit.point    = Vector2.LerpUnclamped(hitA.point, hitC.point, 0.50f);
