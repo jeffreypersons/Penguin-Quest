@@ -24,8 +24,8 @@ namespace PQ.Common.Physics.Internal
             public bool  VisualizePath        { get; set; }
         }
 
-        private Params _params;
-        private KinematicRigidbody2D _body;
+        private readonly Params _params;
+        private readonly KinematicRigidbody2D _body;
         private CollisionFlags2D _collisions;
 
 
@@ -45,12 +45,7 @@ namespace PQ.Common.Physics.Internal
 
         public KinematicLinearSolver2D(KinematicRigidbody2D body, in Params solverParams)
         {
-            if (body == null)
-            {
-                throw new ArgumentNullException($"Expected non-null {nameof(KinematicRigidbody2D)}");
-            }
-
-            _body       = body;
+            _body       = body ?? throw new ArgumentNullException($"Expected non-null {nameof(KinematicRigidbody2D)}");
             _collisions = CollisionFlags2D.None;
             _params     = solverParams;
         }
@@ -184,7 +179,9 @@ namespace PQ.Common.Physics.Internal
             }
 
             // if sufficiently outside the collider, then no adjustment is needed
-            if (_body.ComputeSeparation(collider, Vector2.zero, out float separation, out Vector2 direction, out bool overlapped) && !overlapped && separation > _body.SkinWidth)
+            if (_body.ComputeSeparation(collider, Vector2.zero, out float separation, out Vector2 direction, out bool overlapped) &&
+                !overlapped &&
+                separation > _body.SkinWidth)
             {
                 return;
             }
