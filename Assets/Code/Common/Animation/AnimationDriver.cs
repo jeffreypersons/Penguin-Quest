@@ -62,11 +62,6 @@ namespace PQ.Common.Animation
         public bool SetInteger(ParamId paramId, int paramValue)
         {
             var paramName = _params[paramId];
-            if (_animator.GetInteger(paramName) == paramValue)
-            {
-                return false;
-            }
-
             _animator.SetInteger(paramName, paramValue);
             OnParamChanged(paramName, paramValue);
             return true;
@@ -75,11 +70,6 @@ namespace PQ.Common.Animation
         public bool SetBool(ParamId paramId, bool paramValue)
         {
             var paramName = _params[paramId];
-            if (_animator.GetBool(paramName) == paramValue)
-            {
-                return false;
-            }
-
             _animator.SetBool(paramName, paramValue);
             OnParamChanged(paramName, paramValue);
             return true;
@@ -88,11 +78,6 @@ namespace PQ.Common.Animation
         public bool SetFloat(ParamId paramId, float paramValue)
         {
             var paramName = _params[paramId];
-            if (_animator.GetFloat(paramName) == paramValue)
-            {
-                return false;
-            }
-
             _animator.SetFloat(paramName, paramValue);
             OnParamChanged(paramName, paramValue);
             return true;
