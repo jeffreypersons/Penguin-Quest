@@ -37,6 +37,8 @@ namespace PQ.Common.Physics.Internal
             // Specifically, Vector2 equality check handles this far better than comparing squares of magnitude/Mathf.Epsilon.
             return delta == Vector2.zero;
         }
+
+        public CollisionFlags2D LastCollisionFlags => _collisions;
         
         public override string ToString() =>
             $"{GetType()}, " +
@@ -103,6 +105,38 @@ namespace PQ.Common.Physics.Internal
             }
         }
 
+        /*
+         * Compute the inverse of the minimum separation between given collider and body.
+        */
+        public void ResolveOverlapWithCollider(Collider2D collider)
+        {
+            if (collider == null)
+            {
+                return;
+            }
+
+            // if sufficiently outside the collider, then no adjustment is needed
+            if (_body.ComputeSeparation(collider, Vector2.zero, out float separation, out Vector2 direction, out bool overlapped) &&
+                !overlapped &&
+                separation > _body.SkinWidth)
+            {
+                return;
+            }
+            // otherwise, move the entire distance needed to resolve the initial overlap
+            _body.MoveBy(separation * direction);
+
+            // in the case of a convex collider, we may need additional small adjustments to find a non-overlapping spot
+            for (int i = 0; i < _params.MaxOverlapIterations; i++)
+            {
+                if (!_body.ComputeSeparation(collider, Vector2.zero, out separation, out direction, out overlapped) || !overlapped)
+                {
+                    break;
+                }
+                _body.MoveBy(separation * direction);
+            }
+        }
+
+        
         private void MoveHorizontal(Vector2 initialDelta)
         {
             Vector2 delta = initialDelta;
@@ -166,39 +200,7 @@ namespace PQ.Common.Physics.Internal
             }
             #endif
         }
-
-
-        /*
-        Compute the inverse of the minimum separation between given collider and body.
-        */
-        private void ResolveOverlapWithCollider(Collider2D collider)
-        {
-            if (collider == null)
-            {
-                return;
-            }
-
-            // if sufficiently outside the collider, then no adjustment is needed
-            if (_body.ComputeSeparation(collider, Vector2.zero, out float separation, out Vector2 direction, out bool overlapped) &&
-                !overlapped &&
-                separation > _body.SkinWidth)
-            {
-                return;
-            }
-            // otherwise, move the entire distance needed to resolve the initial overlap
-            _body.MoveBy(separation * direction);
-
-            // in the case of a convex collider, we may need additional small adjustments to find a non-overlapping spot
-            for (int i = 0; i < _params.MaxOverlapIterations; i++)
-            {
-                if (!_body.ComputeSeparation(collider, Vector2.zero, out separation, out direction, out overlapped) || !overlapped)
-                {
-                    break;
-                }
-                _body.MoveBy(separation * direction);
-            }
-        }
-
+        
         /*
         Apply bounciness/friction coefficients to hit position/normal, in proportion with the desired movement distance.
 

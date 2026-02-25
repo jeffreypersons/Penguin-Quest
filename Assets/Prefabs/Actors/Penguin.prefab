@@ -100,7 +100,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.57500005}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -110,7 +110,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 1
-  m_Size: {x: 0.44, y: 1}
+  m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0.04
 --- !u!114 &2916047126819965676
 MonoBehaviour:
@@ -125,11 +125,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _transform: {fileID: 99392607343190492}
+  _enableOverlapRecovery: 1
   _layerMask:
     serializedVersion: 2
     m_Bits: 4096
-  _AABBCornerMin: {x: -0.22, y: 0.075}
-  _AABBCornerMax: {x: 0.22, y: 1.075}
+  _aabbCornerMin: {x: -1, y: -1}
+  _aabbCornerMax: {x: 1, y: 1}
   _skinWidth: 0.04
   _maxAscendableSlopeAngle: 90
   _collisionFriction: 0

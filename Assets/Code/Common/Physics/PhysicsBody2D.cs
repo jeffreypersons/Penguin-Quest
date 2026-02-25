@@ -24,6 +24,10 @@ namespace PQ.Common.Physics
         [Tooltip("Transform used for movement, expected to have attached rigidbody 2D and box collider 2D")]
         [SerializeField] private Transform _transform = null;
 
+        [Header("Modes")]
+
+        [Tooltip("Enable fail-safes for snapping to outside overlapping collider geometry")]
+        [SerializeField] private bool _enableOverlapRecovery = true;
 
         [Header("Thresholds")]
 
@@ -100,7 +104,8 @@ namespace PQ.Common.Physics
                 $"MaxSolverOverlapIterations:{_maxSolverContactAdjustmentIterations}," +
                 $"PreallocatedBufferSize:{_preallocatedResultBufferSize}" +
             $"}}";
-        
+
+        public CollisionFlags2D LastCollisionFlags => _kinematicSolver.LastCollisionFlags;
         
         #if UNITY_EDITOR
         [Flags]
@@ -155,7 +160,13 @@ namespace PQ.Common.Physics
             Initialize(force: true);
             SyncProperties();
         }
-        
+
+        private void Start()
+        {
+            // force collision detection on initial location
+            _kinematicSolver.SolveMovement(Vector2.zero);
+        }
+
         /* Set world transform to given point, ignoring physics. */
         public void TeleportTo(Vector2 position)
         {
@@ -230,7 +241,7 @@ namespace PQ.Common.Physics
             Initialize(force: false);
             SyncProperties();
         }
-
+        
         void OnDrawGizmos()
         {
             Vector2 buffer = new Vector2(_skinWidth, _skinWidth);

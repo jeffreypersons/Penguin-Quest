@@ -154,6 +154,8 @@ namespace PQ.Common.Physics.Internal
         public void SetLayerMask(LayerMask layerMask) => _contactFilter.SetLayerMask(layerMask);
         public bool IsAttachedTo(Transform transform) => ReferenceEquals(_transform, transform);
 
+        public bool IsFilteringLayerMask(GameObject other) => _contactFilter.IsFilteringLayerMask(other);
+
         public void TeleportTo(Vector2 position) => _transform.position = position;
         public void MoveTo(Vector2 position)     => _rigidbody.position = position;
         public void MoveBy(Vector2 delta)        => _rigidbody.position += delta;
@@ -322,7 +324,6 @@ namespace PQ.Common.Physics.Internal
                 flags |= isFlippedVertical ? CollisionFlags2D.Below : CollisionFlags2D.Above;
             }
             _contactFilter.useNormalAngle = false;
-            Debug.Log(flags);
             return flags;
         }
 
