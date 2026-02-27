@@ -9,7 +9,7 @@ namespace PQ.Game.Entities.Penguin
     public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinEntity>
     {
         protected override void OnInitialStateEntered(PenguinStateId initial) =>
-            Debug.Log($"Intialized {this}");
+            Debug.Log($"Initialized {this}");
 
         protected override void OnTransition(PenguinStateId source, PenguinStateId dest) =>
             Debug.Log($"Transitioning Penguin from {source} to {dest}");
