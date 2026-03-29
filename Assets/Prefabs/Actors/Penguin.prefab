@@ -16,9 +16,10 @@ GameObject:
   - component: {fileID: 5935993559784443868}
   - component: {fileID: 4485612146676894531}
   - component: {fileID: 79367290388874975}
+  - component: {fileID: 6804888461898933805}
   m_Layer: 7
   m_Name: Penguin
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62,7 +63,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
@@ -109,7 +110,7 @@ BoxCollider2D:
     adaptiveTilingThreshold: 0
     drawMode: 0
     adaptiveTiling: 0
-  m_AutoTiling: 1
+  m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0.04
 --- !u!114 &2916047126819965676
@@ -147,7 +148,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1807875206248570255}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d843ab528b90ca24986ff473f5abc37e, type: 3}
   m_Name: 
@@ -202,6 +203,14 @@ MonoBehaviour:
   _penguinSkeleton: {fileID: 4485612146676894531}
   _penguinStateMachine: {fileID: 5935993559784443868}
   _config: {fileID: 11400000, guid: dcbbb34068d4a5747898e1c12ed12513, type: 2}
+--- !u!81 &6804888461898933805
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807875206248570255}
+  m_Enabled: 1
 --- !u!1001 &4068149060780552846
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -225,6 +234,10 @@ PrefabInstance:
     - target: {fileID: 1451559343169804102, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_CategoryHash
       value: 2.9092094e-34
+      objectReference: {fileID: 0}
+    - target: {fileID: 1921065799901378291, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_Chain.m_StoredLocalRotations.Array.data[1].z
+      value: -0.000000029802315
       objectReference: {fileID: 0}
     - target: {fileID: 1954794615901475303, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_LocalRotation.z
@@ -266,6 +279,10 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4802095474380568769, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.000000029802315
+      objectReference: {fileID: 0}
     - target: {fileID: 5254529740304907151, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_Name
       value: Puppet
@@ -289,6 +306,10 @@ PrefabInstance:
     - target: {fileID: 5893188474431963402, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.00000011920926
+      objectReference: {fileID: 0}
+    - target: {fileID: 5904942385092003717, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000029802315
       objectReference: {fileID: 0}
     - target: {fileID: 6311454246606712687, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_IsTrigger
@@ -357,6 +378,10 @@ PrefabInstance:
     - target: {fileID: 7826460162982194881, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_Chain.m_StoredLocalRotations.Array.data[2].z
       value: -0.000000029802315
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863912615894168783, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
+      propertyPath: m_Chain.m_StoredLocalRotations.Array.data[4].z
+      value: 0.000000029802315
       objectReference: {fileID: 0}
     - target: {fileID: 8902447895256317435, guid: 0115d0d12e9ae0a48afc1539d643606d, type: 3}
       propertyPath: m_labelHash
