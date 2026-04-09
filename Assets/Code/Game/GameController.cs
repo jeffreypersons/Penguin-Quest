@@ -18,6 +18,7 @@ namespace PQ.Game
         [SerializeField] private CameraController      _cameraController;
         [SerializeField] private SoundEffectController _soundEffectController;
         [SerializeField] private SoundTrackController  _soundTrackController;
+        [SerializeField] private WeatherController     _weatherController;
 
         private GameEventCenter _gameEventCenter;
 
@@ -37,6 +38,7 @@ namespace PQ.Game
             _playerPenguin.GetComponent<Entities.Penguin.PenguinEntity>().EventBus = _gameEventCenter;
 
             _cameraController.FollowTarget = _playerPenguin.transform;
+            _weatherController.FollowTarget = _playerPenguin.transform;
         }
 
         void Start()
