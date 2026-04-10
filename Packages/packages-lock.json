@@ -134,7 +134,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.28",
+      "version": "1.8.29",
       "depth": 2,
       "source": "registry",
       "dependencies": {
@@ -144,7 +144,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.cinemachine": {
-      "version": "2.10.6",
+      "version": "2.10.7",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -191,9 +191,9 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {
-        "com.unity.cinemachine": "2.10.6",
+        "com.unity.cinemachine": "2.10.7",
         "com.unity.timeline": "1.8.12",
-        "com.unity.visualscripting": "1.9.10"
+        "com.unity.visualscripting": "1.9.11"
       }
     },
     "com.unity.ide.rider": {
@@ -245,7 +245,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.recorder": {
-      "version": "5.1.5",
+      "version": "5.1.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -341,7 +341,7 @@
       }
     },
     "com.unity.test-framework.performance": {
-      "version": "3.2.0",
+      "version": "3.4.0",
       "depth": 2,
       "source": "registry",
       "dependencies": {
@@ -372,7 +372,7 @@
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.9.10",
+      "version": "1.9.11",
       "depth": 1,
       "source": "registry",
       "dependencies": {
