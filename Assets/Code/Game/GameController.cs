@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using PQ.Common.Extensions;
+using PQ.Common.Spawning;
 using PQ.Game.Entities;
 using PQ.Game.Sound;
 using PQ.Game.Input;
@@ -24,7 +25,6 @@ namespace PQ.Game
 
         private CharacterStatus _characterStatus;
 
-        private Transform _initialSpawnPoint;
         [SerializeField] private GameObject _playerInstance;
 
         void Awake()
@@ -38,12 +38,7 @@ namespace PQ.Game
             if (_playerPrefab == null)
                 throw new MissingReferenceException($"Cannot start game - player prefab not set in inspector");
 
-            // todo: extract out proper spawn/pool/positions system
-            _initialSpawnPoint = GameObject.FindGameObjectsWithTag("SpawnPoint")[0].transform;
-            if (_initialSpawnPoint == null)
-                throw new MissingReferenceException($"Cannot start game - initial spawn point not set in inspector");
-            
-            _playerInstance = Instantiate(_playerPrefab, _initialSpawnPoint.position, _initialSpawnPoint.rotation);
+            _playerInstance = SpawnSystem.Spawn(prefab: _playerPrefab, tag: "SpawnPoint");
 
             _gameEventCenter = GameEventCenter.Instance;
             _playerInstance.SetActive(true);
