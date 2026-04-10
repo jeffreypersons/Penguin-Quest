@@ -13,7 +13,7 @@ namespace PQ.Game
 {
     public class GameController : MonoBehaviour
     {
-        [SerializeField] private GameObject            _playerPenguin;
+        [SerializeField] private GameObject            _playerPrefab;
         [SerializeField] private GameplayInputReceiver _gameplayInputController;
         [SerializeField] private CameraController      _cameraController;
         [SerializeField] private SoundEffectController _soundEffectController;
@@ -24,6 +24,8 @@ namespace PQ.Game
 
         private CharacterStatus _characterStatus;
 
+        private Transform _initialSpawnPoint;
+        [SerializeField] private GameObject _playerInstance;
 
         void Awake()
         {
@@ -33,12 +35,22 @@ namespace PQ.Game
                 health:  1.0f
              );
 
-            _gameEventCenter = GameEventCenter.Instance;
-            _playerPenguin.SetActive(true);
-            _playerPenguin.GetComponent<Entities.Penguin.PenguinEntity>().EventBus = _gameEventCenter;
+            if (_playerPrefab == null)
+                throw new MissingReferenceException($"Cannot start game - player prefab not set in inspector");
 
-            _cameraController.FollowTarget = _playerPenguin.transform;
-            _weatherController.FollowTarget = _playerPenguin.transform;
+            // todo: extract out proper spawn/pool/positions system
+            _initialSpawnPoint = GameObject.FindGameObjectsWithTag("SpawnPoint")[0].transform;
+            if (_initialSpawnPoint == null)
+                throw new MissingReferenceException($"Cannot start game - initial spawn point not set in inspector");
+            
+            _playerInstance = Instantiate(_playerPrefab, _initialSpawnPoint.position, _initialSpawnPoint.rotation);
+
+            _gameEventCenter = GameEventCenter.Instance;
+            _playerInstance.SetActive(true);
+            _playerInstance.GetComponent<Entities.Penguin.PenguinEntity>().EventBus = _gameEventCenter;
+
+            _cameraController.FollowTarget = _playerInstance.transform;
+            _weatherController.FollowTarget = _playerInstance.transform;
         }
 
         void Start()
