@@ -10,19 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Web
-  m_EditorClassIdentifier: 
+  m_Name: Mac - Dev
+  m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.Build.Profile.BuildProfile
   m_AssetVersion: 1
-  m_BuildTarget: 20
-  m_Subtarget: 0
-  m_PlatformId: 84a3bb9e7420477f885e98145999eb20
+  m_BuildTarget: 2
+  m_Subtarget: 2
+  m_PlatformId: 0d2129357eac403d8b359c2dcbf82502
   m_PlatformBuildProfile:
-    rid: 110530760966930453
+    rid: 322572764296511559
   m_OverrideGlobalSceneList: 0
-  m_Scenes:
-  - m_enabled: 1
-    m_path: Assets/Scenes/Main.unity
-    m_guid: 5c097d3c90e1dd246947142496476b4c
+  m_Scenes: []
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
@@ -30,10 +27,10 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 110530760966930453
-      type: {class: WebGLPlatformSettings, ns: UnityEditor.WebGL, asm: UnityEditor.WebGL.Extensions}
+    - rid: 322572764296511559
+      type: {class: OSXStandaloneBuildProfile, ns: UnityEditor.OSXStandalone, asm: UnityEditor.OSXStandalone.Extensions}
       data:
-        m_Development: 0
+        m_Development: 1
         m_ConnectProfiler: 0
         m_BuildWithDeepProfilingSupport: 0
         m_AllowDebugging: 0
@@ -42,12 +39,11 @@ MonoBehaviour:
         m_ExplicitNullChecks: 0
         m_ExplicitDivideByZeroChecks: 0
         m_ExplicitArrayBoundsChecks: 0
-        m_CompressionType: -1
+        m_CompressionType: 2
         m_InstallInBuildFolder: 0
         m_InsightsSettingsContainer:
           m_BuildProfileEngineDiagnosticsState: 2
         m_AdaptivePerformanceEnabled: 0
-        m_CodeOptimization: 4
-        m_WebGLClientBrowserPath: 
-        m_WebGLClientBrowserType: 0
-        m_WebGLTextureSubtarget: 0
+        m_MacOSXcodeBuildConfig: 1
+        m_Architecture: 2
+        m_CreateXcodeProject: 0
