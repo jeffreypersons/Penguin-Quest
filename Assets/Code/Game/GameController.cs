@@ -24,21 +24,23 @@ namespace PQ.Game
         private GameEventCenter _gameEventCenter;
 
         private CharacterStatus _characterStatus;
+        private SpawnSystem _spawnSystem;
 
         [SerializeField] private GameObject _playerInstance;
 
         void Awake()
         {
+            if (_playerPrefab == null)
+                throw new MissingReferenceException($"Cannot start game - player prefab not set in inspector");
+            
             _characterStatus = new CharacterStatus(
                 lives:   1,
                 stamina: 1.0f,
                 health:  1.0f
              );
 
-            if (_playerPrefab == null)
-                throw new MissingReferenceException($"Cannot start game - player prefab not set in inspector");
-
-            _playerInstance = SpawnSystem.Spawn(prefab: _playerPrefab, tag: "SpawnPoint");
+            _spawnSystem = new SpawnSystem();
+            _playerInstance = _spawnSystem.Spawn(prefab: _playerPrefab, tag: "SpawnPoint");
 
             _gameEventCenter = GameEventCenter.Instance;
             _playerInstance.SetActive(true);
