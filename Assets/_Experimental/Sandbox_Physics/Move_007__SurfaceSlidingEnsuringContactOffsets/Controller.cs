@@ -10,7 +10,7 @@ namespace PQ._Experimental.Physics.Move_007
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
         [Range(0f,  1)][SerializeField] private float _contactOffset = 0.05f;
 
-        [SerializeField] private bool _enableOverlapRecovery = true;
+        [SerializeField] private bool _enableOverlapRecovery = false;
 
         
         #if UNITY_EDITOR
@@ -40,6 +40,7 @@ namespace PQ._Experimental.Physics.Move_007
 
         void Update()
         {
+            _kinematicSolver.ContactOffset = _contactOffset;
             if (!Mathf.Approximately(Time.timeScale, _timeScale))
             {
                 Time.timeScale = _timeScale;
@@ -82,16 +83,14 @@ namespace PQ._Experimental.Physics.Move_007
             }
         }
 
-        /*
         void OnCollisionExit2D(Collision2D collision)
         {
             if (_enableOverlapRecovery && !_kinematicBody.IsFilteringLayerMask(collision.collider.gameObject))
             {
                 var sep = _kinematicBody.ComputeMinimumSeparation(collision.collider);
-                _kinematicBody.Position += KinematicLinearSolver2D.ContactOffset * sep.normal;
+                _kinematicBody.Position += _kinematicSolver.ContactOffset * sep.normal;
             }
         }
-        */
         
         void OnDrawGizmos()
         {

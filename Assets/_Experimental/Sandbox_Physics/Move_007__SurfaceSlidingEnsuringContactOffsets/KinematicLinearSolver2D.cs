@@ -27,7 +27,7 @@ namespace PQ._Experimental.Physics.Move_007
         private const float Epsilon = 0.001f;
 
         /* Amount used to ensure we don't get _too_ close to surfaces, to avoid getting stuck when moving tangential to a surface. */
-        private const float ContactOffset = 0.05f;
+        public float ContactOffset { get; set; } = 0.05f;
 
 
         public KinematicLinearSolver2D(KinematicBody2D kinematicBody2D)
