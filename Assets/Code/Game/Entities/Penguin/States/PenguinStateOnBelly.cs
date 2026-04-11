@@ -13,7 +13,7 @@ namespace PQ.Game.Entities.Penguin
         public PenguinStateOnBelly() : base() { }
 
 
-        protected override void OnIntialize()
+        protected override void OnInitialize()
         {
             RegisterEvent(Blob.EventBus.standUpCommand,      HandleStandUpInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange, HandleMoveHorizontalChanged);

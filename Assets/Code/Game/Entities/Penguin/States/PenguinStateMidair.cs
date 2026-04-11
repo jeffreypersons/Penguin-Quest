@@ -8,7 +8,7 @@ namespace PQ.Game.Entities.Penguin
     {
         public PenguinStateMidair() : base() { }
 
-        protected override void OnIntialize()
+        protected override void OnInitialize()
         {
             //RegisterEvent(Blob.CharacterController.OnGroundContactChanged, HandleGroundContactChanged);
         }

@@ -8,7 +8,7 @@ namespace PQ.Game.Entities.Penguin
     {
         public PenguinStateStandingUp() : base() { }
 
-        protected override void OnIntialize()
+        protected override void OnInitialize()
         {
             RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.StandUpStarted), HandleStandUpAnimationStarted);
             RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.StandUpEnded),   HandleStandUpAnimationFinished);

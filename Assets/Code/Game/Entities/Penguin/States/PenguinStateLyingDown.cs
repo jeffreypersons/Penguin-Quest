@@ -8,7 +8,7 @@ namespace PQ.Game.Entities.Penguin
     {
         public PenguinStateLyingDown() : base() { }
 
-        protected override void OnIntialize()
+        protected override void OnInitialize()
         {
             RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.LieDownStarted),  HandleLieDownAnimationStarted);
             RegisterEvent(Blob.Animation.LookupEvent(PenguinAnimationEventId.LieDownMidpoint), HandleLieDownAnimationMidpoint);

@@ -12,7 +12,7 @@ namespace PQ.Game.Entities.Penguin
 
         public PenguinStateOnFeet() : base() { }
 
-        protected override void OnIntialize()
+        protected override void OnInitialize()
         {
             RegisterEvent(Blob.EventBus.lieDownCommand,      HandleLieDownInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange, HandleMoveHorizontalChanged);

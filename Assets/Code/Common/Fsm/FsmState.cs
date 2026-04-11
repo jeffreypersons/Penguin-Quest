@@ -70,7 +70,7 @@ namespace PQ.Common.Fsm
                 _active        = false,
                 _eventRegistry = new(),
             };
-            instance.OnIntialize();
+            instance.OnInitialize();
             instance._eventRegistry.UnsubscribeToAllRegisteredEvents();
             return instance;
         }
@@ -118,7 +118,7 @@ namespace PQ.Common.Fsm
 
         // Required one time callback where long living data can be hooked up (eg events/handlers)
 
-        protected abstract void OnIntialize();
+        protected abstract void OnInitialize();
 
 
         // Required entry/exit point callbacks
