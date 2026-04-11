@@ -40,7 +40,7 @@ namespace PQ.Game
              );
 
             _spawnSystem = new SpawnSystem();
-            _playerInstance = _spawnSystem.Spawn(prefab: _playerPrefab, tag: "SpawnPoint");
+            _playerInstance = _spawnSystem.Spawn(prefab: _playerPrefab, tag: "SpawnPoint", new SpawnCollisionOptions(SnapDirection.Down));
 
             _gameEventCenter = GameEventCenter.Instance;
             _playerInstance.SetActive(true);

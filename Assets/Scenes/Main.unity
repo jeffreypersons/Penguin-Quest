@@ -4912,11 +4912,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4222894139018958991, guid: ea2e2206dd569493caba455d7a84b737, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -52
+      value: -52.89
       objectReference: {fileID: 0}
     - target: {fileID: 4222894139018958991, guid: ea2e2206dd569493caba455d7a84b737, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 4222894139018958991, guid: ea2e2206dd569493caba455d7a84b737, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4952,10 +4952,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6191864688577046444, guid: ea2e2206dd569493caba455d7a84b737, type: 3}
       propertyPath: m_Name
-      value: SpawnPoint
-      objectReference: {fileID: 0}
-    - target: {fileID: 6191864688577046444, guid: ea2e2206dd569493caba455d7a84b737, type: 3}
-      propertyPath: m_TagString
       value: SpawnPoint
       objectReference: {fileID: 0}
     m_RemovedComponents: []
