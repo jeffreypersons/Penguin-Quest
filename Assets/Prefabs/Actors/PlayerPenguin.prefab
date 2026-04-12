@@ -130,15 +130,15 @@ MonoBehaviour:
   _layerMask:
     serializedVersion: 2
     m_Bits: 4096
-  _aabbCornerMin: {x: -0.22, y: -0.075}
+  _aabbCornerMin: {x: -0.22, y: 0.075}
   _aabbCornerMax: {x: 0.22, y: 1.075}
-  _skinWidth: 0.02
+  _skinWidth: 0.04
   _maxAscendableSlopeAngle: 90
   _collisionFriction: 0
   _collisionBounciness: 0
   _gravityScale: 1
   _maxSolverMoveIterations: 10
-  _maxSolverContactAdjustmentIterations: 0
+  _maxSolverContactAdjustmentIterations: 2
   _preallocatedResultBufferSize: 16
   _editorVisuals: -1
 --- !u!114 &2002890420633338778

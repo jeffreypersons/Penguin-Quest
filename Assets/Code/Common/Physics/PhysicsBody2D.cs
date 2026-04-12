@@ -163,8 +163,13 @@ namespace PQ.Common.Physics
 
         private void Start()
         {
-            // force collision detection on initial location
-            _kinematicSolver.SolveMovement(Vector2.zero);
+            Settle();
+        }
+
+        /* Resolve overlaps and detect contacts at current position, without movement or interpolation. */
+        public void Settle()
+        {
+            _kinematicSolver.Settle();
         }
 
         /* Set world transform to given point, ignoring physics. */
