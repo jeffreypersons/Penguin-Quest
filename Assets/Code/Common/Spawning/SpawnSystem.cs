@@ -87,6 +87,22 @@ namespace PQ.Common.Spawning
                 ResolveSpawnCollisions(instance, collisionOptions.Value);
             return instance;
         }
+        
+        private static Vector2 ToVector(SnapDirection direction) => direction switch
+        {
+            SnapDirection.Up    => Vector2.up,
+            SnapDirection.Down  => Vector2.down,
+            SnapDirection.Left  => Vector2.left,
+            SnapDirection.Right => Vector2.right,
+            _                   => Vector2.zero,
+        };
+
+        private GameObject GetFromPool(GameObject prefab)
+        {
+            return _pools.ContainsKey(prefab) && _pools[prefab].Count > 0
+                ? _pools[prefab].Dequeue()
+                : Object.Instantiate(prefab);
+        }
 
         /*
         Resolve spawn-time collisions in two phases:
@@ -101,11 +117,13 @@ namespace PQ.Common.Spawning
         */
         private static void ResolveSpawnCollisions(GameObject instance, SpawnCollisionOptions options)
         {
-            LayerMask mask = options.CollisionMask == 0 ? Physics2D.DefaultRaycastLayers : options.CollisionMask;
-            ContactFilter2D filter = new ContactFilter2D();
-            filter.useLayerMask = true;
-            filter.layerMask    = mask;
-            filter.useTriggers  = false;
+            var mask = options.CollisionMask == 0 ? (LayerMask)Physics2D.DefaultRaycastLayers : options.CollisionMask;
+            var filter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                layerMask = mask,
+                useTriggers = false
+            };
 
             // Ensure physics engine sees the freshly-set transform position.
             // Required because Physics2D.autoSyncTransforms is disabled in this project.
@@ -187,28 +205,12 @@ namespace PQ.Common.Spawning
         */
         private static void SnapToSurface(SpriteRenderer sprite, ContactFilter2D filter, Vector2 direction)
         {
+            Physics2D.SyncTransforms();
             Bounds b = sprite.bounds;
             RaycastHit2D[] hits = new RaycastHit2D[1];
             int hitCount = Physics2D.BoxCast(b.center, b.size, 0f, direction, filter, hits, Mathf.Infinity);
             if (hitCount > 0 && hits[0].distance > 0f)
                 sprite.transform.position += (Vector3)(direction * hits[0].distance);
-        }
-
-        private static Vector2 ToVector(SnapDirection direction) => direction switch
-        {
-            SnapDirection.Up    => Vector2.up,
-            SnapDirection.Down  => Vector2.down,
-            SnapDirection.Left  => Vector2.left,
-            SnapDirection.Right => Vector2.right,
-            _                   => Vector2.zero,
-        };
-
-        private GameObject GetFromPool(GameObject prefab)
-        {
-            if (_pools.ContainsKey(prefab) && _pools[prefab].Count > 0)
-                return _pools[prefab].Dequeue();
-
-            return Object.Instantiate(prefab);
         }
     }
 }
