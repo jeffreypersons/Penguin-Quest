@@ -1,6 +1,5 @@
 using UnityEngine;
 using PQ.Common.Fsm;
-using PQ.Common.Physics;
 
 
 namespace PQ.Game.Entities.Penguin
@@ -21,7 +20,6 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnEnter()
         {
             Blob.Animation.AddTriggerToQueue(PenguinAnimationParamId.JumpUp);
-            Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, false);
             _velocity = new Vector2(0f, Blob.Config.jumpImpulse);
             _wasGrounded = false;
         }
@@ -38,9 +36,7 @@ namespace PQ.Game.Entities.Penguin
 
             Blob.PhysicsBody.Move(_velocity * Time.fixedDeltaTime);
 
-            bool isGrounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
-            Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, isGrounded);
-
+            bool isGrounded = Blob.IsGrounded;
             if (!_wasGrounded && isGrounded)
             {
                 base.SignalMoveToPreviousState();

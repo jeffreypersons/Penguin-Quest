@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using PQ.Common.Fsm;
-using PQ.Common.Physics;
 
 
 namespace PQ.Game.Entities.Penguin
 {
     public class PenguinStateOnBelly : FsmState<PenguinStateId, PenguinEntity>
     {
-        private bool _grounded;
         private HorizontalInput _horizontalInput;
 
         public PenguinStateOnBelly() : base() { }
@@ -42,15 +40,12 @@ namespace PQ.Game.Entities.Penguin
                 Blob.PhysicsBody.Flip(horizontal: _horizontalInput.value < 0, vertical: false);
             }
 
-            // todo: check inputAxis.y for jumps
-
             Vector2 velocity = new(
                 x: Blob.Config.maxHorizontalSpeedUpright * _horizontalInput.value,
-                y: _grounded ? 0 : Blob.PhysicsBody.Gravity
+                y: Blob.IsGrounded ? 0 : Blob.PhysicsBody.Gravity
             );
 
             Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
-            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         protected override void OnUpdate()
@@ -61,7 +56,6 @@ namespace PQ.Game.Entities.Penguin
         private void HandleConfigChanged()
         {
             Blob.PhysicsBody.SetAABBMinMax(Blob.Config.boundsMinProne, Blob.Config.boundsMaxProne, Blob.Config.skinWidthProne);
-            _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
         private void HandleStandUpInputReceived()

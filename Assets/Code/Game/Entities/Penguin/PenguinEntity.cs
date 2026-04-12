@@ -37,6 +37,7 @@ namespace PQ.Game.Entities.Penguin
         public PenguinAnimationDriver   Animation    => _penguinAnimation;
         public PenguinSkeletalStructure Skeleton     => _penguinSkeleton;
         public PenguinFsmDriver         StateMachine => _penguinStateMachine;
+        public bool                     IsGrounded   => _physicsBody.IsContacting(CollisionFlags2D.Below);
 
         // todo: add acceleration curves here until we find a better place to put it
 
