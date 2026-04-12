@@ -6,6 +6,9 @@ namespace PQ.Game.Entities.Penguin
 {
     public class PenguinStateStandingUp : FsmState<PenguinStateId, PenguinEntity>
     {
+        private const float FallbackTimeoutSeconds = 2.0f;
+        private float _elapsedTime;
+
         public PenguinStateStandingUp() : base() { }
 
         protected override void OnInitialize()
@@ -17,6 +20,7 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnEnter()
         {
             Blob.Animation.AddTriggerToQueue(PenguinAnimationParamId.StandUp);
+            _elapsedTime = 0f;
         }
 
         protected override void OnExit()
@@ -27,6 +31,12 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnFixedUpdate()
         {
             // todo: handle momentum during stand up and 'sliding' bounding box adjustments
+            _elapsedTime += Time.fixedDeltaTime;
+            if (_elapsedTime > FallbackTimeoutSeconds)
+            {
+                Debug.LogWarning("StandingUp animation did not complete in time - forcing transition to Feet");
+                base.SignalMoveToNextState(PenguinStateId.Feet);
+            }
         }
 
         private void HandleStandUpAnimationStarted()

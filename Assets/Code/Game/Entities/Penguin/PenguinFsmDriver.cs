@@ -8,22 +8,27 @@ namespace PQ.Game.Entities.Penguin
     // todo: integrate with entity so the graph is initialized there, and use game object instantiate/add component instead of subclass
     public sealed class PenguinFsmDriver : FsmDriver<PenguinStateId, PenguinEntity>
     {
+        private PenguinEntity _penguin;
+
         protected override void OnInitialStateEntered(PenguinStateId initial) =>
             Debug.Log($"Initialized {this}");
 
-        protected override void OnTransition(PenguinStateId source, PenguinStateId dest) =>
+        protected override void OnTransition(PenguinStateId source, PenguinStateId dest)
+        {
             Debug.Log($"Transitioning Penguin from {source} to {dest}");
+            _penguin.Animation.ResetAllTriggers();
+        }
 
 
         protected override void OnInitialize()
         {
-            if (!gameObject.TryGetComponent<PenguinEntity>(out var penguinBlob))
+            if (!gameObject.TryGetComponent<PenguinEntity>(out _penguin))
             {
                 throw new InvalidOperationException(
                     $"PenguinBlob not found - driver must be attached to same gameObject as PenguinFsmDriver");
             }
 
-            Initialize(new Builder(persistentData: penguinBlob, initial: PenguinStateId.Feet)
+            Initialize(new Builder(persistentData: _penguin, initial: PenguinStateId.Feet)
                 .AddNode<PenguinStateOnFeet>(PenguinStateId.Feet, new[] {
                     PenguinStateId.LyingDown,
                     PenguinStateId.Midair,

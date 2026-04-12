@@ -94,6 +94,13 @@ namespace PQ.Common.Animation
             return true;
         }
 
+        // clear all pending trigger parameters on the animator, preventing stale triggers from carrying
+        // over across state transitions
+        public void ResetAllTriggers()
+        {
+            ResetAllAnimatorTriggers(_animator);
+        }
+
 
 
         /*** Internal Hooks for Setting up a Animation Component Instance ***/
@@ -171,8 +178,7 @@ namespace PQ.Common.Animation
                 throw new InvalidOperationException("Cannot start driver - animator must be provided in OnInitialize()");
             }
 
-            // until animator params configured, the param ids won't match, so until then silence the validation
-            //EnsureRegisteredAndEditorParamsAreAnExistMatch();
+            EnsureRegisteredAndEditorParamsAreAnExactMatch();
         }
 
 
@@ -180,14 +186,14 @@ namespace PQ.Common.Animation
         /*** Internal 'Machinery' ***/
 
         // is the ordering, count, and names of our paramIds an _exact_ match with the ones in the mecanim editor window?
-        private void EnsureRegisteredAndEditorParamsAreAnExistMatch()
+        private void EnsureRegisteredAndEditorParamsAreAnExactMatch()
         {
             IReadOnlyList<string> given  = _params.Values;
             IReadOnlyList<string> actual = _animator.parameters.Select(param => param.name).ToArray();
             if (!given.SequenceEqual(actual))
             {
-                throw new InvalidOperationException(
-                    $"Enum field names must match animator parameter names exactly - " +
+                Debug.LogWarning(
+                    $"Enum field names do not match animator parameter names - " +
                     $"given=[{string.Join(',', given)}], actual=[{string.Join(',', actual)}]");
             }
         }
