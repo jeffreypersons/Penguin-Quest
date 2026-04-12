@@ -88,6 +88,13 @@ namespace PQ.Common.Physics.Internal
             _collisions = _body.CheckSides();
         }
 
+        /* Resolve overlaps and update collision flags at the current position. No movement or interpolation. */
+        public void Settle()
+        {
+            SnapToSurfaceIfNearOrInside();
+            _collisions = _body.CheckSides();
+        }
+
         public bool InContact(CollisionFlags2D flags)
         {
             return (_collisions & flags) == flags;
