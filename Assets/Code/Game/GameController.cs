@@ -88,7 +88,7 @@ namespace PQ.Game
         private void PauseGame()        => Time.timeScale = 0f;
         private void ResumeGame()       => Time.timeScale = 1f;
         private void RestartGame()      => SceneExtensions.LoadScene("Main");
-        private void EndGame()          { Time.timeScale = 1f; SceneExtensions.LoadScene("EndCredits"); }
+        private void EndGame()          { Time.timeScale = 1f; SceneExtensions.LoadScene("Credits"); }
         private bool WinConditionMet()  => false;
         private bool LoseConditionMet() => false;
     }
