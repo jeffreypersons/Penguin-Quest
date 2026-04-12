@@ -117,6 +117,7 @@ namespace PQ.Common.Spawning
                 ResolveOverlaps(collider, filter, options.MaxIterations, escapeDir);
                 if (options.SnapDirection != SnapDirection.None)
                     SnapToSurface(collider, filter, ToVector(options.SnapDirection));
+                Physics2D.SyncTransforms();
             }
             else if (options.SnapDirection != SnapDirection.None &&
                      instance.TryGetComponent(out SpriteRenderer sprite))
