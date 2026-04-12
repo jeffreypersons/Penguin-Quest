@@ -14,6 +14,7 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnInitialize()
         {
+            RegisterEvent(Blob.EventBus.jumpCommand,         HandleJumpInputReceived);
             RegisterEvent(Blob.EventBus.lieDownCommand,      HandleLieDownInputReceived);
             RegisterEvent(Blob.EventBus.movementInputChange, HandleMoveHorizontalChanged);
             RegisterEvent(Blob.Config.OnChangedInEditor,     HandleConfigChanged);
@@ -63,6 +64,14 @@ namespace PQ.Game.Entities.Penguin
         {
             Blob.PhysicsBody.SetAABBMinMax(Blob.Config.boundsMinUpright, Blob.Config.boundsMaxUpright, Blob.Config.skinWidthUpright);
             _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+        }
+
+        private void HandleJumpInputReceived()
+        {
+            if (_grounded)
+            {
+                base.SignalMoveToNextState(PenguinStateId.Midair);
+            }
         }
 
         private void HandleLieDownInputReceived()

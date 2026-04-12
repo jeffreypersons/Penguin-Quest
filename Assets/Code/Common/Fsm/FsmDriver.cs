@@ -170,9 +170,10 @@ namespace PQ.Common.Fsm
         {
             if (_scheduledState != null)
             {
-                throw new InvalidOperationException(
+                Debug.LogWarning(
                     $"Cannot move to {dest} - a transition " +
-                    $"{_activeState.Id}=>{_scheduledState.Id} is already queued");
+                    $"{_activeState.Id}=>{_scheduledState.Id} is already queued, ignoring");
+                return;
             }
             if (!_graph.HasTransition(_activeState.Id, dest))
             {

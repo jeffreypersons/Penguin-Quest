@@ -6,6 +6,9 @@ namespace PQ.Game.Entities.Penguin
 {
     public class PenguinStateLyingDown : FsmState<PenguinStateId, PenguinEntity>
     {
+        private const float FallbackTimeoutSeconds = 2.0f;
+        private float _elapsedTime;
+
         public PenguinStateLyingDown() : base() { }
 
         protected override void OnInitialize()
@@ -18,6 +21,7 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnEnter()
         {
             Blob.Animation.AddTriggerToQueue(PenguinAnimationParamId.LieDown);
+            _elapsedTime = 0f;
         }
 
         protected override void OnExit()
@@ -28,6 +32,12 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnFixedUpdate()
         {
             // todo: handle momentum during stand up and 'sliding' bounding box adjustments
+            _elapsedTime += Time.fixedDeltaTime;
+            if (_elapsedTime > FallbackTimeoutSeconds)
+            {
+                Debug.LogWarning("LyingDown animation did not complete in time - forcing transition to Belly");
+                base.SignalMoveToNextState(PenguinStateId.Belly);
+            }
         }
 
         private void HandleLieDownAnimationStarted()
