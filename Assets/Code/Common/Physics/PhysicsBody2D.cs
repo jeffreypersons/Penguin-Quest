@@ -167,7 +167,7 @@ namespace PQ.Common.Physics
         }
 
         /* Resolve overlaps and detect contacts at current position, without movement or interpolation. */
-        public void Settle()
+        private void Settle()
         {
             _kinematicSolver.Settle();
         }
@@ -237,6 +237,8 @@ namespace PQ.Common.Physics
             _skinWidth     = skinWidth;
             _aabbCornerMin = localMin;
             _aabbCornerMax = localMax;
+
+            Settle();
         }
         
 

@@ -61,7 +61,6 @@ namespace PQ.Game.Entities.Penguin
         private void HandleConfigChanged()
         {
             Blob.PhysicsBody.SetAABBMinMax(Blob.Config.boundsMinProne, Blob.Config.boundsMaxProne, Blob.Config.skinWidthProne);
-            Blob.PhysicsBody.Settle();
             _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
         }
 
