@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using PQ.Common.Extensions;
-using PQ.Common.Physics;
 using PQ.Common.Spawning;
 using PQ.Game.Entities;
 using PQ.Game.Sound;
