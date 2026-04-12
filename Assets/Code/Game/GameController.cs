@@ -71,7 +71,7 @@ namespace PQ.Game
         void OnEnable()
         {
             _gameEventCenter.startGame .AddHandler(RestartGame);
-            _gameEventCenter.endGame   .AddHandler(ResumeGame);
+            _gameEventCenter.endGame   .AddHandler(EndGame);
             _gameEventCenter.pauseGame .AddHandler(PauseGame);
             _gameEventCenter.resumeGame.AddHandler(ResumeGame);
         }
@@ -79,7 +79,7 @@ namespace PQ.Game
         void OnDisable()
         {
             _gameEventCenter.startGame .RemoveHandler(RestartGame);
-            _gameEventCenter.endGame   .RemoveHandler(ResumeGame);
+            _gameEventCenter.endGame   .RemoveHandler(EndGame);
             _gameEventCenter.pauseGame .RemoveHandler(PauseGame);
             _gameEventCenter.resumeGame.RemoveHandler(ResumeGame);
         }
@@ -88,6 +88,7 @@ namespace PQ.Game
         private void PauseGame()        => Time.timeScale = 0f;
         private void ResumeGame()       => Time.timeScale = 1f;
         private void RestartGame()      => SceneExtensions.LoadScene("Main");
+        private void EndGame()          { Time.timeScale = 1f; SceneExtensions.LoadScene("EndCredits"); }
         private bool WinConditionMet()  => false;
         private bool LoseConditionMet() => false;
     }
