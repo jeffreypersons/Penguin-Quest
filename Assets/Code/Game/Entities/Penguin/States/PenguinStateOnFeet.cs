@@ -8,6 +8,7 @@ namespace PQ.Game.Entities.Penguin
     public class PenguinStateOnFeet : FsmState<PenguinStateId, PenguinEntity>
     {
         private bool _grounded;
+        private bool _jumpRequested;
         private HorizontalInput _horizontalInput;
 
         public PenguinStateOnFeet() : base() { }
@@ -23,6 +24,7 @@ namespace PQ.Game.Entities.Penguin
         protected override void OnEnter()
         {
             // no need to turn off feet and flippers, since they overlap when sliding around
+            _jumpRequested = false;
             _horizontalInput = new(HorizontalInput.Type.None);
             Blob.Skeleton.ColliderConstraints = PenguinColliderConstraints.None;
             HandleConfigChanged();
@@ -30,6 +32,7 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnExit()
         {
+            _jumpRequested = false;
             _horizontalInput = new(HorizontalInput.Type.None);
         }
 
@@ -42,16 +45,25 @@ namespace PQ.Game.Entities.Penguin
                 Blob.PhysicsBody.Flip(horizontal: _horizontalInput.value < 0, vertical: false);
             }
 
-            // todo: check inputAxis.y for jumps
+            float verticalVelocity = _grounded ? 0f : Blob.PhysicsBody.Gravity;
+            if (_jumpRequested && _grounded)
+            {
+                verticalVelocity = Blob.Config.jumpImpulse;
+                _jumpRequested = false;
+            }
 
             Vector2 velocity = new(
                 x: Blob.Config.maxHorizontalSpeedUpright * _horizontalInput.value,
-                y: _grounded ? 0 : Blob.PhysicsBody.Gravity
+                y: verticalVelocity
             );
 
             Blob.PhysicsBody.Move(velocity * Time.fixedDeltaTime);
-
             _grounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
+
+            if (verticalVelocity > 0f)
+            {
+                base.SignalMoveToNextState(PenguinStateId.Midair);
+            }
         }
 
         protected override void OnUpdate()
@@ -68,10 +80,7 @@ namespace PQ.Game.Entities.Penguin
 
         private void HandleJumpInputReceived()
         {
-            if (_grounded)
-            {
-                base.SignalMoveToNextState(PenguinStateId.Midair);
-            }
+            _jumpRequested = true;
         }
 
         private void HandleLieDownInputReceived()

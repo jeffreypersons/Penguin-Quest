@@ -8,6 +8,7 @@ namespace PQ.Game.Entities.Penguin
     // todo: add some sort of free fall check that forces a respawn/death
     public class PenguinStateMidair : FsmState<PenguinStateId, PenguinEntity>
     {
+        private Vector2 _velocity;
         private bool _wasGrounded;
 
         public PenguinStateMidair() : base() { }
@@ -21,6 +22,7 @@ namespace PQ.Game.Entities.Penguin
         {
             Blob.Animation.AddTriggerToQueue(PenguinAnimationParamId.JumpUp);
             Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, false);
+            _velocity = new Vector2(0f, Blob.Config.jumpImpulse);
             _wasGrounded = false;
         }
 
@@ -31,6 +33,11 @@ namespace PQ.Game.Entities.Penguin
 
         protected override void OnFixedUpdate()
         {
+            _velocity.y += Blob.PhysicsBody.Gravity * Time.fixedDeltaTime;
+            _velocity.y = Mathf.Clamp(_velocity.y, -Blob.Config.maxVerticalSpeedFalling, Blob.Config.maxVerticalSpeedJumping);
+
+            Blob.PhysicsBody.Move(_velocity * Time.fixedDeltaTime);
+
             bool isGrounded = Blob.PhysicsBody.IsContacting(CollisionFlags2D.Below);
             Blob.Animation.SetBool(PenguinAnimationParamId.IsGrounded, isGrounded);
 

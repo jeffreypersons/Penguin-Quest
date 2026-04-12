@@ -19,7 +19,10 @@ namespace PQ.Game.Entities.Penguin
         [Tooltip("Terminal speed when falling")]
         [SerializeField][Range(0, 100)] public float maxVerticalSpeedJumping = 5f;
 
-        // todo: add jump, sliding 'launch' thresholds, etc
+        [Tooltip("Initial upward velocity applied on jump")]
+        [SerializeField][Range(0, 50)] public float jumpImpulse = 8f;
+
+        // todo: add sliding 'launch' thresholds, etc
         // todo: use min/max sliders for bounds
 
         [Header("Upright")]
