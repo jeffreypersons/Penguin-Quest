@@ -19,8 +19,7 @@ namespace PQ._Experimental.Physics.Move_006
             }
         }
         #endif
-
-
+        
         private Vector2 _inputAxis;
 
         private KinematicBody2D         _kinematicBody;

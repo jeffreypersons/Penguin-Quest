@@ -18,6 +18,7 @@ namespace PQ._Experimental.Physics.Contact_005
         TopLeftCorner     = 1 << 8,
         All               = ~0,
     }
+    
     internal sealed class Body
     {
         private Transform        _transform;

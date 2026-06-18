@@ -11,8 +11,6 @@ namespace PQ._Experimental.Physics.Move_007
         [Range(0f,  1)][SerializeField] private float _contactOffset = 0.05f;
 
         [SerializeField] private bool _enableOverlapRecovery = false;
-
-        
         #if UNITY_EDITOR
         [SerializeField] private bool _drawAllCastsFromBody = false;
         private void OnValidate()
@@ -24,9 +22,8 @@ namespace PQ._Experimental.Physics.Move_007
         }
         #endif
 
-
         private Vector2 _inputAxis;
-
+        
         private KinematicBody2D         _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;

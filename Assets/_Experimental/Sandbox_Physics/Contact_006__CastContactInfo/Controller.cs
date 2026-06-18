@@ -7,9 +7,10 @@ namespace PQ._Experimental.Physics.Contact_006
 {
     public class Controller : MonoBehaviour
     {
-        [SerializeField] private Body _body;
         [SerializeField] [Range(0f, 1f)] private float _contactOffset = 0.05f;
 
+        private Body _body;
+        
         private StringBuilder summary;
 
         void Awake()

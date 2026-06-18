@@ -18,6 +18,7 @@ namespace PQ._Experimental.Physics.Move_006
         TopLeftCorner     = 1 << 8,
         All               = ~0,
     }
+    
     internal sealed class KinematicBody2D
     {
         private Transform        _transform;
