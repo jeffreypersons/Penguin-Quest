@@ -13,8 +13,7 @@ namespace PQ._Experimental.Physics.LinearStep_002
         private KinematicBody2D         _kinematicBody;
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;
-
-
+        
         void Awake()
         {
             Application.targetFrameRate = 60;

@@ -15,7 +15,6 @@ namespace PQ._Experimental.Physics.Move_005
         private KinematicLinearSolver2D _kinematicSolver;
         private CircularBuffer<Vector2> _positionHistory;
 
-
         void Awake()
         {
             Application.targetFrameRate = 60;

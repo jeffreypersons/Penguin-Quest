@@ -5,8 +5,7 @@ namespace PQ._Experimental.Physics.Contact_004
 {
     public class Controller : MonoBehaviour
     {
-        [SerializeField] private Body _body;
-
+        private Body _body;
         private ContactFlags2D _flags;
 
         void Awake()

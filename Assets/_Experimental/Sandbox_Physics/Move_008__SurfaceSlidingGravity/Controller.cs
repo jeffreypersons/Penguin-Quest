@@ -8,7 +8,6 @@ namespace PQ._Experimental.Physics.Move_008
     {
         [Range(0,  10)][SerializeField] private float _timeScale = 1f;
         [Range(0, 100)][SerializeField] private float _moveSpeed = 5f;
-        
         #if UNITY_EDITOR
         [SerializeField] private bool _drawAllCastsFromBody = false;
         private void OnValidate()
@@ -19,8 +18,7 @@ namespace PQ._Experimental.Physics.Move_008
             }
         }
         #endif
-
-
+        
         private Vector2 _inputAxis;
 
         private KinematicBody2D         _kinematicBody;

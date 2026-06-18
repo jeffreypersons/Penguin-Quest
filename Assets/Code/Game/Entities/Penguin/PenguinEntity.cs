@@ -41,7 +41,6 @@ namespace PQ.Game.Entities.Penguin
 
         // todo: add acceleration curves here until we find a better place to put it
 
-
         #if UNITY_EDITOR
         void Start()
         {

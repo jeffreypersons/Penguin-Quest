@@ -13,7 +13,6 @@ namespace PQ._Experimental.Physics.LinearStep_001
         private KinematicLinearSolver2D _kinematicSolver;
         private bool _nextButtonPressed;
 
-
         void Awake()
         {
             Application.targetFrameRate = 60;
