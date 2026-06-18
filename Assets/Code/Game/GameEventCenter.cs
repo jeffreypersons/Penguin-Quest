@@ -42,6 +42,8 @@ namespace PQ.Game
         public readonly PqEvent useCommand     = new("command.use");
         public readonly PqEvent fireCommand    = new("command.fire");
 
+        public readonly PqEvent anyKeyPressed = new("ui.anykey");
+
         public readonly PqEvent<HorizontalInput> movementInputChange    = new("command.movement.changed");
         public readonly PqEvent<CharacterStatus> characterStatusChanged = new("character.status.changed");
 

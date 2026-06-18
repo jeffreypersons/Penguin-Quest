@@ -4,26 +4,26 @@ using PQ.Common.Extensions;
 
 namespace PQ.Game.UI
 {
-    public class SplashScreenController : MonoBehaviour
+    public class EndCreditsController : MonoBehaviour
     {
         [Header("UI Elements")]
         [SerializeField] private TMPro.TextMeshProUGUI _title;
-        [SerializeField] private TMPro.TextMeshProUGUI _subtitle;
+        [SerializeField] private TMPro.TextMeshProUGUI _credits;
         [SerializeField] private TMPro.TextMeshProUGUI _prompt;
 
         [Header("Settings")]
-        [SerializeField] private float  _minimumDisplaySeconds = 2f;
-        [SerializeField] private string _nextSceneName = "Main";
+        [SerializeField] private float  _minimumDisplaySeconds = 3f;
+        [SerializeField] private string _nextSceneName = "Splash";
 
         private GameEventCenter _eventCenter;
         private float _elapsedTime;
         private bool  _ready;
         private bool  _transitioning;
 
-        public void Initialize(TMPro.TextMeshProUGUI title, TMPro.TextMeshProUGUI subtitle, TMPro.TextMeshProUGUI prompt)
+        public void Initialize(TMPro.TextMeshProUGUI title, TMPro.TextMeshProUGUI credits, TMPro.TextMeshProUGUI prompt)
         {
             _title = title;
-            _subtitle = subtitle;
+            _credits = credits;
             _prompt = prompt;
         }
 
