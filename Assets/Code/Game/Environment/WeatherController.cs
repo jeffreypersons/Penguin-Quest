@@ -14,10 +14,10 @@ public class WeatherController : MonoBehaviour
         get => _followTarget;
         set
         {
-            Debug.LogFormat("Weather.FollowTarget set to {0} (previously {1})",
+            Debug.LogFormat("{0} set to {1} (previously {2})",
                 $"{nameof(WeatherController)}.{nameof(FollowTarget)}",
-                ExtractTargetName(_followTarget),
-                ExtractTargetName(value));
+                ExtractTargetName(value),
+                ExtractTargetName(_followTarget));
             _followTarget = value;
 
             var ps = _snowParticleSystem.main;

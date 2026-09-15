@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
-using Cinemachine;
+using Unity.Cinemachine;
 
 
 namespace PQ.Game.Camera
@@ -25,7 +25,7 @@ namespace PQ.Game.Camera
         [SerializeField] private CinemachineBrain _brain = null;
 
         [Tooltip("Configured Cinemachine virtual cameras")]
-        [SerializeField] private CinemachineVirtualCamera[] _virtualCameras = Array.Empty<CinemachineVirtualCamera>();
+        [SerializeField] private CinemachineCamera[] _virtualCameras = Array.Empty<CinemachineCamera>();
 
 
         private string ExtractTargetName(Transform target) =>
@@ -56,10 +56,10 @@ namespace PQ.Game.Camera
                     return;
                 }
 
-                Debug.LogFormat("Camera.FollowTarget set to {0} (previously {1})",
+                Debug.LogFormat("{0} set to {1} (previously {2})",
                     $"{nameof(CameraController)}.{nameof(FollowTarget)}",
-                    ExtractTargetName(_followTarget),
-                    ExtractTargetName(value));
+                    ExtractTargetName(value),
+                    ExtractTargetName(_followTarget));
 
                 _followTarget = value;
                 for (int i = 0; i < _virtualCameras.Length; i++)
