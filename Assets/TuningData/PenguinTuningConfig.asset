@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxVerticalSpeedFalling: 5
   maxVerticalSpeedJumping: 7
+  jumpImpulse: 8
   maxHorizontalSpeedUpright: 0.5
   skinWidthUpright: 0.04
   boundsMinUpright: {x: -0.22, y: 0.075}
